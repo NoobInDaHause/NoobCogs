@@ -8,7 +8,9 @@ from redbot.core.bot import Red
 
 class GiveawayDonation(commands.Cog):
     """
-    Donate bot virtual currencies to server giveaways."""
+    Donate bot virtual currencies to server giveaways.
+    Version: f"{self.__version__}"
+    Author: f"{self.__author__}""""
     
     __version__ = "1.0.0"
     __author__ = "Richard Winters#2808"
