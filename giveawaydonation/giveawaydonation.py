@@ -11,6 +11,7 @@ class GiveawayDonation(commands.Cog):
     Donate bot virtual currencies to server giveaways."""
     
     __version__ = "1.0.0"
+    __author__ = "Richard Winters#2808"
     
     def __init__(self, bot: Red):
         self.bot = bot
@@ -19,12 +20,13 @@ class GiveawayDonation(commands.Cog):
         return
     
     @checks.bot_has_permissions(embed_links=True, mention_everyone=True)
+    @commands.command(aliases=["gdonate"])
     @commands.command(name="giveawaydonate")
     async def cmd_giveawaydonate(self, ctx: commands.Context, bot_type: str, duration: str, winners: str, requirements: str, prize: str, message: str = None):
         """
         Donate to server giveaways.
         
-        Will automatically delete the command invocation.
+        This will ping the Giveaway Managers and sends an embed version of your message.
         """
         pingrole = "<@&996041779369492540>"
         embed = discord.Embed(description=f"**Bot:** {bot_type}\n**Time:** {duration}\n**Winners:** {winners}\n**Requirements:** {requirements}\n**Prize:** {prize}\n**Message:** {message}", color=discord.Colour.blurple(), timestamp=datetime.datetime.utcnow())
