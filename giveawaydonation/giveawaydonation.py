@@ -20,7 +20,7 @@ class GiveawayDonation(commands.Cog):
         return
     
     @checks.bot_has_permissions(embed_links=True, mention_everyone=True)
-    @commands.command(aliases=["gdonate"])
+    @commands.command(aliases=["givedonate"])
     @commands.command(name="giveawaydonate")
     async def cmd_giveawaydonate(self, ctx: commands.Context, bot_type: str, duration: str, winners: str, requirements: str, prize: str, message: str = None):
         """
