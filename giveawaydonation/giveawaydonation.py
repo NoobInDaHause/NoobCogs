@@ -20,14 +20,14 @@ class GiveawayDonation(commands.Cog):
     
     @checks.bot_has_permissions(embed_links=True, mention_everyone=True)
     @commands.command(name="giveawaydonate")
-    async def cmd_giveawaydonate(self, ctx: commands.Context, bot, *, time, winners, requirements, prize, message: str = None):
+    async def cmd_giveawaydonate(self, ctx: commands.Context, bot_type: str, duration: str, winners: str, requirements: str, prize: str, message: str = None):
         """
         Donate to server giveaways.
         
         Will automatically delete the command invocation.
         """
         pingrole = "<@&996041779369492540>"
-        embed = discord.Embed(description=f"**Bot:** {args1}\n**Time:** {args2}\n**Winners:** {args3}\n**Requirements:** {args4}\n**Prize:** {args5}\n**Message:** {args6}", color=discord.Colour.blurple(), timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(description=f"**Bot:** {bot_type}\n**Time:** {duration}\n**Winners:** {winners}\n**Requirements:** {requirements}\n**Prize:** {prize}\n**Message:** {message}", color=discord.Colour.blurple(), timestamp=datetime.datetime.utcnow())
         embed.set_author(name=f"{ctx.author} would like to donate for a giveaway!", icon_url=f"{ctx.author.avatar_url}")
         embed.set_footer(text='\u200b')
         await ctx.send(embed=embed, content=pingrole, allowed_mentions=discord.AllowedMentions(roles=True))
