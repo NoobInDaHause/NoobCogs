@@ -3,6 +3,8 @@ import asyncio
 import discord
 
 import datetime
+
+import InteractionType
 from redbot.core import checks, commands
 from redbot.core.bot import Red
 from redbot.core.utils import menus
