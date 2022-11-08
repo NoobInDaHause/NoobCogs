@@ -32,7 +32,7 @@ class GiveawayDonation(commands.Cog):
         This will ping the Giveaway Managers and sends an embed version of your message.
         """
         pingrole = "<@&996041779369492540>"
-        embed = discord.Embed(description=f"**Bot:** {bot_type}\n**Time:** {duration}\n**Winners:** {winners}\n**Requirements:** {requirements}\n**Prize:** {prize}\n**Message:** {message}", color=discord.Colour.blurple(), timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(description=f"**Bot:** {bot_type}\n**Time:** {duration}\n**Winners:** {winners}\n**Requirements:** {requirements}\n**Prize:** {prize}\n**Message:** {message}", color='16760576', timestamp=datetime.datetime.utcnow())
         embed.set_author(name=f"{ctx.author} would like to donate for a giveaway!", icon_url=f"{ctx.author.avatar_url}")
         embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
         await ctx.send(embed=embed, content=pingrole, allowed_mentions=discord.AllowedMentions(roles=True))
