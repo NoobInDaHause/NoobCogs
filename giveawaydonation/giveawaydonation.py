@@ -3,11 +3,8 @@ import asyncio
 import discord
 
 import datetime
-
-import InteractionType
 from redbot.core import checks, commands
 from redbot.core.bot import Red
-from redbot.core.utils import menus
 
 class GiveawayDonation(commands.Cog):
     """
@@ -40,13 +37,3 @@ class GiveawayDonation(commands.Cog):
         embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
         await ctx.send(embed=embed, content=pingrole, allowed_mentions=discord.AllowedMentions(roles=True))
         await ctx.message.delete()
-        
-    @checks.bot_has_permissions(embed_links=True)
-    @commands.command(name='gdonotest')
-    async def cmd_gdonotest(self, ctx: commands.Context, message: str = None):
-        """
-        Button test command.
-        
-        Test buttons on message
-        """
-        await ctx.send(type=InteractionType.ChannelMessageWithSource, content=f"{message}", components=[Button(style=ButtonStyle.URL, label="Example Invite Button", url="https://google.com"), Button(style=ButtonStyle.blue, label="Default Button", custom_id="button")])
