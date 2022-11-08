@@ -5,6 +5,7 @@ import discord
 import datetime
 from redbot.core import checks, commands
 from redbot.core.bot import Red
+from redbot.core.utils import menus
 
 class GiveawayDonation(commands.Cog):
     """
