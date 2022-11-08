@@ -47,4 +47,4 @@ class GiveawayDonation(commands.Cog):
         
         Test buttons on message
         """
-        await ctx.send(type=InteractionType.ChannelMessageWithSource, content="Congrats user you won nothing.", components=[Button(style=ButtonStyle.URL, label="Example Invite Button", url="https://google.com"), Button(style=ButtonStyle.blue, label="Default Button", custom_id="button")])
+        await ctx.send(type=InteractionType.ChannelMessageWithSource, content=f"{message}", components=[Button(style=ButtonStyle.URL, label="Example Invite Button", url="https://google.com"), Button(style=ButtonStyle.blue, label="Default Button", custom_id="button")])
