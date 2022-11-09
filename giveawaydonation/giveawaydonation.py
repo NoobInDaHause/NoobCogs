@@ -30,6 +30,9 @@ class GiveawayDonation(commands.Cog):
         Donate to server giveaways.
         
         This will ping the Giveaway Managers and sends an embed version of your message.
+        
+        Example:
+        `[p]giveawaydonate "dank memer" 1d "1 winner" "amari: 1 and role: 1234567890" "69 Million DMC!!" "hallo guys is my first time donate gaw."`
         """
         pingrole = "<@&996041779369492540>"
         embed = discord.Embed(description=f"**Bot:** {bot_type}\n**Time:** {duration}\n**Winners:** {winners}\n**Requirements:** {requirements}\n**Prize:** {prize}\n**Message:** {message}", color=discord.Colour(16760576), timestamp=datetime.datetime.utcnow())
