@@ -1,0 +1,14 @@
+{
+    "name": "<cog_name>",
+    "short": "<cog_short_description>",
+    "description": "<cog_long_description>",
+    "end_user_data_statement": "This cog does not store end user data.",
+    "install_msg": "Thanks for installing <cog_name>. Load the cog with `[p]load <cog_name>`.",
+    "author": [
+        "Richard Winters#2808"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [],
+    "type": "COG"
+}
