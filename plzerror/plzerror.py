@@ -26,6 +26,5 @@ class PlzError(commands.Cog):
         
         Very useless cog if you ask me unless it's for testing purposes.
         This command contains an AssertionError.
-        This command is inspired by sravan :D.
         """
         assert False
