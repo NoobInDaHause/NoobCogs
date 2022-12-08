@@ -17,7 +17,7 @@ class PlzError(commands.Cog):
     async def red_delete_data_for_user(self, **kwargs):
         return
     
-    @commands.command()
+    @commands.command(aliases=["plserror"])
     @checks.is_owner()
     @checks.bot_has_permissions(embed_links=True)
     async def plzerror(self, ctx):
