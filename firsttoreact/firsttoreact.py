@@ -11,7 +11,7 @@ class FirstToReact(commands.Cog):
     
     Cog suggested by: Cool aid man#3600
     
-    Cog version: 0.0.2
+    Cog version: 0.1.0
     Cog author: Noobindahause#2808
     """
     
