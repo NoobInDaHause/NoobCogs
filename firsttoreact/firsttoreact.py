@@ -1,5 +1,6 @@
 import discord
 import datetime
+import asyncio
 
 from redbot.core import commands
 from redbot.core.bot import Red
@@ -10,7 +11,7 @@ class FirstToReact(commands.Cog):
     
     Cog suggested by: Cool aid man#3600
     
-    Cog version: 0.0.2
+    Cog version: 0.0.3
     Cog author: Noobindahause#2808
     """
     
@@ -32,14 +33,15 @@ class FirstToReact(commands.Cog):
         if user.bot:
             return
         
-        if str(payload.emoji) == '\U0001F396':
+        if str(payload.emoji) == '⚡':
+            await message.clear_reactions()
+            await asyncio.sleep(2)
             winner = discord.Embed(
                 title="\U0001F389 First To React Game Ended \U0001F389",
                 description=f"This first to react game has ended.\nCongratulations to {user.mention}! They are the first one to react!",
                 colour=0x2F3136,
                 timestamp=datetime.datetime.utcnow()
             ).set_footer(text="Ended at")
-            await message.clear_reactions()
             await message.edit(content=user.mention, embed=winner)
             await message.reply(f"{user.mention} has reacted first!")
     
@@ -54,11 +56,11 @@ class FirstToReact(commands.Cog):
         A very fun cog.
         """
             
-        emote = '\U0001F396'
+        emote = '⚡'
         
         embed = discord.Embed(
             title="\U0001F389 First To React Game \U0001F389",
-            description="First one to react with \U0001F396 wins the game!",
+            description="First one to react with ⚡ wins the game!",
             colour=await ctx.embed_colour()
         ).set_footer(text=f"Hosted by: {ctx.author}", icon_url=ctx.author.avatar_url)
         
