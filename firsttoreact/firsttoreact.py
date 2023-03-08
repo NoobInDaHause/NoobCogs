@@ -10,7 +10,7 @@ class FirstToReact(commands.Cog):
     
     Cog suggested by: Cool aid man#3600
     
-    Cog version: 0.0.1
+    Cog version: 0.0.2
     Cog author: Noobindahause#2808
     """
     
@@ -32,7 +32,7 @@ class FirstToReact(commands.Cog):
         if user.bot:
             return
         
-        if str(payload.emoji) == '\U0001F44B':
+        if str(payload.emoji) == '\U0001F396':
             winner = discord.Embed(
                 title="\U0001F389 First To React Game Ended \U0001F389",
                 description=f"This first to react game has ended.\nCongratulations to {user.mention}! They are the first one to react!",
@@ -54,13 +54,13 @@ class FirstToReact(commands.Cog):
         A very fun cog.
         """
             
-        emote = '\U0001F44B'
+        emote = '\U0001F396'
         
         embed = discord.Embed(
             title="\U0001F389 First To React Game \U0001F389",
-            description="First one to react with \U0001F44B wins the game!",
+            description="First one to react with \U0001F396 wins the game!",
             colour=await ctx.embed_colour()
-        ).set_footer(text=f"Game hosted by: {ctx.author}", icon_url=ctx.author.avatar_url)
+        ).set_footer(text=f"Hosted by: {ctx.author}", icon_url=ctx.author.avatar_url)
         
         ftrmsg = await ctx.send(embed=embed)
         await ftrmsg.add_reaction(emote)
