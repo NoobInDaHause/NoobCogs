@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.2.7"
+    __version__ = "1.2.8"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -81,11 +81,12 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(content=f"{user1.mention} and {user2.mention}", embed=sotembed, allowed_mentions=sotam)
         await asyncio.sleep(60)
         
-        await ctx.send("Time is up! I will now DM the players if they choose to split 🤝 or steal ⚔️.")
+        await ctx.send(f"Time is up! I will now DM the players if they choose to split 🤝 or steal ⚔️.\n> {user1.mention} and {user2.mention} make sure you have your DM's open for me to send message.")
+        await asyncio.sleep(3)
         
         try:
             await user2.send(
-                f"Waiting for {user1}'s answer. Please wait."
+                f"Waiting for {user1}'s response. Please wait."
             )
         except Exception:
             return await ctx.send(
