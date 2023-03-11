@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.2.2"
+    __version__ = "1.2.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
