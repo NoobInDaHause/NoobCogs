@@ -1,0 +1,18 @@
+{
+    "name": "SplitOrSteal",
+    "short": "Split or steal game.",
+    "description": "A very fun game to play on an event.",
+    "end_user_data_statement": "This cog does not store end user data.",
+    "install_msg": "Thank you for installing SplitOrSteal. Load the cog with `[p]load splitorsteal`.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "split",
+        "splitorsteal",
+        "steal"
+    ],
+    "type": "COG"
+}
