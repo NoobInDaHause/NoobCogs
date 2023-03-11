@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.0.2"
+    __version__ = "1.1.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -80,9 +80,14 @@ class SplitOrSteal(commands.Cog):
         
         await ctx.send("Time is up! I will now DM the players if they choose to split 🤝 or steal ⚔️.")
         
-        await user2.send(
-            f"Waiting for {user1}'s answer. Please wait."
-        )
+        try:
+            await user2.send(
+                f"Waiting for {user1}'s answer. Please wait."
+            )
+        except Exception:
+            return await ctx.send(
+                f"It seems {user2.mention} had their DM's closed! Cancelling game."
+            )
         
         try:
             def check(m):
@@ -93,7 +98,12 @@ class SplitOrSteal(commands.Cog):
                 description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?\nYou have 30 seconds to answer."
             )
             
-            await user1.send(embed=dm1embed)
+            try:
+                await user1.send(embed=dm1embed)
+            except Exception:
+                return await ctx.send(
+                    f"It seems {user1.mention} had their DM's closed! Cancelling game."
+                )
             
             confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
             
@@ -161,7 +171,12 @@ class SplitOrSteal(commands.Cog):
                 colour = await ctx.embed_colour()
             )
             
-            await user2.send(embed=dm2embed)
+            try:
+                await user2.send(embed=dm2embed)
+            except Exception:
+                return await ctx.send(
+                    f"It seems {user2.mention} had their DM's closed! Cancelling game."
+                )
             
             confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
             
@@ -242,7 +257,7 @@ class SplitOrSteal(commands.Cog):
             title = "Game over",
             description = f"This Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} chose {answer2.capitalize()}!"
         )
-        gameoverembed.add_field(name="Results:", value=result, inline=False)
+        gameoverembed.add_field(name="Result:", value=result, inline=False)
         gameoverembed.set_footer(text="Thanks for playing!")
         
         await ctx.send(content=author.mention, embed=gameoverembed)
