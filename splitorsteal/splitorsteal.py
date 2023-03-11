@@ -5,6 +5,7 @@ import datetime
 
 from redbot.core import commands
 from redbot.core.bot import Red
+from disputils import BotEmbedPaginator
 
 log = logging.getLogger("red.winterscogs.splitorsteal")
 
@@ -16,7 +17,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.2.12"
+    __version__ = "1.3.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -28,6 +29,49 @@ class SplitOrSteal(commands.Cog):
     
     async def red_delete_data_for_user(self, **kwargs):
         return
+    
+    @commands.command(name="sotrules")
+    @commands.bot_has_permissions(embed_links=True)
+    async def sotrules(self, ctx):
+        """
+        Know how to play or what the rules of split or steal game is.
+        """
+        emotes = ["⏪", "◀️", "▶️", "⏩", "❌"]
+
+        em1desc = """
+        The game involves a segment called `Split or Steal` in which two participants or players make the decision to either `split` or `steal` and to determine how the prize is divided or stolen.
+        The game also determines the ones who are good or evil.
+        The game requires 2 participants or players to play.
+        A very fun game to play.
+        :warning: This game can shatter friendships! Play at your own risk!
+        Happy playing! :)
+        """
+
+        em2desc = """
+        The rules are pretty simple, you have two choices `split` or `steal`.
+        ` - ` If both participants or players chose `split` then they both split the prize and everyone is a winner.
+        ` - ` If one player chooses `split` and the other player chooses `steal` the bad person who chose steal gets all the prize!
+        ` - ` If both players or participants chose `steal` nobody wins the prize cause they are both bad. :joy:
+        :warning: Be warned trust no one in this game. ;)
+        """
+
+        em1 = discord.Embed(
+            title = "***__How it works__***",
+            description = em1desc,
+            colour = await ctx.embed_colour()
+        )
+        em1.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+
+        em2 = discord.Embed(
+            title = "***__Rules__***",
+            description = em2desc,
+            colour = await ctx.embed_colour()
+        )
+        em1.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+
+        emeds = [em1, em2]
+        paginator = BotEmbedPaginator(ctx, emeds, control_emojis=emotes)
+        await paginator.run(timeout=60)
     
     @commands.command(name="splitorsteal", aliases=["sot"], usage="<player_1> <player_2> <prize>")
     @commands.guild_only()

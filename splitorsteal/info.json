@@ -8,7 +8,7 @@
         "Noobindahause#2808"
     ],
     "required_cogs": {},
-    "requirements": [],
+    "requirements": ["disputils"],
     "tags": [
         "split",
         "splitorsteal",
