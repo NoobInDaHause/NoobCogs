@@ -17,7 +17,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.3.0"
+    __version__ = "1.3.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -67,7 +67,7 @@ class SplitOrSteal(commands.Cog):
             description = em2desc,
             colour = await ctx.embed_colour()
         )
-        em1.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+        em2.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
 
         emeds = [em1, em2]
         paginator = BotEmbedPaginator(ctx, emeds, control_emojis=emotes)
