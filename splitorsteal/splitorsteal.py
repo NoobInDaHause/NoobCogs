@@ -154,7 +154,7 @@ class SplitOrSteal(commands.Cog):
                         )
                         failembed.add_field(name="Result:", value=failar, inline=False)
 
-                        await ctx.send(embed=failembed)
+                        await ctx.send(content=author.mention, embed=failembed)
                         return
         except asyncio.TimeoutError:
             await user1.send(
@@ -171,7 +171,7 @@ class SplitOrSteal(commands.Cog):
             )
             failembed.add_field(name="Result:", value=failar, inline=False)
                         
-            await ctx.send(embed=failembed)
+            await ctx.send(content=author.mention, embed=failembed)
             return
         
         try:
@@ -239,7 +239,7 @@ class SplitOrSteal(commands.Cog):
                         )
                         failembed.add_field(name="Result:", value=failar, inline=False)
                         
-                        await ctx.send(embed=failembed)
+                        await ctx.send(content=author.mention, embed=failembed)
                         return
         except asyncio.TimeoutError:
             await user2.send(
@@ -256,7 +256,7 @@ class SplitOrSteal(commands.Cog):
             )
             failembed.add_field(name="Result:", value=failar, inline=False)
                         
-            await ctx.send(embed=failembed)
+            await ctx.send(content=author.mention, embed=failembed)
             return
         
         if answer1 and answer2 == "split":
