@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -72,7 +72,7 @@ class SplitOrSteal(commands.Cog):
         sotembed.set_author(name=f"Hosted by: {author}", icon_url=author.avatar_url)
         sotam = discord.AllowedMentions(roles=False, users=True, everyone=False)
         await ctx.send(content=f"{user1.mention} and {user2.mention}", embed=sotembed, allowed_mentions=sotam)
-        await asyncio.sleep(5)
+        await asyncio.sleep(60)
         
         await ctx.send("Time is up! I will now DM the players if they choose to split 🤝 or steal ⚔️.")
         
