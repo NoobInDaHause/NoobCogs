@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.2.3"
+    __version__ = "1.2.4"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -57,13 +57,13 @@ class SplitOrSteal(commands.Cog):
         bothans = ["split", "🤝", "steal", "⚔️"]
         
         setupembed = discord.Embed(
-            description = "Setting up game please wait..."
+            description = "Setting up game please wait."
         )
         setup = await ctx.send(embed=setupembed)
         await asyncio.sleep(5)
         
         setupdoneembed = discord.Embed(
-            description = "Set up done. Starting game now."
+            description = "Set up done. Starting split or steal game now."
         )
         await setup.edit(embed=setupdoneembed)
         await asyncio.sleep(3)
@@ -97,6 +97,7 @@ class SplitOrSteal(commands.Cog):
                 return m.author == user1 and m.channel == user1.dm_channel
             
             dm1embed = discord.Embed(
+                title = "Split or Steal",
                 colour = await ctx.embed_colour(),
                 description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?"
             )
@@ -185,6 +186,7 @@ class SplitOrSteal(commands.Cog):
                 return m.author == user2 and m.channel == user2.dm_channel
             
             dm2embed = discord.Embed(
+                title = "Split or Steal",
                 description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?",
                 colour = await ctx.embed_colour()
             )
