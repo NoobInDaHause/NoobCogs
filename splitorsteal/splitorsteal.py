@@ -17,7 +17,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.3.1"
+    __version__ = "1.3.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -55,8 +55,27 @@ class SplitOrSteal(commands.Cog):
         :warning: Be warned trust no one in this game. ;)
         """
 
+        em3desc = f"""
+        The game works by running `{ctx.prefix}splitorsteal <player_1> <player_2> <prize>`.
+        You will need 2 players and a prize to start the game.
+        You can not play the game with discord bots. Noob.
+
+        Once the command is ran the bot now sets up the game.
+        The bot will now tell both the participants to think very carefully and to discuss whether they want to `split` or `steal`.
+
+        Once the minute is up the bot now sends the players a DM's and letting them choose `split` or `steal`.
+        Players must have their DM's open! Otherwise the game gets cancelled.
+
+        If one of the players did not respond to the bots DM's they will automatically forfeit the game.
+        If one of the players fail to answer `split` or `steal` they will automatically forfeit the game. It's 2 simple choices how did you still mess up??
+        The bot also accepts emojis but it only accepts 🤝 for `split` or ⚔️ for `steal` please don't say anything else besides that.
+
+        Then when everything is set we will now see who the bad or the good person is.
+        It may be both good or both bad or one good and one bad.
+        """
+
         em1 = discord.Embed(
-            title = "***__How it works__***",
+            title = "***__What is Split or Steal__***",
             description = em1desc,
             colour = await ctx.embed_colour()
         )
@@ -69,7 +88,14 @@ class SplitOrSteal(commands.Cog):
         )
         em2.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
 
-        emeds = [em1, em2]
+        em3 = discord.Embed(
+            title = "***__How the game works__***",
+            description = em3desc,
+            colour = await ctx.embed_colour()
+        )
+        em3.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+        
+        emeds = [em1, em2, em3]
         paginator = BotEmbedPaginator(ctx, emeds, control_emojis=emotes)
         await paginator.run(timeout=60)
     
@@ -116,12 +142,12 @@ class SplitOrSteal(commands.Cog):
         await setup.delete()
         
         sotembed = discord.Embed(
-            title = "Split or Steal game",
-            description = "The split or steal game has begun!\nPlayers now have 1 minute to discuss if they want to either split 🤝 or steal ⚔️.",
+            title = "Split or Steal Game",
+            description = "The split or steal game has begun!\nPlayers now have 1 minute to discuss if they want to either split 🤝 or steal ⚔️.\nThink very carefully and make your decisions precise!",
             colour = await ctx.embed_colour()
         )
         sotembed.add_field(name="Prize:", value=prize, inline=False)
-        sotembed.set_footer(text="Be warned trust no one in this game. ;)", icon_url="https://static.vecteezy.com/system/resources/previews/012/042/301/original/warning-sign-icon-transparent-background-free-png.png")
+        sotembed.set_footer(text="Remember trust no one in this game. ;)", icon_url="https://cdn.vectorstock.com/i/preview-1x/13/61/mafia-character-abstract-silhouette-vector-45291361.jpg")
         sotembed.set_author(name=f"Hosted by: {host}", icon_url=host.avatar_url)
         sotam = discord.AllowedMentions(roles=False, users=True, everyone=False)
         await ctx.send(content=f"{user1.mention} and {user2.mention}", embed=sotembed, allowed_mentions=sotam)
