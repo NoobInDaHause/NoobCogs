@@ -107,39 +107,39 @@ class SplitOrSteal(commands.Cog):
             
             confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
             
-            if confirm.content.lower() in ("split"):
+            if confirm.content.lower() in ("split", "🤝"):
                 await user1.send(
                     "You have chosen split 🤝."
                 )
                 answer1 = "split"
                 
-            elif confirm.content.lower() in ("steal"):
+            elif confirm.content.lower() in ("steal", "⚔️"):
                 await user1.send(
                     "You have chosen steal ⚔️."
                 )
                 answer1 = "steal"
             
             else:
-                if confirm.content.lower() not in ("split", "steal"):
+                if confirm.content.lower() not in ("split", "steal", "🤝", "⚔️"):
                     await user1.send(
                         "That is not a valid answer, answer `split` or `steal` or you will forfeit the game."
                     )
                     
                     confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
                     
-                    if confirm.content.lower() in ("split"):
+                    if confirm.content.lower() in ("split", "🤝"):
                         await user1.send(
                             "You have chosen split 🤝."
                         )
                         answer1 = "split"
                         
-                    if confirm.content.lower() in ("steal"):
+                    if confirm.content.lower() in ("steal", "⚔️"):
                         await user1.send(
                             "You have chosen steal ⚔️."
                         )
                         answer1 = "steal"
                         
-                    if confirm.content.lower() not in ("split", "steal"):
+                    if confirm.content.lower() not in ("split", "steal", "🤝", "⚔️"):
                         await user1.send(
                             "You have failed to answer 2 times therefor you ferfeit the game."
                         )
@@ -180,39 +180,39 @@ class SplitOrSteal(commands.Cog):
             
             confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
             
-            if confirm.content.lower() in ("split"):
+            if confirm.content.lower() in ("split", "🤝"):
                 await user2.send(
                     "You have chosen split 🤝."
                 )
                 answer2 = "split"
             
-            elif confirm.content.lower() in ("steal"):
+            elif confirm.content.lower() in ("steal", "⚔️"):
                 await user2.send(
                     "You have chosen steal ⚔️."
                 )
                 answer2 = "steal"
             
             else:
-                if confirm.content.lower() not in ("split", "steal"):
+                if confirm.content.lower() not in ("split", "steal", "🤝", "⚔️"):
                     await user2.send(
                         "That is not a valid answer, answer `split` or `steal` or you will forfeit the game."
                     )
                     
                     confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
                     
-                    if confirm.content.lower() in ("split"):
+                    if confirm.content.lower() in ("split", "🤝"):
                         await user2.send(
                             "You have chosen split 🤝."
                         )
                         answer2 = "split"
                         
-                    if confirm.content.lower() in ("steal"):
+                    if confirm.content.lower() in ("steal", "⚔️"):
                         await user2.send(
                             "You have chosen steal ⚔️."
                         )
                         answer2 = "steal"
                         
-                    if confirm.content.lower() not in ("split", "steal"):
+                    if confirm.content.lower() not in ("split", "steal", "🤝", "⚔️"):
                         await user2.send(
                             "You have failed to answer 2 times therefor you ferfeit the game."
                         )
