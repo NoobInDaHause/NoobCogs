@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.2.8"
+    __version__ = "1.2.9"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -48,6 +48,10 @@ class SplitOrSteal(commands.Cog):
             return await ctx.send("This game requires 2 users to play.")
         if prize == None:
             return await ctx.send("The game won't start without a prize.")
+        if player_1 == player_1.bot:
+            return await ctx.send("Bots can not play this game.")
+        if player_2 == player_2.bot:
+            return await ctx.send("Bots can not play this game.")
         
         host = ctx.author
         user1 = player_1
