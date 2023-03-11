@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.2.6"
+    __version__ = "1.2.7"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -127,7 +127,7 @@ class SplitOrSteal(commands.Cog):
             else:
                 if confirm.content.lower() not in bothans:
                     await user1.send(
-                        "That is not a valid answer, answer `split` or `steal` or you will forfeit the game."
+                        "That is not a valid answer, answer either `split` 🤝 or `steal` ⚔️ or you will forfeit the game."
                     )
                     
                     confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
@@ -216,7 +216,7 @@ class SplitOrSteal(commands.Cog):
             else:
                 if confirm.content.lower() not in bothans:
                     await user2.send(
-                        "That is not a valid answer, answer `split` or `steal` or you will forfeit the game."
+                        "That is not a valid answer, answer either `split` 🤝 or `steal` ⚔️ or you will forfeit the game."
                     )
                     
                     confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
