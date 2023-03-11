@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.2.5"
+    __version__ = "1.2.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -54,6 +54,7 @@ class SplitOrSteal(commands.Cog):
         user2 = player_2
         splitans = ["split", "🤝"]
         stealans = ["steal", "⚔️"]
+        bothans = ["split", "🤝", "steal", "⚔️"]
         
         setupembed = discord.Embed(
             description = "Setting up game please wait."
@@ -62,7 +63,7 @@ class SplitOrSteal(commands.Cog):
         await asyncio.sleep(5)
         
         setupdoneembed = discord.Embed(
-            description = "Set up done. Starting split or steal game now."
+            description = "Setup done. Starting split or steal game now."
         )
         await setup.edit(embed=setupdoneembed)
         await asyncio.sleep(3)
@@ -124,7 +125,7 @@ class SplitOrSteal(commands.Cog):
                 answer1 = "steal"
             
             else:
-                if confirm.content.lower() not in splitans or stealans:
+                if confirm.content.lower() not in bothans:
                     await user1.send(
                         "That is not a valid answer, answer `split` or `steal` or you will forfeit the game."
                     )
@@ -143,7 +144,7 @@ class SplitOrSteal(commands.Cog):
                         )
                         answer1 = "steal"
                         
-                    if confirm.content.lower() not in splitans or stealans:
+                    if confirm.content.lower() not in bothans:
                         await user1.send(
                             "You have failed to answer 2 times therefor you ferfeit the game."
                         )
@@ -213,7 +214,7 @@ class SplitOrSteal(commands.Cog):
                 answer2 = "steal"
             
             else:
-                if confirm.content.lower() not in splitans or stealans:
+                if confirm.content.lower() not in bothans:
                     await user2.send(
                         "That is not a valid answer, answer `split` or `steal` or you will forfeit the game."
                     )
@@ -232,7 +233,7 @@ class SplitOrSteal(commands.Cog):
                         )
                         answer2 = "steal"
                         
-                    if confirm.content.lower() not in splitans or stealans:
+                    if confirm.content.lower() not in bothans:
                         await user2.send(
                             "You have failed to answer 2 times therefor you ferfeit the game."
                         )
