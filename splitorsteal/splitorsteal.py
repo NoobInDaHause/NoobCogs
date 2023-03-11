@@ -16,7 +16,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.1.1"
+    __version__ = "1.2.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -143,23 +143,35 @@ class SplitOrSteal(commands.Cog):
                         await user1.send(
                             "You have failed to answer 2 times therefor you ferfeit the game."
                         )
-                        await ctx.send(
-                            f"{user1.mention} failed to answer `split` or `steal`, therefor they forfeit game."
+
+                        failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for failing to answer."
+
+                        failembed = discord.Embed(
+                            colour = 0x00FF00,
+                            title = "Game over",
+                            timestamp = datetime.datetime.utcnow(),
+                            description = f"This Split or Steal game has ended.\n{user1.mention} failed to answer `split` or `steal`!\n{user2.mention} chose nothing!"
                         )
-                        await ctx.send(
-                            f"{user2.mention} has won the **{prize}**."
-                        )
+                        failembed.add_field(name="Result:", value=failar, inline=False)
+
+                        await ctx.send(embed=failembed)
                         return
         except asyncio.TimeoutError:
             await user1.send(
                 "You took too long to respond."
             )
-            await ctx.send(
-                f"{user1.mention} took too long to respond, therefor they forfeit the game."
+
+            failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for taking too long to answer."
+
+            failembed = discord.Embed(
+                colour = 0x00FF00,
+                title = "Game over",
+                timestamp = datetime.datetime.utcnow(),
+                description = f"This Split or Steal game has ended.\n{user1.mention} took too long to answer!\n{user2.mention} chose nothing!"
             )
-            await ctx.send(
-                f"{user2.mention} has won the {prize}."
-            )
+            failembed.add_field(name="Result:", value=failar, inline=False)
+                        
+            await ctx.send(embed=failembed)
             return
         
         try:
@@ -216,23 +228,35 @@ class SplitOrSteal(commands.Cog):
                         await user2.send(
                             "You have failed to answer 2 times therefor you ferfeit the game."
                         )
-                        await ctx.send(
-                            f"{user2.mention} failed to answer `split` or `steal`, therefor they forfeit game."
+
+                        failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for failing to answer."
+
+                        failembed = discord.Embed(
+                            colour = 0x00FF00,
+                            title = "Game over",
+                            timestamp = datetime.datetime.utcnow(),
+                            description = f"This Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} failed to answer `split` or `steal`!"
                         )
-                        await ctx.send(
-                            f"{user1.mention} has won the **{prize}**."
-                        )
+                        failembed.add_field(name="Result:", value=failar, inline=False)
+                        
+                        await ctx.send(embed=failembed)
                         return
         except asyncio.TimeoutError:
             await user2.send(
                 "You took too long to respond."
             )
-            await ctx.send(
-                f"{user2.mention} took too long to respond, therefor they forfeit game."
+
+            failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for taking too long to answer."
+
+            failembed = discord.Embed(
+                colour = 0x00FF00,
+                title = "Game over",
+                timestamp = datetime.datetime.utcnow(),
+                description = f"This Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} took too long to answer!"
             )
-            await ctx.send(
-                f"{user1.mention} has won the {prize}."
-            )
+            failembed.add_field(name="Result:", value=failar, inline=False)
+                        
+            await ctx.send(embed=failembed)
             return
         
         if answer1 and answer2 == "split":
