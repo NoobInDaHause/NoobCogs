@@ -38,20 +38,14 @@ class SplitOrSteal(commands.Cog):
         Start a split or steal game event.
         """
         
-        if player_1 == None:
+        if not player_1 or player_2:
             return await ctx.send("This game requires 2 users to play.")
-        if player_2 == None:
+        if player_1 == player_2 or player_2 == player_1:
             return await ctx.send("This game requires 2 users to play.")
-        if player_1 == player_2:
-            return await ctx.send("This game requires 2 users to play.")
-        if player_2 == player_1:
-            return await ctx.send("This game requires 2 users to play.")
-        if prize == None:
+        if player_1.bot or player_2.bot:
+            return await ctx.send("Erm! You cannot play the game with a bot! 🙄 ||- Coll aid man#3600||")
+        if not prize:
             return await ctx.send("The game won't start without a prize.")
-        if player_1.bot:
-            return await ctx.send("Bots can not play this game.")
-        if player_2.bot:
-            return await ctx.send("Bots can not play this game.")
         
         host = ctx.author
         user1 = player_1
