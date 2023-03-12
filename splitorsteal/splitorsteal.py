@@ -17,7 +17,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.4.0"
+    __version__ = "1.4.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -30,7 +30,7 @@ class SplitOrSteal(commands.Cog):
     async def red_delete_data_for_user(self, **kwargs):
         return
     
-    @commands.command(name="sotrules")
+    @commands.command(name="sosrules")
     @commands.bot_has_permissions(embed_links=True)
     async def sotrules(self, ctx):
         """
@@ -99,7 +99,7 @@ class SplitOrSteal(commands.Cog):
         paginator = BotEmbedPaginator(ctx, emeds, control_emojis=emotes)
         await paginator.run(timeout=60)
     
-    @commands.command(name="splitorsteal", aliases=["sot"], usage="<player_1> <player_2> <prize>")
+    @commands.command(name="splitorsteal", usage="<player_1> <player_2> <prize>")
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
