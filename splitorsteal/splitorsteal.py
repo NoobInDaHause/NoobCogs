@@ -17,7 +17,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.4.1"
+    __version__ = "1.4.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -32,7 +32,7 @@ class SplitOrSteal(commands.Cog):
     
     @commands.command(name="sosrules")
     @commands.bot_has_permissions(embed_links=True)
-    async def sotrules(self, ctx):
+    async def sosrules(self, ctx):
         """
         Know how to play or what the rules of split or steal game is.
         """
