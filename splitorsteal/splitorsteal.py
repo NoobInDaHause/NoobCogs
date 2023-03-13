@@ -21,7 +21,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.5.0"
+    __version__ = "1.5.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -399,7 +399,7 @@ class SplitOrSteal(commands.Cog):
         if answer1 and answer2 == "steal":
             result = f"Both players chose steal ⚔️! They both did not win the **{prize}** prize."
             col = 0x2F3136
-            img = betraygif
+            img = losergif
             
         if answer1 == "split" and answer2 == "steal":
             result = f"{user2.mention} steals the **{prize}** prize from {user1.mention} ⚔️! "
@@ -409,7 +409,7 @@ class SplitOrSteal(commands.Cog):
         if answer1 == "steal" and answer2 == "split":
             result = f"{user1.mention} steals the **{prize}** prize from {user2.mention} ⚔️!"
             col = 0xFF0000
-            img = losegif
+            img = betraygif
         
         gameoverdesc = f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} chose {answer2.capitalize()}!"
         
