@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import discord
 import logging
+import random
 
 from redbot.core import commands
 from redbot.core.bot import Red
@@ -20,7 +21,7 @@ class SplitOrSteal(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
-    __version__ = "1.4.3"
+    __version__ = "1.5.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -241,15 +242,17 @@ class SplitOrSteal(commands.Cog):
                         )
 
                         failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for failing to answer."
+                        failimg = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
 
                         failembed = discord.Embed(
                             colour = 0x00FF00,
                             title = "Game over",
                             timestamp = datetime.datetime.utcnow(),
-                            description = f"This Split or Steal game has ended.\n{user1.mention} failed to answer `split` or `steal`!\n{user2.mention} chose nothing!"
+                            description = f"Split or Steal game has ended.\n{user1.mention} failed to answer `split` or `steal`!\n{user2.mention} chose nothing!"
                         )
                         failembed.add_field(name="Result:", value=failar, inline=False)
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
+                        failembed.set_image(url=failimg)
 
                         return await ctx.send(content=host.mention, embed=failembed)
         except asyncio.TimeoutError:
@@ -258,16 +261,18 @@ class SplitOrSteal(commands.Cog):
             )
 
             failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for taking too long to answer."
+            failimg = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
 
             failembed = discord.Embed(
                 colour = 0x00FF00,
                 title = "Game over",
                 timestamp = datetime.datetime.utcnow(),
-                description = f"This Split or Steal game has ended.\n{user1.mention} took too long to answer!\n{user2.mention} chose nothing!"
+                description = f"Split or Steal game has ended.\n{user1.mention} took too long to answer!\n{user2.mention} chose nothing!"
             )
             failembed.add_field(name="Result:", value=failar, inline=False)
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
-                        
+            failembed.set_image(url=failimg)
+
             return await ctx.send(content=host.mention, embed=failembed)
         
         try:
@@ -328,16 +333,18 @@ class SplitOrSteal(commands.Cog):
                         )
 
                         failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for failing to answer."
-
+                        failimg = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
+                        
                         failembed = discord.Embed(
                             colour = 0x00FF00,
                             title = "Game over",
                             timestamp = datetime.datetime.utcnow(),
-                            description = f"This Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} failed to answer `split` or `steal`!"
+                            description = f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} failed to answer `split` or `steal`!"
                         )
                         failembed.add_field(name="Result:", value=failar, inline=False)
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
-                        
+                        failembed.set_image(url=failimg)
+
                         return await ctx.send(content=host.mention, embed=failembed)
         except asyncio.TimeoutError:
             await user2.send(
@@ -345,35 +352,66 @@ class SplitOrSteal(commands.Cog):
             )
 
             failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for taking too long to answer."
-
+            failimg = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
+            
             failembed = discord.Embed(
                 colour = 0x00FF00,
                 title = "Game over",
                 timestamp = datetime.datetime.utcnow(),
-                description = f"This Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} took too long to answer!"
+                description = f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} took too long to answer!"
             )
             failembed.add_field(name="Result:", value=failar, inline=False)
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
+            failembed.set_image(url=failimg)
                         
             return await ctx.send(content=host.mention, embed=failembed)
+        
+        w1 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084840480489099304/tom-jerry-playing-clg846ldrq2w0l6b.gif"
+        w2 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084841885803237427/high-five-amy-santiago.gif"
+        w3 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084842629520425160/385b1w_1.gif"
+        w4 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084844274367082566/high-five_1.gif"
+        w5 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084844732766748772/wedding-crasher-hro_1.gif"
+        wimg = [w1, w2, w3, w4, w5]
+        wingif = random.choice(wimg)
+        
+        b1 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084805789677531226/tf2-spy.gif"
+        b2 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084819894505324674/Sheperd_Betrayal.gif"
+        b3 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084835711355719790/icegif-634.gif"
+        b4 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084837146822717480/laughing-kangaroo.gif"
+        b5 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084838240923693116/AdolescentUnlawfulDungenesscrab-max-1mb_1.gif"
+        bimg = [b1, b2, b3, b4, b5]
+        betraygif = random.choice(bimg)
+
+        l1 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084826566841872425/clothesline_collision.gif"
+        l2 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084827437411602503/17wM.gif"
+        l3 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084829936407281664/1.gif"
+        l4 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084834072548888687/collision-knights_1.gif"
+        l5 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084845839157039104/gta-grand-theft-auto_1.gif"
+        limg = [l1, l2, l3, l4, l5]
+        losegif = random.choice(limg)
+        
         
         if answer1 and answer2 == "split":
             result = f"Both players chose split 🤝! They can now split the **{prize}** prize."
             col = 0x00FF00
+            img = wingif
             
         if answer1 and answer2 == "steal":
             result = f"Both players chose steal ⚔️! They both did not win the **{prize}** prize."
             col = 0x2F3136
+            img = betraygif
             
         if answer1 == "split" and answer2 == "steal":
             result = f"{user2.mention} steals the **{prize}** prize from {user1.mention} ⚔️! "
             col = 0xFF0000
+            img = betraygif
             
         if answer1 == "steal" and answer2 == "split":
             result = f"{user1.mention} steals the **{prize}** prize from {user2.mention} ⚔️!"
             col = 0xFF0000
+            img = losegif
         
-        gameoverdesc = f"This Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} chose {answer2.capitalize()}!"
+        gameoverdesc = f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} chose {answer2.capitalize()}!"
         
         gameoverembed = discord.Embed(
             colour = col,
@@ -383,5 +421,6 @@ class SplitOrSteal(commands.Cog):
         )
         gameoverembed.add_field(name="Result:", value=result, inline=False)
         gameoverembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
+        gameoverembed.set_image(url=img)
         
         await ctx.send(content=host.mention, embed=gameoverembed)
