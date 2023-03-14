@@ -390,28 +390,27 @@ class SplitOrSteal(commands.Cog):
         limg = [l1, l2, l3, l4, l5]
         losegif = random.choice(limg)
         
-        
         if answer1 and answer2 == "split":
-            result = f"Both players chose split 🤝! They can now split the **{prize}** prize."
+            result = f"Both players chose Split! They can now split the **{prize}** prize 🤝!"
             col = 0x00FF00
             img = wingif
             
-        if answer1 and answer2 == "steal":
-            result = f"Both players chose steal ⚔️! They both did not win the **{prize}** prize."
-            col = 0x2F3136
-            img = losergif
-            
-        if answer1 == "split" and answer2 == "steal":
-            result = f"{user2.mention} steals the **{prize}** prize from {user1.mention} ⚔️! "
-            col = 0xFF0000
-            img = betraygif
-            
         if answer1 == "steal" and answer2 == "split":
-            result = f"{user1.mention} steals the **{prize}** prize from {user2.mention} ⚔️!"
+            result = f"Player {user1.mention} steals the **{prize}** prize for themselves ⚔️!"
             col = 0xFF0000
             img = betraygif
         
-        gameoverdesc = f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} chose {answer2.capitalize()}!"
+        if answer1 == "split" and answer2 == "steal":
+            result = f"Player {user2.mention} steals the **{prize}** prize for themselves ⚔️! "
+            col = 0xFF0000
+            img = betraygif
+        
+        if answer1 and answer2 == "steal":
+            result = f"Both players chose Steal! Nobody has won the **{prize}** prize 🚫!"
+            col = 0x2F3136
+            img = losergif
+        
+        gameoverdesc = f"Split or Steal game has ended.\n[Player 1] {user1.mention} chose {answer1.capitalize()}!\n[Player 2] {user2.mention} chose {answer2.capitalize()}!"
         
         gameoverembed = discord.Embed(
             colour = col,
