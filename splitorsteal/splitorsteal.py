@@ -26,7 +26,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**def_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.0.0"
+    __version__ = "2.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -37,7 +37,7 @@ class SplitOrSteal(commands.Cog):
         return f"{pre_processed}\n\nCog Version: {self.__version__}\nCog Author: {humanize_list([f'{auth}' for auth in self.__author__])}"
     
     async def red_delete_data_for_user(self, *, requester, user_id):
-        # This cog doesn't any store user data whatsoever
+        # This cog does not store any user data whatsoever.
         return
     
     @commands.group(name="splitorstealset", aliases=["sosset"])
@@ -57,13 +57,14 @@ class SplitOrSteal(commands.Cog):
         settings = await self.config.guild(ctx.guild).sosmanager_id()
         
         if settings:
-            setrole = f"Manager role: <@&{settings}>"
+            setrole = f"Split or Steal manager role: <@&{settings}>"
         else:
             setrole = "No manager role set."
             
         emb = discord.Embed(
             title=ctx.guild,
-            description=setrole
+            description=setrole,
+            colour=await ctx.embed_folour()
         )
         await ctx.send(embed=emb)
 
@@ -85,7 +86,7 @@ class SplitOrSteal(commands.Cog):
             return await ctx.send("It appears you already have a manager role set.")
         
         await self.config.guild(ctx.guild).sosmanager_id.set(role.id)
-        await ctx.send(f"Successfully set `@{role.name}` as the manager role.")
+        await ctx.send(f"Successfully set `@{role.name}` as the split or steal manager role.")
         
     @splitorstealset_manager.command(name="remove")
     async def splitorstealset_manager_remove(self, ctx):
