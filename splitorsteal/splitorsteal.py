@@ -4,12 +4,12 @@ import discord
 import logging
 import random
 
-from redbot.core import commands
+from redbot.core import commands, Config
 from redbot.core.bot import Red
+from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core.utils.predicates import MessagePredicate
 
 from disputils import BotEmbedPaginator
-
-log = logging.getLogger("red.winterscogs.splitorsteal")
 
 class SplitOrSteal(commands.Cog):
     """
@@ -20,8 +20,13 @@ class SplitOrSteal(commands.Cog):
     
     def __init__(self, bot: Red) -> None:
         self.bot = bot
+
+        self.config = Config.get_conf(self, identifier=7465487365754648, force_registration=True)
+        def_guild_settings = {"sosmanager_id": None}
+        self.config.register_guild(**def_guild_settings)
+        self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "1.5.2"
+    __version__ = "2.0.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -29,10 +34,82 @@ class SplitOrSteal(commands.Cog):
         Thanks Sinbad and sravan!
         """
         pre_processed = super().format_help_for_context(ctx)
-        return f"{pre_processed}\n\nCog Version: {self.__version__}\nCog Author: {', '.join(self.__author__)}"
+        return f"{pre_processed}\n\nCog Version: {self.__version__}\nCog Author: {humanize_list([f'{auth}' for auth in self.__author__])}"
     
-    async def red_delete_data_for_user(self, **kwargs):
+    async def red_delete_data_for_user(self, *, requester, user_id):
+        # This cog doesn't any store user data whatsoever
         return
+    
+    @commands.group(name="splitorstealset", aliases=["sosset"])
+    @commands.guild_only()
+    @commands.bot_has_permissions(embed_links=True)
+    @commands.admin_or_permissions(administrator=True)
+    async def splitorstealset(self, ctx):
+        """
+        Settings for split or steal.
+        """
+
+    @splitorstealset.group(name="manager", invoke_without_command=True)
+    async def splitorstealset_manager(self, ctx):
+        """
+        Set or remove the manager role.
+        """
+        settings = await self.config.guild(ctx.guild).sosmanager_id()
+        
+        if settings:
+            setrole = f"Manager role: <@&{settings}>"
+        else:
+            setrole = "No manager role set."
+            
+        emb = discord.Embed(
+            title=ctx.guild,
+            description=setrole
+        )
+        await ctx.send(embed=emb)
+
+    @splitorstealset_manager.command(name="set")
+    async def splitorstealset_manager_set(self, ctx, *, role: discord.Role = None):
+        """
+        Set the manager role.
+        """
+        settings = await self.config.guild(ctx.guild).sosmanager_id()
+        managerrole = [settings]
+        
+        if not role:
+            return await ctx.send_help()
+        
+        if role.id in managerrole:
+            return await ctx.send(f"It appears that role is the set manager role.")
+        
+        if settings:
+            return await ctx.send("It appears you already have a manager role set.")
+        
+        await self.config.guild(ctx.guild).sosmanager_id.set(role.id)
+        await ctx.send(f"Successfully set `@{role.name}` as the manager role.")
+        
+    @splitorstealset_manager.command(name="remove")
+    async def splitorstealset_manager_remove(self, ctx):
+        """
+        Remove the set manager role.
+        """
+        settings = await self.config.guild(ctx.guild).sosmanager_id()
+        
+        if not settings:
+            return await ctx.send("You do not have a manager role set.")
+        
+        await ctx.send("Are you sure you want to remove the set manager role? (`yes`/`no`)")
+        
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond. Cancelling.")
+        
+        if pred.result:
+            await self.config.guild(ctx.guild).sosmanager_id.clear()
+            await ctx.send("Successfully removed the set manager role.")
+        else:
+            await ctx.send("Alright not doing that then.")
     
     @commands.command(name="sosrules")
     @commands.bot_has_permissions(embed_links=True)
@@ -122,6 +199,11 @@ class SplitOrSteal(commands.Cog):
 
         Fun game to play.
         """
+        settings = await self.config.guild(ctx.guild).sosmanager_id()
+        setrole = ctx.guild.get_role(settings)
+        
+        if setrole not in ctx.author.roles:
+            return await ctx.send("You do not have permissions to start a split or steal game.")
         
         if not player_1:
             return await ctx.send("This game requires 2 users to play.")
