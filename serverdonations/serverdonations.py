@@ -32,7 +32,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -66,7 +66,7 @@ class ServerDonations(commands.Cog):
     
     async def _send_to_echan(self, ctx: commands.Context, embed):
         """
-        Sends to the set giveaway donation request channel.
+        Sends to the set event donation request channel.
         """
         settings = await self.config.guild(ctx.guild).all()
         
@@ -84,7 +84,7 @@ class ServerDonations(commands.Cog):
         
     async def _send_to_hchan(self, ctx: commands.Context, embed):
         """
-        Sends to the set giveaway donation request channel.
+        Sends to the set heist donation request channel.
         """
         settings = await self.config.guild(ctx.guild).all()
         
@@ -740,7 +740,7 @@ class ServerDonations(commands.Cog):
         message
     ):
         """
-        Donate to server heist.
+        Donate to server heists.
         
         Arguments must be split by `spaces`. If an argument contains a space, put it in quotes "".
         This command is especially designed for Bro bot and/or Dank Memer Bot or any other bot that has the similar feature.
