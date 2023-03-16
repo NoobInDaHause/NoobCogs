@@ -26,7 +26,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**def_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.0.1"
+    __version__ = "2.0.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -64,7 +64,7 @@ class SplitOrSteal(commands.Cog):
         emb = discord.Embed(
             title=ctx.guild,
             description=setrole,
-            colour=await ctx.embed_folour()
+            colour=await ctx.embed_colour()
         )
         await ctx.send(embed=emb)
 
