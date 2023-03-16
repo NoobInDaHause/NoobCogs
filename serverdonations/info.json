@@ -1,0 +1,21 @@
+{
+    "name": "ServerDonations",
+    "short": "Donate bot currencies or other things to servers.",
+    "description": "Base commands to donate to server giveaways, events, heists etc.",
+    "end_user_data_statement": "This cog does not store end user data.",
+    "install_msg": "Thank you for installing ServerDonations. Load the cog with `[p]load serverdonations`.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "required_cogs": {},
+    "requirements": ["disputils"],
+    "tags": [
+        "donate",
+        "donates",
+        "donation",
+        "donations",
+        "serverdonation",
+        "serverdonations"
+    ],
+    "type": "COG"
+}
