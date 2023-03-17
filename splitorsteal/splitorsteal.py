@@ -7,7 +7,6 @@ import random
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
-from redbot.core.utils.predicates import MessagePredicate
 
 from disputils import BotEmbedPaginator
 
@@ -29,7 +28,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**def_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.0"
+    __version__ = "2.1.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
