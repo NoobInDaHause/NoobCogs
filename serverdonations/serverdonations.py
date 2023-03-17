@@ -4,6 +4,7 @@ import logging
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, box
+from redbot.core.utils.predicates import MessagePredicate
 
 from disputils import BotEmbedPaginator
 
@@ -30,7 +31,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.1.2"
+    __version__ = "1.2.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -235,6 +236,25 @@ class ServerDonations(commands.Cog):
         See sub commands for more info.
         """
         
+    @serverdonationsset.command(name="reset")
+    async def serverdonationsset_reset(self, ctx):
+        """
+        Reset the serverdonations guild settings to default.
+        """
+        await ctx.send("Are you sure you want to reset the guild's settings to default? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond. Cancelling.")
+        
+        if pred.result:
+            await self.config.guild(ctx.guild).clear()
+            await ctx.send("Successfully resetted the guild's settings to default.")
+        else:
+            await ctx.send("Alright not doing that then.")
+    
     @serverdonationsset.group(name="pingrole")
     async def serverdonationsset_pingrole(self, ctx):
         """
