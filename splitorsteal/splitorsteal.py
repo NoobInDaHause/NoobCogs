@@ -7,6 +7,7 @@ import random
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core.utils.predicates import MessagePredicate
 
 from disputils import BotEmbedPaginator
 
@@ -28,7 +29,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**def_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.1"
+    __version__ = "2.1.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -52,19 +53,23 @@ class SplitOrSteal(commands.Cog):
         """
     
     @splitorstealset.command(name="reset")
-    async def splitorstealset_reset(
-        self,
-        ctx: commands.Context,
-        true_or_false: bool
-    ):
+    async def splitorstealset_reset(self, ctx):
         """
         Reset the guild settings to default.
         """
-        if true_or_false == True:
+        await ctx.send("Are you sure you want to reset the splitorsteal guild settings? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond. Cancelling.")
+
+        if pred.result:
             await self.config.guild(ctx.guild).clear()
             return await ctx.send(f"Successfully resetted the guild's settings.")
         else:
-            await ctx.send(f"Why even run this command if your answer is false.")
+            await ctx.send("Alright not doing that then.")
     
     @splitorstealset.command(name="manageronly")
     async def splitorstealset_manageronly(
