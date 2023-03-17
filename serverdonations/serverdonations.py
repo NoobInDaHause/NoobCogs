@@ -30,7 +30,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -110,7 +110,7 @@ class ServerDonations(commands.Cog):
     @commands.command(name="sdonatehelp")
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
-    async def sdonohelp(self, ctx):
+    async def sdonatehelp(self, ctx):
         """
         Know how to run the donation commands.
         
@@ -272,7 +272,7 @@ class ServerDonations(commands.Cog):
         await self.config.guild(ctx.guild).gman_id.set(role.id)
         await ctx.send(f"Successfully set `@{role.name}` as the giveaway manager role.")
             
-    @serverdonationsset_pingrole.command(name="eman",)
+    @serverdonationsset_pingrole.command(name="eman")
     async def serverdonationsset_pingrole_eman(
         self,
         ctx: commands.Context,
