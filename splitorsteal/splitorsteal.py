@@ -30,7 +30,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.4"
+    __version__ = "2.1.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -322,9 +322,11 @@ class SplitOrSteal(commands.Cog):
                 f"Waiting for {user1}'s response. Please wait."
             )
         except Exception:
+            await self.config.guild(ctx.guild).active.set(False)
             return await ctx.send(
                 f"It seems {user2.mention} had their DM's closed! Cancelling game."
             )
+
         
         try:
             def check(m):
@@ -340,6 +342,7 @@ class SplitOrSteal(commands.Cog):
             try:
                 await user1.send(embed=dm1embed)
             except Exception:
+                await self.config.guild(ctx.guild).active.set(False)
                 return await ctx.send(
                     f"It seems {user1.mention} had their DM's closed! Cancelling game."
                 )
@@ -396,6 +399,7 @@ class SplitOrSteal(commands.Cog):
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
                         failembed.set_image(url=failimg)
 
+                        await self.config.guild(ctx.guild).active.set(False)
                         return await ctx.send(content=host.mention, embed=failembed)
         except asyncio.TimeoutError:
             await user1.send(
@@ -415,6 +419,7 @@ class SplitOrSteal(commands.Cog):
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
             failembed.set_image(url=failimg)
 
+            await self.config.guild(ctx.guild).active.set(False)
             return await ctx.send(content=host.mention, embed=failembed)
         
         try:
@@ -431,6 +436,7 @@ class SplitOrSteal(commands.Cog):
             try:
                 await user2.send(embed=dm2embed)
             except Exception:
+                await self.config.guild(ctx.guild).active.set(False)
                 return await ctx.send(
                     f"It seems {user2.mention} had their DM's closed! Cancelling game."
                 )
@@ -487,6 +493,7 @@ class SplitOrSteal(commands.Cog):
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
                         failembed.set_image(url=failimg)
 
+                        await self.config.guild(ctx.guild).active.set(False)
                         return await ctx.send(content=host.mention, embed=failembed)
         except asyncio.TimeoutError:
             await user2.send(
@@ -506,7 +513,8 @@ class SplitOrSteal(commands.Cog):
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
             failembed.set_image(url=failimg)
                         
-            return await ctx.send(content=host.mention, embed=failembed)
+            await self.config.guild(ctx.guild).active.set(False)
+            await ctx.send(content=host.mention, embed=failembed)
         
         w1 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084840480489099304/tom-jerry-playing-clg846ldrq2w0l6b.gif"
         w2 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084841885803237427/high-five-amy-santiago.gif"
@@ -564,5 +572,5 @@ class SplitOrSteal(commands.Cog):
         gameoverembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
         gameoverembed.set_image(url=img)
         
-        await ctx.send(content=host.mention, embed=gameoverembed)
         await self.config.guild(ctx.guild).active.set(False)
+        await ctx.send(content=host.mention, embed=gameoverembed)
