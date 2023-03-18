@@ -249,7 +249,7 @@ class SplitOrSteal(commands.Cog):
 
         Fun game to play.
         """
-        manroles = await self.config.guild(ctx.guild).sosmanager_id()
+        manroles = await self.config.guild(ctx.guild).sosmanager_ids()
         manonly = await self.config.guild(ctx.guild).manager_only()
         
         if manonly == True:
