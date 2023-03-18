@@ -22,11 +22,12 @@ class SplitOrSteal(commands.Cog):
         self.bot = bot
 
         self.config = Config.get_conf(self, identifier=7465487365754648, force_registration=True)
-        def_guild_settings = {
+        default_guild_settings = {
             "sosmanager_ids": [],
-            "manager_only": False
+            "manager_only": False,
+            "active": False
         }
-        self.config.register_guild(**def_guild_settings)
+        self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
     __version__ = "2.1.3"
@@ -251,6 +252,10 @@ class SplitOrSteal(commands.Cog):
         """
         manroles = await self.config.guild(ctx.guild).sosmanager_ids()
         manonly = await self.config.guild(ctx.guild).manager_only()
+        active = await self.config.guild(ctx.guild).active()
+        
+        if active == True:
+            return await ctx.send("A game of SplitOrSteal is already running from this server. Wait for that one to finish.")
         
         if manonly == True:
             if any(role.id in manroles for role in ctx.author.roles):
@@ -277,6 +282,8 @@ class SplitOrSteal(commands.Cog):
         splitans = ["split", "🤝"]
         stealans = ["steal", "⚔️"]
         bothans = ["split", "🤝", "steal", "⚔️"]
+        
+        await self.config.guild(ctx.guild).active.set(True)
         
         setupembed = discord.Embed(
             description = "Setting up game please wait."
@@ -558,3 +565,4 @@ class SplitOrSteal(commands.Cog):
         gameoverembed.set_image(url=img)
         
         await ctx.send(content=host.mention, embed=gameoverembed)
+        await self.config.guild(ctx.guild).active.set(False)
