@@ -25,12 +25,12 @@ class SplitOrSteal(commands.Cog):
         default_guild_settings = {
             "sosmanager_ids": [],
             "manager_only": False,
-            "active": False
+            "activechan": []
         }
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.5"
+    __version__ = "2.1.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -53,7 +53,30 @@ class SplitOrSteal(commands.Cog):
         Settings for split or steal.
         """
     
+    @splitorstealset.command(name="clearactive")
+    @commands.guild_only()
+    async def splitorstealset_clearactives(
+        self,
+        ctx: commands.Context,
+        channel: discord.TextChannel
+    ):
+        """
+        Clear an active game on a channel.
+        
+        If you can not start a game on a channel even if there is no game running use this command.
+        """
+        active = await self.config.guild(ctx.guild).activechan()
+        
+        if channel not in active:
+            return await ctx.send("No active games found in that channel.")
+        
+        async with self.config.guild(ctx.guild).activechan() as achan:
+            index = achan.index(channel.id)
+            achan.pop(index)
+        await ctx.send(f"Successfully removed the active game in {channel.mention}")
+    
     @splitorstealset.command(name="reset")
+    @commands.guild_only()
     async def splitorstealset_reset(self, ctx):
         """
         Reset the guild settings to default.
@@ -73,6 +96,7 @@ class SplitOrSteal(commands.Cog):
             await ctx.send("Alright not doing that then.")
     
     @splitorstealset.command(name="manageronly")
+    @commands.guild_only()
     async def splitorstealset_manageronly(
         self,
         ctx: commands.Context,
@@ -91,6 +115,7 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(yep)
     
     @splitorstealset.command(name="showsetting", aliases=["ss", "showset", "showsettings"])
+    @commands.guild_only()
     async def splitorstealset_showsettings(self, ctx):
         """
         See the settings of SplitOrSteal.
@@ -109,6 +134,7 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(embed=emb)
     
     @splitorstealset.group(name="manager", aliases=["managers"])
+    @commands.guild_only()
     async def splitorstealset_manager(self, ctx):
         """
         Add or remove the manager role.
@@ -118,16 +144,12 @@ class SplitOrSteal(commands.Cog):
     async def splitorstealset_manager_set(
         self,
         ctx: commands.Context,
-        *,
-        role: discord.Role = None
+        role: discord.Role
     ):
         """
         Add a manager role.
         """
         settings = await self.config.guild(ctx.guild).sosmanager_ids()
-        
-        if not role:
-            return await ctx.send_help()
         
         if role.id in settings:
             return await ctx.send(f"It appears that role is already in the set manager roles.")
@@ -140,8 +162,7 @@ class SplitOrSteal(commands.Cog):
     async def splitorstealset_manager_remove(
         self,
         ctx: commands.Context,
-        *,
-        role: discord.Role = None
+        role: discord.Role
     ):
         """
         Remove a set manager role.
@@ -160,6 +181,7 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(f"Successfully removed `@{role.name}` from the set manager roles.")
     
     @commands.command(name="sosrules")
+    @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def sosrules(self, ctx):
         """
@@ -235,7 +257,7 @@ class SplitOrSteal(commands.Cog):
         paginator = BotEmbedPaginator(ctx, emeds, control_emojis=emotes)
         await paginator.run(timeout=60)
     
-    @commands.command(name="splitorsteal", usage="<player_1> <player_2> <prize>")
+    @commands.command(name="splitorsteal", usage="<player_1> <player_2> <prize>", aliases=["sors"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
@@ -252,10 +274,10 @@ class SplitOrSteal(commands.Cog):
         """
         manroles = await self.config.guild(ctx.guild).sosmanager_ids()
         manonly = await self.config.guild(ctx.guild).manager_only()
-        active = await self.config.guild(ctx.guild).active()
+        active = await self.config.guild(ctx.guild).activechan()
         
-        if active == True:
-            return await ctx.send("A game of SplitOrSteal is already running from this server. Wait for that one to finish.")
+        if ctx.channel.id in active:
+            return await ctx.send(f"A game of SplitOrSteal is already running from this channel. Wait for that one to finish.\nIf you think this is a mistake ask an admin to run `{ctx.prefix}sosset clearactive <channel>` on this channel.")
         
         if manonly == True:
             if any(role.id in manroles for role in ctx.author.roles):
@@ -263,16 +285,12 @@ class SplitOrSteal(commands.Cog):
             else:
                 return await ctx.send(f"You do not have permissions to start a split or steal game.")
         
-        if not player_1:
+        if not player_1 and not player_2:
             return await ctx.send("This game requires 2 users to play.")
-        if not player_2:
-            return await ctx.send("This game requires 2 users to play.")
-        if player_1 == player_2:
-            return await ctx.send("This game requires 2 users to play.")
-        if player_2 == player_1:
+        if player_1.id == player_2.id or player_2.id == player_1.id:
             return await ctx.send("This game requires 2 users to play.")
         if player_1.bot or player_2.bot:
-            return await ctx.send("Erm! You cannot play the game with a bot! 🙄 ||- Cool aid man#3600||")
+            return await ctx.send("Erm! You cannot play the game with a bot! 🙄 ||Message brought to you by: Cool aid man#3600||")
         if not prize:
             return await ctx.send("The game won't start without a prize.")
         
@@ -283,7 +301,8 @@ class SplitOrSteal(commands.Cog):
         stealans = ["steal", "⚔️"]
         bothans = ["split", "🤝", "steal", "⚔️"]
         
-        await self.config.guild(ctx.guild).active.set(True)
+        async with self.config.guild(ctx.guild).activechan() as achan:
+            achan.append(ctx.channel.id)
         
         setupembed = discord.Embed(
             description = "Setting up game please wait."
@@ -322,7 +341,9 @@ class SplitOrSteal(commands.Cog):
                 f"Waiting for {user1}'s response. Please wait."
             )
         except Exception:
-            await self.config.guild(ctx.guild).active.set(False)
+            async with self.config.guild(ctx.guild).activechan() as achan:
+                index = achan.index(ctx.channel.id)
+                achan.pop(index)
             return await ctx.send(
                 f"It seems {user2.mention} had their DM's closed! Cancelling game."
             )
@@ -342,7 +363,9 @@ class SplitOrSteal(commands.Cog):
             try:
                 await user1.send(embed=dm1embed)
             except Exception:
-                await self.config.guild(ctx.guild).active.set(False)
+                async with self.config.guild(ctx.guild).activechan() as achan:
+                    index = achan.index(ctx.channel.id)
+                    achan.pop(index)
                 return await ctx.send(
                     f"It seems {user1.mention} had their DM's closed! Cancelling game."
                 )
@@ -399,7 +422,9 @@ class SplitOrSteal(commands.Cog):
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
                         failembed.set_image(url=failimg)
 
-                        await self.config.guild(ctx.guild).active.set(False)
+                        async with self.config.guild(ctx.guild).activechan() as achan:
+                            index = achan.index(ctx.channel.id)
+                            achan.pop(index)
                         return await ctx.send(content=host.mention, embed=failembed)
         except asyncio.TimeoutError:
             await user1.send(
@@ -419,7 +444,9 @@ class SplitOrSteal(commands.Cog):
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
             failembed.set_image(url=failimg)
 
-            await self.config.guild(ctx.guild).active.set(False)
+            async with self.config.guild(ctx.guild).activechan() as achan:
+                index = achan.index(ctx.channel.id)
+                achan.pop(index)
             return await ctx.send(content=host.mention, embed=failembed)
         
         try:
@@ -436,7 +463,9 @@ class SplitOrSteal(commands.Cog):
             try:
                 await user2.send(embed=dm2embed)
             except Exception:
-                await self.config.guild(ctx.guild).active.set(False)
+                async with self.config.guild(ctx.guild).activechan() as achan:
+                    index = achan.index(ctx.channel.id)
+                    achan.pop(index)
                 return await ctx.send(
                     f"It seems {user2.mention} had their DM's closed! Cancelling game."
                 )
@@ -493,7 +522,9 @@ class SplitOrSteal(commands.Cog):
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
                         failembed.set_image(url=failimg)
 
-                        await self.config.guild(ctx.guild).active.set(False)
+                        async with self.config.guild(ctx.guild).activechan() as achan:
+                            index = achan.index(ctx.channel.id)
+                            achan.pop(index)
                         return await ctx.send(content=host.mention, embed=failembed)
         except asyncio.TimeoutError:
             await user2.send(
@@ -513,7 +544,9 @@ class SplitOrSteal(commands.Cog):
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
             failembed.set_image(url=failimg)
                         
-            await self.config.guild(ctx.guild).active.set(False)
+            async with self.config.guild(ctx.guild).activechan() as achan:
+                index = achan.index(ctx.channel.id)
+                achan.pop(index)
             await ctx.send(content=host.mention, embed=failembed)
         
         w1 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084840480489099304/tom-jerry-playing-clg846ldrq2w0l6b.gif"
@@ -572,5 +605,7 @@ class SplitOrSteal(commands.Cog):
         gameoverembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
         gameoverembed.set_image(url=img)
         
-        await self.config.guild(ctx.guild).active.set(False)
+        async with self.config.guild(ctx.guild).activechan() as achan:
+            index = achan.index(ctx.channel.id)
+            achan.pop(index)
         await ctx.send(content=host.mention, embed=gameoverembed)
