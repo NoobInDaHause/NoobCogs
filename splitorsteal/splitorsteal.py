@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.8"
+    __version__ = "2.1.9"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -238,21 +238,21 @@ class SplitOrSteal(commands.Cog):
             description = em1desc,
             colour = await ctx.embed_colour()
         )
-        em1.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+        em1.set_footer(text=f"Command executed by: {ctx.author} | Page 1/3", icon_url=ctx.author.avatar_url)
 
         em2 = discord.Embed(
             title = "***__Rules of Split or Seal__***",
             description = em2desc,
             colour = await ctx.embed_colour()
         )
-        em2.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+        em2.set_footer(text=f"Command executed by: {ctx.author} | Page 2/3", icon_url=ctx.author.avatar_url)
 
         em3 = discord.Embed(
             title = "***__How Split or Steal works__***",
             description = em3desc,
             colour = await ctx.embed_colour()
         )
-        em3.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+        em3.set_footer(text=f"Command executed by: {ctx.author} | Page 3/3", icon_url=ctx.author.avatar_url)
         
         emeds = [em1, em2, em3]
         await menu(ctx, emeds, controls=DEFAULT_CONTROLS, timeout=60)

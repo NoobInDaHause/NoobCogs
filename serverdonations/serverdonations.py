@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.1"
+    __version__ = "1.2.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -210,19 +210,19 @@ class ServerDonations(commands.Cog):
             title=f"How to use `{ctx.prefix}giveawaydonate` command",
             description=gdonodesc,
             colour=await ctx.embed_colour()
-        ).set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+        ).set_footer(text=f"Command executed by: {ctx.author} | Page 1/3", icon_url=ctx.author.avatar_url)
         
         em2 = discord.Embed(
             title=f"How to use `{ctx.prefix}eventdonate` command",
             description=edonodesc,
             colour=await ctx.embed_colour()
-        ).set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+        ).set_footer(text=f"Command executed by: {ctx.author} | Page 2/3", icon_url=ctx.author.avatar_url)
         
         em3 = discord.Embed(
             title=f"How to use `{ctx.prefix}heistdonate` command",
             description=hdonodesc,
             colour=await ctx.embed_colour()
-        ).set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
+        ).set_footer(text=f"Command executed by: {ctx.author} | Page 3/3", icon_url=ctx.author.avatar_url)
         
         bemeds = [em1, em2, em3]
         await menu(ctx, bemeds, controls=DEFAULT_CONTROLS, timeout=60)
