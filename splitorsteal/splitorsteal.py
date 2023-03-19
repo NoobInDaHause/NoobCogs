@@ -30,7 +30,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.6"
+    __version__ = "2.1.7"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -44,7 +44,7 @@ class SplitOrSteal(commands.Cog):
         # This cog does not store any end user data whatsoever.
         return
     
-    @commands.group(name="splitorstealset", aliases=["sosset"])
+    @commands.group(name="splitorstealset", aliases=["sorsset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     @commands.admin_or_permissions(administrator=True)
@@ -128,8 +128,8 @@ class SplitOrSteal(commands.Cog):
             title=f"Settings for {ctx.guild}",
             colour=await ctx.embed_colour()
         )
-        emb.add_field(name="Manager roles:", value=manrole, inline=False)
-        emb.add_field(name="Sos manager only:", value=settings2, inline=False)
+        emb.add_field(name="Sors Manager roles:", value=manrole, inline=False)
+        emb.add_field(name="Sors manager only:", value=settings2, inline=False)
         
         await ctx.send(embed=emb)
     
@@ -180,10 +180,10 @@ class SplitOrSteal(commands.Cog):
             sosman.pop(index)
         await ctx.send(f"Successfully removed `@{role.name}` from the set manager roles.")
     
-    @commands.command(name="sosrules")
+    @commands.command(name="sorsrules")
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
-    async def sosrules(self, ctx):
+    async def sorsrules(self, ctx):
         """
         Some useful information about split or steal.
 
