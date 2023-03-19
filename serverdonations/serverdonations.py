@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.5"
+    __version__ = "1.2.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -60,13 +60,13 @@ class ServerDonations(commands.Cog):
         if not gman_pingrole:
             try:
                 return await channel.send(embed=embed)
-            except discord.HTTPException:
+            except Exception:
                 return await ctx.send("It appears that I do not see the giveaway donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
                 return await channel.send(content=gman_pingrole.mention, embed=embed, allowed_mentions=am)
-            except discord.HTTPException:
+            except Exception:
                 return await ctx.send("It appears that I do not see the giveaway donation request channel. It's most likely deleted or I do not have permission to view it.")
     
     async def _send_to_echan(self, ctx: commands.Context, embed):
@@ -81,13 +81,13 @@ class ServerDonations(commands.Cog):
         if not eman_pingrole:
             try:
                 return await channel.send(embed=embed)
-            except discord.HTTPException:
+            except Exception:
                 return await ctx.send("It appears that I do not see the event donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
                 return await channel.send(content=eman_pingrole.mention, embed=embed, allowed_mentions=am)
-            except discord.HTTPException:
+            except Exception:
                 return await ctx.send("It appears that I do not see the event donation request channel. It's most likely deleted or I do not have permission to view it.")
         
     async def _send_to_hchan(self, ctx: commands.Context, embed):
@@ -102,13 +102,13 @@ class ServerDonations(commands.Cog):
         if not hman_pingrole:
             try:
                 return await channel.send(embed=embed)
-            except discord.HTTPException:
+            except Exception:
                 return await ctx.send("It appears that I do not see the heist donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
                 return await channel.send(content=hman_pingrole.mention, embed=embed, allowed_mentions=am)
-            except discord.HTTPException:
+            except Exception:
                 return await ctx.send("It appears that I do not see the heist donation request channel. It's most likely deleted or I do not have permission to view it.")
     
     @commands.command(name="sdonatehelp")
