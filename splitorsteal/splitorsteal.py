@@ -7,9 +7,12 @@ import random
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
+try:
+    from slashtags import menu
+except ModuleNotFoundError:
+    from redbot.core.utils.menus import menu
+from redbot.core.utils.menus import DEFAULT_CONTROLS
 from redbot.core.utils.predicates import MessagePredicate
-
-from disputils import BotEmbedPaginator
 
 class SplitOrSteal(commands.Cog):
     """
@@ -30,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.7"
+    __version__ = "2.1.8"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -189,8 +192,6 @@ class SplitOrSteal(commands.Cog):
 
         Know how to play or what the rules of split or steal game is.
         """
-        emotes = ["⏪", "◀️", "▶️", "⏩", "❌"]
-
         em1desc = """
         The game involves a segment called `Split or Steal` in which two participants or players make the decision to either `split` or `steal` and to determine how the prize is divided or stolen.
         
@@ -254,8 +255,7 @@ class SplitOrSteal(commands.Cog):
         em3.set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
         
         emeds = [em1, em2, em3]
-        paginator = BotEmbedPaginator(ctx, emeds, control_emojis=emotes)
-        await paginator.run(timeout=60)
+        await menu(ctx, emeds, controls=DEFAULT_CONTROLS, timeout=60)
     
     @commands.command(name="splitorsteal", usage="<player_1> <player_2> <prize>", aliases=["sors"])
     @commands.guild_only()

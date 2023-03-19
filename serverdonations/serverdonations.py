@@ -4,9 +4,12 @@ import logging
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, box
+try:
+    from slashtags import menu
+except ModuleNotFoundError:
+    from redbot.core.utils.menus import menu
+from redbot.core.utils.menus import DEFAULT_CONTROLS
 from redbot.core.utils.predicates import MessagePredicate
-
-from disputils import BotEmbedPaginator
 
 
 class ServerDonations(commands.Cog):
@@ -222,8 +225,7 @@ class ServerDonations(commands.Cog):
         ).set_footer(text=f"Command executed by: {ctx.author} | Page", icon_url=ctx.author.avatar_url)
         
         bemeds = [em1, em2, em3]
-        paginator = BotEmbedPaginator(ctx, bemeds, control_emojis=emotes)
-        await paginator.run(timeout=60)
+        await menu(ctx, bemeds, controls=DEFAULT_CONTROLS, timeout=60)
     
     @commands.group(name="serverdonationsset", aliases=["sdonateset"])
     @commands.guild_only()
