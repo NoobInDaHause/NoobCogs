@@ -47,7 +47,7 @@ class SplitOrSteal(commands.Cog):
         # This cog does not store any end user data whatsoever.
         return
     
-    @commands.group(name="splitorstealset", aliases=["sorsset"])
+    @commands.group(name="splitorstealset", aliases=["sosset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     @commands.admin_or_permissions(administrator=True)
@@ -131,8 +131,8 @@ class SplitOrSteal(commands.Cog):
             title=f"Settings for {ctx.guild}",
             colour=await ctx.embed_colour()
         )
-        emb.add_field(name="Sors Manager roles:", value=manrole, inline=False)
-        emb.add_field(name="Sors manager only:", value=settings2, inline=False)
+        emb.add_field(name="Sos Manager roles:", value=manrole, inline=False)
+        emb.add_field(name="Sos manager only:", value=settings2, inline=False)
         
         await ctx.send(embed=emb)
     
@@ -183,10 +183,10 @@ class SplitOrSteal(commands.Cog):
             sosman.pop(index)
         await ctx.send(f"Successfully removed `@{role.name}` from the set manager roles.")
     
-    @commands.command(name="sorsrules")
+    @commands.command(name="sosrules")
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
-    async def sorsrules(self, ctx):
+    async def sosrules(self, ctx):
         """
         Some useful information about split or steal.
 
@@ -257,7 +257,7 @@ class SplitOrSteal(commands.Cog):
         emeds = [em1, em2, em3]
         await menu(ctx, emeds, controls=DEFAULT_CONTROLS, timeout=60)
     
-    @commands.command(name="splitorsteal", usage="<player_1> <player_2> <prize>", aliases=["sors"])
+    @commands.command(name="splitorsteal", usage="<player_1> <player_2> <prize>", aliases=["sos"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
