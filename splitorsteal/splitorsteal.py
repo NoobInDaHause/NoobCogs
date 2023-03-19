@@ -9,9 +9,10 @@ from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 try:
     from slashtags import menu
+    from redbot.core.utils.menus import DEFAULT_CONTROLS
 except ModuleNotFoundError:
     from redbot.core.utils.menus import menu
-from redbot.core.utils.menus import DEFAULT_CONTROLS
+    from redbot.core.utils.menus import DEFAULT_CONTROLS
 from redbot.core.utils.predicates import MessagePredicate
 
 class SplitOrSteal(commands.Cog):
@@ -33,7 +34,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.10"
+    __version__ = "2.1.11"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:

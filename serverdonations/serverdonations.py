@@ -6,9 +6,10 @@ from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, box
 try:
     from slashtags import menu
+    from redbot.core.utils.menus import DEFAULT_CONTROLS
 except ModuleNotFoundError:
-    from redbot.core.utils.menus import menu
-from redbot.core.utils.menus import DEFAULT_CONTROLS
+    from redbot.core.utils.menus import menus
+    from redbot.core.utils.menus import DEFAULT_CONTROLS
 from redbot.core.utils.predicates import MessagePredicate
 
 
@@ -34,7 +35,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.2"
+    __version__ = "1.2.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
