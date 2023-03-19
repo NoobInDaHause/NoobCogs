@@ -8,8 +8,7 @@ try:
     from slashtags import menu
     from redbot.core.utils.menus import DEFAULT_CONTROLS
 except ModuleNotFoundError:
-    from redbot.core.utils.menus import menu
-    from redbot.core.utils.menus import DEFAULT_CONTROLS
+    from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 from redbot.core.utils.predicates import MessagePredicate
 
 
@@ -35,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.4"
+    __version__ = "1.2.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
