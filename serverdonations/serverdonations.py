@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.8"
+    __version__ = "1.2.9"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -48,80 +48,43 @@ class ServerDonations(commands.Cog):
         # This cog does not store any end user data whatsoever.
         return
     
-    async def _send_to_gchan(self, ctx: commands.Context, embed):
+    async def _send_to_chan(self, ctx: commands.Context, embed, chantype: str):
         """
         Sends to the set giveaway donation request channel.
         """
         settings = await self.config.guild(ctx.guild).all()
         
-        channel = ctx.guild.get_channel(settings["gchannel_id"])
-        gman_pingrole = ctx.guild.get_role(settings["gman_id"])
+        if chantype == "giveaway":
+            channel = ctx.guild.get_channel(settings["gchannel_id"])
+            pingrole = ctx.guild.get_role(settings["gman_id"])
+            channeltype = "giveaway"
+            lett = ""
+        elif chantype == "event":
+            channel = ctx.guild.get_channel(settings["echannel_id"])
+            pingrole = ctx.guild.get_role(settings["eman_id"])
+            channeltype = "event"
+            lett = "n"
+        else:
+            channel = ctx.guild.get_channel(settings["hchannel_id"])
+            pingrole = ctx.guild.get_role(settings["hman_id"])
+            channeltype = "heist"
+            lett = ""
         
-        if not gman_pingrole:
+        if not pingrole:
             try:
                 await channel.send(embed=embed)
                 await ctx.tick()
-                return await ctx.send("You have sent a giveaway donation request. Please wait for a manager to respond.")
+                return await ctx.send(f"You have sent a{lett} {channeltype} donation request. Please wait for a manager to respond.")
             except Exception:
-                return await ctx.send("It appears that I do not see the giveaway donation request channel. It's most likely deleted or I do not have permission to view it.")
+                return await ctx.send(f"It appears that I do not see the {channeltype} donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
-                await channel.send(content=gman_pingrole.mention, embed=embed, allowed_mentions=am)
+                await channel.send(content=pingrole.mention, embed=embed, allowed_mentions=am)
                 await ctx.tick()
-                return await ctx.send("You have sent a giveaway donation request. Please wait for a manager to respond.")
+                return await ctx.send(f"You have sent a{lett} {channeltype} donation request. Please wait for a manager to respond.")
             except Exception:
-                return await ctx.send("It appears that I do not see the giveaway donation request channel. It's most likely deleted or I do not have permission to view it.")
-    
-    async def _send_to_echan(self, ctx: commands.Context, embed):
-        """
-        Sends to the set event donation request channel.
-        """
-        settings = await self.config.guild(ctx.guild).all()
-        
-        channel = ctx.guild.get_channel(settings["echannel_id"])
-        eman_pingrole = ctx.guild.get_role(settings["eman_id"])
-        
-        if not eman_pingrole:
-            try:
-                await channel.send(embed=embed)
-                await ctx.tick()
-                return await ctx.send("You have sent an event donation request. Please wait for a manager to respond.")
-            except Exception:
-                return await ctx.send("It appears that I do not see the event donation request channel. It's most likely deleted or I do not have permission to view it.")
-        else:
-            am = discord.AllowedMentions(roles=True, users=False, everyone=False)
-            try:
-                await channel.send(content=eman_pingrole.mention, embed=embed, allowed_mentions=am)
-                await ctx.tick()
-                return await ctx.send("You have sent an event donation request. Please wait for a manager to respond.")
-            except Exception:
-                return await ctx.send("It appears that I do not see the event donation request channel. It's most likely deleted or I do not have permission to view it.")
-        
-    async def _send_to_hchan(self, ctx: commands.Context, embed):
-        """
-        Sends to the set heist donation request channel.
-        """
-        settings = await self.config.guild(ctx.guild).all()
-        
-        channel = ctx.guild.get_channel(settings["hchannel_id"])
-        hman_pingrole = ctx.guild.get_role(settings["hman_id"])
-        
-        if not hman_pingrole:
-            try:
-                await channel.send(embed=embed)
-                await ctx.tick()
-                return await ctx.send("You have sent a heist donation request. Please wait for a manager to respond.")
-            except Exception:
-                return await ctx.send("It appears that I do not see the heist donation request channel. It's most likely deleted or I do not have permission to view it.")
-        else:
-            am = discord.AllowedMentions(roles=True, users=False, everyone=False)
-            try:
-                await channel.send(content=hman_pingrole.mention, embed=embed, allowed_mentions=am)
-                await ctx.tick()
-                return await ctx.send("You have sent a heist donation request. Please wait for a manager to respond.")
-            except Exception:
-                return await ctx.send("It appears that I do not see the heist donation request channel. It's most likely deleted or I do not have permission to view it.")
+                return await ctx.send(f"It appears that I do not see the {channeltype} donation request channel. It's most likely deleted or I do not have permission to view it.")
     
     @commands.command(name="sdonatehelp")
     @commands.guild_only()
@@ -291,7 +254,6 @@ class ServerDonations(commands.Cog):
         Pass without role to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).gman_id()
-        gmanrole = [settings]
         
         if not role:
             if not settings:
@@ -300,7 +262,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(ctx.guild).gman_id.clear()
                 return await ctx.send("The giveaway manager ping role has been removed.")
         
-        if role.id in gmanrole:
+        if role.id == settings:
             return await ctx.send("It appears that role is already the set giveaway manager role.")
         
         await self.config.guild(ctx.guild).gman_id.set(role.id)
@@ -320,7 +282,6 @@ class ServerDonations(commands.Cog):
         Pass without role to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).eman_id()
-        emanrole = [settings]
         
         if not role:
             if not settings:
@@ -329,7 +290,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(ctx.guild).eman_id.clear()
                 return await ctx.send("The event manager ping role has been removed.")
         
-        if role.id in emanrole:
+        if role.id == settings:
             return await ctx.send("It appears that role is already the set event manager role.")
         
         await self.config.guild(ctx.guild).eman_id.set(role.id)
@@ -349,7 +310,6 @@ class ServerDonations(commands.Cog):
         Pass without role to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).hman_id()
-        hmanrole = [settings]
         
         if not role:
             if not settings:
@@ -358,7 +318,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(ctx.guild).hman_id.clear()
                 return await ctx.send("The heist manager ping role has been removed.")
         
-        if role.id in hmanrole:
+        if role.id == settings:
             return await ctx.send("It appears that role is already the set heist manager role.")
         
         await self.config.guild(ctx.guild).hman_id.set(role.id)
@@ -386,7 +346,6 @@ class ServerDonations(commands.Cog):
         Pass without channel to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).gchannel_id()
-        gchan = [settings]
         
         if not channel:
             if not settings:
@@ -395,7 +354,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(ctx.guild).gchannel_id.clear()
                 return await ctx.send("The giveaway donation request channel has been removed.")
             
-        if channel.id in gchan:
+        if channel.id == settings:
             return await ctx.send("It appears that channel is already the set giveaway donation request channel.")
         
         await self.config.guild(ctx.guild).gchannel_id.set(channel.id)
@@ -415,7 +374,6 @@ class ServerDonations(commands.Cog):
         Pass without channel to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).echannel_id()
-        echan = [settings]
         
         if not channel:
             if not settings:
@@ -424,7 +382,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(ctx.guild).echannel_id.clear()
                 return await ctx.send("The event donation request channel has been removed.")
             
-        if channel.id in echan:
+        if channel.id == settings:
             return await ctx.send("It appears that channel is already the set event donation request channel.")
         
         await self.config.guild(ctx.guild).echannel_id.set(channel.id)
@@ -444,7 +402,6 @@ class ServerDonations(commands.Cog):
         Pass without channel to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).hchannel_id()
-        hchan = [settings]
         
         if not channel:
             if not settings:
@@ -453,7 +410,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(ctx.guild).hchannel_id.clear()
                 return await ctx.send("The heist donation request channel has been removed.")
             
-        if channel.id in hchan:
+        if channel.id == settings:
             return await ctx.send("It appears that channel is already the set heist donation request channel.")
         
         await self.config.guild(ctx.guild).hchannel_id.set(channel.id)
@@ -522,6 +479,7 @@ class ServerDonations(commands.Cog):
         See `[p]sdonohelp` to know how to donate.
         """
         settings = await self.config.guild(ctx.guild).gchannel_id()
+        chantype = "giveaway"
         
         if not settings:
             return await ctx.send("No giveaway donation request channel set.")
@@ -542,7 +500,7 @@ class ServerDonations(commands.Cog):
         embed.add_field(name="Message:", value=message, inline=False)
         embed.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await self._send_to_gchan(ctx, embed=embed)
+        await self._send_to_chan(ctx, embed=embed, chantype=chantype)
         
     @commands.command(name="eventdonate", aliases=["edonate"])
     @commands.guild_only()
@@ -565,6 +523,7 @@ class ServerDonations(commands.Cog):
         See `[p]sdonohelp` to know how to donate.
         """
         settings = await self.config.guild(ctx.guild).echannel_id()
+        chantype = "event"
         
         if not settings:
             return await ctx.send("No event donation request channel set.")
@@ -584,7 +543,7 @@ class ServerDonations(commands.Cog):
         emb.add_field(name="Message:", value=message, inline=True)
         emb.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await self._send_to_echan(ctx, embed=emb)
+        await self._send_to_chan(ctx, embed=emb, chantype=chantype)
         
     @commands.command(name="heistdonate", aliases=["hdonate"])
     @commands.guild_only()
@@ -607,6 +566,7 @@ class ServerDonations(commands.Cog):
         See `[p]sdonohelp` to know how to donate.
         """
         settings = await self.config.guild(ctx.guild).hchannel_id()
+        chantype = "heist"
         
         if not settings:
             return await ctx.send("No heist donation request channel set.")
@@ -625,4 +585,4 @@ class ServerDonations(commands.Cog):
         emb.add_field(name="Message:", value=message, inline=False)
         emb.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await self._send_to_hchan(ctx, embed=emb)
+        await self._send_to_chan(ctx, embed=emb, chantype=chantype)

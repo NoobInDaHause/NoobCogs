@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import discord
 import logging
-import random
 
 from redbot.core import commands, Config
 from redbot.core.bot import Red
@@ -13,6 +12,7 @@ try:
 except ModuleNotFoundError:
     from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 from redbot.core.utils.predicates import MessagePredicate
+from .sosgifs import *
 
 class SplitOrSteal(commands.Cog):
     """
@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.12"
+    __version__ = "2.1.13"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -262,7 +262,9 @@ class SplitOrSteal(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
     async def splitorsteal(
-        self, ctx, player_1: discord.Member = None,
+        self,
+        ctx,
+        player_1: discord.Member = None,
         player_2: discord.Member = None,
         *,
         prize = None
@@ -317,11 +319,9 @@ class SplitOrSteal(commands.Cog):
         await asyncio.sleep(3)
         await setup.delete()
         
-        sotdesc = "The split or steal game has begun!\nPlayers now have 1 minute to discuss if they want to either split 🤝 or steal ⚔️.\nThink very carefully and make your decisions precise!"
-        
         sotembed = discord.Embed(
             title = "Split or Steal Game",
-            description = sotdesc,
+            description = "The split or steal game has begun!\nPlayers now have 1 minute to discuss if they want to either split 🤝 or steal ⚔️.\nThink very carefully and make your decisions precise!",
             colour = await ctx.embed_colour()
         )
         sotembed.add_field(name="Prize:", value=prize, inline=False)
@@ -332,7 +332,7 @@ class SplitOrSteal(commands.Cog):
         await asyncio.sleep(60)
         
         await ctx.send(
-            f"Time is up! I will now DM the players if they choose to split 🤝 or steal ⚔️.\n> {user1.mention} and {user2.mention} make sure you have your DM's open for me to send message."
+            f"Time is up! I will now DM the players their choices.\n{user1.mention} and {user2.mention} make sure you have your DM's open for me to send message."
         )
         await asyncio.sleep(3)
         
@@ -410,7 +410,6 @@ class SplitOrSteal(commands.Cog):
                         )
 
                         failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for failing to answer."
-                        failimg = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
 
                         failembed = discord.Embed(
                             colour = 0x00FF00,
@@ -420,7 +419,7 @@ class SplitOrSteal(commands.Cog):
                         )
                         failembed.add_field(name="Result:", value=failar, inline=False)
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
-                        failembed.set_image(url=failimg)
+                        failembed.set_image(url=forfeitgif)
 
                         async with self.config.guild(ctx.guild).activechan() as achan:
                             index = achan.index(ctx.channel.id)
@@ -432,7 +431,6 @@ class SplitOrSteal(commands.Cog):
             )
 
             failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for taking too long to answer."
-            failimg = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
 
             failembed = discord.Embed(
                 colour = 0x00FF00,
@@ -442,7 +440,7 @@ class SplitOrSteal(commands.Cog):
             )
             failembed.add_field(name="Result:", value=failar, inline=False)
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
-            failembed.set_image(url=failimg)
+            failembed.set_image(url=forfeitgif)
 
             async with self.config.guild(ctx.guild).activechan() as achan:
                 index = achan.index(ctx.channel.id)
@@ -510,7 +508,6 @@ class SplitOrSteal(commands.Cog):
                         )
 
                         failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for failing to answer."
-                        failimg = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
                         
                         failembed = discord.Embed(
                             colour = 0x00FF00,
@@ -520,7 +517,7 @@ class SplitOrSteal(commands.Cog):
                         )
                         failembed.add_field(name="Result:", value=failar, inline=False)
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
-                        failembed.set_image(url=failimg)
+                        failembed.set_image(url=forfeitgif)
 
                         async with self.config.guild(ctx.guild).activechan() as achan:
                             index = achan.index(ctx.channel.id)
@@ -532,7 +529,6 @@ class SplitOrSteal(commands.Cog):
             )
 
             failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for taking too long to answer."
-            failimg = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
             
             failembed = discord.Embed(
                 colour = 0x00FF00,
@@ -542,36 +538,12 @@ class SplitOrSteal(commands.Cog):
             )
             failembed.add_field(name="Result:", value=failar, inline=False)
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
-            failembed.set_image(url=failimg)
+            failembed.set_image(url=forfeitgif)
                         
             async with self.config.guild(ctx.guild).activechan() as achan:
                 index = achan.index(ctx.channel.id)
                 achan.pop(index)
             await ctx.send(content=host.mention, embed=failembed)
-        
-        w1 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084840480489099304/tom-jerry-playing-clg846ldrq2w0l6b.gif"
-        w2 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084841885803237427/high-five-amy-santiago.gif"
-        w3 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084842629520425160/385b1w_1.gif"
-        w4 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084844274367082566/high-five_1.gif"
-        w5 = "https://cdn.discordapp.com/attachments/1084833694285582466/1084844732766748772/wedding-crasher-hro_1.gif"
-        wimg = [w1, w2, w3, w4, w5]
-        wingif = random.choice(wimg)
-        
-        b1 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084805789677531226/tf2-spy.gif"
-        b2 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084819894505324674/Sheperd_Betrayal.gif"
-        b3 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084835711355719790/icegif-634.gif"
-        b4 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084837146822717480/laughing-kangaroo.gif"
-        b5 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084838240923693116/AdolescentUnlawfulDungenesscrab-max-1mb_1.gif"
-        bimg = [b1, b2, b3, b4, b5]
-        betraygif = random.choice(bimg)
-
-        l1 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084826566841872425/clothesline_collision.gif"
-        l2 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084827437411602503/17wM.gif"
-        l3 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084829936407281664/1.gif"
-        l4 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084834072548888687/collision-knights_1.gif"
-        l5 = "https://cdn.discordapp.com/attachments/1005509422749065286/1084845839157039104/gta-grand-theft-auto_1.gif"
-        limg = [l1, l2, l3, l4, l5]
-        losergif = random.choice(limg)
         
         if answer1 and answer2 == "split":
             result = f"Both players chose Split! They can now split the **{prize}** prize 🤝!"
