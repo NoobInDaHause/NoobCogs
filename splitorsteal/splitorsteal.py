@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.13"
+    __version__ = "2.1.14"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -100,22 +100,14 @@ class SplitOrSteal(commands.Cog):
     
     @splitorstealset.command(name="manageronly")
     @commands.guild_only()
-    async def splitorstealset_manageronly(
-        self,
-        ctx: commands.Context,
-        true_or_false: bool
-    ):
+    async def splitorstealset_manageronly(self, ctx):
         """
         Toggle whether to restrict the `[p]splitorsteal` command to the set manager roles.
         """
-        await self.config.guild(ctx.guild).manager_only.set(true_or_false)
-        
-        if true_or_false == True:
-            yep = f"Restricted the `{ctx.prefix}splitorsteal` command to set manager roles."
-        else:
-            yep = f"`{ctx.prefix}splitorsteal` command is now public."
-            
-        await ctx.send(yep)
+        current = await self.config.guild(ctx.guild).manager_only()
+        await self.config.guild(ctx.guild).manager_only.set(not current)
+        status = "enabled" if current else "disabled"
+        await ctx.send(f"Manager only setting for splitorsteal has been {status}.")
     
     @splitorstealset.command(name="showsetting", aliases=["ss", "showset", "showsettings"])
     @commands.guild_only()
