@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.14"
+    __version__ = "2.1.15"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -106,7 +106,7 @@ class SplitOrSteal(commands.Cog):
         """
         current = await self.config.guild(ctx.guild).manager_only()
         await self.config.guild(ctx.guild).manager_only.set(not current)
-        status = "enabled" if current else "disabled"
+        status = "enabled" if not current else "disabled"
         await ctx.send(f"Manager only setting for splitorsteal has been {status}.")
     
     @splitorstealset.command(name="showsetting", aliases=["ss", "showset", "showsettings"])
