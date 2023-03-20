@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.6"
+    __version__ = "1.2.7"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -59,12 +59,16 @@ class ServerDonations(commands.Cog):
         
         if not gman_pingrole:
             try:
+                await ctx.tick()
+                await ctx.send("You have sent a giveaway donation request. Please wait for a manager to respond.")
                 return await channel.send(embed=embed)
             except Exception:
                 return await ctx.send("It appears that I do not see the giveaway donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
+                await ctx.tick()
+                await ctx.send("You have sent a giveaway donation request. Please wait for a manager to respond.")
                 return await channel.send(content=gman_pingrole.mention, embed=embed, allowed_mentions=am)
             except Exception:
                 return await ctx.send("It appears that I do not see the giveaway donation request channel. It's most likely deleted or I do not have permission to view it.")
@@ -80,12 +84,16 @@ class ServerDonations(commands.Cog):
         
         if not eman_pingrole:
             try:
+                await ctx.tick()
+                await ctx.send("You have sent an event donation request. Please wait for a manager to respond.")
                 return await channel.send(embed=embed)
             except Exception:
                 return await ctx.send("It appears that I do not see the event donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
+                await ctx.tick()
+                await ctx.send("You have sent an event donation request. Please wait for a manager to respond.")
                 return await channel.send(content=eman_pingrole.mention, embed=embed, allowed_mentions=am)
             except Exception:
                 return await ctx.send("It appears that I do not see the event donation request channel. It's most likely deleted or I do not have permission to view it.")
@@ -101,12 +109,16 @@ class ServerDonations(commands.Cog):
         
         if not hman_pingrole:
             try:
+                await ctx.tick()
+                await ctx.send("You have sent a heist donation request. Please wait for a manager to respond.")
                 return await channel.send(embed=embed)
             except Exception:
                 return await ctx.send("It appears that I do not see the heist donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
+                await ctx.tick()
+                await ctx.send("You have sent a heist donation request. Please wait for a manager to respond.")
                 return await channel.send(content=hman_pingrole.mention, embed=embed, allowed_mentions=am)
             except Exception:
                 return await ctx.send("It appears that I do not see the heist donation request channel. It's most likely deleted or I do not have permission to view it.")
@@ -530,8 +542,6 @@ class ServerDonations(commands.Cog):
         embed.add_field(name="Message:", value=message, inline=False)
         embed.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await ctx.tick()
-        await ctx.send("You have sent a donation request. Please wait for a manager to respond.")
         await self._send_to_gchan(ctx, embed=embed)
         
     @commands.command(name="eventdonate", aliases=["edonate"])
@@ -574,8 +584,6 @@ class ServerDonations(commands.Cog):
         emb.add_field(name="Message:", value=message, inline=True)
         emb.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await ctx.tick()
-        await ctx.send("You have sent a donation request. Please wait for a manager to respond.")
         await self._send_to_echan(ctx, embed=emb)
         
     @commands.command(name="heistdonate", aliases=["hdonate"])
@@ -617,6 +625,4 @@ class ServerDonations(commands.Cog):
         emb.add_field(name="Message:", value=message, inline=False)
         emb.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await ctx.tick()
-        await ctx.send("You have sent a donation request. Please wait for a manager to respond.")
         await self._send_to_hchan(ctx, embed=emb)
