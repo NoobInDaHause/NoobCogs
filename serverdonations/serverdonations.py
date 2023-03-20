@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.7"
+    __version__ = "1.2.8"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -59,17 +59,17 @@ class ServerDonations(commands.Cog):
         
         if not gman_pingrole:
             try:
+                await channel.send(embed=embed)
                 await ctx.tick()
-                await ctx.send("You have sent a giveaway donation request. Please wait for a manager to respond.")
-                return await channel.send(embed=embed)
+                return await ctx.send("You have sent a giveaway donation request. Please wait for a manager to respond.")
             except Exception:
                 return await ctx.send("It appears that I do not see the giveaway donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
+                await channel.send(content=gman_pingrole.mention, embed=embed, allowed_mentions=am)
                 await ctx.tick()
-                await ctx.send("You have sent a giveaway donation request. Please wait for a manager to respond.")
-                return await channel.send(content=gman_pingrole.mention, embed=embed, allowed_mentions=am)
+                return await ctx.send("You have sent a giveaway donation request. Please wait for a manager to respond.")
             except Exception:
                 return await ctx.send("It appears that I do not see the giveaway donation request channel. It's most likely deleted or I do not have permission to view it.")
     
@@ -84,17 +84,17 @@ class ServerDonations(commands.Cog):
         
         if not eman_pingrole:
             try:
+                await channel.send(embed=embed)
                 await ctx.tick()
-                await ctx.send("You have sent an event donation request. Please wait for a manager to respond.")
-                return await channel.send(embed=embed)
+                return await ctx.send("You have sent an event donation request. Please wait for a manager to respond.")
             except Exception:
                 return await ctx.send("It appears that I do not see the event donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
+                await channel.send(content=eman_pingrole.mention, embed=embed, allowed_mentions=am)
                 await ctx.tick()
-                await ctx.send("You have sent an event donation request. Please wait for a manager to respond.")
-                return await channel.send(content=eman_pingrole.mention, embed=embed, allowed_mentions=am)
+                return await ctx.send("You have sent an event donation request. Please wait for a manager to respond.")
             except Exception:
                 return await ctx.send("It appears that I do not see the event donation request channel. It's most likely deleted or I do not have permission to view it.")
         
@@ -109,17 +109,17 @@ class ServerDonations(commands.Cog):
         
         if not hman_pingrole:
             try:
+                await channel.send(embed=embed)
                 await ctx.tick()
-                await ctx.send("You have sent a heist donation request. Please wait for a manager to respond.")
-                return await channel.send(embed=embed)
+                return await ctx.send("You have sent a heist donation request. Please wait for a manager to respond.")
             except Exception:
                 return await ctx.send("It appears that I do not see the heist donation request channel. It's most likely deleted or I do not have permission to view it.")
         else:
             am = discord.AllowedMentions(roles=True, users=False, everyone=False)
             try:
+                await channel.send(content=hman_pingrole.mention, embed=embed, allowed_mentions=am)
                 await ctx.tick()
-                await ctx.send("You have sent a heist donation request. Please wait for a manager to respond.")
-                return await channel.send(content=hman_pingrole.mention, embed=embed, allowed_mentions=am)
+                return await ctx.send("You have sent a heist donation request. Please wait for a manager to respond.")
             except Exception:
                 return await ctx.send("It appears that I do not see the heist donation request channel. It's most likely deleted or I do not have permission to view it.")
     
