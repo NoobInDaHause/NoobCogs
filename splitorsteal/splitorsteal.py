@@ -92,7 +92,7 @@ class SplitOrSteal(commands.Cog):
 
         if pred.result:
             await self.config.guild(ctx.guild).clear()
-            return await ctx.send(f"Successfully resetted the guild's settings.")
+            return await ctx.send("Successfully resetted the guild's settings.")
         else:
             await ctx.send("Alright not doing that then.")
     
@@ -103,7 +103,7 @@ class SplitOrSteal(commands.Cog):
         """
         current = await self.config.guild(ctx.guild).manager_only()
         await self.config.guild(ctx.guild).manager_only.set(not current)
-        status = "enabled" if not current else "disabled"
+        status = "disabled" if current else "enabled"
         await ctx.send(f"Manager only setting for splitorsteal has been {status}.")
     
     @splitorstealset.command(name="showsetting", aliases=["ss", "showset", "showsettings"])
@@ -113,15 +113,19 @@ class SplitOrSteal(commands.Cog):
         """
         settings1 = await self.config.guild(ctx.guild).sosmanager_ids()
         settings2 = await self.config.guild(ctx.guild).manager_only()
-        manrole = "No manager role set." if not settings1 else humanize_list([f'<@&{role}>' for role in settings1])
-        
+        manrole = (
+            humanize_list([f'<@&{role}>' for role in settings1])
+            if settings1
+            else "No manager role set."
+        )
+
         emb = discord.Embed(
             title=f"Settings for {ctx.guild}",
             colour=await ctx.embed_colour()
         )
         emb.add_field(name="Sos Manager roles:", value=manrole, inline=False)
         emb.add_field(name="Sos manager only:", value=settings2, inline=False)
-        
+
         await ctx.send(embed=emb)
     
     @splitorstealset.group(name="manager", aliases=["managers"])
@@ -140,10 +144,12 @@ class SplitOrSteal(commands.Cog):
         Add a manager role.
         """
         settings = await self.config.guild(ctx.guild).sosmanager_ids()
-        
+
         if role.id in settings:
-            return await ctx.send(f"It appears that role is already in the set manager roles.")
-        
+            return await ctx.send(
+                "It appears that role is already in the set manager roles."
+            )
+
         async with self.config.guild(ctx.guild).sosmanager_ids() as sosman:
             sosman.append(role.id)
         await ctx.send(f"Successfully added `@{role.name}` in the manager roles.")
@@ -263,16 +269,18 @@ class SplitOrSteal(commands.Cog):
         manroles = await self.config.guild(ctx.guild).sosmanager_ids()
         manonly = await self.config.guild(ctx.guild).manager_only()
         active = await self.config.guild(ctx.guild).activechan()
-        
+
         if ctx.channel.id in active:
             return await ctx.send(f"A game of SplitOrSteal is already running from this channel. Wait for that one to finish.\nIf you think this is a mistake ask an admin to run `{ctx.prefix}sosset clearactive <channel>` on this channel.")
-        
+
         if manonly == True:
             if any(role.id in manroles for role in ctx.author.roles):
                 await ctx.tick()
             else:
-                return await ctx.send(f"You do not have permissions to start a split or steal game.")
-        
+                return await ctx.send(
+                    "You do not have permissions to start a split or steal game."
+                )
+
         if not player_1 and not player_2:
             return await ctx.send("This game requires 2 users to play.")
         if player_1.id == player_2.id or player_2.id == player_1.id:
@@ -281,30 +289,30 @@ class SplitOrSteal(commands.Cog):
             return await ctx.send("Erm! You cannot play the game with a bot! 🙄 ||Message brought to you by: Cool aid man#3600||")
         if not prize:
             return await ctx.send("The game won't start without a prize.")
-        
+
         host = ctx.author
         user1 = player_1
         user2 = player_2
         splitans = ["split", "🤝"]
         stealans = ["steal", "⚔️"]
         bothans = ["split", "🤝", "steal", "⚔️"]
-        
+
         async with self.config.guild(ctx.guild).activechan() as achan:
             achan.append(ctx.channel.id)
-        
+
         setupembed = discord.Embed(
             description = "Setting up game please wait."
         )
         setup = await ctx.send(embed=setupembed)
         await asyncio.sleep(5)
-        
+
         setupdoneembed = discord.Embed(
             description = "Setup done. Starting split or steal game now."
         )
         await setup.edit(embed=setupdoneembed)
         await asyncio.sleep(3)
         await setup.delete()
-        
+
         sotembed = discord.Embed(
             title = "Split or Steal Game",
             description = "The split or steal game has begun!\nPlayers now have 60 seconds to discuss if they want to either split 🤝 or steal ⚔️.\nThink very carefully and make your decisions precise!",
@@ -316,12 +324,12 @@ class SplitOrSteal(commands.Cog):
         sotam = discord.AllowedMentions(roles=False, users=True, everyone=False)
         await ctx.send(content=f"{user1.mention} and {user2.mention}", embed=sotembed, allowed_mentions=sotam)
         await asyncio.sleep(60)
-        
+
         await ctx.send(
             f"Time is up! I will now DM the players if they want to either split 🤝 or steal ⚔️.\n{user1.mention} and {user2.mention} make sure you have your DM's open for me to send message."
         )
         await asyncio.sleep(3)
-        
+
         try:
             await user2.send(
                 f"Waiting for {user1}'s response. Please wait."
@@ -334,18 +342,18 @@ class SplitOrSteal(commands.Cog):
                 f"It appears {user2.mention} had their DM's closed! Cancelling game."
             )
 
-        
+
         try:
             def check(m):
                 return m.author == user1 and m.channel == user1.dm_channel
-            
+
             dm1embed = discord.Embed(
                 title = "Split or Steal",
                 colour = await ctx.embed_colour(),
                 description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?\nYou may also answer with emojis corresponding to the answers."
             )
             dm1embed.set_footer(text="You have 30 seconds to answer.")
-            
+
             try:
                 await user1.send(embed=dm1embed)
             except Exception:
@@ -355,41 +363,41 @@ class SplitOrSteal(commands.Cog):
                 return await ctx.send(
                     f"It appears {user1.mention} had their DM's closed! Cancelling game."
                 )
-            
+
             confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
-            
+
             if confirm.content.lower() in splitans:
                 await user1.send(
                     "You have chosen `split` 🤝."
                 )
                 answer1 = "split"
-                
+
             elif confirm.content.lower() in stealans:
                 await user1.send(
                     "You have chosen `steal` ⚔️."
                 )
                 answer1 = "steal"
-            
+
             else:
                 if confirm.content.lower() not in bothans:
                     await user1.send(
                         "That is not a valid answer, answer either `split` 🤝 or `steal` ⚔️ or you will forfeit the game."
                     )
-                    
+
                     confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
-                    
+
                     if confirm.content.lower() in splitans:
                         await user1.send(
                             "You have chosen `split` 🤝."
                         )
                         answer1 = "split"
-                        
+
                     if confirm.content.lower() in stealans:
                         await user1.send(
                             "You have chosen `steal` ⚔️."
                         )
                         answer1 = "steal"
-                        
+
                     if confirm.content.lower() not in bothans:
                         await user1.send(
                             "You have failed to answer 2 times therefor you ferfeit the game."
@@ -432,18 +440,18 @@ class SplitOrSteal(commands.Cog):
                 index = achan.index(ctx.channel.id)
                 achan.pop(index)
             return await ctx.send(content=host.mention, embed=failembed)
-        
+
         try:
             def check(m):
                 return m.author == user2 and m.channel == user2.dm_channel
-            
+
             dm2embed = discord.Embed(
                 title = "Split or Steal",
                 description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?\nYou may also answer with emojis corresponding to the answers.",
                 colour = await ctx.embed_colour()
             )
             dm2embed.set_footer(text="You have 30 seconds to answer.")
-            
+
             try:
                 await user2.send(embed=dm2embed)
             except Exception:
@@ -453,48 +461,48 @@ class SplitOrSteal(commands.Cog):
                 return await ctx.send(
                     f"It appears {user2.mention} had their DM's closed! Cancelling game."
                 )
-            
+
             confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
-            
+
             if confirm.content.lower() in splitans:
                 await user2.send(
                     "You have chosen `split` 🤝."
                 )
                 answer2 = "split"
-            
+
             elif confirm.content.lower() in stealans:
                 await user2.send(
                     "You have chosen `steal` ⚔️."
                 )
                 answer2 = "steal"
-            
+
             else:
                 if confirm.content.lower() not in bothans:
                     await user2.send(
                         "That is not a valid answer, answer either `split` 🤝 or `steal` ⚔️ or you will forfeit the game."
                     )
-                    
+
                     confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
-                    
+
                     if confirm.content.lower() in splitans:
                         await user2.send(
                             "You have chosen `split` 🤝."
                         )
                         answer2 = "split"
-                        
+
                     if confirm.content.lower() in stealans:
                         await user2.send(
                             "You have chosen `steal` ⚔️."
                         )
                         answer2 = "steal"
-                        
+
                     if confirm.content.lower() not in bothans:
                         await user2.send(
                             "You have failed to answer 2 times therefor you ferfeit the game."
                         )
 
                         failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for failing to answer."
-                        
+
                         failembed = discord.Embed(
                             colour = 0x00FF00,
                             title = "Game over",
@@ -515,7 +523,7 @@ class SplitOrSteal(commands.Cog):
             )
 
             failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for taking too long to answer."
-            
+
             failembed = discord.Embed(
                 colour = 0x00FF00,
                 title = "Game over",
@@ -525,34 +533,34 @@ class SplitOrSteal(commands.Cog):
             failembed.add_field(name="Result:", value=failar, inline=False)
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
             failembed.set_image(url=forfeitgif)
-                        
+
             async with self.config.guild(ctx.guild).activechan() as achan:
                 index = achan.index(ctx.channel.id)
                 achan.pop(index)
             await ctx.send(content=host.mention, embed=failembed)
-        
+
         if answer1 and answer2 == "split":
             result = f"Both players chose Split! They can now split the **{prize}** prize 🤝!"
             col = 0x00FF00
             img = wingif
-            
+
         if answer1 == "steal" and answer2 == "split":
             result = f"Player {user1.mention} steals the **{prize}** prize for themselves ⚔️!"
             col = 0xFF0000
             img = betraygif
-        
+
         if answer1 == "split" and answer2 == "steal":
             result = f"Player {user2.mention} steals the **{prize}** prize for themselves ⚔️! "
             col = 0xFF0000
             img = betraygif
-        
+
         if answer1 and answer2 == "steal":
             result = f"Both players chose Steal! Nobody has won the **{prize}** prize 🚫!"
             col = 0x2F3136
             img = losergif
-        
+
         gameoverdesc = f"Split or Steal game has ended.\n[Player 1] {user1.mention} chose {answer1.capitalize()}!\n[Player 2] {user2.mention} chose {answer2.capitalize()}!"
-        
+
         gameoverembed = discord.Embed(
             colour = col,
             timestamp = datetime.datetime.utcnow(),
@@ -562,7 +570,7 @@ class SplitOrSteal(commands.Cog):
         gameoverembed.add_field(name="Result:", value=result, inline=False)
         gameoverembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
         gameoverembed.set_image(url=img)
-        
+
         async with self.config.guild(ctx.guild).activechan() as achan:
             index = achan.index(ctx.channel.id)
             achan.pop(index)
