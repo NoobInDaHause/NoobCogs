@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.11"
+    __version__ = "1.2.12"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -203,7 +203,7 @@ class ServerDonations(commands.Cog):
     
     @commands.group(name="serverdonationsset", aliases=["sdonateset"])
     @commands.guild_only()
-    @commands.admin_or_permissions(administrator=True)
+    @commands.admin_or_permissions(administrator=True, manage_guild=True)
     @commands.bot_has_permissions(embed_links=True)
     async def serverdonationsset(self, ctx):
         """
@@ -412,7 +412,7 @@ class ServerDonations(commands.Cog):
     @serverdonationsset.command(name="showsetting", aliases=["showset", "ss", "showsettings"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
-    @commands.admin_or_permissions(administrator=True)
+    @commands.admin_or_permissions(administrator=True, manage_guild=True)
     async def serverdonationsset_showsetting(self, ctx):
         """
         See the guild settings set for ServerDonations.

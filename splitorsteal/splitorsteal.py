@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.16"
+    __version__ = "2.1.17"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -50,14 +50,13 @@ class SplitOrSteal(commands.Cog):
     @commands.group(name="splitorstealset", aliases=["sosset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
-    @commands.admin_or_permissions(administrator=True)
+    @commands.admin_or_permissions(administrator=True, manage_guild=True)
     async def splitorstealset(self, ctx):
         """
         Settings for split or steal.
         """
     
     @splitorstealset.command(name="clearactive")
-    @commands.guild_only()
     async def splitorstealset_clearactives(
         self,
         ctx: commands.Context,
@@ -79,7 +78,6 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(f"Successfully removed the active game in {channel.mention}")
     
     @splitorstealset.command(name="reset")
-    @commands.guild_only()
     async def splitorstealset_reset(self, ctx):
         """
         Reset the guild settings to default.
@@ -99,7 +97,6 @@ class SplitOrSteal(commands.Cog):
             await ctx.send("Alright not doing that then.")
     
     @splitorstealset.command(name="manageronly")
-    @commands.guild_only()
     async def splitorstealset_manageronly(self, ctx):
         """
         Toggle whether to restrict the `[p]splitorsteal` command to the set manager roles.
@@ -110,7 +107,6 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(f"Manager only setting for splitorsteal has been {status}.")
     
     @splitorstealset.command(name="showsetting", aliases=["ss", "showset", "showsettings"])
-    @commands.guild_only()
     async def splitorstealset_showsettings(self, ctx):
         """
         See the settings of SplitOrSteal.
@@ -129,7 +125,6 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(embed=emb)
     
     @splitorstealset.group(name="manager", aliases=["managers"])
-    @commands.guild_only()
     async def splitorstealset_manager(self, ctx):
         """
         Add or remove the manager role.
