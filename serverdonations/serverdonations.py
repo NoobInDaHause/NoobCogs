@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.9"
+    __version__ = "1.2.10"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -48,7 +48,7 @@ class ServerDonations(commands.Cog):
         # This cog does not store any end user data whatsoever.
         return
     
-    async def _send_to_chan(self, ctx: commands.Context, embed, chantype: str):
+    async def send_to_set_channel(self, ctx: commands.Context, embed, chantype: str):
         """
         Sends to the set giveaway donation request channel.
         """
@@ -154,8 +154,8 @@ class ServerDonations(commands.Cog):
         ` - ` Does not require double quotes `""` if it has some spaces.
         
         Examples:
-            `{ctx.prefix}eventdonate "Owo bot" "Split Or Steal" none "A sloppy burger" can i have chezburger plz`
-            `{ctx.prefix}edonate owobot splitorsteal none sloppyburger mmmmmm chezburger`
+            `{ctx.prefix}eventdonate "Owo bot" "Split Or Steal" none "1m owo coins" can i have chezburger plz`
+            `{ctx.prefix}edonate owobot splitorsteal none 1mowocoins mmmmmm chezburger`
         """
         
         hdonodesc = f"""
@@ -240,11 +240,10 @@ class ServerDonations(commands.Cog):
         See sub commands for more info.
         """
         
-    @serverdonationsset_pingrole.command(name="gman")
+    @serverdonationsset_pingrole.command(name="giveawaymanager", aliases=["gman"])
     async def serverdonationsset_pingrole_gman(
         self,
         ctx: commands.Context,
-        *,
         role: discord.Role = None
     ):
         """
@@ -266,13 +265,12 @@ class ServerDonations(commands.Cog):
             return await ctx.send("It appears that role is already the set giveaway manager role.")
         
         await self.config.guild(ctx.guild).gman_id.set(role.id)
-        await ctx.send(f"Successfully set `@{role.name}` as the giveaway manager role.")
+        await ctx.send(f"Successfully set `@{role.name}` as the giveaway manager ping role.")
             
-    @serverdonationsset_pingrole.command(name="eman")
+    @serverdonationsset_pingrole.command(name="eventmanager", aliases=["eman"])
     async def serverdonationsset_pingrole_eman(
         self,
         ctx: commands.Context,
-        *,
         role: discord.Role = None
     ):
         """
@@ -296,11 +294,10 @@ class ServerDonations(commands.Cog):
         await self.config.guild(ctx.guild).eman_id.set(role.id)
         await ctx.send(f"Successfully set `@{role.name}` as the event manager role.")
             
-    @serverdonationsset_pingrole.command(name="hman")
+    @serverdonationsset_pingrole.command(name="heistmanager", aliases=["hman"])
     async def serverdonationsset_pingrole_hman(
         self,
         ctx: commands.Context,
-        *,
         role: discord.Role = None
     ):
         """
@@ -336,7 +333,6 @@ class ServerDonations(commands.Cog):
     async def serverdonationsset_channel_gchannel(
         self,
         ctx: commands.Context,
-        *,
         channel: discord.TextChannel = None
     ):
         """
@@ -364,7 +360,6 @@ class ServerDonations(commands.Cog):
     async def serverdonationsset_channel_echannel(
         self,
         ctx: commands.Context,
-        *,
         channel: discord.TextChannel = None
     ):
         """
@@ -392,7 +387,6 @@ class ServerDonations(commands.Cog):
     async def serverdonationsset_channel_hchannel(
         self,
         ctx: commands.Context,
-        *,
         channel: discord.TextChannel = None
     ):
         """
@@ -476,7 +470,7 @@ class ServerDonations(commands.Cog):
         Donate to server giveaways.
         
         Arguments must be split by `spaces`. If an argument contains a space, put it in quotes "".
-        See `[p]sdonohelp` to know how to donate.
+        See `[p]sdonatehelp` to know how to donate.
         """
         settings = await self.config.guild(ctx.guild).gchannel_id()
         chantype = "giveaway"
@@ -500,7 +494,7 @@ class ServerDonations(commands.Cog):
         embed.add_field(name="Message:", value=message, inline=False)
         embed.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await self._send_to_chan(ctx, embed=embed, chantype=chantype)
+        await self.send_to_set_channel(ctx, embed=embed, chantype=chantype)
         
     @commands.command(name="eventdonate", aliases=["edonate"])
     @commands.guild_only()
@@ -520,7 +514,7 @@ class ServerDonations(commands.Cog):
         Donate to server events.
         
         Arguments must be split by `spaces`. If an argument contains a space, put it in quotes "".
-        See `[p]sdonohelp` to know how to donate.
+        See `[p]sdonatehelp` to know how to donate.
         """
         settings = await self.config.guild(ctx.guild).echannel_id()
         chantype = "event"
@@ -543,7 +537,7 @@ class ServerDonations(commands.Cog):
         emb.add_field(name="Message:", value=message, inline=True)
         emb.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await self._send_to_chan(ctx, embed=emb, chantype=chantype)
+        await self.send_to_set_channel(ctx, embed=emb, chantype=chantype)
         
     @commands.command(name="heistdonate", aliases=["hdonate"])
     @commands.guild_only()
@@ -563,7 +557,7 @@ class ServerDonations(commands.Cog):
         
         Arguments must be split by `spaces`. If an argument contains a space, put it in quotes "".
         This command is especially designed for Bro bot and/or Dank Memer Bot or any other bot that has the similar feature.
-        See `[p]sdonohelp` to know how to donate.
+        See `[p]sdonatehelp` to know how to donate.
         """
         settings = await self.config.guild(ctx.guild).hchannel_id()
         chantype = "heist"
@@ -585,4 +579,4 @@ class ServerDonations(commands.Cog):
         emb.add_field(name="Message:", value=message, inline=False)
         emb.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await self._send_to_chan(ctx, embed=emb, chantype=chantype)
+        await self.send_to_set_channel(ctx, embed=emb, chantype=chantype)
