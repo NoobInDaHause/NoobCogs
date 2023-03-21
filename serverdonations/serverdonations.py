@@ -251,17 +251,16 @@ class ServerDonations(commands.Cog):
         Pass without role to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).gman_id()
-        
+
         if not role:
             if not settings:
                 return await ctx.send("It appears there is no set giveaway manager role. Set one by passing a role.")
-            else:
-                await self.config.guild(ctx.guild).gman_id.clear()
-                return await ctx.send("The giveaway manager ping role has been removed.")
-        
+            await self.config.guild(ctx.guild).gman_id.clear()
+            return await ctx.send("The giveaway manager ping role has been removed.")
+
         if role.id == settings:
             return await ctx.send("It appears that role is already the set giveaway manager role.")
-        
+
         await self.config.guild(ctx.guild).gman_id.set(role.id)
         await ctx.send(f"Successfully set `@{role.name}` as the giveaway manager ping role.")
             
@@ -278,17 +277,16 @@ class ServerDonations(commands.Cog):
         Pass without role to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).eman_id()
-        
+
         if not role:
             if not settings:
                 return await ctx.send("It appears there is no set event manager role. Set one by passing a role.")
-            else:
-                await self.config.guild(ctx.guild).eman_id.clear()
-                return await ctx.send("The event manager ping role has been removed.")
-        
+            await self.config.guild(ctx.guild).eman_id.clear()
+            return await ctx.send("The event manager ping role has been removed.")
+
         if role.id == settings:
             return await ctx.send("It appears that role is already the set event manager ping role.")
-        
+
         await self.config.guild(ctx.guild).eman_id.set(role.id)
         await ctx.send(f"Successfully set `@{role.name}` as the event manager role.")
             
@@ -305,17 +303,16 @@ class ServerDonations(commands.Cog):
         Pass without role to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).hman_id()
-        
+
         if not role:
             if not settings:
                 return await ctx.send("It appears there is no set heist manager role. Set one by passing a role.")
-            else:
-                await self.config.guild(ctx.guild).hman_id.clear()
-                return await ctx.send("The heist manager ping role has been removed.")
-        
+            await self.config.guild(ctx.guild).hman_id.clear()
+            return await ctx.send("The heist manager ping role has been removed.")
+
         if role.id == settings:
             return await ctx.send("It appears that role is already the set heist manager role.")
-        
+
         await self.config.guild(ctx.guild).hman_id.set(role.id)
         await ctx.send(f"Successfully set `@{role.name}` as the heist manager ping role.")
             
@@ -340,17 +337,16 @@ class ServerDonations(commands.Cog):
         Pass without channel to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).gchannel_id()
-        
+
         if not channel:
             if not settings:
                 return await ctx.send("It appears there is no set giveaway donation request channel. Ask an admin to set one.")
-            else:
-                await self.config.guild(ctx.guild).gchannel_id.clear()
-                return await ctx.send("The giveaway donation request channel has been removed.")
-            
+            await self.config.guild(ctx.guild).gchannel_id.clear()
+            return await ctx.send("The giveaway donation request channel has been removed.")
+
         if channel.id == settings:
             return await ctx.send("It appears that channel is already the set giveaway donation request channel.")
-        
+
         await self.config.guild(ctx.guild).gchannel_id.set(channel.id)
         await ctx.send(f"Successfully set {channel.mention} as the giveaway donation request channel.")
         
@@ -367,17 +363,16 @@ class ServerDonations(commands.Cog):
         Pass without channel to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).echannel_id()
-        
+
         if not channel:
             if not settings:
                 return await ctx.send("It appears there is no set event donation request channel. Ask an admin to set one.")
-            else:
-                await self.config.guild(ctx.guild).echannel_id.clear()
-                return await ctx.send("The event donation request channel has been removed.")
-            
+            await self.config.guild(ctx.guild).echannel_id.clear()
+            return await ctx.send("The event donation request channel has been removed.")
+
         if channel.id == settings:
             return await ctx.send("It appears that channel is already the set event donation request channel.")
-        
+
         await self.config.guild(ctx.guild).echannel_id.set(channel.id)
         await ctx.send(f"Successfully set {channel.mention} as the event donation request channel.")
             
@@ -394,17 +389,16 @@ class ServerDonations(commands.Cog):
         Pass without channel to remove the current set one.
         """
         settings = await self.config.guild(ctx.guild).hchannel_id()
-        
+
         if not channel:
             if not settings:
                 return await ctx.send("It appears there is no set heist donation request channel. Ask an admin to set one.")
-            else:
-                await self.config.guild(ctx.guild).hchannel_id.clear()
-                return await ctx.send("The heist donation request channel has been removed.")
-            
+            await self.config.guild(ctx.guild).hchannel_id.clear()
+            return await ctx.send("The heist donation request channel has been removed.")
+
         if channel.id == settings:
             return await ctx.send("It appears that channel is already the set heist donation request channel.")
-        
+
         await self.config.guild(ctx.guild).hchannel_id.set(channel.id)
         await ctx.send(f"Successfully set {channel.mention} as the heist donation request channel.")
             
