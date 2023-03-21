@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.15"
+    __version__ = "2.1.16"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -324,7 +324,7 @@ class SplitOrSteal(commands.Cog):
         await asyncio.sleep(60)
         
         await ctx.send(
-            f"Time is up! I will now DM the players their choices.\n{user1.mention} and {user2.mention} make sure you have your DM's open for me to send message."
+            f"Time is up! I will now DM the players if they want to either split 🤝 or steal ⚔️.\n{user1.mention} and {user2.mention} make sure you have your DM's open for me to send message."
         )
         await asyncio.sleep(3)
         
