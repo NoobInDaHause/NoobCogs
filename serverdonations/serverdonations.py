@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.10"
+    __version__ = "1.2.11"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -98,7 +98,6 @@ class ServerDonations(commands.Cog):
         `[p]eventdonate`
         `[p]heistdonate`
         """
-        emotes = ["⏪", "◀️", "▶️", "⏩", "❌"]
         gdono = f"Syntax: {ctx.prefix}giveawaydonate <type> <duration> <winners> <requirements> <prize> <message>\nAlias: {ctx.prefix}gdonate"
         edono = f"Syntax: {ctx.prefix}eventdonate <type> <event> <requirements> <prize> <message>\nAlias: {ctx.prefix}edonate"
         hdono = f"Syntax: {ctx.prefix}heistdonate <type> <requirements> <amount> <message>\nAlias: {ctx.prefix}hdonate"
@@ -289,7 +288,7 @@ class ServerDonations(commands.Cog):
                 return await ctx.send("The event manager ping role has been removed.")
         
         if role.id == settings:
-            return await ctx.send("It appears that role is already the set event manager role.")
+            return await ctx.send("It appears that role is already the set event manager ping role.")
         
         await self.config.guild(ctx.guild).eman_id.set(role.id)
         await ctx.send(f"Successfully set `@{role.name}` as the event manager role.")
@@ -319,7 +318,7 @@ class ServerDonations(commands.Cog):
             return await ctx.send("It appears that role is already the set heist manager role.")
         
         await self.config.guild(ctx.guild).hman_id.set(role.id)
-        await ctx.send(f"Successfully set `@{role.name}` as the heist manager role.")
+        await ctx.send(f"Successfully set `@{role.name}` as the heist manager ping role.")
             
     @serverdonationsset.group(name="channel", aliases=["chan"])
     async def serverdonationsset_channel(self, ctx):
@@ -336,7 +335,7 @@ class ServerDonations(commands.Cog):
         channel: discord.TextChannel = None
     ):
         """
-        Set or remove the giveaway donation channel.
+        Set or remove the giveaway donation request channel.
         
         The gchannel is required for the `[p]giveawaydonate` command.
         Pass without channel to remove the current set one.
@@ -363,7 +362,7 @@ class ServerDonations(commands.Cog):
         channel: discord.TextChannel = None
     ):
         """
-        Set or remove the channel for event donation requests.
+        Set or remove the event donation requests channel.
         
         The echannel is required for the `[p]eventdonate` command.
         Pass without channel to remove the current set one.
