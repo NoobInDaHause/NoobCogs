@@ -1,9 +1,11 @@
 import random
 
 # <----- FORFEIT GIFS ----->
-f1 = "https://cdn.discordapp.com/attachments/996044937730732062/1084848840017985546/boy-look_1.gif"
+f1 = "https://cdn.discordapp.com/attachments/1087623489130872832/1087624656212733963/pink-panther-pink.gif"
+f2 = "https://cdn.discordapp.com/attachments/1087623489130872832/1087623551978319903/eh-meh.gif"
+f3 = "https://cdn.discordapp.com/attachments/1087623489130872832/1087623774431621201/nathan-ing-twitch-streamer.gif"
 
-fimg = [f1]
+fimg = [f1, f2, f3]
 forfeitgif = random.choice(fimg)
 
 # <----- WIN GIFS ----->
@@ -24,8 +26,9 @@ b2 = "https://cdn.discordapp.com/attachments/1005509686302359562/108481989450532
 b3 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084835711355719790/icegif-634.gif"
 b4 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084837146822717480/laughing-kangaroo.gif"
 b5 = "https://cdn.discordapp.com/attachments/1005509686302359562/1084838240923693116/AdolescentUnlawfulDungenesscrab-max-1mb_1.gif"
+b6 = "https://cdn.discordapp.com/attachments/1005509686302359562/1087623151933997056/emotional-damage_1.gif"
 
-bimg = [b1, b2, b3, b4, b5]
+bimg = [b1, b2, b3, b4, b5, b6]
 betraygif = random.choice(bimg)
 
 # <----- LOSE GIFS ----->

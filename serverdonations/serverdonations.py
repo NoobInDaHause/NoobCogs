@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.12"
+    __version__ = "1.2.13"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -87,7 +87,6 @@ class ServerDonations(commands.Cog):
                 return await ctx.send(f"It appears that I do not see the {channeltype} donation request channel. It's most likely deleted or I do not have permission to view it.")
     
     @commands.command(name="sdonatehelp")
-    @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def sdonatehelp(self, ctx):
         """
@@ -410,9 +409,6 @@ class ServerDonations(commands.Cog):
         await ctx.send(f"Successfully set {channel.mention} as the heist donation request channel.")
             
     @serverdonationsset.command(name="showsetting", aliases=["showset", "ss", "showsettings"])
-    @commands.guild_only()
-    @commands.bot_has_permissions(embed_links=True)
-    @commands.admin_or_permissions(administrator=True, manage_guild=True)
     async def serverdonationsset_showsetting(self, ctx):
         """
         See the guild settings set for ServerDonations.
@@ -440,15 +436,15 @@ class ServerDonations(commands.Cog):
         emb = discord.Embed(
             colour=await ctx.embed_colour(),
         )
-        emb.set_author(name=f"ServerDonations settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
-        emb.add_field(name="Giveaway manager role:", value=gman, inline=True)
-        emb.add_field(name="Event manager role:", value=eman, inline=True)
-        emb.add_field(name="Heist manager role:", value=hman, inline=True)
-        emb.add_field(name="Giveaway donate channel:", value=gchan, inline=True)
-        emb.add_field(name="Event donate channel:", value=echan, inline=True)
-        emb.add_field(name="Heist donate channel:", value=hchan, inline=True)
+        embed.set_author(name=f"ServerDonations settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
+        embed.add_field(name="Giveaway manager role:", value=gman, inline=True)
+        embed.add_field(name="Event manager role:", value=eman, inline=True)
+        embed.add_field(name="Heist manager role:", value=hman, inline=True)
+        embed.add_field(name="Giveaway donate channel:", value=gchan, inline=True)
+        embed.add_field(name="Event donate channel:", value=echan, inline=True)
+        embed.add_field(name="Heist donate channel:", value=hchan, inline=True)
         
-        await ctx.send(embed=emb)
+        await ctx.send(embed=embed)
         
     @commands.command(name="giveawaydonate", aliases=["gdonate"])
     @commands.guild_only()
@@ -521,22 +517,22 @@ class ServerDonations(commands.Cog):
         if not settings:
             return await ctx.send("No event donation request channel set.")
             
-        emb = discord.Embed(
+        embed = discord.Embed(
             colour = await ctx.embed_colour(),
             title="Someone would like to donate for an event!",
             timestamp=ctx.message.created_at
         )
-        emb.set_thumbnail(url=ctx.author.avatar_url)
-        emb.set_footer(text=ctx.guild, icon_url=ctx.guild.icon_url)
-        emb.add_field(name="Donor:", value=ctx.author.mention, inline=False)
-        emb.add_field(name="Type:", value=type, inline=True)
-        emb.add_field(name="Event:", value=event, inline=True)
-        emb.add_field(name="Requirements:", value=requirements, inline=False)
-        emb.add_field(name="Prize:", value=prize, inline=True)
-        emb.add_field(name="Message:", value=message, inline=True)
-        emb.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
+        embed.set_thumbnail(url=ctx.author.avatar_url)
+        embed.set_footer(text=ctx.guild, icon_url=ctx.guild.icon_url)
+        embed.add_field(name="Donor:", value=ctx.author.mention, inline=False)
+        embed.add_field(name="Type:", value=type, inline=True)
+        embed.add_field(name="Event:", value=event, inline=True)
+        embed.add_field(name="Requirements:", value=requirements, inline=False)
+        embed.add_field(name="Prize:", value=prize, inline=True)
+        embed.add_field(name="Message:", value=message, inline=True)
+        embed.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await self.send_to_set_channel(ctx, embed=emb, chantype=chantype)
+        await self.send_to_set_channel(ctx, embed=embed, chantype=chantype)
         
     @commands.command(name="heistdonate", aliases=["hdonate"])
     @commands.guild_only()
@@ -564,18 +560,18 @@ class ServerDonations(commands.Cog):
         if not settings:
             return await ctx.send("No heist donation request channel set.")
             
-        emb = discord.Embed(
+        embed = discord.Embed(
             colour = await ctx.embed_colour(),
             title="Someone would like to donate for a heist!",
             timestamp=ctx.message.created_at
         )
-        emb.set_thumbnail(url=ctx.author.avatar_url)
-        emb.set_footer(text=ctx.guild, icon_url=ctx.guild.icon_url)
-        emb.add_field(name="Donor:", value=ctx.author.mention, inline=False)
-        emb.add_field(name="Type:", value=type, inline=True)
-        emb.add_field(name="Amount:", value=amount, inline=True)
-        emb.add_field(name="Requirements:", value=requirements, inline=False)
-        emb.add_field(name="Message:", value=message, inline=False)
-        emb.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
+        embed.set_thumbnail(url=ctx.author.avatar_url)
+        embed.set_footer(text=ctx.guild, icon_url=ctx.guild.icon_url)
+        embed.add_field(name="Donor:", value=ctx.author.mention, inline=False)
+        embed.add_field(name="Type:", value=type, inline=True)
+        embed.add_field(name="Amount:", value=amount, inline=True)
+        embed.add_field(name="Requirements:", value=requirements, inline=False)
+        embed.add_field(name="Message:", value=message, inline=False)
+        embed.add_field(name="Jump to Command:", value=f"[[Click here]]({ctx.message.jump_url})", inline=False)
         
-        await self.send_to_set_channel(ctx, embed=emb, chantype=chantype)
+        await self.send_to_set_channel(ctx, embed=embed, chantype=chantype)

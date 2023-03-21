@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.17"
+    __version__ = "2.1.18"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -171,7 +171,6 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(f"Successfully removed `@{role.name}` from the set manager roles.")
     
     @commands.command(name="sosrules")
-    @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def sosrules(self, ctx):
         """
@@ -241,8 +240,8 @@ class SplitOrSteal(commands.Cog):
         )
         em3.set_footer(text=f"Command executed by: {ctx.author} | Page 3/3", icon_url=ctx.author.avatar_url)
         
-        emeds = [em1, em2, em3]
-        await menu(ctx, emeds, controls=DEFAULT_CONTROLS, timeout=60)
+        embeds = [em1, em2, em3]
+        await menu(ctx, embeds, controls=DEFAULT_CONTROLS, timeout=60)
     
     @commands.command(name="splitorsteal", usage="<player_1> <player_2> <prize>", aliases=["sos"])
     @commands.guild_only()
@@ -308,7 +307,7 @@ class SplitOrSteal(commands.Cog):
         
         sotembed = discord.Embed(
             title = "Split or Steal Game",
-            description = "The split or steal game has begun!\nPlayers now have 1 minute to discuss if they want to either split 🤝 or steal ⚔️.\nThink very carefully and make your decisions precise!",
+            description = "The split or steal game has begun!\nPlayers now have 60 seconds to discuss if they want to either split 🤝 or steal ⚔️.\nThink very carefully and make your decisions precise!",
             colour = await ctx.embed_colour()
         )
         sotembed.add_field(name="Prize:", value=prize, inline=False)
@@ -332,7 +331,7 @@ class SplitOrSteal(commands.Cog):
                 index = achan.index(ctx.channel.id)
                 achan.pop(index)
             return await ctx.send(
-                f"It seems {user2.mention} had their DM's closed! Cancelling game."
+                f"It appears {user2.mention} had their DM's closed! Cancelling game."
             )
 
         
@@ -343,7 +342,7 @@ class SplitOrSteal(commands.Cog):
             dm1embed = discord.Embed(
                 title = "Split or Steal",
                 colour = await ctx.embed_colour(),
-                description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?"
+                description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?\nYou may also answer with emojis corresponding to the answers."
             )
             dm1embed.set_footer(text="You have 30 seconds to answer.")
             
@@ -354,20 +353,20 @@ class SplitOrSteal(commands.Cog):
                     index = achan.index(ctx.channel.id)
                     achan.pop(index)
                 return await ctx.send(
-                    f"It seems {user1.mention} had their DM's closed! Cancelling game."
+                    f"It appears {user1.mention} had their DM's closed! Cancelling game."
                 )
             
             confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
             
             if confirm.content.lower() in splitans:
                 await user1.send(
-                    "You have chosen split 🤝."
+                    "You have chosen `split` 🤝."
                 )
                 answer1 = "split"
                 
             elif confirm.content.lower() in stealans:
                 await user1.send(
-                    "You have chosen steal ⚔️."
+                    "You have chosen `steal` ⚔️."
                 )
                 answer1 = "steal"
             
@@ -381,13 +380,13 @@ class SplitOrSteal(commands.Cog):
                     
                     if confirm.content.lower() in splitans:
                         await user1.send(
-                            "You have chosen split 🤝."
+                            "You have chosen `split` 🤝."
                         )
                         answer1 = "split"
                         
                     if confirm.content.lower() in stealans:
                         await user1.send(
-                            "You have chosen steal ⚔️."
+                            "You have chosen `steal` ⚔️."
                         )
                         answer1 = "steal"
                         
@@ -414,7 +413,7 @@ class SplitOrSteal(commands.Cog):
                         return await ctx.send(content=host.mention, embed=failembed)
         except asyncio.TimeoutError:
             await user1.send(
-                "You took too long to respond."
+                "You took too long to respond therfor you forfeit the game."
             )
 
             failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for taking too long to answer."
@@ -440,7 +439,7 @@ class SplitOrSteal(commands.Cog):
             
             dm2embed = discord.Embed(
                 title = "Split or Steal",
-                description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?",
+                description = "You may now choose. Do you want to `split` 🤝 or `steal` ⚔️?\nYou may also answer with emojis corresponding to the answers.",
                 colour = await ctx.embed_colour()
             )
             dm2embed.set_footer(text="You have 30 seconds to answer.")
@@ -452,20 +451,20 @@ class SplitOrSteal(commands.Cog):
                     index = achan.index(ctx.channel.id)
                     achan.pop(index)
                 return await ctx.send(
-                    f"It seems {user2.mention} had their DM's closed! Cancelling game."
+                    f"It appears {user2.mention} had their DM's closed! Cancelling game."
                 )
             
             confirm = await ctx.bot.wait_for("message", check=check, timeout=30)
             
             if confirm.content.lower() in splitans:
                 await user2.send(
-                    "You have chosen split 🤝."
+                    "You have chosen `split` 🤝."
                 )
                 answer2 = "split"
             
             elif confirm.content.lower() in stealans:
                 await user2.send(
-                    "You have chosen steal ⚔️."
+                    "You have chosen `steal` ⚔️."
                 )
                 answer2 = "steal"
             
@@ -479,13 +478,13 @@ class SplitOrSteal(commands.Cog):
                     
                     if confirm.content.lower() in splitans:
                         await user2.send(
-                            "You have chosen split 🤝."
+                            "You have chosen `split` 🤝."
                         )
                         answer2 = "split"
                         
                     if confirm.content.lower() in stealans:
                         await user2.send(
-                            "You have chosen steal ⚔️."
+                            "You have chosen `steal` ⚔️."
                         )
                         answer2 = "steal"
                         
@@ -512,7 +511,7 @@ class SplitOrSteal(commands.Cog):
                         return await ctx.send(content=host.mention, embed=failembed)
         except asyncio.TimeoutError:
             await user2.send(
-                "You took too long to respond."
+                "You took too long to respond therfor you forfeit the game."
             )
 
             failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for taking too long to answer."
