@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.splitorsteal")
         
-    __version__ = "2.1.19"
+    __version__ = "2.1.20"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -406,10 +406,10 @@ class SplitOrSteal(commands.Cog):
                         failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for failing to answer."
 
                         failembed = discord.Embed(
-                            colour = 0x00FF00,
-                            title = "Game over",
-                            timestamp = datetime.datetime.utcnow(),
-                            description = f"Split or Steal game has ended.\n{user1.mention} failed to answer `split` or `steal`!\n{user2.mention} chose nothing!"
+                            colour=0x00FF00,
+                            title="Game over",
+                            timestamp=datetime.datetime.now(datetime.timezone.utc),
+                            description=f"Split or Steal game has ended.\n{user1.mention} failed to answer `split` or `steal`!\n{user2.mention} chose nothing!",
                         )
                         failembed.add_field(name="Result:", value=failar, inline=False)
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
@@ -427,10 +427,10 @@ class SplitOrSteal(commands.Cog):
             failar = f"{user2.mention} has won the **{prize}** prize since {user1.mention} forfeited for taking too long to answer."
 
             failembed = discord.Embed(
-                colour = 0x00FF00,
-                title = "Game over",
-                timestamp = datetime.datetime.utcnow(),
-                description = f"Split or Steal game has ended.\n{user1.mention} took too long to answer!\n{user2.mention} chose nothing!"
+                colour=0x00FF00,
+                title="Game over",
+                timestamp=datetime.datetime.now(datetime.timezone.utc),
+                description=f"Split or Steal game has ended.\n{user1.mention} took too long to answer!\n{user2.mention} chose nothing!",
             )
             failembed.add_field(name="Result:", value=failar, inline=False)
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
@@ -504,10 +504,10 @@ class SplitOrSteal(commands.Cog):
                         failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for failing to answer."
 
                         failembed = discord.Embed(
-                            colour = 0x00FF00,
-                            title = "Game over",
-                            timestamp = datetime.datetime.utcnow(),
-                            description = f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} failed to answer `split` or `steal`!"
+                            colour=0x00FF00,
+                            title="Game over",
+                            timestamp=datetime.datetime.now(datetime.timezone.utc),
+                            description=f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} failed to answer `split` or `steal`!",
                         )
                         failembed.add_field(name="Result:", value=failar, inline=False)
                         failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
@@ -525,10 +525,10 @@ class SplitOrSteal(commands.Cog):
             failar = f"{user1.mention} has won the **{prize}** prize since {user2.mention} forfeited for taking too long to answer."
 
             failembed = discord.Embed(
-                colour = 0x00FF00,
-                title = "Game over",
-                timestamp = datetime.datetime.utcnow(),
-                description = f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} took too long to answer!"
+                colour=0x00FF00,
+                title="Game over",
+                timestamp=datetime.datetime.now(datetime.timezone.utc),
+                description=f"Split or Steal game has ended.\n{user1.mention} chose {answer1.capitalize()}!\n{user2.mention} took too long to answer!",
             )
             failembed.add_field(name="Result:", value=failar, inline=False)
             failembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)
@@ -562,10 +562,10 @@ class SplitOrSteal(commands.Cog):
         gameoverdesc = f"Split or Steal game has ended.\n[Player 1] {user1.mention} chose {answer1.capitalize()}!\n[Player 2] {user2.mention} chose {answer2.capitalize()}!"
 
         gameoverembed = discord.Embed(
-            colour = col,
-            timestamp = datetime.datetime.utcnow(),
-            title = "Game over",
-            description = gameoverdesc,
+            colour=col,
+            timestamp=datetime.datetime.now(datetime.timezone.utc),
+            title="Game over",
+            description=gameoverdesc,
         )
         gameoverembed.add_field(name="Result:", value=result, inline=False)
         gameoverembed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar_url)

@@ -1,4 +1,5 @@
 import discord
+import asyncio
 import logging
 
 from redbot.core import commands, Config
@@ -34,7 +35,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.14"
+    __version__ = "1.2.15"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -427,7 +428,7 @@ class ServerDonations(commands.Cog):
         hchan = ctx.guild.get_channel(settings["hchannel_id"])
         hchan = hchan.mention if hchan else "No channel set."
         
-        emb = discord.Embed(
+        embed = discord.Embed(
             colour=await ctx.embed_colour(),
         )
         embed.set_author(name=f"ServerDonations settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
