@@ -17,7 +17,8 @@ some of the cogs are badly coded and buggy so handle these cogs with care.
 
 ## Available cogs
 
-| Name            |  Version  | Description                                       |
-| --------------- | --------- | ------------------------------------------------- |
-| ServerDonations |  v1.2.15  | Donate bot currencies or other things to servers. |
-| SplitOrSteal    |  v2.1.20  | A fun split or steal game.                        |
+| Name            |  Version  | Description                                         |
+| --------------- | --------- | --------------------------------------------------- |
+| ServerDonations |  v1.2.15  | Donate bot currencies or other things to servers.   |
+| ServerEvents    |  v1.0.0   | Ping people for server giveaways, events or heists. |
+| SplitOrSteal    |  v2.1.20  | A fun split or steal game.                          |
