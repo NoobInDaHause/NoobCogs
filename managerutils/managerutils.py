@@ -50,7 +50,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -601,9 +601,8 @@ class ManagerUtils(commands.Cog):
         Notes: You do not need to split the sponsor with `|` but for everything else you will need to. See the syntax above.
         
         Examples:
-            `{ctx.prefix}giveawayping @Cool aid man a ban hammer | Win this and get a free ban. :joy:`
             `{ctx.prefix}giveawayping @Noobindahause 69 million coins | I am rich af. :moneybag:`
-            `{ctx.prefix}gping 607369416149172286 10 karuta tickets | not really playing this bot much but here you go.`
+            `{ctx.prefix}gping 607369416149172286 10 karuta tickets | not really playing this bot much so here you go.`
         """
         
         d2 = f"""
@@ -625,9 +624,8 @@ class ManagerUtils(commands.Cog):
         Notes: You do not need to split the sponsor with `|` but for everything else you will need to. See the syntax above.
         
         Examples:
-            `{ctx.prefix}eventping @Cool aid man 500k owo coins | UwU :joy_cat:`
-            `{ctx.prefix}eventping @Noobindahause 10 million bro coins | Broooooooo :sunglasses:`
-            `{ctx.prefix}eping 607369416149172286 basic nitro | I am rich af V2 :money_mouth:.`
+            `{ctx.prefix}eventping @Noobindahause gtn | 10 million bro coins | @somerole | Broooooooo :sunglasses:`
+            `{ctx.prefix}eping 607369416149172286 skirbble | basic nitro | none | I am rich af V2 :money_mouth:.`
         """
         
         d3 = f"""
@@ -647,8 +645,8 @@ class ManagerUtils(commands.Cog):
         Notes: You do not need to split the sponsor with `|` but for everything else you will need to. See the syntax above.
         
         Examples:
-            `{ctx.prefix}heistping @Noobindahause 10 million bro coins | Time for bro heist`
-            `{ctx.prefix}hping 607369416149172286 1 billion dank coins | I am rich af V3 :credit_card:.`
+            `{ctx.prefix}heistping @Noobindahause 10 million bro coins | amari level 5 | Time for bro heist`
+            `{ctx.prefix}hping 607369416149172286 1 billion dank coins | @somerolemention | I am rich af V3 :credit_card:.`
         """
         
         em1 = discord.Embed(
