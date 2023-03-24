@@ -51,7 +51,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.2.2"
+    __version__ = "1.2.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -400,7 +400,7 @@ class ManagerUtils(commands.Cog):
         return await ctx.send("Successfully cleared the list of event announcement channel.")
     
     @managerutilsset_announcechannel.group(name="heists", aliases=["heist"])
-    async def managerutilsset_announcechannel_hchan(self, ctx):
+    async def managerutilsset_announcechannel_heists(self, ctx):
         """
         Add or remove a heist announcements channel.
         
