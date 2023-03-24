@@ -15,6 +15,7 @@ from redbot.core.utils.chat_formatting import humanize_list, box
 from redbot.core.utils.predicates import MessagePredicate
 
 from . import url_button
+from .utils import *
 
 from typing import Literal
 
@@ -50,7 +51,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.1.4"
+    __version__ = "1.2.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -583,33 +584,31 @@ class ManagerUtils(commands.Cog):
         [p]eventping
         [p]heistping`
         """
-        gping = f"Syntax: {ctx.prefix}giveawayping <sponsor> <prize> | [message]\nAlias: {ctx.prefix}gping"
-        eping = f"Syntax: {ctx.prefix}eventping <sponsor> <event_name> | <prize> | [requirements] | [message]\nAlias: {ctx.prefix}eping"
-        hping = f"Syntax: {ctx.prefix}heistping <sponsor> <amount> | [requirements] | [message]\nAlias: {ctx.prefix}hping"
+        gping = f"Syntax: {ctx.prefix}giveawayping <sponsor> | <prize> | [message]\nAlias: {ctx.prefix}gping"
+        eping = f"Syntax: {ctx.prefix}eventping <sponsor> | <event_name> | <prize> | [requirements] | [message]\nAlias: {ctx.prefix}eping"
+        hping = f"Syntax: {ctx.prefix}heistping <sponsor> | <amount> | [requirements] | [message]\nAlias: {ctx.prefix}hping"
         
         d1 = f"""
         {box(gping, "yaml")}
         *Arguments:*
         **Sponsor**
-        ` - ` The user ID or user mention required for the sponsor field.
+        ` - ` The sponsor mention required for the sponsor field.
         **Prize**
         ` - ` The prize of the giveaway.
         **Message**
         ` - ` The optional message from the sponsor.
         ` - ` Pass `none` if None.
         
-        Notes: You do not need to split the sponsor with `|` but for everything else you will need to. See the syntax above.
-        
         Examples:
-            `{ctx.prefix}giveawayping @Noobindahause 69 million coins | I am rich af. :moneybag:`
-            `{ctx.prefix}gping 607369416149172286 10 karuta tickets | not really playing this bot much so here you go.`
+            `{ctx.prefix}giveawayping @Noobindahause | 69 million coins | I am rich af. :moneybag:`
+            `{ctx.prefix}gping @Noobindahause | 10 karuta tickets | not really playing this bot much so here you go.`
         """
         
         d2 = f"""
         {box(eping, "yaml")}
         *Arguments*
         **Sponsor**
-        ` - ` The user ID or user mention required for the sponsor field.
+        ` - ` The sponsor mention required for the sponsor field.
         **Event_Name**
         ` - ` The name or type of the event.
         **Requirements**
@@ -621,18 +620,16 @@ class ManagerUtils(commands.Cog):
         ` - ` The optional message from the sponsor.
         ` - ` Pass `none` if None.
         
-        Notes: You do not need to split the sponsor with `|` but for everything else you will need to. See the syntax above.
-        
         Examples:
-            `{ctx.prefix}eventping @Noobindahause gtn | 10 million bro coins | @somerole | Broooooooo :sunglasses:`
-            `{ctx.prefix}eping 607369416149172286 skirbble | basic nitro | none | I am rich af V2 :money_mouth:.`
+            `{ctx.prefix}eventping @Noobindahause | gtn | 10 million bro coins | Broooooooo :sunglasses:`
+            `{ctx.prefix}eping @Noobindahause | skirbble | basic nitro | I am rich af V2 :money_mouth:.`
         """
         
         d3 = f"""
         {box(hping, "yaml")}
         *Arguments*
         **Sponsor**
-        ` - ` The user ID or user mention required for the sponsor field.
+        ` - ` The sponsor mention required for the sponsor field.
         **Amount**
         ` - ` The amount of coins to heist.
         **Requirements**
@@ -642,11 +639,9 @@ class ManagerUtils(commands.Cog):
         ` - ` The optional message from the sponsor.
         ` - ` Pass `none` if None.
         
-        Notes: You do not need to split the sponsor with `|` but for everything else you will need to. See the syntax above.
-        
         Examples:
-            `{ctx.prefix}heistping @Noobindahause 10 million bro coins | amari level 5 | Time for bro heist`
-            `{ctx.prefix}hping 607369416149172286 1 billion dank coins | @somerolemention | I am rich af V3 :credit_card:.`
+            `{ctx.prefix}heistping @Noobindahause | 10 million bro coins | amari level 5 | Time for bro heist`
+            `{ctx.prefix}hping @Noobindahause | 1 billion dank coins | @somerolemention | I am rich af V3 :credit_card:.`
         """
         
         em1 = discord.Embed(
@@ -670,14 +665,14 @@ class ManagerUtils(commands.Cog):
         embeds = [em1, em2, em3]
         return await menu(ctx, embeds, controls=DEFAULT_CONTROLS, timeout=60)
     
-    @commands.command(name="giveawayping", aliases=["gping"], usage="<sponsor> <prize> | [message]")
+    @commands.command(name="giveawayping", aliases=["gping"], usage="<sponsor> | <prize> | [message]")
     @commands.guild_only()
+    @is_gman()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(mention_everyone=True, embed_links=True)
     async def giveawayping(
         self,
         ctx: commands.Context,
-        sponsor: discord.Member = None,
         *,
         giveaways
     ):
@@ -691,14 +686,6 @@ class ManagerUtils(commands.Cog):
         """
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = await self.config.guild(ctx.guild).giveaway_announcement_channel_ids()
-        gman = await self.config.guild(ctx.guild).giveaway_manager_id()
-        gmanrole = ctx.guild.get_role(gman)
-        
-        if not gman:
-            return await ctx.send("It appears there is not set Giveaway Manager Role. Ask an admin to set one.")
-        
-        if gmanrole not in ctx.author.roles:
-            return await ctx.send("You do not have permission to run this command.")
         
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized giveaway announcement channels. Ask an admin to add one.")
@@ -706,15 +693,12 @@ class ManagerUtils(commands.Cog):
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
         
-        if not sponsor:
-            return await ctx.send("Please pass a user ID or mention them for the sponsor argument.")
-        
         giveaways = giveaways.split("|")
         maxargs = len(giveaways)
         
-        if maxargs > 2:
+        if maxargs > 3:
             return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
-        if maxargs < 2:
+        if maxargs < 3:
             return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
         
         if await self.config.guild(ctx.guild).auto_delete_commands():
@@ -730,7 +714,7 @@ class ManagerUtils(commands.Cog):
         
         gembed = discord.Embed(
             title="Server Giveaway Time!",
-            description=f"**Prize:** {giveaways[0]}\n**Sponsor:** {sponsor.mention}\n**Message:** {giveaways[1]}",
+            description=f"**Sponsor:** {giveaways[0]}\n**Prize:** {giveaways[1]}\n**Message:** {giveaways[1]}",
             colour=await ctx.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc),
         )
@@ -753,7 +737,7 @@ class ManagerUtils(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Giveaway Logging",
-                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {sponsor.mention}\n**Prize:** {giveaways[0]}\n**Message:** {giveaways[1]}",
+                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {giveaways[0]}\n**Prize:** {giveaways[1]}\n**Message:** {giveaways[2]}",
                     colour=ctx.author.colour,
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
@@ -773,14 +757,14 @@ class ManagerUtils(commands.Cog):
             except Exception:
                 return await ctx.send("It appears that I do not see the giveaway log channel. It's most likely deleted or I do not have permission to view it.")
             
-    @commands.command(name="eventping", aliases=["eping"], usage="<sponsor> <event_name> | <prize> | [requirements] | [message]")
+    @commands.command(name="eventping", aliases=["eping"], usage="<sponsor> | <event_name> | <prize> | [message]")
     @commands.guild_only()
+    @is_eman()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(mention_everyone=True, embed_links=True)
     async def eventping(
         self,
         ctx: commands.Context,
-        sponsor: discord.Member = None,
         *,
         events
     ):  # sourcery skip: low-code-quality
@@ -789,18 +773,10 @@ class ManagerUtils(commands.Cog):
         
         See `[p]muhelp` to know how to run the commands.
         Split arguments with `|`.
-        Requires set Event Manager to use this command.
+        Requires set Event Manager role to use this command.
         """
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = await self.config.guild(ctx.guild).event_announcement_channel_ids()
-        eman = await self.config.guild(ctx.guild).event_manager_id()
-        emanrole = ctx.guild.get_role(eman)
-        
-        if not eman:
-            return await ctx.send("It appears there is not set Event Manager Role. Ask an admin to set one.")
-        
-        if emanrole not in ctx.author.roles:
-            return await ctx.send("You do not have permission to run this command.")
         
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized event announcement channels. Ask an admin to add one.")
@@ -808,15 +784,12 @@ class ManagerUtils(commands.Cog):
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
         
-        if not sponsor:
-            return await ctx.send("Please pass a user ID or mention them for the sponsor argument.")
-        
         events = events.split("|")
         maxargs = len(events)
         
-        if maxargs > 4:
+        if maxargs > 5:
             return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
-        if maxargs < 4:
+        if maxargs < 5:
             return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
         
         if await self.config.guild(ctx.guild).auto_delete_commands():
@@ -837,11 +810,11 @@ class ManagerUtils(commands.Cog):
         )
         eembed.set_footer(text=f"Hosted by: {ctx.author} (ID: {ctx.author.id})", icon_url=ctx.author.avatar_url)
         eembed.set_thumbnail(url=ctx.guild.icon_url)
-        eembed.add_field(name="Event Sponsor:", value=sponsor.mention, inline=False)
-        eembed.add_field(name="Event Name:", value=events[0], inline=True)
-        eembed.add_field(name="Event Prize:", value=events[1], inline=True)
-        eembed.add_field(name="Requirements:", value=events[2], inline=False)
-        eembed.add_field(name="Message:", value=events[3], inline=False)
+        eembed.add_field(name="Event Sponsor:", value=events[0], inline=False)
+        eembed.add_field(name="Event Name:", value=events[1], inline=True)
+        eembed.add_field(name="Event Prize:", value=events[2], inline=True)
+        eembed.add_field(name="Requirements:", value=events[3], inline=False)
+        eembed.add_field(name="Message:", value=events[4], inline=False)
         
         if not epingrole:
             try:
@@ -860,7 +833,7 @@ class ManagerUtils(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Event Logging",
-                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {sponsor.mention}\n**Event Name:** {events[0]}\n**Prize:** {events[1]}\n**Requirements:** {events[2]}\n**Message:** {events[3]}",
+                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {events[0]}\n**Event Name:** {events[1]}\n**Prize:** {events[2]}\n**Message:** {events[3]}",
                     colour=ctx.author.colour,
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
@@ -880,14 +853,14 @@ class ManagerUtils(commands.Cog):
             except Exception:
                 return await ctx.send("It appears that I do not see the event log channel. It's most likely deleted or I do not have permission to view it.")
             
-    @commands.command(name="heistping", aliases=["hping"], usage="<sponsor> <amount> | [requirements] | [message]")
+    @commands.command(name="heistping", aliases=["hping"], usage="<sponsor> | <amount> | [requirements] | [message]")
     @commands.guild_only()
+    @is_hman()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(mention_everyone=True, embed_links=True)
     async def heistping(
         self,
         ctx: commands.Context,
-        sponsor: discord.Member = None,
         *,
         heists
     ):  # sourcery skip: low-code-quality
@@ -900,14 +873,6 @@ class ManagerUtils(commands.Cog):
         """
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = await self.config.guild(ctx.guild).heist_announcement_channel_ids()
-        hman = await self.config.guild(ctx.guild).heist_manager_id()
-        hmanrole = ctx.guild.get_role(hman)
-        
-        if not hman:
-            return await ctx.send("It appears there is not set Heist Manager Role. Ask an admin to set one.")
-        
-        if hmanrole not in ctx.author.roles:
-            return await ctx.send("You do not have permission to run this command.")
         
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized heist announcement channels. Ask an admin to add one.")
@@ -915,15 +880,12 @@ class ManagerUtils(commands.Cog):
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
         
-        if not sponsor:
-            return await ctx.send("Please pass a user ID or mention them for the sponsor argument.")
-        
         heists = heists.split("|")
         maxargs = len(heists)
         
-        if maxargs > 3:
+        if maxargs > 4:
             return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
-        if maxargs < 3:
+        if maxargs < 4:
             return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
         
         if await self.config.guild(ctx.guild).auto_delete_commands():
@@ -944,11 +906,11 @@ class ManagerUtils(commands.Cog):
         )
         hembed.set_footer(text=f"Hosted by: {ctx.author} (ID: {ctx.author.id})", icon_url=ctx.author.avatar_url)
         hembed.set_thumbnail(url=ctx.guild.icon_url)
-        hembed.add_field(name="Heist Sponsor:", value=sponsor.mention, inline=True)
-        hembed.add_field(name="Amount:", value=heists[0], inline=True)
-        hembed.add_field(name="Requirements:", value=heists[1], inline=False)
+        hembed.add_field(name="Heist Sponsor:", value=heists[0], inline=True)
+        hembed.add_field(name="Amount:", value=heists[1], inline=True)
+        hembed.add_field(name="Requirements:", value=heists[2], inline=False)
         hembed.add_field(name="Checklist:", value="` - ` Have a life saver on your inventory.\n` - ` Withdraw at least **1** coin.\n` - ` Press the big green `JOIN HEIST` button.", inline=False)
-        hembed.add_field(name="Message:", value=heists[2], inline=False)
+        hembed.add_field(name="Message:", value=heists[3], inline=False)
         
         if not hpingrole:
             try:
@@ -967,7 +929,7 @@ class ManagerUtils(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Heist Logging",
-                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {sponsor.mention}\n**Amount:** {heists[0]}\n**Requirements:** {heists[1]}\n**Message:** {heists[2]}",
+                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {heists[0]}\n**Amount:** {heists[1]}\n**Requirements:** {heists[2]}\n**Message:** {heists[3]}",
                     colour=ctx.author.colour,
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
