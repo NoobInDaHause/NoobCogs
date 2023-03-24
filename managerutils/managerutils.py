@@ -51,7 +51,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.2.1"
+    __version__ = "1.2.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -86,8 +86,8 @@ class ManagerUtils(commands.Cog):
         These roles will have access to the manager only commands.
         """
         
-    @managerutilsset_manager.command(name="gman")
-    async def managerutilsset_manager_gman(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_manager.command(name="giveaways", aliases=["giveaway", "gaw"])
+    async def managerutilsset_manager_giveaways(self, ctx: commands.Context, role: discord.Role = None):
         """
         Set or remove the giveaway manager role.
         
@@ -105,8 +105,8 @@ class ManagerUtils(commands.Cog):
         await self.config.guild(ctx.guild).giveaway_manager_id.set(role.id)
         return await ctx.send(f"Successfully set `@{role.name}` as the giveaway manager role.")
     
-    @managerutilsset_manager.command(name="eman")
-    async def managerutilsset_manager_eman(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_manager.command(name="events", aliases=["event"])
+    async def managerutilsset_manager_events(self, ctx: commands.Context, role: discord.Role = None):
         """
         Set or remove the event manager role.
         
@@ -124,8 +124,8 @@ class ManagerUtils(commands.Cog):
         await self.config.guild(ctx.guild).event_manager_id.set(role.id)
         return await ctx.send(f"Successfully set `@{role.name}` as the event manager role.")
     
-    @managerutilsset_manager.command(name="hman")
-    async def managerutilsset_manager_hman(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_manager.command(name="heists", aliases=["heist"])
+    async def managerutilsset_manager_heists(self, ctx: commands.Context, role: discord.Role = None):
         """
         Set or remove the heist manager role.
         
@@ -151,8 +151,8 @@ class ManagerUtils(commands.Cog):
         These are the roles that gets pinged for giveaways, events or heists.
         """
     
-    @managerutilsset_pingrole.command(name="grole")
-    async def managerutilsset_pingrole_grole(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_pingrole.command(name="giveaways", aliases=["giveaway", "gaw"])
+    async def managerutilsset_pingrole_giveaways(self, ctx: commands.Context, role: discord.Role = None):
         """
         Set or remove the giveaway ping role.
         
@@ -170,8 +170,8 @@ class ManagerUtils(commands.Cog):
         await self.config.guild(ctx.guild).giveaway_ping_role_id.set(role.id)
         return await ctx.send(f"Successfully set `@{role.name}` as the giveaway ping role.")
     
-    @managerutilsset_pingrole.command(name="erole")
-    async def managerutilsset_pingrole_erole(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_pingrole.command(name="events", aliases=["event"])
+    async def managerutilsset_pingrole_events(self, ctx: commands.Context, role: discord.Role = None):
         """
         Set or remove the event ping role.
         
@@ -189,8 +189,8 @@ class ManagerUtils(commands.Cog):
         await self.config.guild(ctx.guild).event_ping_role_id.set(role.id)
         return await ctx.send(f"Successfully set `@{role.name}` as the event ping role.")
     
-    @managerutilsset_pingrole.command(name="hrole")
-    async def managerutilsset_pingrole_hrole(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_pingrole.command(name="heists", aliases=["heist"])
+    async def managerutilsset_pingrole_heists(self, ctx: commands.Context, role: discord.Role = None):
         """
         Set or remove the heist ping role.
         
@@ -216,8 +216,8 @@ class ManagerUtils(commands.Cog):
         These are the log channels where the giveaway, event or heist ping command is used.
         """
         
-    @managerutilsset_logchannel.command(name="glogchan")
-    async def managerutilsset_logchannel_glogchan(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_logchannel.command(name="giveaways", aliases=["giveaway", "gaw"])
+    async def managerutilsset_logchannel_giveaways(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Set or remove the giveaway log channel.
         
@@ -235,8 +235,8 @@ class ManagerUtils(commands.Cog):
         await self.config.guild(ctx.guild).giveaway_log_channel_id.set(channel.id)
         return await ctx.send(f"Successfully set {channel.mention} as the giveaway log channel.")
     
-    @managerutilsset_logchannel.command(name="elogchan")
-    async def managerutilsset_logchannel_elogchan(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_logchannel.command(name="events", aliases=["event"])
+    async def managerutilsset_logchannel_events(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Set or remove the event log channel.
         
@@ -254,8 +254,8 @@ class ManagerUtils(commands.Cog):
         await self.config.guild(ctx.guild).event_log_channel_id.set(channel.id)
         return await ctx.send(f"Successfully set {channel.mention} as the event log channel.")
     
-    @managerutilsset_logchannel.command(name="hlogchan")
-    async def managerutilsset_logchannel_hlogchan(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_logchannel.command(name="heists", aliases=["heist"])
+    async def managerutilsset_logchannel_heists(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Set or remove the heist log channel.
         
@@ -281,20 +281,20 @@ class ManagerUtils(commands.Cog):
         These are the channels for giveaway, event or heist announcement channel.
         """
     
-    @managerutilsset_announcechannel.group(name="gchan")
-    async def managerutilsset_announcechannel_gchan(self, ctx):
+    @managerutilsset_announcechannel.group(name="giveaways", aliases=["giveaway", "gaw"])
+    async def managerutilsset_announcechannel_giveaways(self, ctx):
         """
         Add or remove a giveaway announcements channel.
         
         These channels are required to run the `[p]gping` command.
         """
         
-    @managerutilsset_announcechannel_gchan.command(name="add")
-    async def managerutilsset_announcechannel_gchan_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_announcechannel_giveaways.command(name="add")
+    async def managerutilsset_announcechannel_giveaways_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Add a channel to the list of giveaway announcements channel.
         
-        Use `[p]seset announcechan gchan remove` to remove a channel from the list of giveaway announcement channel.
+        Use `[p]seset announcechan giveaways remove` to remove a channel from the list of giveaway announcement channel.
         """
         if channel.id in await self.config.guild(ctx.guild).giveaway_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of giveaway announcement channel.")
@@ -303,12 +303,12 @@ class ManagerUtils(commands.Cog):
             gc.append(channel.id)
         return await ctx.send(f"Successfully added {channel.mention} in the list of giveaway announcement channel.")
     
-    @managerutilsset_announcechannel_gchan.command(name="remove")
-    async def managerutilsset_announcechannel_gchan_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_announcechannel_giveaways.command(name="remove")
+    async def managerutilsset_announcechannel_giveaways_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Remove a channel from the list of giveaway announcements channel.
         
-        Use `[p]seset announcechan gchan add` to add a channel in the list of giveaway announcement channel.
+        Use `[p]seset announcechan giveaways add` to add a channel in the list of giveaway announcement channel.
         """
         if channel.id not in await self.config.guild(ctx.guild).giveaway_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of giveaway announcement channel.")
@@ -318,8 +318,8 @@ class ManagerUtils(commands.Cog):
             gc.pop(index)
         return await ctx.send(f"Successfully removed {channel.mention} from the list of giveaway announcement channel.")
     
-    @managerutilsset_announcechannel_gchan.command(name="clear")
-    async def managerutilsset_announcechannel_gchan_clear(self, ctx):
+    @managerutilsset_announcechannel_giveaways.command(name="clear")
+    async def managerutilsset_announcechannel_giveaways_clear(self, ctx):
         """
         Clear the list of giveaway announcement channel.
         
@@ -340,20 +340,20 @@ class ManagerUtils(commands.Cog):
         await self.config.guild(ctx.guild).giveaway_announcement_channel_ids.clear()
         return await ctx.send("Successfully cleared the list of giveaway announcement channel.")
     
-    @managerutilsset_announcechannel.group(name="echan")
-    async def managerutilsset_announcechannel_echan(self, ctx):
+    @managerutilsset_announcechannel.group(name="events", aliases=["event"])
+    async def managerutilsset_announcechannel_events(self, ctx):
         """
         Add or remove a event announcements channel.
         
         These channels are required to run the `[p]eping` command.
         """
         
-    @managerutilsset_announcechannel_echan.command(name="add")
-    async def managerutilsset_announcechannel_echan_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_announcechannel_events.command(name="add")
+    async def managerutilsset_announcechannel_events_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Add a channel to the list of event announcements channel.
         
-        Use `[p]seset announcechan echan remove` to remove a channel from the list of event announcement channel.
+        Use `[p]seset announcechan events remove` to remove a channel from the list of event announcement channel.
         """
         if channel.id in await self.config.guild(ctx.guild).event_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of event announcement channel.")
@@ -362,12 +362,12 @@ class ManagerUtils(commands.Cog):
             ec.append(channel.id)
         return await ctx.send(f"Successfully added {channel.mention} in the list of event announcement channel.")
     
-    @managerutilsset_announcechannel_echan.command(name="remove")
-    async def managerutilsset_announcechannel_echan_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_announcechannel_events.command(name="remove")
+    async def managerutilsset_announcechannel_events_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Remove a channel from the list of event announcements channel.
         
-        Use `[p]seset announcechan echan add` to add a channel in the list of event announcement channel.
+        Use `[p]seset announcechan events add` to add a channel in the list of event announcement channel.
         """
         if channel.id not in await self.config.guild(ctx.guild).event_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of event announcement channel.")
@@ -377,8 +377,8 @@ class ManagerUtils(commands.Cog):
             ec.pop(index)
         return await ctx.send(f"Successfully removed {channel.mention} from the list of event announcement channel.")
     
-    @managerutilsset_announcechannel_echan.command(name="clear")
-    async def managerutilsset_announcechannel_echan_clear(self, ctx):
+    @managerutilsset_announcechannel_events.command(name="clear")
+    async def managerutilsset_announcechannel_events_clear(self, ctx):
         """
         Clear the list of event announcement channel.
         
@@ -399,7 +399,7 @@ class ManagerUtils(commands.Cog):
         await self.config.guild(ctx.guild).event_announcement_channel_ids.clear()
         return await ctx.send("Successfully cleared the list of event announcement channel.")
     
-    @managerutilsset_announcechannel.group(name="hchan")
+    @managerutilsset_announcechannel.group(name="heists", aliases=["heist"])
     async def managerutilsset_announcechannel_hchan(self, ctx):
         """
         Add or remove a heist announcements channel.
@@ -407,12 +407,12 @@ class ManagerUtils(commands.Cog):
         These channels are required to run the `[p]hping` command.
         """
         
-    @managerutilsset_announcechannel_hchan.command(name="add")
-    async def managerutilsset_announcechannel_hchan_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_announcechannel_heists.command(name="add")
+    async def managerutilsset_announcechannel_heists_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Add a channel to the list of heist announcements channel.
         
-        Use `[p]seset announcechan hchan remove` to remove a channel from the list of heist announcement channel.
+        Use `[p]seset announcechan heists remove` to remove a channel from the list of heist announcement channel.
         """
         if channel.id in await self.config.guild(ctx.guild).heist_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of heist announcement channel.")
@@ -421,12 +421,12 @@ class ManagerUtils(commands.Cog):
             hc.append(channel.id)
         return await ctx.send(f"Successfully added {channel.mention} in the list of heist announcement channel.")
     
-    @managerutilsset_announcechannel_hchan.command(name="remove")
-    async def managerutilsset_announcechannel_hchan_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    @managerutilsset_announcechannel_heists.command(name="remove")
+    async def managerutilsset_announcechannel_heists_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """
         Remove a channel from the list of heist announcements channel.
         
-        Use `[p]seset announcechan echan add` to add a channel in the list of heist announcement channel.
+        Use `[p]seset announcechan heists add` to add a channel in the list of heist announcement channel.
         """
         if channel.id not in await self.config.guild(ctx.guild).heist_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of heist announcement channel.")
@@ -436,8 +436,8 @@ class ManagerUtils(commands.Cog):
             hc.pop(index)
         return await ctx.send(f"Successfully removed {channel.mention} from the list of heist announcement channel.")
     
-    @managerutilsset_announcechannel_hchan.command(name="clear")
-    async def managerutilsset_announcechannel_hchan_clear(self, ctx):
+    @managerutilsset_announcechannel_heists.command(name="clear")
+    async def managerutilsset_announcechannel_heists_clear(self, ctx):
         """
         Clear the list of heist announcement channel.
         
