@@ -51,7 +51,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -577,7 +577,7 @@ class ManagerUtils(commands.Cog):
     @commands.bot_has_permissions(embed_links=True)
     async def managerutilshelp(self, ctx):
         """
-        Know how to use the server events commands.
+        Know how to use the manager utils commands.
         
         Available commands:
         `[p]giveawayping
