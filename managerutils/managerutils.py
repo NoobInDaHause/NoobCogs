@@ -50,7 +50,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.1.3"
+    __version__ = "1.1.4"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -687,6 +687,7 @@ class ManagerUtils(commands.Cog):
         
         See `[p]muhelp` to know how to run the commands.
         Split arguments with `|`.
+        Requires set Giveaway Manager role to use this command.
         """
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = await self.config.guild(ctx.guild).giveaway_announcement_channel_ids()
@@ -737,7 +738,7 @@ class ManagerUtils(commands.Cog):
         
         if not gpingrole:
             try:
-                glog = await ctx.send(embed=gembed)
+                glog = await ctx.send(content=f"No giveaway ping role set. Use `{ctx.prefix}muset pingrole grole` to set one.", embed=gembed)
             except Exception:
                 return await ctx.author.send("It appears that I not have permission to send a message from that channel.")
         
@@ -788,6 +789,7 @@ class ManagerUtils(commands.Cog):
         
         See `[p]muhelp` to know how to run the commands.
         Split arguments with `|`.
+        Requires set Event Manager to use this command.
         """
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = await self.config.guild(ctx.guild).event_announcement_channel_ids()
@@ -843,7 +845,7 @@ class ManagerUtils(commands.Cog):
         
         if not epingrole:
             try:
-                elog = await ctx.send(embed=eembed)
+                elog = await ctx.send(content=f"No event ping role set. Use `{ctx.prefix}muset pingrole erole` to set one.", embed=eembed)
             except Exception:
                 return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
         
@@ -894,6 +896,7 @@ class ManagerUtils(commands.Cog):
         
         See `[p]muhelp` to know how to run the commands.
         Split arguments with `|`.
+        Requires set Heist Manager role to use this command.
         """
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = await self.config.guild(ctx.guild).heist_announcement_channel_ids()
@@ -949,7 +952,7 @@ class ManagerUtils(commands.Cog):
         
         if not hpingrole:
             try:
-                hlog = await ctx.send(embed=hembed)
+                hlog = await ctx.send(content=f"No heist ping role set. Use `{ctx.prefix}muset pingrole hrole` to set one.", embed=hembed)
             except Exception:
                 return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
         
