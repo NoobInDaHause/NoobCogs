@@ -50,7 +50,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -907,7 +907,7 @@ class ManagerUtils(commands.Cog):
             return await ctx.send("You do not have permission to run this command.")
         
         if not authorizedchans:
-            return await ctx.send("It appears there are no authorized heistt announcement channels. Ask an admin to add one.")
+            return await ctx.send("It appears there are no authorized heist announcement channels. Ask an admin to add one.")
         
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
@@ -931,8 +931,8 @@ class ManagerUtils(commands.Cog):
             with contextlib.suppress(Exception):
                 await ctx.tick()
                 
-        hlogchan = ctx.guild.get_channel(settings["event_log_channel_id"])
-        hpingrole = ctx.guild.get_role(settings["event_ping_role_id"])
+        hlogchan = ctx.guild.get_channel(settings["heist_log_channel_id"])
+        hpingrole = ctx.guild.get_role(settings["heist_ping_role_id"])
         
         hembed = discord.Embed(
             title="Server Heist Time!",
