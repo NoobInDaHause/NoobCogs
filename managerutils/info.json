@@ -1,6 +1,6 @@
 {
     "name": "ManagerUtils",
-    "short": "Some utility commands that are useful for server managers.",
+    "short": "Some utility commands that are useful for managers from servers.",
     "description": "Utility cog for server giveaway, event or heist managers.",
     "end_user_data_statement": "This cog does not store end user data.",
     "install_msg": "Thank you for installing ManagerUtils. Load the cog with `[p]load managerutils`.",

@@ -22,7 +22,7 @@ RequestType = Literal["discord_deleted_user", "owner", "user", "user_strict"]
 
 class ManagerUtils(commands.Cog):
     """
-    Some utility commands that are useful for server managers.
+    Some utility commands that are useful for managers from servers.
     
     Utility cog for server giveaway, event or heist managers.
     Formerly called serverevents.
@@ -50,7 +50,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.1.2"
+    __version__ = "1.1.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -944,7 +944,7 @@ class ManagerUtils(commands.Cog):
         hembed.add_field(name="Heist Sponsor:", value=sponsor.mention, inline=True)
         hembed.add_field(name="Amount:", value=heists[0], inline=True)
         hembed.add_field(name="Requirements:", value=heists[1], inline=False)
-        hembed.add_field(name="Checklist:", value="` - ` Have a life saver on your inventory.\n` - ` Withdraw at least **1** coin.\n` - ` Press the big green `JOIN HEIST` button when it starts.", inline=False)
+        hembed.add_field(name="Checklist:", value="` - ` Have a life saver on your inventory.\n` - ` Withdraw at least **1** coin.\n` - ` Press the big green `JOIN HEIST` button.", inline=False)
         hembed.add_field(name="Message:", value=heists[2], inline=False)
         
         if not hpingrole:

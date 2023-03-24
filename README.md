@@ -17,8 +17,8 @@ some of the cogs are badly coded and buggy so handle these cogs with care.
 
 ## Available cogs
 
-| Name            |  Version  | Description                                                |
-| --------------- | --------- | ---------------------------------------------------------- |
-| ManagerUtils    |  v1.1.2   | Some utility commands that are useful for server managers. |
-| ServerDonations |  v1.2.15  | Donate bot currencies or other things to servers.          |
-| SplitOrSteal    |  v2.1.20  | A fun split or steal game.                                 |
+| Name            |  Version  | Description                                                      |
+| --------------- | --------- | ---------------------------------------------------------------- |
+| ManagerUtils    |  v1.1.3   | Some utility commands that are useful for managers from servers. |
+| ServerDonations |  v1.2.15  | Donate bot currencies or other things to servers.                |
+| SplitOrSteal    |  v2.1.20  | A fun split or steal game.                                       |
