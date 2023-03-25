@@ -102,7 +102,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.3.0"
+    __version__ = "1.3.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -639,11 +639,11 @@ class ManagerUtils(commands.Cog):
         """
         settings = await self.config.guild(ctx.guild).all()
 
-        gmanrole = humanize_list([f'<#{role}>' for role in settings["giveaway_manager_ids"]]) if settings["giveaway_manager_ids"] else "No giveaway managers set."
+        gmanrole = humanize_list([f'<@&{role}>' for role in settings["giveaway_manager_ids"]]) if settings["giveaway_manager_ids"] else "No giveaway managers set."
 
-        emanrole = humanize_list([f'<#{role}>' for role in settings["event_manager_ids"]]) if settings["event_manager_ids"] else "No event managers set."
+        emanrole = humanize_list([f'<@&{role}>' for role in settings["event_manager_ids"]]) if settings["event_manager_ids"] else "No event managers set."
 
-        hmanrole = humanize_list([f'<#{role}>' for role in settings["heist_manager_ids"]]) if settings["heist_manager_ids"] else "No heist managers set."
+        hmanrole = humanize_list([f'<@&{role}>' for role in settings["heist_manager_ids"]]) if settings["heist_manager_ids"] else "No heist managers set."
 
         gpingrole = ctx.guild.get_role(settings["giveaway_ping_role_id"])
         gpingrole = gpingrole.mention if gpingrole else "No giveaway ping role set."
