@@ -1,4 +1,5 @@
 from .splitorsteal import SplitOrSteal
 
 def setup(bot):
-    bot.add_cog(SplitOrSteal(bot))
+    n = SplitOrSteal(bot)
+    bot.add_cog(n)

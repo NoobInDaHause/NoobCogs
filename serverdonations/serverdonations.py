@@ -1,17 +1,21 @@
-import discord
 import asyncio
+import discord
 import logging
 
-from redbot.core import commands, Config
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, box
 try:
     from slashtags import menu
     from redbot.core.utils.menus import DEFAULT_CONTROLS
 except ModuleNotFoundError:
     from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+
+from redbot.core import commands, Config
+from redbot.core.bot import Red
+from redbot.core.utils.chat_formatting import humanize_list, box
 from redbot.core.utils.predicates import MessagePredicate
 
+from typing import Literal
+
+RequestType = Literal["discord_deleted_user", "owner", "user", "user_strict"]
 
 class ServerDonations(commands.Cog):
     """
@@ -35,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.15"
+    __version__ = "1.2.16"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -45,9 +49,11 @@ class ServerDonations(commands.Cog):
         pre_processed = super().format_help_for_context(ctx)
         return f"{pre_processed}\n\nCog Version: {self.__version__}\nCog Author: {humanize_list([f'{author}' for author in self.__author__])}"
     
-    async def red_delete_data_for_user(self, *, requester, user_id):
+    async def red_delete_data_for_user(
+        self, *, requester: RequestType, user_id: int
+    ) -> None:
         # This cog does not store any end user data whatsoever.
-        return
+        super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     async def send_to_set_channel(self, ctx: commands.Context, embed, chantype: str):
         """

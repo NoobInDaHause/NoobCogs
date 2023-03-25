@@ -100,9 +100,9 @@ class ManagerUtils(commands.Cog):
             }
         }
         self.config.register_guild(**default_guild_settings)
-        self.log = logging.getLogger("red.WintersCogs.managerutils")
+        self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "1.3.1"
+    __version__ = "1.3.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -732,7 +732,6 @@ class ManagerUtils(commands.Cog):
         return await ctx.send("Successfully resetted the guild's settings.")
             
     @commands.command(name="managerutilshelp", aliases=["muhelp"])
-    @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def managerutilshelp(self, ctx):
         """

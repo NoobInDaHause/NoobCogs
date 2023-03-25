@@ -3,16 +3,20 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, Config
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list
 try:
     from slashtags import menu
     from redbot.core.utils.menus import DEFAULT_CONTROLS
 except ModuleNotFoundError:
     from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core import commands, Config
+from redbot.core.bot import Red
+from redbot.core.utils.chat_formatting import humanize_list
 from redbot.core.utils.predicates import MessagePredicate
+
 from .sosgifs import *
+from typing import Literal
+
+RequestType = Literal["discord_deleted_user", "owner", "user", "user_strict"]
 
 class SplitOrSteal(commands.Cog):
     """
@@ -31,9 +35,9 @@ class SplitOrSteal(commands.Cog):
             "activechan": []
         }
         self.config.register_guild(**default_guild_settings)
-        self.log = logging.getLogger("red.WintersCogs.splitorsteal")
+        self.log = logging.getLogger("red.WintersCogs.SplitOrSteal")
         
-    __version__ = "2.1.20"
+    __version__ = "2.1.21"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -43,9 +47,11 @@ class SplitOrSteal(commands.Cog):
         pre_processed = super().format_help_for_context(ctx)
         return f"{pre_processed}\n\nCog Version: {self.__version__}\nCog Author: {humanize_list([f'{auth}' for auth in self.__author__])}"
     
-    async def red_delete_data_for_user(self, *, requester, user_id):
+    async def red_delete_data_for_user(
+        self, *, requester: RequestType, user_id: int
+    ) -> None:
         # This cog does not store any end user data whatsoever.
-        return
+        super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     @commands.group(name="splitorstealset", aliases=["sosset"])
     @commands.guild_only()
@@ -57,7 +63,7 @@ class SplitOrSteal(commands.Cog):
         """
     
     @splitorstealset.command(name="clearactive")
-    async def splitorstealset_clearactives(
+    async def splitorstealset_clearactive(
         self,
         ctx: commands.Context,
         channel: discord.TextChannel
@@ -107,7 +113,7 @@ class SplitOrSteal(commands.Cog):
         await ctx.send(f"Manager only setting for splitorsteal has been {status}.")
     
     @splitorstealset.command(name="showsetting", aliases=["ss", "showset", "showsettings"])
-    async def splitorstealset_showsettings(self, ctx):
+    async def splitorstealset_showsetting(self, ctx):
         """
         See the settings of SplitOrSteal.
         """
@@ -135,7 +141,7 @@ class SplitOrSteal(commands.Cog):
         """
     
     @splitorstealset_manager.command(name="add")
-    async def splitorstealset_manager_set(
+    async def splitorstealset_manager_add(
         self,
         ctx: commands.Context,
         role: discord.Role
