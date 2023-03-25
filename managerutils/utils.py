@@ -3,7 +3,7 @@ from redbot.core.utils import mod
 
 def is_gman():
     async def predicate(ctx):
-        gman = await ctx.cog.config.guild(ctx.guild).giveaway_manager_id()
+        gmans = await ctx.cog.config.guild(ctx.guild).giveaway_manager_ids()
         
         if not ctx.guild:
             return False
@@ -14,19 +14,18 @@ def is_gman():
         elif ctx.author.guild_permissions.administrator:
             return True
         
-        elif not gman:
+        elif not gmans:
             return False
         
-        elif gman:
-            role = ctx.guild.get_role(gman)
-            if role in ctx.author.roles:
+        elif gmans:
+            if any(role.id in gmans for role in ctx.author.roles):
                 return True
 
     return commands.check(predicate)
 
 def is_eman():
     async def predicate(ctx):
-        eman = await ctx.cog.config.guild(ctx.guild).event_manager_id()
+        emans = await ctx.cog.config.guild(ctx.guild).event_manager_ids()
         
         if not ctx.guild:
             return False
@@ -37,19 +36,18 @@ def is_eman():
         elif ctx.author.guild_permissions.administrator:
             return True
         
-        elif not eman:
+        elif not emans:
             return False
         
-        elif eman:
-            role = ctx.guild.get_role(eman)
-            if role in ctx.author.roles:
+        elif emans:
+            if any(role.id in emans for role in ctx.author.roles):
                 return True
 
     return commands.check(predicate)
 
 def is_hman():
     async def predicate(ctx):
-        hman = await ctx.cog.config.guild(ctx.guild).heist_manager_id()
+        hmans = await ctx.cog.config.guild(ctx.guild).heist_manager_ids()
         
         if not ctx.guild:
             return False
@@ -60,12 +58,11 @@ def is_hman():
         elif ctx.author.guild_permissions.administrator:
             return True
         
-        elif not hman:
+        elif not hmans:
             return False
         
-        elif hman:
-            role = ctx.guild.get_role(hman)
-            if role in ctx.author.roles:
+        elif hmans:
+            if any(role.id in hmans for role in ctx.author.roles):
                 return True
 
     return commands.check(predicate)

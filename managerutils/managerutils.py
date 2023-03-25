@@ -35,9 +35,9 @@ class ManagerUtils(commands.Cog):
         self.config = Config.get_conf(self, identifier=3454365754648, force_registration=True)
         default_guild_settings = {
             "auto_delete_commands": False,
-            "giveaway_manager_id": None,
-            "event_manager_id": None,
-            "heist_manager_id": None,
+            "giveaway_manager_ids": [],
+            "event_manager_ids": [],
+            "heist_manager_ids": [],
             "giveaway_ping_role_id": None,
             "event_ping_role_id": None,
             "heist_ping_role_id": None,
@@ -47,11 +47,62 @@ class ManagerUtils(commands.Cog):
             "giveaway_announcement_channel_ids": [],
             "event_announcement_channel_ids": [],
             "heist_announcement_channel_ids": [],
+            "giveaway_embed": {
+                "title": None,
+                "colour": None,
+                "footer": None,
+                "footer_icon": None,
+                "description": None,
+            },
+            "event_embed": {
+                "title": None,
+                "colour": None,
+                "footer": None,
+                "footer_icon": None,
+                "thumbnail": None,
+                "field_1": None,
+                "field_2": None,
+                "field_3": None,
+                "field_4": None,
+                "field_5": None,
+                "field_value_1": None,
+                "field_value_2": None,
+                "field_value_3": None,
+                "field_value_4": None,
+                "field_value_5": None,
+                "field_inline_1": False,
+                "field_inline_2": True,
+                "field_inline_3": True,
+                "field_inline_4": False,
+                "field_inline_5": False,
+            },
+            "heist_embed": {
+                "title": None,
+                "colour": None,
+                "footer": None,
+                "footer_icon": None,
+                "thumbnail": None,
+                "field_1": None,
+                "field_2": None,
+                "field_3": None,
+                "field_4": None,
+                "field_5": None,
+                "field_value_1": None,
+                "field_value_2": None,
+                "field_value_3": None,
+                "field_value_4": None,
+                "field_value_5": None,
+                "field_inline_1": True,
+                "field_inline_2": True,
+                "field_inline_3": False,
+                "field_inline_4": False,
+                "field_inline_5": False,
+            }
         }
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.managerutils")
         
-    __version__ = "1.2.3"
+    __version__ = "1.3.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -86,62 +137,173 @@ class ManagerUtils(commands.Cog):
         These roles will have access to the manager only commands.
         """
         
-    @managerutilsset_manager.command(name="giveaways", aliases=["giveaway", "gaw"])
-    async def managerutilsset_manager_giveaways(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_manager.group(name="giveaways", aliases=["giveaway", "gaw"])
+    async def managerutilsset_manager_giveaways(self, ctx):
         """
-        Set or remove the giveaway manager role.
-        
-        Pass without role to remove the current set one.
+        Add or remove a role in the list of giveaway manager role.
         """
-        if not role:
-            if not await self.config.guild(ctx.guild).giveaway_manager_id():
-                return await ctx.send("It appears you do not have a giveaway manager role set.")
-            await self.config.guild(ctx.guild).giveaway_manager_id.clear()
-            return await ctx.send("The set giveaway manager role has been removed.")
-        
-        if role.id == await self.config.guild(ctx.guild).giveaway_manager_id():
-            return await ctx.send("That role is already the set giveaway manager role.")
-        
-        await self.config.guild(ctx.guild).giveaway_manager_id.set(role.id)
-        return await ctx.send(f"Successfully set `@{role.name}` as the giveaway manager role.")
     
-    @managerutilsset_manager.command(name="events", aliases=["event"])
-    async def managerutilsset_manager_events(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_manager_giveaways.command(name="add")
+    async def managerutilsset_manager_giveaways_add(self, ctx: commands.Context, role: discord.Role = None):
         """
-        Set or remove the event manager role.
-        
-        Pass without role to remove the current set one.
+        Add a role to the list of giveaway managers.
         """
-        if not role:
-            if not await self.config.guild(ctx.guild).event_manager_id():
-                return await ctx.send("It appears you do not have an event manager role set.")
-            await self.config.guild(ctx.guild).event_manager_id.clear()
-            return await ctx.send("The set event manager role has been removed.")
+        if role.id in await self.config.guild(ctx.guild).giveaway_manager_ids():
+            return await ctx.send("That role is already in the list of giveaway managers.")
         
-        if role.id == await self.config.guild(ctx.guild).event_manager_id():
-            return await ctx.send("That role is already the set event manager role.")
-        
-        await self.config.guild(ctx.guild).event_manager_id.set(role.id)
-        return await ctx.send(f"Successfully set `@{role.name}` as the event manager role.")
+        async with self.config.guild(ctx.guild).giveaway_manager_ids() as gmans:
+            gmans.append(role.id)
+        await ctx.send(f"Successfully added `@{role.name}` in the list of giveaway manager roles.")
     
-    @managerutilsset_manager.command(name="heists", aliases=["heist"])
-    async def managerutilsset_manager_heists(self, ctx: commands.Context, role: discord.Role = None):
+    @managerutilsset_manager_giveaways.command(name="remove")
+    async def managerutilsset_manager_giveaways_remove(self, ctx: commands.Context, role: discord.Role = None):
         """
-        Set or remove the heist manager role.
-        
-        Pass without role to remove the current set one.
+        Remove a role from the list of giveaway managers.
         """
-        if not role:
-            if not await self.config.guild(ctx.guild).heist_manager_id():
-                return await ctx.send("It appears you do not have a heist manager role set.")
-            await self.config.guild(ctx.guild).heist_manager_id.clear()
-            return await ctx.send("The set heist manager role has been removed.")
+        if not await self.config.guild(ctx.guild).giveaway_manager_ids():
+            return await ctx.send("It appears there are no roles from the list of giveaway managers.")
         
-        if role.id == await self.config.guild(ctx.guild).heist_manager_id():
-            return await ctx.send("That role is already the set heist manager role.")
+        if role.id not in await self.config.guild(ctx.guild).giveaway_manager_ids():
+            return await ctx.send("It appears that role is not in the list of giveaway managers.")
         
-        await self.config.guild(ctx.guild).heist_manager_id.set(role.id)
-        return await ctx.send(f"Successfully set `@{role.name}` as the heist manager role.")
+        async with self.config.guild(ctx.guild).giveaway_manager_ids() as gmans:
+            index = gmans.index(role.id)
+            gmans.pop(index)
+        await ctx.send(f"Successfully removed `@{role.name}` from the list of giveaway manager roles.")
+    
+    @managerutilsset_manager_giveaways.command(name="clear")
+    async def managerutilsset_manager_giveaways_clear(self, ctx):
+        """
+        Clear the list of giveaway manager roles.
+        
+        If you are too lazy to remove each role one by one from the list of giveaway managers, then say no more cause this command is for you.
+        There is an alternative command `[p]muset reset` but that command resets the whole guild's settings.
+        """
+        await ctx.send("Are you sure you want to clear the list of giveaway managers? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond. Cancelling.")
+
+        if not pred.result:
+            return await ctx.send("Alright not doing that then.")
+        
+        await self.config.guild(ctx.guild).giveaway_manager_ids.clear()
+        await ctx.send("Successfully cleared the list of giveaway manager roles.")
+    
+    @managerutilsset_manager.group(name="events", aliases=["event"])
+    async def managerutilsset_manager_events(self, ctx):
+        """
+        Add or remove a role from the list of event manager roles.
+        """
+        
+    @managerutilsset_manager_events.command(name="add")
+    async def managerutilsset_manager_events_add(self, ctx: commands.Context, role: discord.Role = None):
+        """
+        Add a role to the list of event managers.
+        """
+        if role.id in await self.config.guild(ctx.guild).event_manager_ids():
+            return await ctx.send("That role is already in the list of event managers.")
+        
+        async with self.config.guild(ctx.guild).event_manager_ids() as emans:
+            emans.append(role.id)
+        await ctx.send(f"Successfully added `@{role.name}` in the list of event manager roles.")
+    
+    @managerutilsset_manager_events.command(name="remove")
+    async def managerutilsset_manager_events_remove(self, ctx: commands.Context, role: discord.Role = None):
+        """
+        Remove a role from the list of event managers.
+        """
+        if not await self.config.guild(ctx.guild).event_manager_ids():
+            return await ctx.send("It appears there are no roles from the list of event managers.")
+        
+        if role.id not in await self.config.guild(ctx.guild).event_manager_ids():
+            return await ctx.send("It appears that role is not in the list of event managers.")
+        
+        async with self.config.guild(ctx.guild).event_manager_ids() as emans:
+            index = emans.index(role.id)
+            emans.pop(index)
+        await ctx.send(f"Successfully removed `@{role.name}` from the list of giveaway manager roles.")
+    
+    @managerutilsset_manager_events.command(name="clear")
+    async def managerutilsset_manager_events_clear(self, ctx):
+        """
+        Clear the list of event manager roles.
+        
+        If you are too lazy to remove each role one by one from the list of event managers, then say no more cause this command is for you.
+        There is an alternative command `[p]muset reset` but that command resets the whole guild's settings.
+        """
+        await ctx.send("Are you sure you want to clear the list of event managers? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond. Cancelling.")
+
+        if not pred.result:
+            return await ctx.send("Alright not doing that then.")
+        
+        await self.config.guild(ctx.guild).event_manager_ids.clear()
+        await ctx.send("Successfully cleared the list of event manager roles.")
+    
+    @managerutilsset_manager.group(name="heists", aliases=["heist"])
+    async def managerutilsset_manager_heists(self, ctx):
+        """
+        Add or remove a role from the list of heist manager role.
+        """
+        
+    @managerutilsset_manager_heists.command(name="add")
+    async def managerutilsset_manager_heists_add(self, ctx: commands.Context, role: discord.Role = None):
+        """
+        Add a role to the list of heist managers.
+        """
+        if role.id in await self.config.guild(ctx.guild).heist_manager_ids():
+            return await ctx.send("That role is already in the list of heist managers.")
+        
+        async with self.config.guild(ctx.guild).heist_manager_ids() as hmans:
+            hmans.append(role.id)
+        await ctx.send(f"Successfully added `@{role.name}` in the list of heist manager roles.")
+    
+    @managerutilsset_manager_heists.command(name="remove")
+    async def managerutilsset_manager_heists_remove(self, ctx: commands.Context, role: discord.Role = None):
+        """
+        Remove a role from the list of heist managers.
+        """
+        if not await self.config.guild(ctx.guild).heist_manager_ids():
+            return await ctx.send("It appears there are no roles from the list of heist managers.")
+        
+        if role.id not in await self.config.guild(ctx.guild).heist_manager_ids():
+            return await ctx.send("It appears that role is not in the list of heist managers.")
+        
+        async with self.config.guild(ctx.guild).heist_manager_ids() as hmans:
+            index = hmans.index(role.id)
+            hmans.pop(index)
+        await ctx.send(f"Successfully removed `@{role.name}` from the list of heist manager roles.")
+    
+    @managerutilsset_manager_heists.command(name="clear")
+    async def managerutilsset_manager_heists_clear(self, ctx):
+        """
+        Clear the list of heist manager roles.
+        
+        If you are too lazy to remove each role one by one from the list of heist managers, then say no more cause this command is for you.
+        There is an alternative command `[p]muset reset` but that command resets the whole guild's settings.
+        """
+        await ctx.send("Are you sure you want to clear the list of heist managers? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond. Cancelling.")
+
+        if not pred.result:
+            return await ctx.send("Alright not doing that then.")
+        
+        await self.config.guild(ctx.guild).heist_manager_ids.clear()
+        await ctx.send("Successfully cleared the list of heist manager roles.")
     
     @managerutilsset.group(name="pingrole", aliases=["prole"])
     async def managerutilsset_pingrole(self, ctx):
@@ -294,7 +456,7 @@ class ManagerUtils(commands.Cog):
         """
         Add a channel to the list of giveaway announcements channel.
         
-        Use `[p]seset announcechan giveaways remove` to remove a channel from the list of giveaway announcement channel.
+        Use `[p]muset announcechan giveaways remove` to remove a channel from the list of giveaway announcement channel.
         """
         if channel.id in await self.config.guild(ctx.guild).giveaway_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of giveaway announcement channel.")
@@ -308,7 +470,7 @@ class ManagerUtils(commands.Cog):
         """
         Remove a channel from the list of giveaway announcements channel.
         
-        Use `[p]seset announcechan giveaways add` to add a channel in the list of giveaway announcement channel.
+        Use `[p]muset announcechan giveaways add` to add a channel in the list of giveaway announcement channel.
         """
         if channel.id not in await self.config.guild(ctx.guild).giveaway_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of giveaway announcement channel.")
@@ -324,7 +486,7 @@ class ManagerUtils(commands.Cog):
         Clear the list of giveaway announcement channel.
         
         If you are too lazy to remove each channel one by one from the list of giveaway announcement channel, then say no more cause this command is for you.
-        There is an alternative command `[p]seset reset` but that command resets the whole guild's settings.
+        There is an alternative command `[p]muset reset` but that command resets the whole guild's settings.
         """
         await ctx.send("Are you sure you want to clear the list of giveaway announcement channel? (`yes`/`no`)")
 
@@ -353,7 +515,7 @@ class ManagerUtils(commands.Cog):
         """
         Add a channel to the list of event announcements channel.
         
-        Use `[p]seset announcechan events remove` to remove a channel from the list of event announcement channel.
+        Use `[p]muset announcechan events remove` to remove a channel from the list of event announcement channel.
         """
         if channel.id in await self.config.guild(ctx.guild).event_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of event announcement channel.")
@@ -367,7 +529,7 @@ class ManagerUtils(commands.Cog):
         """
         Remove a channel from the list of event announcements channel.
         
-        Use `[p]seset announcechan events add` to add a channel in the list of event announcement channel.
+        Use `[p]muset announcechan events add` to add a channel in the list of event announcement channel.
         """
         if channel.id not in await self.config.guild(ctx.guild).event_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of event announcement channel.")
@@ -383,7 +545,7 @@ class ManagerUtils(commands.Cog):
         Clear the list of event announcement channel.
         
         If you are too lazy to remove each channel one by one from the list of event announcement channel, then say no more cause this command is for you.
-        There is an alternative command `[p]seset reset` but that command resets the whole guild's settings.
+        There is an alternative command `[p]muset reset` but that command resets the whole guild's settings.
         """
         await ctx.send("Are you sure you want to clear the list of event announcement channel? (`yes`/`no`)")
 
@@ -412,7 +574,7 @@ class ManagerUtils(commands.Cog):
         """
         Add a channel to the list of heist announcements channel.
         
-        Use `[p]seset announcechan heists remove` to remove a channel from the list of heist announcement channel.
+        Use `[p]muset announcechan heists remove` to remove a channel from the list of heist announcement channel.
         """
         if channel.id in await self.config.guild(ctx.guild).heist_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of heist announcement channel.")
@@ -426,7 +588,7 @@ class ManagerUtils(commands.Cog):
         """
         Remove a channel from the list of heist announcements channel.
         
-        Use `[p]seset announcechan heists add` to add a channel in the list of heist announcement channel.
+        Use `[p]muset announcechan heists add` to add a channel in the list of heist announcement channel.
         """
         if channel.id not in await self.config.guild(ctx.guild).heist_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of heist announcement channel.")
@@ -442,7 +604,7 @@ class ManagerUtils(commands.Cog):
         Clear the list of heist announcement channel.
         
         If you are too lazy to remove each channel one by one from the list of heist announcement channel, then say no more cause this command is for you.
-        There is an alternative command `[p]seset reset` but that command resets the whole guild's settings.
+        There is an alternative command `[p]muset reset` but that command resets the whole guild's settings.
         """
         await ctx.send("Are you sure you want to clear the list of heist announcement channel? (`yes`/`no`)")
 
@@ -477,14 +639,11 @@ class ManagerUtils(commands.Cog):
         """
         settings = await self.config.guild(ctx.guild).all()
 
-        gmanrole = ctx.guild.get_role(settings["giveaway_manager_id"])
-        gmanrole = gmanrole.mention if gmanrole else "No giveaway manager role set."
+        gmanrole = humanize_list([f'<#{role}>' for role in settings["giveaway_manager_ids"]]) if settings["giveaway_manager_ids"] else "No giveaway managers set."
 
-        emanrole = ctx.guild.get_role(settings["event_manager_id"])
-        emanrole = emanrole.mention if emanrole else "No event manager role set."
+        emanrole = humanize_list([f'<#{role}>' for role in settings["event_manager_ids"]]) if settings["event_manager_ids"] else "No event managers set."
 
-        hmanrole = ctx.guild.get_role(settings["heist_manager_id"])
-        hmanrole = hmanrole.mention if hmanrole else "No heist manager role set."
+        hmanrole = humanize_list([f'<#{role}>' for role in settings["heist_manager_ids"]]) if settings["heist_manager_ids"] else "No heist managers set."
 
         gpingrole = ctx.guild.get_role(settings["giveaway_ping_role_id"])
         gpingrole = gpingrole.mention if gpingrole else "No giveaway ping role set."
