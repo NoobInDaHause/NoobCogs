@@ -8,6 +8,8 @@ from redbot.core.bot import Red
 class URLButton:
     """
     Send a message with a URL button, with pure dpy 1.7.
+
+    Credits to honkertonken for this code.
     """
     def __init__(self, label: str, url: str) -> None:
         if not isinstance(label, str):

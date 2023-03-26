@@ -1,4 +1,5 @@
 # WintersCogs
+
 some random cogs for red made by me a noob at python.
 
 some of the cogs are badly coded and buggy so handle these cogs with care.
@@ -19,6 +20,10 @@ some of the cogs are badly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| ManagerUtils    |  v1.3.2   | Some utility commands that are useful for managers from servers. |
-| ServerDonations |  v1.2.16  | Donate bot currencies or other things to servers.                |
-| SplitOrSteal    |  v2.1.21  | A fun split or steal game.                                       |
+| ManagerUtils    |  v1.3.3   | Some utility commands that are useful for managers from servers. |
+| ServerDonations |  v1.2.17  | Donate bot currencies or other things to servers.                |
+| SplitOrSteal    |  v2.1.22  | A fun split or steal game.                                       |
+
+## Credits
+
+Special thanks to the authors of some of the codes that I got from, all credits goes to them.

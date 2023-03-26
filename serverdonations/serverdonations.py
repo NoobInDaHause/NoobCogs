@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.16"
+    __version__ = "1.2.17"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -52,7 +52,7 @@ class ServerDonations(commands.Cog):
     async def red_delete_data_for_user(
         self, *, requester: RequestType, user_id: int
     ) -> None:
-        # This cog does not store any end user data whatsoever.
+        # This cog does not store any end user data whatsoever. Also thanks sravan!
         super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     async def send_to_set_channel(self, ctx: commands.Context, embed, chantype: str):
