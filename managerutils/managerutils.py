@@ -102,7 +102,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "1.3.3"
+    __version__ = "1.3.4"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -148,6 +148,9 @@ class ManagerUtils(commands.Cog):
         """
         Add a role to the list of giveaway managers.
         """
+        if not role:
+            return await ctx.send_help()
+        
         if role.id in await self.config.guild(ctx.guild).giveaway_manager_ids():
             return await ctx.send("That role is already in the list of giveaway managers.")
         
@@ -160,6 +163,9 @@ class ManagerUtils(commands.Cog):
         """
         Remove a role from the list of giveaway managers.
         """
+        if not role:
+            return await ctx.send_help()
+        
         if not await self.config.guild(ctx.guild).giveaway_manager_ids():
             return await ctx.send("It appears there are no roles from the list of giveaway managers.")
         
@@ -204,6 +210,9 @@ class ManagerUtils(commands.Cog):
         """
         Add a role to the list of event managers.
         """
+        if not role:
+            return await ctx.send_help()
+        
         if role.id in await self.config.guild(ctx.guild).event_manager_ids():
             return await ctx.send("That role is already in the list of event managers.")
         
@@ -216,6 +225,9 @@ class ManagerUtils(commands.Cog):
         """
         Remove a role from the list of event managers.
         """
+        if not role:
+            return await ctx.send_help()
+        
         if not await self.config.guild(ctx.guild).event_manager_ids():
             return await ctx.send("It appears there are no roles from the list of event managers.")
         
@@ -260,6 +272,9 @@ class ManagerUtils(commands.Cog):
         """
         Add a role to the list of heist managers.
         """
+        if not role:
+            return await ctx.send_help()
+        
         if role.id in await self.config.guild(ctx.guild).heist_manager_ids():
             return await ctx.send("That role is already in the list of heist managers.")
         
@@ -272,6 +287,9 @@ class ManagerUtils(commands.Cog):
         """
         Remove a role from the list of heist managers.
         """
+        if not role:
+            return await ctx.send_help()
+        
         if not await self.config.guild(ctx.guild).heist_manager_ids():
             return await ctx.send("It appears there are no roles from the list of heist managers.")
         
@@ -341,7 +359,7 @@ class ManagerUtils(commands.Cog):
         """
         if not role:
             if not await self.config.guild(ctx.guild).event_ping_role_id():
-                return await ctx.send("It appears you do not have a event ping role set.")
+                return await ctx.send("It appears you do not have an event ping role set.")
             await self.config.guild(ctx.guild).event_ping_role_id.clear()
             return await ctx.send("The set event ping role has been removed.")
         
@@ -458,6 +476,9 @@ class ManagerUtils(commands.Cog):
         
         Use `[p]muset announcechan giveaways remove` to remove a channel from the list of giveaway announcement channel.
         """
+        if not channel:
+            return await ctx.send_help()
+        
         if channel.id in await self.config.guild(ctx.guild).giveaway_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of giveaway announcement channel.")
         
@@ -472,6 +493,9 @@ class ManagerUtils(commands.Cog):
         
         Use `[p]muset announcechan giveaways add` to add a channel in the list of giveaway announcement channel.
         """
+        if not channel:
+            return await ctx.send_help()
+        
         if channel.id not in await self.config.guild(ctx.guild).giveaway_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of giveaway announcement channel.")
         
@@ -517,6 +541,9 @@ class ManagerUtils(commands.Cog):
         
         Use `[p]muset announcechan events remove` to remove a channel from the list of event announcement channel.
         """
+        if not channel:
+            return await ctx.send_help()
+        
         if channel.id in await self.config.guild(ctx.guild).event_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of event announcement channel.")
         
@@ -531,6 +558,9 @@ class ManagerUtils(commands.Cog):
         
         Use `[p]muset announcechan events add` to add a channel in the list of event announcement channel.
         """
+        if not channel:
+            return await ctx.send_help()
+        
         if channel.id not in await self.config.guild(ctx.guild).event_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of event announcement channel.")
         
@@ -576,6 +606,9 @@ class ManagerUtils(commands.Cog):
         
         Use `[p]muset announcechan heists remove` to remove a channel from the list of heist announcement channel.
         """
+        if not channel:
+            return await ctx.send_help()
+        
         if channel.id in await self.config.guild(ctx.guild).heist_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of heist announcement channel.")
         
@@ -590,6 +623,9 @@ class ManagerUtils(commands.Cog):
         
         Use `[p]muset announcechan heists add` to add a channel in the list of heist announcement channel.
         """
+        if not channel:
+            return await ctx.send_help()
+        
         if channel.id not in await self.config.guild(ctx.guild).heist_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of heist announcement channel.")
         
