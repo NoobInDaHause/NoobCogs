@@ -20,7 +20,7 @@ some of the cogs are badly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| ManagerUtils    |  v1.3.5   | Some utility commands that are useful for managers from servers. |
+| ManagerUtils    |  v1.3.6   | Some utility commands that are useful for managers from servers. |
 | ServerDonations |  v1.2.17  | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v2.1.22  | A fun split or steal game.                                       |
 

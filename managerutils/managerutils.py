@@ -102,7 +102,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "1.3.5"
+    __version__ = "1.3.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -645,17 +645,23 @@ class ManagerUtils(commands.Cog):
 
         hmanrole = humanize_list([f'<@&{role}>' for role in settings["heist_manager_ids"]]) if settings["heist_manager_ids"] else "No heist managers set."
 
-        gpingrole = f"<@&{settings["giveaway_ping_role_id"]}>" if settings["giveaway_ping_role_id"] else "No giveaway ping role set."
+        groleid = settings["giveaway_ping_role_id"]
+        gpingrole = f"<@&{groleid}>" if groleid else "No giveaway ping role set."
 
-        epingrole = f"<@&{settings["event_ping_role_id"]}>" if settings["event_ping_role_id"] else "No event ping role set."
+        eroleid = settings["event_ping_role_id"]
+        epingrole = f"<@&{eroleid}>" if eroleid else "No event ping role set."
 
-        hpingrole = f"<@&{settings["heist_ping_role_id"]}>" if settings["heist_ping_role_id"] else "No heist ping role set."
+        hroleid = settings["heist_ping_role_id"]
+        hpingrole = f"<@&{hroleid}>" if hroleid else "No heist ping role set."
 
-        glogchan = f"<#{settings["giveaway_log_channel_id"]}>" if settings["giveaway_log_channel_id"] else "No giveaway log channel set."
+        glogid = settings["giveaway_log_channel_id"]
+        glogchan = f"<#{glogid}>" if glogid else "No giveaway log channel set."
 
-        elogchan = f"<#{settings["event_log_channel_id"]}>" if settings["event_log_channel_id"] else "No event log channel set."
+        elogid = settings["event_log_channel_id"]
+        elogchan = f"<#{elogid}>" if elogid else "No event log channel set."
 
-        hlogchan = f"<#{settings["heist_log_channel_id"]}>" if settings["heist_log_channel_id"] else "No heist log channel set."
+        hlogid = settings["heist_log_channel_id"]
+        hlogchan = f"<#{hlogid}>" if hlogid else "No heist log channel set."
 
         gannchan = humanize_list([f'<#{channel}>' for channel in settings["giveaway_announcement_channel_ids"]]) if settings["giveaway_announcement_channel_ids"] else "No giveaway announcement channels set."
 
