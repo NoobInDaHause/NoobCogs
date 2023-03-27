@@ -102,7 +102,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "1.3.4"
+    __version__ = "1.3.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -144,13 +144,10 @@ class ManagerUtils(commands.Cog):
         """
     
     @managerutilsset_manager_giveaways.command(name="add")
-    async def managerutilsset_manager_giveaways_add(self, ctx: commands.Context, role: discord.Role = None):
+    async def managerutilsset_manager_giveaways_add(self, ctx: commands.Context, role: discord.Role):
         """
         Add a role to the list of giveaway managers.
         """
-        if not role:
-            return await ctx.send_help()
-        
         if role.id in await self.config.guild(ctx.guild).giveaway_manager_ids():
             return await ctx.send("That role is already in the list of giveaway managers.")
         
@@ -159,13 +156,10 @@ class ManagerUtils(commands.Cog):
         await ctx.send(f"Successfully added `@{role.name}` in the list of giveaway manager roles.")
     
     @managerutilsset_manager_giveaways.command(name="remove")
-    async def managerutilsset_manager_giveaways_remove(self, ctx: commands.Context, role: discord.Role = None):
+    async def managerutilsset_manager_giveaways_remove(self, ctx: commands.Context, role: discord.Role):
         """
         Remove a role from the list of giveaway managers.
         """
-        if not role:
-            return await ctx.send_help()
-        
         if not await self.config.guild(ctx.guild).giveaway_manager_ids():
             return await ctx.send("It appears there are no roles from the list of giveaway managers.")
         
@@ -206,13 +200,10 @@ class ManagerUtils(commands.Cog):
         """
         
     @managerutilsset_manager_events.command(name="add")
-    async def managerutilsset_manager_events_add(self, ctx: commands.Context, role: discord.Role = None):
+    async def managerutilsset_manager_events_add(self, ctx: commands.Context, role: discord.Role):
         """
         Add a role to the list of event managers.
         """
-        if not role:
-            return await ctx.send_help()
-        
         if role.id in await self.config.guild(ctx.guild).event_manager_ids():
             return await ctx.send("That role is already in the list of event managers.")
         
@@ -221,13 +212,10 @@ class ManagerUtils(commands.Cog):
         await ctx.send(f"Successfully added `@{role.name}` in the list of event manager roles.")
     
     @managerutilsset_manager_events.command(name="remove")
-    async def managerutilsset_manager_events_remove(self, ctx: commands.Context, role: discord.Role = None):
+    async def managerutilsset_manager_events_remove(self, ctx: commands.Context, role: discord.Role):
         """
         Remove a role from the list of event managers.
         """
-        if not role:
-            return await ctx.send_help()
-        
         if not await self.config.guild(ctx.guild).event_manager_ids():
             return await ctx.send("It appears there are no roles from the list of event managers.")
         
@@ -268,13 +256,10 @@ class ManagerUtils(commands.Cog):
         """
         
     @managerutilsset_manager_heists.command(name="add")
-    async def managerutilsset_manager_heists_add(self, ctx: commands.Context, role: discord.Role = None):
+    async def managerutilsset_manager_heists_add(self, ctx: commands.Context, role: discord.Role):
         """
         Add a role to the list of heist managers.
         """
-        if not role:
-            return await ctx.send_help()
-        
         if role.id in await self.config.guild(ctx.guild).heist_manager_ids():
             return await ctx.send("That role is already in the list of heist managers.")
         
@@ -283,13 +268,10 @@ class ManagerUtils(commands.Cog):
         await ctx.send(f"Successfully added `@{role.name}` in the list of heist manager roles.")
     
     @managerutilsset_manager_heists.command(name="remove")
-    async def managerutilsset_manager_heists_remove(self, ctx: commands.Context, role: discord.Role = None):
+    async def managerutilsset_manager_heists_remove(self, ctx: commands.Context, role: discord.Role):
         """
         Remove a role from the list of heist managers.
         """
-        if not role:
-            return await ctx.send_help()
-        
         if not await self.config.guild(ctx.guild).heist_manager_ids():
             return await ctx.send("It appears there are no roles from the list of heist managers.")
         
@@ -470,15 +452,12 @@ class ManagerUtils(commands.Cog):
         """
         
     @managerutilsset_announcechannel_giveaways.command(name="add")
-    async def managerutilsset_announcechannel_giveaways_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    async def managerutilsset_announcechannel_giveaways_add(self, ctx: commands.Context, channel: discord.TextChannel):
         """
         Add a channel to the list of giveaway announcements channel.
         
         Use `[p]muset announcechan giveaways remove` to remove a channel from the list of giveaway announcement channel.
         """
-        if not channel:
-            return await ctx.send_help()
-        
         if channel.id in await self.config.guild(ctx.guild).giveaway_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of giveaway announcement channel.")
         
@@ -487,15 +466,12 @@ class ManagerUtils(commands.Cog):
         return await ctx.send(f"Successfully added {channel.mention} in the list of giveaway announcement channel.")
     
     @managerutilsset_announcechannel_giveaways.command(name="remove")
-    async def managerutilsset_announcechannel_giveaways_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    async def managerutilsset_announcechannel_giveaways_remove(self, ctx: commands.Context, channel: discord.TextChannel):
         """
         Remove a channel from the list of giveaway announcements channel.
         
         Use `[p]muset announcechan giveaways add` to add a channel in the list of giveaway announcement channel.
         """
-        if not channel:
-            return await ctx.send_help()
-        
         if channel.id not in await self.config.guild(ctx.guild).giveaway_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of giveaway announcement channel.")
         
@@ -535,15 +511,12 @@ class ManagerUtils(commands.Cog):
         """
         
     @managerutilsset_announcechannel_events.command(name="add")
-    async def managerutilsset_announcechannel_events_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    async def managerutilsset_announcechannel_events_add(self, ctx: commands.Context, channel: discord.TextChannel):
         """
         Add a channel to the list of event announcements channel.
         
         Use `[p]muset announcechan events remove` to remove a channel from the list of event announcement channel.
         """
-        if not channel:
-            return await ctx.send_help()
-        
         if channel.id in await self.config.guild(ctx.guild).event_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of event announcement channel.")
         
@@ -552,15 +525,12 @@ class ManagerUtils(commands.Cog):
         return await ctx.send(f"Successfully added {channel.mention} in the list of event announcement channel.")
     
     @managerutilsset_announcechannel_events.command(name="remove")
-    async def managerutilsset_announcechannel_events_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    async def managerutilsset_announcechannel_events_remove(self, ctx: commands.Context, channel: discord.TextChannel):
         """
         Remove a channel from the list of event announcements channel.
         
         Use `[p]muset announcechan events add` to add a channel in the list of event announcement channel.
         """
-        if not channel:
-            return await ctx.send_help()
-        
         if channel.id not in await self.config.guild(ctx.guild).event_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of event announcement channel.")
         
@@ -600,15 +570,12 @@ class ManagerUtils(commands.Cog):
         """
         
     @managerutilsset_announcechannel_heists.command(name="add")
-    async def managerutilsset_announcechannel_heists_add(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    async def managerutilsset_announcechannel_heists_add(self, ctx: commands.Context, channel: discord.TextChannel):
         """
         Add a channel to the list of heist announcements channel.
         
         Use `[p]muset announcechan heists remove` to remove a channel from the list of heist announcement channel.
         """
-        if not channel:
-            return await ctx.send_help()
-        
         if channel.id in await self.config.guild(ctx.guild).heist_announcement_channel_ids():
             return await ctx.send("That channel is already in the list of heist announcement channel.")
         
@@ -617,15 +584,12 @@ class ManagerUtils(commands.Cog):
         return await ctx.send(f"Successfully added {channel.mention} in the list of heist announcement channel.")
     
     @managerutilsset_announcechannel_heists.command(name="remove")
-    async def managerutilsset_announcechannel_heists_remove(self, ctx: commands.Context, channel: discord.TextChannel = None):
+    async def managerutilsset_announcechannel_heists_remove(self, ctx: commands.Context, channel: discord.TextChannel):
         """
         Remove a channel from the list of heist announcements channel.
         
         Use `[p]muset announcechan heists add` to add a channel in the list of heist announcement channel.
         """
-        if not channel:
-            return await ctx.send_help()
-        
         if channel.id not in await self.config.guild(ctx.guild).heist_announcement_channel_ids():
             return await ctx.send("That channel is not in the list of heist announcement channel.")
         
@@ -681,23 +645,17 @@ class ManagerUtils(commands.Cog):
 
         hmanrole = humanize_list([f'<@&{role}>' for role in settings["heist_manager_ids"]]) if settings["heist_manager_ids"] else "No heist managers set."
 
-        gpingrole = ctx.guild.get_role(settings["giveaway_ping_role_id"])
-        gpingrole = gpingrole.mention if gpingrole else "No giveaway ping role set."
+        gpingrole = f"<@&{settings["giveaway_ping_role_id"]}>" if settings["giveaway_ping_role_id"] else "No giveaway ping role set."
 
-        epingrole = ctx.guild.get_role(settings["event_ping_role_id"])
-        epingrole = epingrole.mention if epingrole else "No event ping role set."
+        epingrole = f"<@&{settings["event_ping_role_id"]}>" if settings["event_ping_role_id"] else "No event ping role set."
 
-        hpingrole = ctx.guild.get_role(settings["heist_ping_role_id"])
-        hpingrole = hpingrole.mention if hpingrole else "No heist ping role set."
+        hpingrole = f"<@&{settings["heist_ping_role_id"]}>" if settings["heist_ping_role_id"] else "No heist ping role set."
 
-        glogchan = ctx.guild.get_channel(settings["giveaway_log_channel_id"])
-        glogchan = glogchan.mention if glogchan else "No giveaway log channel set."
+        glogchan = f"<#{settings["giveaway_log_channel_id"]}>" if settings["giveaway_log_channel_id"] else "No giveaway log channel set."
 
-        elogchan = ctx.guild.get_channel(settings["event_log_channel_id"])
-        elogchan = elogchan.mention if elogchan else "No event log channel set."
+        elogchan = f"<#{settings["event_log_channel_id"]}>" if settings["event_log_channel_id"] else "No event log channel set."
 
-        hlogchan = ctx.guild.get_channel(settings["heist_log_channel_id"])
-        hlogchan = hlogchan.mention if hlogchan else "No heist log channel set."
+        hlogchan = f"<#{settings["heist_log_channel_id"]}>" if settings["heist_log_channel_id"] else "No heist log channel set."
 
         gannchan = humanize_list([f'<#{channel}>' for channel in settings["giveaway_announcement_channel_ids"]]) if settings["giveaway_announcement_channel_ids"] else "No giveaway announcement channels set."
 
