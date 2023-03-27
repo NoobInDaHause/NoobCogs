@@ -102,7 +102,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "1.3.6"
+    __version__ = "1.3.7"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -945,9 +945,9 @@ class ManagerUtils(commands.Cog):
         events = events.split("|")
         maxargs = len(events)
         
-        if maxargs > 5:
+        if maxargs > 4:
             return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
-        if maxargs < 5:
+        if maxargs < 4:
             return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
         
         if await self.config.guild(ctx.guild).auto_delete_commands():
@@ -971,8 +971,7 @@ class ManagerUtils(commands.Cog):
         eembed.add_field(name="Event Sponsor:", value=events[0], inline=False)
         eembed.add_field(name="Event Name:", value=events[1], inline=True)
         eembed.add_field(name="Event Prize:", value=events[2], inline=True)
-        eembed.add_field(name="Requirements:", value=events[3], inline=False)
-        eembed.add_field(name="Message:", value=events[4], inline=False)
+        eembed.add_field(name="Message:", value=events[3], inline=False)
         
         if not epingrole:
             try:
