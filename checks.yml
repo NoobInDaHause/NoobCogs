@@ -1,2 +1,0 @@
-- name: Python quality and format checker
-  uses: konstruktoid/action-pylint@v0.1.2
