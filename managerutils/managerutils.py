@@ -126,7 +126,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "2.0.0"
+    __version__ = "2.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -2035,7 +2035,7 @@ class ManagerUtils(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Event Logging",
-                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {events[0]}\n**Event Name:** {events[1]}\n**Prize:** {events[2]}\n**Message:** {events[3]}",
+                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {sponsor}\n**Event Name:** {name}\n**Prize:** {prize}\n**Message:** {message}",
                     colour=ctx.author.colour,
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
@@ -2182,7 +2182,7 @@ class ManagerUtils(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Heist Logging",
-                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {heists[0]}\n**Amount:** {heists[1]}\n**Requirements:** {heists[2]}\n**Message:** {heists[3]}",
+                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {sponsor}\n**Amount:** {amount}\n**Requirements:** {requirements}\n**Message:** {message}",
                     colour=ctx.author.colour,
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
