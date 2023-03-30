@@ -15,6 +15,7 @@ from redbot.core.utils.chat_formatting import humanize_list, box
 from redbot.core.utils.predicates import MessagePredicate
 
 from . import url_button
+from .embed_defaults import *
 from .utils import *
 
 from typing import Literal
@@ -49,60 +50,83 @@ class ManagerUtils(commands.Cog):
             "heist_announcement_channel_ids": [],
             "giveaway_embed": {
                 "title": None,
-                "colour": None,
-                "footer": None,
+                "colour_value": None,
+                "str_colour": None,
+                "footer_text": None,
                 "footer_icon": None,
+                "thumbnail": None,
+                "image": None,
                 "description": None,
+                "show_footer": True
             },
             "event_embed": {
                 "title": None,
-                "colour": None,
-                "footer": None,
+                "description": None,
+                "colour_value": None,
+                "str_colour": None,
+                "footer_text": None,
                 "footer_icon": None,
+                "image": None,
                 "thumbnail": None,
-                "field_1": None,
-                "field_2": None,
-                "field_3": None,
-                "field_4": None,
-                "field_5": None,
-                "field_value_1": None,
-                "field_value_2": None,
-                "field_value_3": None,
-                "field_value_4": None,
-                "field_value_5": None,
-                "field_inline_1": False,
-                "field_inline_2": True,
-                "field_inline_3": True,
-                "field_inline_4": False,
-                "field_inline_5": False,
+                "show_footer": True,
+                "sponsor_field": {
+                    "name": None,
+                    "value": None,
+                    "inline": False
+                },
+                "name_field": {
+                    "name": None,
+                    "value": None,
+                    "inline": True
+                },
+                "prize_field": {
+                    "name": None,
+                    "value": None,
+                    "inline": True
+                },
+                "message_field": {
+                    "name": None,
+                    "value": None,
+                    "inline": False
+                },
             },
             "heist_embed": {
                 "title": None,
-                "colour": None,
-                "footer": None,
+                "description": None,
+                "colour_value": None,
+                "str_colour": None,
+                "footer_text": None,
                 "footer_icon": None,
+                "image": None,
                 "thumbnail": None,
-                "field_1": None,
-                "field_2": None,
-                "field_3": None,
-                "field_4": None,
-                "field_5": None,
-                "field_value_1": None,
-                "field_value_2": None,
-                "field_value_3": None,
-                "field_value_4": None,
-                "field_value_5": None,
-                "field_inline_1": True,
-                "field_inline_2": True,
-                "field_inline_3": False,
-                "field_inline_4": False,
-                "field_inline_5": False,
+                "checklist_toggle": True,
+                "show_footer": True,
+                "hsponsor_field": {
+                    "name": None,
+                    "value": None,
+                    "inline": True
+                },
+                "hamount_field": {
+                    "name": None,
+                    "value": None,
+                    "inline": True
+                },
+                "hrequirements_field": {
+                    "name": None,
+                    "value": None,
+                    "inline": False
+                },
+                "hmessage_field": {
+                    "name": None,
+                    "value": None,
+                    "inline": False
+                }
             }
         }
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "1.3.8"
+    __version__ = "2.0.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -129,6 +153,884 @@ class ManagerUtils(commands.Cog):
         See sub commands.
         """
         
+    @managerutilsset.group(name="embed")
+    async def managerutilsset_embed(self, ctx):
+        """
+        Customize the giveaway, event or heist embed to your liking.
+        """
+    
+    @managerutilsset_embed.group(name="giveaways", aliases=["giveaway", "gaw"])
+    async def managerutilsset_embed_giveaways(self, ctx):
+        """
+        Customize the giveaway embed to your liking.
+        """
+        
+    @managerutilsset_embed_giveaways.command(name="colour", aliases=["color"])
+    async def managerutilsset_embed_giveaways_colour(self, ctx: commands.Context, colour: discord.Colour = None):
+        """
+        Customize the giveaway embed colour.
+        
+        Pass without colour to reset the color to the bots default embed color.
+        """
+        if not colour:
+            await self.config.guild(ctx.guild).giveaway_embed.colour_value.clear()
+            await self.config.guild(ctx.guild).giveaway_embed.str_colour.clear()
+            return await ctx.send("Successfully resetted the giveaway embed colour.")
+        
+        await self.config.guild(ctx.guild).giveaway_embed.colour_value.set(colour.value)
+        await self.config.guild(ctx.guild).giveaway_embed.str_colour.set(str(colour))
+        await ctx.send(f"Successfully set the giveaway embed colour to:\n{box(colour, 'py')}")
+    
+    @managerutilsset_embed_giveaways.command(name="title")
+    async def managerutilsset_embed_giveaways_title(self, ctx: commands.Context, *, title = None):
+        """
+        Customize the giveaway embed title.
+        
+        Pass without title to reset to the default title.
+        
+        Available variables:
+        ` - ` {guild} - the guild name.
+        
+        This defaults to `Server Giveaway Time!`.
+        """
+        if not title:
+            await self.config.guild(ctx.guild).giveaway_embed.title.clear()
+            return await ctx.send("Successfully resetted the giveaways embed title.")
+        
+        await self.config.guild(ctx.guild).giveaway_embed.title.set(title)
+        await ctx.send(f"Successfully set the giveaway embed title to:\n{box(title, 'py')}")
+    
+    @managerutilsset_embed_giveaways.command(name="thumbnail")
+    async def managerutilsset_embed_giveaways_thumbnail(self, ctx: commands.Context, link = None):
+        """
+        Customize the giveaway embed thumbnail.
+        
+        Pass without link to remove it.
+        
+        The thumbnail defaults to `None` but if you want to add a thumbnail use this command.
+        
+        Available variables:
+        ` - ` {host.avatar_url} - the avatar of the host
+        ` - ` {guild.icon_url} - the guilds image
+        
+        If you use these variables please make sure to not add anything else besides the variables. 
+        """
+        if not link:
+            await self.config.guild(ctx.guild).giveaway_embed.thumbnail.clear()
+            return await ctx.send("The giveaway embed thumbnail has been removed.")
+        
+        await self.config.guild(ctx.guild).giveaway_embed.thumbnail.set(link)
+        await ctx.send(f"Successfully set the giveaway embed tumbnail to:\n{box(link, 'py')}")
+        
+    @managerutilsset_embed_giveaways.command(name="image")
+    async def managerutilsset_embed_giveaways_image(self, ctx: commands.Context, link = None):
+        """
+        Add or remove an image to the giveaways embed.
+        
+        Pass without link to remove it.
+        
+        The image defaults to `None` but if you want to add an image use this command.
+        """
+        if not link:
+            if not await self.config.guild(ctx.guild).giveaway_embed.image():
+                return await ctx.send("It appears you do not have a giveaway embed image set.")
+            await self.config.guild(ctx.guild).giveaway_embed.image.clear()
+            return await ctx.send("The giveaway embed image has been removed.")
+        
+        await self.config.guild(ctx.guild).giveaway_embed.image.set(link)
+        await ctx.send(f"Successfully set the giveaway embed image to:\n{box(link, 'py')}")
+    
+    @managerutilsset_embed_giveaways.command(name="description", aliases=["desc"])
+    async def managerutilsset_embed_giveaways_description(self, ctx: commands.Context, *, description = None):
+        """
+        Customize the giveaways embed description.
+        
+        Pass without description to reset it to default.
+        
+        This defaults to:
+        `**Prize:** {prize}
+        **Sponsor:** {sponsor}
+        **Message:** {message}`
+        
+        Available variables:
+        ` - ` {sponsor} - the sponsor
+        ` - ` {prize} - the prize
+        ` - ` {host} - the host
+        ` - ` {message} - the sponsors message
+        ` - ` {guild} - the guild name
+        """
+        if not description:
+            await self.config.guild(ctx.guild).giveaway_embed.description.clear()
+            return await ctx.send("Successfully resetted the giveaways embed description.")
+        
+        await self.config.guild(ctx.guild).giveaway_embed.description.set(description)
+        await ctx.send(f"Successfully set the giveaways embed description to:\n{box(description, 'py')}")
+    
+    @managerutilsset_embed_giveaways.group(name="footer")
+    async def managerutilsset_embed_giveaways_footer(self, ctx):
+        """
+        Customize the giveaways embed footer text or icon.
+        """
+    
+    @managerutilsset_embed_giveaways_footer.command(name="text")
+    async def managerutilsset_embed_giveaways_footer_text(self, ctx: commands.Context, *, text = None):
+        """
+        Customize the giveaways embed footer text.
+        
+        Pass without text to reset it to default.
+        
+        This defaults to `Hosted by: {host}`.
+        
+        Available variables:
+        ` - ` {host} - the host name
+        ` - ` {host.id} - the host ID
+        ` - ` {guild} - the guild name
+        """
+        if not text:
+            await self.config.guild(ctx.guild).giveaway_embed.footer_text.clear()
+            return await ctx.send("Successfully resetted the giveaways embed footer text.")
+        
+        await self.config.guild(ctx.guild).giveaway_embed.footer_text.set(text)
+        await ctx.send(f"Successfully set the giveaways embed footer text to:\n{box(text, 'py')}")
+    
+    @managerutilsset_embed_giveaways_footer.command(name="icon")
+    async def managerutilsset_embed_giveaways_footer_icon(self, ctx: commands.Context, icon = None):
+        """
+        Customize or remove the giveaways embed footer icon.
+        
+        Pass without link to remove it.
+        
+        This defaults to hosts avatar.
+        
+        Available variables:
+        ` - ` {host.avatar_url} - the avatar of the host
+        ` - ` {guild.icon_url} - the guild image
+        
+        If you use one of these variables don't add anything else besides the variable that you chose.
+        """
+        if not icon:
+            await self.config.guild(ctx.guild).giveaway_embed.footer_icon.set("removed")
+            return await ctx.send("The giveaway embed footer icon has been removed.")
+        
+        await self.config.guild(ctx.guild).giveaway_embed.footer_icon.set(icon)
+        await ctx.send(f"Successfully set the giveaway embed footer icon to:\n{box(icon, 'py')}")
+    
+    @managerutilsset_embed_giveaways_footer.command(name="toggle")
+    async def managerutilsset_embed_giveaways_footer_remove(self, ctx):
+        """
+        Toggle whether to remove or add back the giveaways embed footer text and icon.
+        """
+        current = await self.config.guild(ctx.guild).giveaway_embed.show_footer()
+        await self.config.guild(ctx.guild).giveaway_embed.show_footer.set(not current)
+        status = "removed" if current else "added back"
+        await ctx.send(f"The giveaways embed footer text and icon has been {status}.")
+    
+    @managerutilsset_embed.group(name="events", aliases=["event"])
+    async def managerutilsset_embed_events(self, ctx):
+        """
+        Customize the event embed to your liking.
+        """
+    
+    @managerutilsset_embed_events.command(name="title")
+    async def managerutilsset_embed_events_title(self, ctx: commands.Context, *, title = None):
+        """
+        Customize the event embed title.
+        
+        Pass without title to reset to the default title.
+        
+        Available variables:
+        ` - ` {guild} - the guild name.
+        
+        This defaults to `Server Event Time!`.
+        """
+        if not title:
+            await self.config.guild(ctx.guild).event_embed.title.clear()
+            return await ctx.send("Successfully resetted the events embed title.")
+        
+        await self.config.guild(ctx.guild).event_embed.title.set(title)
+        await ctx.send(f"Successfully set the event embed title to:\n{box(title, 'py')}")
+    
+    @managerutilsset_embed_events.command(name="colour", aliases=["color"])
+    async def managerutilsset_embed_events_colour(self, ctx: commands.Context, colour: discord.Colour = None):
+        """
+        Customize the event embed colour.
+        
+        Pass without colour to reset the color to the bots default embed color.
+        """
+        if not colour:
+            await self.config.guild(ctx.guild).event_embed.colour_value.clear()
+            await self.config.guild(ctx.guild).event_embed.str_colour.clear()
+            return await ctx.send("Successfully resetted the event embed colour.")
+        
+        await self.config.guild(ctx.guild).event_embed.colour_value.set(colour.value)
+        await self.config.guild(ctx.guild).event_embed.str_colour.set(str(colour))
+        await ctx.send(f"Successfully set the event embed colour to:\n{box(colour, 'py')}")
+    
+    @managerutilsset_embed_events.command(name="thumbnail")
+    async def managerutilsset_embed_events_thumbnail(self, ctx: commands.Context, link = None):
+        """
+        Customize the event embed thumbnail.
+        
+        Pass without link to remove it.
+        
+        The thumbnail defaults to `{guild.icon_url}` but if you want to remove the thumbnail use this command.
+        
+        Available variables:
+        ` - ` {host.avatar_url} - the avatar of the host
+        ` - ` {guild.icon_url} - the guilds image
+        
+        If you use these variables please make sure to not add anything else besides the variables. 
+        """
+        if not link:
+            await self.config.guild(ctx.guild).event_embed.thumbnail.set("removed")
+            return await ctx.send("The event embed thumbnail has been removed.")
+        
+        await self.config.guild(ctx.guild).event_embed.thumbnail.set(link)
+        await ctx.send(f"Successfully set the event embed tumbnail to:\n{box(link, 'py')}")
+    
+    @managerutilsset_embed_events.command(name="image")
+    async def managerutilsset_embed_events_image(self, ctx: commands.Context, link = None):
+        """
+        Add or remove an image to the events embed.
+        
+        Pass without link to remove it.
+        
+        The image defaults to `None` but if you want to add an image use this command.
+        """
+        if not link:
+            if not await self.config.guild(ctx.guild).event_embed.image():
+                return await ctx.send("It appears you do not have an event embed image set.")
+            await self.config.guild(ctx.guild).event_embed.image.clear()
+            return await ctx.send("The event embed image has been removed.")
+        
+        await self.config.guild(ctx.guild).event_embed.image.set(link)
+        await ctx.send(f"Successfully set the event embed image to:\n{box(link, 'py')}")
+    
+    @managerutilsset_embed_events.command(name="description", aliases=["desc"])
+    async def managerutilsset_embed_events_description(self, ctx: commands.Context, *, description = None):
+        """
+        Customize the event embed description.
+        
+        Pass without description to remove it.
+        
+        This defaults to `None`.
+        
+        Available variables:
+        ` - ` {sponsor} - the sponsor
+        ` - ` {name} - the event name
+        ` - ` {prize} - the prize
+        ` - ` {host} - the host
+        ` - ` {message} - the sponsors message
+        ` - ` {guild} - the guild name
+        """
+        if not description:
+            if not await self.config.guild(ctx.guild).event_embed.description():
+                return await ctx.send("It appears you do not have an embed description set.")
+            await self.config.guild(ctx.guild).event_embed.description.clear()
+            return await ctx.send("Successfully removed the events embed description.")
+        
+        await self.config.guild(ctx.guild).event_embed.description.set(description)
+        await ctx.send(f"Successfully set the events embed description to:\n{box(description, 'py')}")
+    
+    @managerutilsset_embed_events.group(name="footer")
+    async def managerutilsset_embed_events_footer(self, ctx):
+        """
+        Customize the events embed footer text or icon.
+        """
+    
+    @managerutilsset_embed_events_footer.command(name="text")
+    async def managerutilsset_embed_events_footer_text(self, ctx: commands.Context, *, text = None):
+        """
+        Customize the events embed footer text.
+        
+        Pass without text to reset it to default.
+        
+        This defaults to `Hosted by: {host}`.
+        
+        Available variables:
+        ` - ` {host} - the host name
+        ` - ` {host.id} - the host ID
+        ` - ` {guild} - the guild name
+        """
+        if not text:
+            await self.config.guild(ctx.guild).event_embed.footer_text.clear()
+            return await ctx.send("Successfully resetted the events embed footer text.")
+        
+        await self.config.guild(ctx.guild).event_embed.footer_text.set(text)
+        await ctx.send(f"Successfully set the events embed footer text to:\n{box(text, 'py')}")
+    
+    @managerutilsset_embed_events_footer.command(name="icon")
+    async def managerutilsset_embed_events_footer_icon(self, ctx: commands.Context, icon = None):
+        """
+        Customize or remove the events embed footer icon.
+        
+        Pass without link to remove it.
+        
+        This defaults to `{host.avatar_url}`.
+        
+        Available variables:
+        ` - ` {host.avatar_url} - the avatar of the host
+        ` - ` {guild.icon_url} - the guild image
+        
+        If you use one of these variables don't add anything else besides the variable that you chose.
+        """
+        if not icon:
+            await self.config.guild(ctx.guild).event_embed.footer_icon.set("removed")
+            return await ctx.send("The event embed footer icon has been removed.")
+        
+        await self.config.guild(ctx.guild).event_embed.footer_icon.set(icon)
+        await ctx.send(f"Successfully set the event embed footer icon to:\n{box(icon, 'py')}")
+    
+    @managerutilsset_embed_events_footer.command(name="toggle")
+    async def managerutilsset_embed_events_footer_remove(self, ctx):
+        """
+        Toggle whether to remove or add back the events embed footer text and icon.
+        """
+        current = await self.config.guild(ctx.guild).event_embed.show_footer()
+        await self.config.guild(ctx.guild).event_embed.show_footer.set(not current)
+        status = "removed" if current else "added back"
+        await ctx.send(f"The events embed footer text and icon has been {status}.")
+    
+    @managerutilsset_embed_events.group(name="fields", aliases=["field"])
+    async def managerutilsset_embed_events_fields(self, ctx):
+        """
+        Customize the event embed fields to your liking.
+        """
+    
+    @managerutilsset_embed_events_fields.command(name="sponsor", usage="<name> | <value> | <inline>")
+    async def managerutilsset_embed_events_fields_sponsor(self, ctx: commands.Context, *, sfield = None):
+        """
+        Customize the event embed sponsor field.
+        
+        Pass without arguments to reset the sponsor field.
+        For the <inline> argument you must only answer with `1` for True or `0` for False and nothing else.
+        Split arguments with `|`.
+        
+        Available variables:
+        ` - ` {sponsor} - the sponsor from `[p]eventping` (can only be used in value argument.)
+        """
+        if not sfield:
+            await self.config.guild(ctx.guild).event_embed.sponsor_field.name.clear()
+            await self.config.guild(ctx.guild).event_embed.sponsor_field.value.clear()
+            await self.config.guild(ctx.guild).event_embed.sponsor_field.inline.clear()
+            return await ctx.send("Successfully resetted the event sponsor field.")
+        
+        sfield = sfield.split("|")
+        maxargs = len(sfield)
+
+        if maxargs > 3:
+            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+        if maxargs < 3:
+            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+        
+        sponsor_name = sfield[0]
+        sponsor_name.replace(" ", "")
+        sponsor_value = sfield[1]
+        sponsor_value.replace(" ", "")
+        sponsor_inline = sfield[2]
+        sponsor_inline.replace(" ", "")
+        if "1" in sponsor_inline:
+            sponsor_inline = True
+        elif "0" in sponsor_inline:
+            sponsor_inline = False
+        else:
+            return await ctx.send("Your answer for the `<inline>` argument should only be `1` for True or `0` for False.")
+        
+        await self.config.guild(ctx.guild).event_embed.sponsor_field.name.set(sponsor_name)
+        await self.config.guild(ctx.guild).event_embed.sponsor_field.value.set(sponsor_value)
+        await self.config.guild(ctx.guild).event_embed.sponsor_field.inline.set(sponsor_inline)
+        await ctx.send(f"Successfully set the event sponsor field to:\n```py\nName: {sponsor_name}\nValue: {sponsor_value}\nInline: {sponsor_inline}```")
+    
+    @managerutilsset_embed_events_fields.command(name="name", usage="<name> | <value> | <inline>")
+    async def managerutilsset_embed_events_fields_name(self, ctx: commands.Context, *, nfield = None):
+        """
+        Customize the event embed name field.
+        
+        Pass without arguments to reset the name field.
+        For the <inline> argument you must only answer with `1` for True or `0` for False and nothing else.
+        Split arguments with `|`.
+        
+        Available variables:
+        ` - ` {name} - the event name from `[p]eventping` (can only be used in value argument.)
+        """
+        if not nfield:
+            await self.config.guild(ctx.guild).event_embed.name_field.name.clear()
+            await self.config.guild(ctx.guild).event_embed.name_field.value.clear()
+            await self.config.guild(ctx.guild).event_embed.name_field.inline.clear()
+            return await ctx.send("Successfully resetted the event name field.")
+        
+        nfield = nfield.split("|")
+        maxargs = len(nfield)
+
+        if maxargs > 3:
+            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+        if maxargs < 3:
+            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+        
+        name_name = nfield[0]
+        name_name.replace(" ", "")
+        name_value = nfield[1]
+        name_value.replace(" ", "")
+        name_inline = nfield[2]
+        name_inline.replace(" ", "")
+        if "1" in name_inline:
+            name_inline = True
+        elif "0" in name_inline:
+            name_inline = False
+        else:
+            return await ctx.send("Your answer for the `<inline>` argument should only be `1` for True or `0` for False.")
+        
+        await self.config.guild(ctx.guild).event_embed.name_field.name.set(name_name)
+        await self.config.guild(ctx.guild).event_embed.name_field.value.set(name_value)
+        await self.config.guild(ctx.guild).event_embed.name_field.inline.set(name_inline)
+        await ctx.send(f"Successfully set the event name field to:\n```py\nName: {name_name}\nValue: {name_value}\nInline: {name_inline}```")
+    
+    @managerutilsset_embed_events_fields.command(name="prize", usage="<name> | <value> | <inline>")
+    async def managerutilsset_embed_events_fields_prize(self, ctx: commands.Context, *, pfield = None):
+        """
+        Customize the event embed prize field.
+        
+        Pass without arguments to reset the name field.
+        For the <inline> argument you must only answer with `1` for True or `0` for False and nothing else.
+        Split arguments with `|`.
+        
+        Available variables:
+        ` - ` {prize} - the event prize from `[p]eventping` (can only be used in value argument.)
+        """
+        if not pfield:
+            await self.config.guild(ctx.guild).event_embed.prize_field.name.clear()
+            await self.config.guild(ctx.guild).event_embed.prize_field.value.clear()
+            await self.config.guild(ctx.guild).event_embed.prize_field.inline.clear()
+            return await ctx.send("Successfully resetted the event prize field.")
+        
+        pfield = pfield.split("|")
+        maxargs = len(pfield)
+
+        if maxargs > 3:
+            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+        if maxargs < 3:
+            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+        
+        prize_name = pfield[0]
+        prize_name.replace(" ", "")
+        prize_value = pfield[1]
+        prize_value.replace(" ", "")
+        prize_inline = pfield[2]
+        prize_inline.replace(" ", "")
+        if "1" in prize_inline:
+            prize_inline = True
+        elif "0" in prize_inline:
+            prize_inline = False
+        else:
+            return await ctx.send("Your answer for the `<inline>` argument should only be `1` for True or `0` for False.")
+        
+        await self.config.guild(ctx.guild).event_embed.prize_field.name.set(prize_name)
+        await self.config.guild(ctx.guild).event_embed.prize_field.value.set(prize_value)
+        await self.config.guild(ctx.guild).event_embed.prize_field.inline.set(prize_inline)
+        await ctx.send(f"Successfully set the event prize field to:\n```py\nName: {prize_name}\nValue: {prize_value}\nInline: {prize_inline}```")
+    
+    @managerutilsset_embed_events_fields.command(name="message", aliases=["msg"], usage="<name> | <value> | <inline>")
+    async def managerutilsset_embed_events_fields_message(self, ctx: commands.Context, *, mfield = None):
+        """
+        Customize the event embed message field.
+        
+        Pass without arguments to reset the name field.
+        For the <inline> argument you must only answer with `1` for True or `0` for False and nothing else.
+        Split arguments with `|`.
+        
+        Available variables:
+        ` - ` {message} - the event sponsor message from `[p]eventping` (can only be used in value argument.)
+        """
+        if not mfield:
+            await self.config.guild(ctx.guild).event_embed.message_field.name.clear()
+            await self.config.guild(ctx.guild).event_embed.message_field.value.clear()
+            await self.config.guild(ctx.guild).event_embed.message_field.inline.clear()
+            return await ctx.send("Successfully resetted the event prize field.")
+        
+        mfield = mfield.split("|")
+        maxargs = len(mfield)
+
+        if maxargs > 3:
+            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+        if maxargs < 3:
+            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+        
+        message_name = mfield[0]
+        message_name.replace(" ", "")
+        message_value = mfield[1]
+        message_value.replace(" ", "")
+        message_inline = mfield[2]
+        message_inline.replace(" ", "")
+        if "1" in message_inline:
+            message_inline = True
+        elif "0" in message_inline:
+            message_inline = False
+        else:
+            return await ctx.send("Your answer for the `<inline>` argument should only be `1` for True or `0` for False.")
+        
+        await self.config.guild(ctx.guild).event_embed.message_field.name.set(message_name)
+        await self.config.guild(ctx.guild).event_embed.message_field.value.set(message_value)
+        await self.config.guild(ctx.guild).event_embed.message_field.inline.set(message_inline)
+        await ctx.send(f"Successfully set the event message field to:\n```py\nName: {message_name}\nValue: {message_value}\nInline: {message_inline}```")
+    
+    @managerutilsset_embed.group(name="hiests", aliases=["heist"])
+    async def managerutilsset_embed_heists(self, ctx):
+        """
+        Customize the heist embed to your liking.
+        """
+    
+    @managerutilsset_embed_heists.command(name="colour", aliases=["color"])
+    async def managerutilsset_embed_heists_colour(self, ctx: commands.Context, colour: discord.Colour = None):
+        """
+        Customize the heist embed colour.
+        
+        Pass without colour to reset the color to the bots default embed color.
+        """
+        if not colour:
+            await self.config.guild(ctx.guild).heist_embed.colour_value.clear()
+            await self.config.guild(ctx.guild).heist_embed.str_colour.clear()
+            return await ctx.send("Successfully resetted the heist embed colour.")
+        
+        await self.config.guild(ctx.guild).heist_embed.colour_value.set(colour.value)
+        await self.config.guild(ctx.guild).heist_embed.str_colour.set(str(colour))
+        await ctx.send(f"Successfully set the heist embed colour to:\n{box(colour, 'py')}")
+    
+    @managerutilsset_embed_heists.command(name="title")
+    async def managerutilsset_embed_heists_title(self, ctx: commands.Context, *, title = None):
+        """
+        Customize the heist embed title.
+        
+        Pass without title to reset to the default title.
+        
+        Available variables:
+        ` - ` {guild} - the guild name.
+        
+        This defaults to `Server Event Time!`.
+        """
+        if not title:
+            await self.config.guild(ctx.guild).heist_embed.title.clear()
+            return await ctx.send("Successfully resetted the heists embed title.")
+        
+        await self.config.guild(ctx.guild).heist_embed.title.set(title)
+        await ctx.send(f"Successfully set the heist embed title to:\n{box(title, 'py')}")
+    
+    @managerutilsset_embed_heists.command(name="thumbnail")
+    async def managerutilsset_embed_heists_thumbnail(self, ctx: commands.Context, link = None):
+        """
+        Customize the heist embed thumbnail.
+        
+        Pass without link to remove it.
+        
+        The thumbnail defaults to `{guild.icon_url}` but if you want to add a thumbnail use this command.
+        
+        Available variables:
+        ` - ` {host.avatar_url} - the avatar of the host
+        ` - ` {guild.icon_url} - the guilds image
+        
+        If you use these variables please make sure to not add anything else besides the variables. 
+        """
+        if not link:
+            await self.config.guild(ctx.guild).heist_embed.thumbnail.set("removed")
+            return await ctx.send("The heist embed thumbnail has been removed.")
+        
+        await self.config.guild(ctx.guild).heist_embed.thumbnail.set(link)
+        await ctx.send(f"Successfully set the heist embed tumbnail to:\n{box(link, 'py')}")
+    
+    @managerutilsset_embed_heists.command(name="image")
+    async def managerutilsset_embed_heists_image(self, ctx: commands.Context, link = None):
+        """
+        Add or remove an image to the heists embed.
+        
+        Pass without link to remove it.
+        
+        The image defaults to `None` but if you want to add an image use this command.
+        """
+        if not link:
+            if not await self.config.guild(ctx.guild).heist_embed.image():
+                return await ctx.send("It appears you do not have a heist embed image set.")
+            await self.config.guild(ctx.guild).heist_embed.image.clear()
+            return await ctx.send("The heist embed image has been removed.")
+        
+        await self.config.guild(ctx.guild).heist_embed.image.set(link)
+        await ctx.send(f"Successfully set the heist embed image to:\n{box(link, 'py')}")
+    
+    @managerutilsset_embed_heists.command(name="description", aliases=["desc"])
+    async def managerutilsset_embed_heists_description(self, ctx: commands.Context, *, description = None):
+        """
+        Customize the heist embed description.
+        
+        Pass without description to remove it.
+        
+        This defaults to `None`.
+        
+        Available variables:
+        ` - ` {sponsor} - the sponsor
+        ` - ` {name} - the event name
+        ` - ` {prize} - the prize
+        ` - ` {host} - the host
+        ` - ` {message} - the sponsors message
+        ` - ` {guild} - the guild name
+        """
+        if not description:
+            if not await self.config.guild(ctx.guild).heist_embed.description():
+                return await ctx.send("It appears you do not have a heist description set.")
+            await self.config.guild(ctx.guild).heist_embed.description.clear()
+            return await ctx.send("Successfully removed the heists embed description.")
+        
+        await self.config.guild(ctx.guild).heist_embed.description.set(description)
+        await ctx.send(f"Successfully set the heists embed description to:\n{box(description, 'py')}")
+    
+    @managerutilsset_embed_heists.group(name="footer")
+    async def managerutilsset_embed_heists_footer(self, ctx):
+        """
+        Customize the heists embed footer text or icon.
+        """
+    
+    @managerutilsset_embed_heists_footer.command(name="text")
+    async def managerutilsset_embed_heists_footer_text(self, ctx: commands.Context, *, text = None):
+        """
+        Customize the heists embed footer text.
+        
+        Pass without text to reset it to default.
+        
+        This defaults to `Hosted by: {host}`.
+        
+        Available variables:
+        ` - ` {host} - the host name
+        ` - ` {host.id} - the host ID
+        ` - ` {guild} - the guild name
+        """
+        if not text:
+            await self.config.guild(ctx.guild).heist_embed.footer_text.clear()
+            return await ctx.send("Successfully resetted the heists embed footer text.")
+        
+        await self.config.guild(ctx.guild).heist_embed.footer_text.set(text)
+        await ctx.send(f"Successfully set the heists embed footer text to:\n{box(text, 'py')}")
+    
+    @managerutilsset_embed_heists_footer.command(name="icon")
+    async def managerutilsset_embed_heists_footer_icon(self, ctx: commands.Context, icon = None):
+        """
+        Customize or remove the heists embed footer icon.
+        
+        Pass without link to remove it.
+        
+        This defaults to `{host.avatar_url}`.
+        
+        Available variables:
+        ` - ` {host.avatar_url} - the avatar of the host
+        ` - ` {guild.icon_url} - the guild image
+        
+        If you use one of these variables don't add anything else besides the variable that you chose.
+        """
+        if not icon:
+            await self.config.guild(ctx.guild).heist_embed.footer_icon.set("removed")
+            return await ctx.send("The heist embed footer icon has been removed.")
+        
+        await self.config.guild(ctx.guild).heist_embed.footer_icon.set(icon)
+        await ctx.send(f"Successfully set the heist embed footer icon to:\n{box(icon, 'py')}")
+    
+    @managerutilsset_embed_heists_footer.command(name="toggle")
+    async def managerutilsset_embed_heists_footer_remove(self, ctx):
+        """
+        Toggle whether to remove or add back the heists embed footer text and icon.
+        """
+        current = await self.config.guild(ctx.guild).heist_embed.show_footer()
+        await self.config.guild(ctx.guild).heist_embed.show_footer.set(not current)
+        status = "removed" if current else "added back"
+        await ctx.send(f"The heists embed footer text and icon has been {status}.")
+    
+    @managerutilsset_embed_heists.group(name="fields", aliases=["field"])
+    async def managerutilsset_embed_heists_fields(self, ctx):
+        """
+        Customize the heist embed fields to your liking.
+        """
+    
+    @managerutilsset_embed_heists_fields.command(name="sponsor", usage="<name> | <value> | <inline>")
+    async def managerutilsset_embed_heists_fields_sponsor(self, ctx: commands.Context, *, hsfield = None):
+        """
+        Customize the heist embed sponsor field.
+        
+        Pass without arguments to reset the sponsor field.
+        For the <inline> argument you must only answer with `1` for True or `0` for False and nothing else.
+        Split arguments with `|`.
+        
+        Available variables:
+        ` - ` {sponsor} - the sponsor from `[p]heistping` (can only be used in value argument.)
+        """
+        if not hsfield:
+            await self.config.guild(ctx.guild).heist_embed.hsponsor_field.name.clear()
+            await self.config.guild(ctx.guild).heist_embed.hsponsor_field.value.clear()
+            await self.config.guild(ctx.guild).heist_embed.hsponsor_field.inline.clear()
+            return await ctx.send("Successfully resetted the heist sponsor field.")
+        
+        hsfield = hsfield.split("|")
+        maxargs = len(hsfield)
+
+        if maxargs > 3:
+            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+        if maxargs < 3:
+            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+        
+        sponsor_name = hsfield[0]
+        sponsor_name.replace(" ", "")
+        sponsor_value = hsfield[1]
+        sponsor_value.replace(" ", "")
+        sponsor_inline = hsfield[2]
+        sponsor_inline.replace(" ", "")
+        if "1" in sponsor_inline:
+            sponsor_inline = True
+        elif "0" in sponsor_inline:
+            sponsor_inline = False
+        else:
+            return await ctx.send("Your answer for the `<inline>` argument should only be `1` for True or `0` for False.")
+        
+        await self.config.guild(ctx.guild).heist_embed.hsponsor_field.name.set(sponsor_name)
+        await self.config.guild(ctx.guild).heist_embed.hsponsor_field.value.set(sponsor_value)
+        await self.config.guild(ctx.guild).heist_embed.hsponsor_field.inline.set(sponsor_inline)
+        await ctx.send(f"Successfully set the heist sponsor field to:\n```py\nName: {sponsor_name}\nValue: {sponsor_value}\nInline: {sponsor_inline}```")
+    
+    @managerutilsset_embed_heists_fields.command(name="amount", usage="<name> | <value> | <inline>")
+    async def managerutilsset_embed_heists_fields_amount(self, ctx: commands.Context, *, asfield = None):
+        """
+        Customize the heist embed amount field.
+        
+        Pass without arguments to reset the amount field.
+        For the <inline> argument you must only answer with `1` for True or `0` for False and nothing else.
+        Split arguments with `|`.
+        
+        Available variables:
+        ` - ` {amount} - the amount from `[p]heistping` (can only be used in value argument.)
+        """
+        if not asfield:
+            await self.config.guild(ctx.guild).heist_embed.hsponsor_field.name.clear()
+            await self.config.guild(ctx.guild).heist_embed.hsponsor_field.value.clear()
+            await self.config.guild(ctx.guild).heist_embed.hsponsor_field.inline.clear()
+            return await ctx.send("Successfully resetted the heist amount field.")
+        
+        asfield = asfield.split("|")
+        maxargs = len(asfield)
+
+        if maxargs > 3:
+            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+        if maxargs < 3:
+            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+        
+        amount_name = asfield[0]
+        amount_name.replace(" ", "")
+        amount_value = asfield[1]
+        amount_value.replace(" ", "")
+        amount_inline = asfield[2]
+        amount_inline.replace(" ", "")
+        if "1" in amount_inline:
+            amount_inline = True
+        elif "0" in amount_inline:
+            amount_inline = False
+        else:
+            return await ctx.send("Your answer for the `<inline>` argument should only be `1` for True or `0` for False.")
+        
+        await self.config.guild(ctx.guild).heist_embed.hamount_field.name.set(amount_name)
+        await self.config.guild(ctx.guild).heist_embed.hamount_field.value.set(amount_value)
+        await self.config.guild(ctx.guild).heist_embed.hamount_field.inline.set(amount_inline)
+        await ctx.send(f"Successfully set the heist amount field to:\n```py\nName: {amount_name}\nValue: {amount_value}\nInline: {amount_inline}```")
+    
+    @managerutilsset_embed_heists_fields.command(name="requirements", aliases=["req"], usage="<name> | <value> | <inline>")
+    async def managerutilsset_embed_heists_fields_requirements(self, ctx: commands.Context, *, rsfield = None):
+        """
+        Customize the heist embed requirements field.
+        
+        Pass without arguments to reset the requirements field.
+        For the <inline> argument you must only answer with `1` for True or `0` for False and nothing else.
+        Split arguments with `|`.
+        
+        Available variables:
+        ` - ` {requirements} - the requirements from `[p]heistping` (can only be used in value argument.)
+        """
+        if not rsfield:
+            await self.config.guild(ctx.guild).heist_embed.hrequirements_field.name.clear()
+            await self.config.guild(ctx.guild).heist_embed.hrequirements_field.value.clear()
+            await self.config.guild(ctx.guild).heist_embed.hrequirements_field.inline.clear()
+            return await ctx.send("Successfully resetted the heist requirements field.")
+        
+        rsfield = rsfield.split("|")
+        maxargs = len(rsfield)
+
+        if maxargs > 3:
+            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+        if maxargs < 3:
+            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+        
+        requirements_name = rsfield[0]
+        requirements_name.replace(" ", "")
+        requirements_value = rsfield[1]
+        requirements_value.replace(" ", "")
+        requirements_inline = rsfield[2]
+        requirements_inline.replace(" ", "")
+        if "1" in requirements_inline:
+            requirements_inline = True
+        elif "0" in requirements_inline:
+            requirements_inline = False
+        else:
+            return await ctx.send("Your answer for the `<inline>` argument should only be `1` for True or `0` for False.")
+        
+        await self.config.guild(ctx.guild).heist_embed.hrequirements_field.name.set(requirements_name)
+        await self.config.guild(ctx.guild).heist_embed.hrequirements_field.value.set(requirements_value)
+        await self.config.guild(ctx.guild).heist_embed.hrequirements_field.inline.set(requirements_inline)
+        await ctx.send(f"Successfully set the heist requirements field to:\n```py\nName: {requirements_name}\nValue: {requirements_value}\nInline: {requirements_inline}```")
+    
+    @managerutilsset_embed_heists_fields.command(name="message", aliases=["msg"], usage="<name> | <value> | <inline>")
+    async def managerutilsset_embed_heists_fields_message(self, ctx: commands.Context, *, hmfield = None):
+        """
+        Customize the heist embed message field.
+        
+        Pass without arguments to reset the message field.
+        For the <inline> argument you must only answer with `1` for True or `0` for False and nothing else.
+        Split arguments with `|`.
+        
+        Available variables:
+        ` - ` {message} - the heist sponsor message from `[p]heistping` (can only be used in value argument.)
+        """
+        if not hmfield:
+            await self.config.guild(ctx.guild).heist_embed.hmessage_field.name.clear()
+            await self.config.guild(ctx.guild).heist_embed.hmessage_field.value.clear()
+            await self.config.guild(ctx.guild).heist_embed.hmessage_field.inline.clear()
+            return await ctx.send("Successfully resetted the heist message field.")
+        
+        hmfield = hmfield.split("|")
+        maxargs = len(hmfield)
+
+        if maxargs > 3:
+            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+        if maxargs < 3:
+            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+        
+        message_name = hmfield[0]
+        message_name.replace(" ", "")
+        message_value = hmfield[1]
+        message_value.replace(" ", "")
+        message_inline = hmfield[2]
+        message_inline.replace(" ", "")
+        if "1" in message_inline:
+            message_inline = True
+        elif "0" in message_inline:
+            message_inline = False
+        else:
+            return await ctx.send("Your answer for the `<inline>` argument should only be `1` for True or `0` for False.")
+        
+        await self.config.guild(ctx.guild).heist_embed.hmessage_field.name.set(message_name)
+        await self.config.guild(ctx.guild).heist_embed.hmessage_field.value.set(message_value)
+        await self.config.guild(ctx.guild).heist_embed.hmessage_field.inline.set(message_inline)
+        await ctx.send(f"Successfully set the heist message field to:\n```py\nName: {message_name}\nValue: {message_value}\nInline: {message_inline}```")
+    
+    @managerutilsset_embed_heists_fields.command(name="cltoggle")
+    async def managerutilsset_embed_heists_fields_cltoggle(self, ctx):
+        """
+        Toggle whether to show the Checklist field or not.
+        """
+        current = await self.config.guild(ctx.guild).heist_embed.checklist_toggle()
+        await self.config.guild(ctx.guild).heist_embed.checklist_toggle.set(not current)
+        status = "will not" if current else "will"
+        return await ctx.send(f"I {status} show the checklist field.")
+    
     @managerutilsset.group(name="manager", aliases=["managers"])
     async def managerutilsset_manager(self, ctx):
         """
@@ -634,83 +1536,164 @@ class ManagerUtils(commands.Cog):
     
     @managerutilsset.command(name="showsetting", aliases=["showsettings", "ss", "showset"])
     async def managerutilsset_showsettings(self, ctx):
+        # sourcery skip: low-code-quality
         """
         See the current settings for this guild.
         """
         settings = await self.config.guild(ctx.guild).all()
-
-        gmanrole = humanize_list([f'<@&{role}>' for role in settings["giveaway_manager_ids"]]) if settings["giveaway_manager_ids"] else "No giveaway managers set."
-
-        emanrole = humanize_list([f'<@&{role}>' for role in settings["event_manager_ids"]]) if settings["event_manager_ids"] else "No event managers set."
-
-        hmanrole = humanize_list([f'<@&{role}>' for role in settings["heist_manager_ids"]]) if settings["heist_manager_ids"] else "No heist managers set."
-
-        groleid = settings["giveaway_ping_role_id"]
-        gpingrole = f"<@&{groleid}>" if groleid else "No giveaway ping role set."
-
-        eroleid = settings["event_ping_role_id"]
-        epingrole = f"<@&{eroleid}>" if eroleid else "No event ping role set."
-
-        hroleid = settings["heist_ping_role_id"]
-        hpingrole = f"<@&{hroleid}>" if hroleid else "No heist ping role set."
-
-        glogid = settings["giveaway_log_channel_id"]
-        glogchan = f"<#{glogid}>" if glogid else "No giveaway log channel set."
-
-        elogid = settings["event_log_channel_id"]
-        elogchan = f"<#{elogid}>" if elogid else "No event log channel set."
-
-        hlogid = settings["heist_log_channel_id"]
-        hlogchan = f"<#{hlogid}>" if hlogid else "No heist log channel set."
-
-        gannchan = humanize_list([f'<#{channel}>' for channel in settings["giveaway_announcement_channel_ids"]]) if settings["giveaway_announcement_channel_ids"] else "No giveaway announcement channels set."
-
-        eannchan = humanize_list([f'<#{channel}>' for channel in settings["event_announcement_channel_ids"]]) if settings["event_announcement_channel_ids"] else "No event announcement channels set."
-
-        hannchan = humanize_list([f'<#{channel}>' for channel in settings["heist_announcement_channel_ids"]]) if settings["heist_announcement_channel_ids"] else "No heist announcement channels set."
-
+        gaw = await self.config.guild(ctx.guild).giveaway_embed.all()
+        event = await self.config.guild(ctx.guild).event_embed.all()
+        snfield = await self.config.guild(ctx.guild).event_embed.sponsor_field.all()
+        nnfield = await self.config.guild(ctx.guild).event_embed.name_field.all()
+        pnfield = await self.config.guild(ctx.guild).event_embed.prize_field.all()
+        mnfield = await self.config.guild(ctx.guild).event_embed.message_field.all()
+        heist = await self.config.guild(ctx.guild).heist_embed.all()
+        hsnfield = await self.config.guild(ctx.guild).heist_embed.hsponsor_field.all()
+        hanfield = await self.config.guild(ctx.guild).heist_embed.hamount_field.all()
+        hrnfield = await self.config.guild(ctx.guild).heist_embed.hrequirements_field.all()
+        hmnfield = await self.config.guild(ctx.guild).heist_embed.hmessage_field.all()
+        
+        role_set = f"""
+        > **Manager Roles:**
+        ` - ` Giveaway Manager Roles: {humanize_list([f'<@&{role}>' for role in settings["giveaway_manager_ids"]]) if settings["giveaway_manager_ids"] else "`No giveaway managers set.`"}
+        ` - ` Event Manager Roles: {humanize_list([f'<@&{role}>' for role in settings["event_manager_ids"]]) if settings["event_manager_ids"] else "`No event managers set.`"}
+        ` - ` Heist Manager Roles: {humanize_list([f'<@&{role}>' for role in settings["heist_manager_ids"]]) if settings["heist_manager_ids"] else "`No heist managers set.`"}
+        
+        > **Ping Roles:**
+        ` - ` Giveaway Ping Role: {f"<@&{settings['giveaway_ping_role_id']}>" if settings["giveaway_ping_role_id"] else "`No giveaway ping role set.`"}
+        ` - ` Event Ping Role: {f"<@&{settings['event_ping_role_id']}>" if settings["event_ping_role_id"] else "`No event ping role set.`"}
+        ` - ` Heist Ping Role: {f"<@&{settings['heist_ping_role_id']}>" if settings["heist_ping_role_id"] else "`No heist ping role set.`"}
+        """
+        
+        channel_set = f"""
+        > **Announcement Channels:**
+        ` - ` Giveaway Announcement Channels: {humanize_list([f'<#{channel}>' for channel in settings["giveaway_announcement_channel_ids"]]) if settings["giveaway_announcement_channel_ids"] else "`No giveaway announcement channels set.`"}
+        ` - ` Event Announcement Channels: {humanize_list([f'<#{channel}>' for channel in settings["event_announcement_channel_ids"]]) if settings["event_announcement_channel_ids"] else "`No event announcement channels set.`"}
+        ` - ` Heist Announcement Channel: {humanize_list([f'<#{channel}>' for channel in settings["heist_announcement_channel_ids"]]) if settings["heist_announcement_channel_ids"] else "`No heist announcement channels set.`"}
+        
+        > **Log Channels:**
+        ` - ` Giveaway Log Channel: {f"<#{settings['giveaway_log_channel_id']}>" if settings["giveaway_log_channel_id"] else "`No giveaway log channel set.`"}
+        ` - ` Event Log Channel: {f"<#{settings['event_log_channel_id']}>" if settings["event_log_channel_id"] else "`No event log channel set.`"}
+        ` - ` Heist Log Channel: {f"<#{settings['heist_log_channel_id']}>" if settings["heist_log_channel_id"] else "`No heist log channel set.`"}
+        """
+        
+        gaw_embed = f"""
+        **Title:**
+        {box(gaw["title"] or gembed_title, 'py')}
+        **Description:**
+        {box(gaw["description"] or gembed_description, 'py')}
+        **Thumbnail:**
+        {box(gaw["thumbnail"] or gembed_thumbnail if gembed_thumbnail else "removed", 'py')}
+        **Image:**
+        {box(gaw["image"] or gembed_image if gembed_image else "None", 'py')}
+        **Colour:**
+        {box(gaw["str_colour"] or await ctx.embed_colour(), 'py')}
+        **Footer Text:**
+        {box(gaw["footer_text"] or gembed_footer_text, 'py')}
+        **Footer Icon:**
+        {box(gaw["footer_icon"] or gembed_footer_icon if gembed_footer_icon else "None", 'py')}
+        **Show Footer:**
+        {box(gaw["show_footer"], 'py')}
+        """
+        
+        event_embed = f"""
+        **Title:**
+        {box(event["title"] or eembed_title, 'py')}
+        **Description:**
+        {box(event["description"] or eembed_description if eembed_description else "None", 'py')}
+        **Thumbnail:**
+        {box(event["thumbnail"] or eembed_thumbnail if eembed_thumbnail else "removed", 'py')}
+        **Image:**
+        {box(event["image"] or eembed_image if eembed_image else "None", 'py')}
+        **Colour:**
+        {box(event["str_colour"] or await ctx.embed_colour(), 'py')}
+        **Footer Text:**
+        {box(event["footer_text"] or eembed_footer_text, 'py')}
+        **Footer Icon:**
+        {box(event["footer_icon"] or eembed_footer_icon if eembed_footer_icon else "None", 'py')}
+        **Show Footer:**
+        {box(event["show_footer"], 'py')}
+        **Sponsor Field:**
+        ```py\nName: {snfield["name"] or eembed_sponsor_field_name}\nValue: {snfield["value"] or eembed_sponsor_field_value}\nInline: {snfield["inline"]}\n```
+        **Name Field:**
+        ```py\nName: {nnfield["name"] or eembed_name_field_name}\nValue: {nnfield["value"] or eembed_name_field_value}\nInline: {nnfield["inline"]}\n```
+        **Prize Field:**
+        ```py\nName: {pnfield["name"] or eembed_prize_field_name}\nValue: {pnfield["value"] or eembed_prize_field_value}\nInline: {pnfield["inline"]}\n```
+        **Message Field:**
+        ```py\nName: {mnfield["name"] or eembed_message_field_name}\nValue: {mnfield["value"] or eembed_message_field_value}\nInline: {mnfield["inline"]}\n```
+        """
+        
+        heist_embed = f"""
+        **Title:**
+        {box(heist["title"] or hembed_title, 'py')}
+        **Description:**
+        {box(heist["description"] or hembed_description if hembed_description else "None", 'py')}
+        **Thumbnail:**
+        {box(heist["thumbnail"] or hembed_thumbnail if hembed_thumbnail else "removed", 'py')}
+        **Image:**
+        {box(heist["image"] or hembed_image if hembed_image else "None", 'py')}
+        **Colour:**
+        {box(heist["str_colour"] or await ctx.embed_colour(), 'py')}
+        **Footer Text:**
+        {box(heist["footer_text"] or hembed_footer_text, 'py')}
+        **Footer Icon:**
+        {box(heist["footer_icon"] or hembed_footer_icon if hembed_footer_icon else "None", 'py')}
+        **Show Footer:**
+        {box(heist["show_footer"], 'py')}
+        **Show Checklist:**
+        {box(heist["checklist_toggle"], 'py')}
+        **Sponsor Field:**
+        ```py\nName: {hsnfield["name"] or hembed_sponsor_field_name}\nValue: {hsnfield["value"] or hembed_sponsor_field_value}\nInline: {hsnfield["inline"]}\n```
+        **Amount Field:**
+        ```py\nName: {hanfield["name"] or hembed_amount_field_name}\nValue: {hanfield["value"] or hembed_amount_field_value}\nInline: {hanfield["inline"]}\n```
+        **Requirements Field:**
+        ```py\nName: {hrnfield["name"] or hembed_requirements_field_name}\nValue: {hrnfield["value"] or hembed_requirements_field_value}\nInline: {hrnfield["inline"]}\n```
+        **Message Field:**
+        ```py\nName: {hmnfield["name"] or hembed_message_field_name}\nValue: {hmnfield["value"] or hembed_message_field_value}\nInline: {hmnfield["inline"]}\n```
+        """
+        
         em1 = discord.Embed(
-            title="Manager role settings",
+            title="Role settings",
+            description=role_set,
             colour=await ctx.embed_colour(),
         )
-        em1.set_author(name=f"Settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
-        em1.set_footer(text=f"Command executed by: {ctx.author} | Page (1/4)", icon_url=ctx.author.avatar_url)
-        em1.add_field(name="Giveaway Manager Role:", value=gmanrole, inline=False)
-        em1.add_field(name="Event Manager Role:", value=emanrole, inline=False)
-        em1.add_field(name="Heist Manager Role:", value=hmanrole, inline=False)
+        em1.set_author(name=f"ManagerUtils settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
+        em1.set_footer(text=f"Command executed by: {ctx.author} | Page (1/5)", icon_url=ctx.author.avatar_url)
         
         em2 = discord.Embed(
-            title="Ping role settings",
+            title="Channel settings",
+            description=channel_set,
             colour=await ctx.embed_colour(),
         )
-        em2.set_author(name=f"Settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
-        em2.set_footer(text=f"Command executed by: {ctx.author} | Page (2/4)", icon_url=ctx.author.avatar_url)
-        em2.add_field(name="Giveaway Ping Role:", value=gpingrole, inline=False)
-        em2.add_field(name="Event Ping Role:", value=epingrole, inline=False)
-        em2.add_field(name="Heist Ping Role:", value=hpingrole, inline=False)
+        em2.set_author(name=f"ManagerUtils settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
+        em2.set_footer(text=f"Command executed by: {ctx.author} | Page (3/5)", icon_url=ctx.author.avatar_url)
         
         em3 = discord.Embed(
-            title="Log channel settings",
+            title="Giveaway embed settings",
+            description=gaw_embed,
             colour=await ctx.embed_colour(),
         )
-        em3.set_author(name=f"Settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
-        em3.set_footer(text=f"Command executed by: {ctx.author} | Page (3/4)", icon_url=ctx.author.avatar_url)
-        em3.add_field(name="Giveaway Log Channel:", value=glogchan, inline=False)
-        em3.add_field(name="Event Log Channel:", value=elogchan, inline=False)
-        em3.add_field(name="Heist Log Channel:", value=hlogchan, inline=False)
+        em3.set_author(name=f"ManagerUtils settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
+        em3.set_footer(text=f"Command executed by: {ctx.author} | Page (3/5)", icon_url=ctx.author.avatar_url)
         
         em4 = discord.Embed(
-            title="Announcement channel settings",
+            title="Event embed settings",
+            description=event_embed,
             colour=await ctx.embed_colour(),
         )
-        em4.set_author(name=f"Settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
-        em4.set_footer(text=f"Command executed by: {ctx.author} | Page (4/4)", icon_url=ctx.author.avatar_url)
-        em4.add_field(name="Giveaway Announcement Channels:", value=gannchan, inline=False)
-        em4.add_field(name="Event Announcement Channels:", value=eannchan, inline=False)
-        em4.add_field(name="Heist Announcement Channel:", value=hannchan, inline=False)
+        em4.set_author(name=f"ManagerUtils settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
+        em4.set_footer(text=f"Command executed by: {ctx.author} | Page (4/5)", icon_url=ctx.author.avatar_url)
         
-        embeds = [em1, em2, em3, em4]
-        return await menu(ctx, embeds, controls=DEFAULT_CONTROLS, timeout=60)
+        em5 = discord.Embed(
+            title="Heist embed settings",
+            description=heist_embed,
+            colour=await ctx.embed_colour(),
+        )
+        em5.set_author(name=f"ManagerUtils settings for [{ctx.guild}]", icon_url=ctx.guild.icon_url)
+        em5.set_footer(text=f"Command executed by: {ctx.author} | Page (5/5)", icon_url=ctx.author.avatar_url)
+        
+        embeds = [em1, em2, em3, em4, em5]
+        await menu(ctx, embeds, controls=DEFAULT_CONTROLS, timeout=60)
     
     @managerutilsset.command(name="reset")
     async def managerutils_reset(self, ctx):
@@ -743,7 +1726,7 @@ class ManagerUtils(commands.Cog):
         [p]heistping`
         """
         gping = f"Syntax: {ctx.prefix}giveawayping <sponsor> | <prize> | [message]\nAlias: {ctx.prefix}gping"
-        eping = f"Syntax: {ctx.prefix}eventping <sponsor> | <event_name> | <prize> | [requirements] | [message]\nAlias: {ctx.prefix}eping"
+        eping = f"Syntax: {ctx.prefix}eventping <sponsor> | <event_name> | <prize> | [message]\nAlias: {ctx.prefix}eping"
         hping = f"Syntax: {ctx.prefix}heistping <sponsor> | <amount> | [requirements] | [message]\nAlias: {ctx.prefix}hping"
         
         d1 = f"""
@@ -769,9 +1752,6 @@ class ManagerUtils(commands.Cog):
         ` - ` The sponsor mention required for the sponsor field.
         **Event_Name**
         ` - ` The name or type of the event.
-        **Requirements**
-        ` - ` The optional requirements for the event. (this can be anything like roles, messages, do this do that or anything you can imagine)
-        ` - ` Pass `none` if None.
         **Prize**
         ` - ` The prize of the event.
         **Message**
@@ -844,66 +1824,88 @@ class ManagerUtils(commands.Cog):
         """
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = await self.config.guild(ctx.guild).giveaway_announcement_channel_ids()
-        
+
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized giveaway announcement channels. Ask an admin to add one.")
-        
+
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
-        
+
         giveaways = giveaways.split("|")
         maxargs = len(giveaways)
-        
+
         if maxargs > 3:
             return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
         if maxargs < 3:
             return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
+
+        sponsor = giveaways[0]
+        sponsor.replace(" ", "")
+        prize = giveaways[1]
+        prize.replace(" ", "")
+        message = giveaways[2]
+        message.replace(" ", "")
+
+        glogchan = ctx.guild.get_channel(settings["giveaway_log_channel_id"])
+        gpingrole = ctx.guild.get_role(settings["giveaway_ping_role_id"])
+        set_footer_icon = await self.config.guild(ctx.guild).giveaway_embed.footer_icon()
+        set_footer_text = await self.config.guild(ctx.guild).giveaway_embed.footer_text()
+        set_title = await self.config.guild(ctx.guild).giveaway_embed.title()
+        set_description = await self.config.guild(ctx.guild).giveaway_embed.description()
+        set_image = await self.config.guild(ctx.guild).giveaway_embed.image()
+        set_thumbnail = await self.config.guild(ctx.guild).giveaway_embed.thumbnail()
+        set_colour = await self.config.guild(ctx.guild).giveaway_embed.colour_value()
+        show_footer = await self.config.guild(ctx.guild).giveaway_embed.show_footer()
         
+        gembed = discord.Embed(
+            title=f"{set_title or gembed_title}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{prize}", f"{prize}"),
+            description=f"{set_description or gembed_description}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{prize}", f"{prize}"),
+            colour=set_colour or await ctx.embed_colour(),
+            timestamp=datetime.datetime.now(datetime.timezone.utc),
+        )
+        gembed.set_image(
+            url=set_image or gembed_image
+        )
+        gembed.set_thumbnail(
+            url=f"{set_thumbnail or gembed_thumbnail}".replace("{host.avatar_url}", f"{ctx.author.avatar_url}").replace("{guild.icon_url}", f"{ctx.guild.icon_url}").replace("removed", "")
+        )
+
+        if show_footer:
+            gembed.set_footer(
+                text=f"{set_footer_text or gembed_footer_text}".replace("{host}", f"{ctx.author}").replace("{host.id}", f"{ctx.author.id}").replace("{guild}", f"{ctx.guild.name}"),
+                icon_url=f"{set_footer_icon or gembed_footer_icon}".replace("{host.avatar_url}", f"{ctx.author.avatar_url}").replace("{guild.icon_url}", f"{ctx.guild.icon_url}").replace("removed", "")
+            )
+
         if await self.config.guild(ctx.guild).auto_delete_commands():
             with contextlib.suppress(Exception):
                 await ctx.message.delete()
-        
-        if not await self.config.guild(ctx.guild).auto_delete_commands():
-            with contextlib.suppress(Exception):
-                await ctx.tick()
-        
-        glogchan = ctx.guild.get_channel(settings["giveaway_log_channel_id"])
-        gpingrole = ctx.guild.get_role(settings["giveaway_ping_role_id"])
-        
-        gembed = discord.Embed(
-            title="Server Giveaway Time!",
-            description=f"**Sponsor:** {giveaways[0]}\n**Prize:** {giveaways[1]}\n**Message:** {giveaways[1]}",
-            colour=await ctx.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc),
-        )
-        gembed.set_footer(text=f"Hosted by: {ctx.author}", icon_url=ctx.author.avatar_url)
-        
+
         if not gpingrole:
             try:
                 glog = await ctx.send(content=f"No giveaway ping role set. Use `{ctx.prefix}muset pingrole grole` to set one.", embed=gembed)
             except Exception:
                 return await ctx.author.send("It appears that I not have permission to send a message from that channel.")
-        
+
         if gpingrole:
             try:
                 am = discord.AllowedMentions(roles=True, users=False, everyone=False)
                 glog = await ctx.send(embed=gembed, content=gpingrole.mention, allowed_mentions=am)
             except Exception:
                 return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-            
+
         if glogchan:
             try:
                 embed = discord.Embed(
                     title="Giveaway Logging",
-                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {giveaways[0]}\n**Prize:** {giveaways[1]}\n**Message:** {giveaways[2]}",
+                    description=f"**Host:** {ctx.author.mention}\n**Channel:** {ctx.channel.mention}\n**Sponsor:** {sponsor}\n**Prize:** {prize}\n**Message:** {message}",
                     colour=ctx.author.colour,
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
-                embed.set_footer(text=f"Host ID: {ctx.author.id}", icon_url=ctx.author.avatar_url)
+                embed.set_footer(text=f"Host: {ctx.author} (ID: {ctx.author.id})", icon_url=ctx.author.avatar_url)
                 embed.set_thumbnail(url=ctx.guild.icon_url)
-                
+
                 button = url_button.URLButton(
-                    "Jump To Giveaway Ping",
+                    "Jump To Message",
                     glog.jump_url,
                 )
                 await url_button.send_message(
@@ -925,7 +1927,7 @@ class ManagerUtils(commands.Cog):
         ctx: commands.Context,
         *,
         events
-    ):  # sourcery skip: low-code-quality
+    ):    # sourcery skip: low-code-quality
         """
         Ping for server events.
         
@@ -935,57 +1937,100 @@ class ManagerUtils(commands.Cog):
         """
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = await self.config.guild(ctx.guild).event_announcement_channel_ids()
-        
+
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized event announcement channels. Ask an admin to add one.")
-        
+
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
-        
+
         events = events.split("|")
         maxargs = len(events)
-        
+
         if maxargs > 4:
             return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
         if maxargs < 4:
             return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
+
+        sponsor = events[0]
+        sponsor.replace(" ", "")
+        name = events[1]
+        name.replace(" ", "")
+        prize = events[2]
+        prize.replace(" ", "")
+        message = events[3]
+        message.replace(" ", "")
+
+        elogchan = ctx.guild.get_channel(settings["event_log_channel_id"])
+        epingrole = ctx.guild.get_role(settings["event_ping_role_id"])
+        set_footer_icon = await self.config.guild(ctx.guild).event_embed.footer_icon()
+        set_footer_text = await self.config.guild(ctx.guild).event_embed.footer_text()
+        set_title = await self.config.guild(ctx.guild).event_embed.title()
+        set_description = await self.config.guild(ctx.guild).event_embed.description()
+        set_image = await self.config.guild(ctx.guild).event_embed.image()
+        set_thumbnail = await self.config.guild(ctx.guild).event_embed.thumbnail()
+        set_colour = await self.config.guild(ctx.guild).event_embed.colour_value()
+        show_footer = await self.config.guild(ctx.guild).event_embed.show_footer()
+        sponsor_field = await self.config.guild(ctx.guild).event_embed.sponsor_field.all()
+        name_field = await self.config.guild(ctx.guild).event_embed.name_field.all()
+        prize_field = await self.config.guild(ctx.guild).event_embed.prize_field.all()
+        message_field = await self.config.guild(ctx.guild).event_embed.message_field.all()
         
+        eembed = discord.Embed(
+            title=f"{set_title or eembed_title}".replace("{guild}", f"{ctx.guild.name}"),
+            description=f"{set_description or eembed_description}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{prize}", f"{prize}"),
+            colour=set_colour or await ctx.embed_colour(),
+            timestamp=datetime.datetime.now(datetime.timezone.utc),
+        )
+        eembed.set_image(
+            url=set_image or eembed_image
+        )
+        eembed.set_thumbnail(
+            url=f"{set_thumbnail or eembed_thumbnail}".replace("{host.avatar_url}", f"{ctx.author.avatar_url}").replace("{guild.icon_url}", f"{ctx.guild.icon_url}").replace("removed", ""),
+        )
+        eembed.add_field(
+            name=sponsor_field["name"] or eembed_sponsor_field_name,
+            value=f"{sponsor_field['value'] or eembed_sponsor_field_value}".replace("{sponsor}", f"{sponsor}"),
+            inline=sponsor_field["inline"]
+        )
+        eembed.add_field(
+            name=name_field["name"] or eembed_name_field_name,
+            value=f"{name_field['value'] or eembed_name_field_value}".replace("{name}", f"{name}"),
+            inline=name_field["inline"]
+        )
+        eembed.add_field(
+            name=prize_field["name"] or eembed_prize_field_name,
+            value=f"{prize_field['value'] or eembed_prize_field_value}".replace("{prize}", f"{prize}"),
+            inline=prize_field["inline"]
+        )
+        eembed.add_field(
+            name=message_field["name"] or eembed_message_field_name,
+            value=f"{message_field['value'] or eembed_message_field_value}".replace("{message}", f"{message}"),
+            inline=message_field["inline"]
+        )
+        if show_footer:
+            eembed.set_footer(
+                text=f"{set_footer_text or eembed_footer_text}".replace("{host}", f"{ctx.author}").replace("{host.id}", f"{ctx.author.id}").replace("{guild}", f"{ctx.guild.name}"),
+                icon_url=f"{set_footer_icon or eembed_footer_icon}".replace("{host.avatar_url}", f"{ctx.author.avatar_url}").replace("{guild.icon_url}", f"{ctx.guild.icon_url}").replace("removed", "")
+            )
+
         if await self.config.guild(ctx.guild).auto_delete_commands():
             with contextlib.suppress(Exception):
                 await ctx.message.delete()
-        
-        if not await self.config.guild(ctx.guild).auto_delete_commands():
-            with contextlib.suppress(Exception):
-                await ctx.tick()
-                
-        elogchan = ctx.guild.get_channel(settings["event_log_channel_id"])
-        epingrole = ctx.guild.get_role(settings["event_ping_role_id"])
-        
-        eembed = discord.Embed(
-            title="Server Event Time!",
-            colour=await ctx.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc),
-        )
-        eembed.set_footer(text=f"Hosted by: {ctx.author} (ID: {ctx.author.id})", icon_url=ctx.author.avatar_url)
-        eembed.set_thumbnail(url=ctx.guild.icon_url)
-        eembed.add_field(name="Event Sponsor:", value=events[0], inline=False)
-        eembed.add_field(name="Event Name:", value=events[1], inline=True)
-        eembed.add_field(name="Event Prize:", value=events[2], inline=True)
-        eembed.add_field(name="Message:", value=events[3], inline=False)
-        
+
         if not epingrole:
             try:
                 elog = await ctx.send(content=f"No event ping role set. Use `{ctx.prefix}muset pingrole erole` to set one.", embed=eembed)
             except Exception:
                 return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-        
+
         if epingrole:
             try:
                 am = discord.AllowedMentions(roles=True, users=False, everyone=False)
                 elog = await ctx.send(embed=eembed, content=epingrole.mention, allowed_mentions=am)
             except Exception:
                 return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-            
+
         if elogchan:
             try:
                 embed = discord.Embed(
@@ -994,11 +2039,11 @@ class ManagerUtils(commands.Cog):
                     colour=ctx.author.colour,
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
-                embed.set_footer(text=f"Host ID: {ctx.author.id}", icon_url=ctx.author.avatar_url)
+                embed.set_footer(text=f"Host: {ctx.author} (ID: {ctx.author.id})", icon_url=ctx.author.avatar_url)
                 embed.set_thumbnail(url=ctx.guild.icon_url)
-                
+
                 button = url_button.URLButton(
-                    "Jump To Event Ping",
+                    "Jump To Message",
                     elog.jump_url,
                 )
                 await url_button.send_message(
@@ -1044,30 +2089,81 @@ class ManagerUtils(commands.Cog):
             return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
         if maxargs < 4:
             return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
+               
+        sponsor = heists[0]
+        sponsor.replace(" ", "")
+        amount = heists[1]
+        amount.replace(" ", "")
+        requirements = heists[2]
+        requirements.replace(" ", "")
+        message = heists[3]
+        message.replace(" ", "")
+        
+        hlogchan = ctx.guild.get_channel(settings["heist_log_channel_id"])
+        hpingrole = ctx.guild.get_role(settings["heist_ping_role_id"])
+        set_footer_icon = await self.config.guild(ctx.guild).heist_embed.footer_icon()
+        set_footer_text = await self.config.guild(ctx.guild).heist_embed.footer_text()
+        set_title = await self.config.guild(ctx.guild).heist_embed.title()
+        set_description = await self.config.guild(ctx.guild).heist_embed.description()
+        set_image = await self.config.guild(ctx.guild).heist_embed.image()
+        set_thumbnail = await self.config.guild(ctx.guild).heist_embed.thumbnail()
+        set_colour = await self.config.guild(ctx.guild).heist_embed.colour_value()
+        show_footer = await self.config.guild(ctx.guild).heist_embed.show_footer()
+        hsponsor_field = await self.config.guild(ctx.guild).heist_embed.hsponsor_field.all()
+        hamount_field = await self.config.guild(ctx.guild).heist_embed.hamount_field.all()
+        hrequirements_field = await self.config.guild(ctx.guild).heist_embed.hrequirements_field.all()
+        hmessage_field = await self.config.guild(ctx.guild).heist_embed.hmessage_field.all()
+        
+        hembed = discord.Embed(
+            title=f"{set_title or hembed_title}".replace("{guild}", f"{ctx.guild.name}"),
+            description=f"{set_description or hembed_description}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{requirements}", f"{requirements}"),
+            colour=set_colour or await ctx.embed_colour(),
+            timestamp=datetime.datetime.now(datetime.timezone.utc),
+        )
+        hembed.set_image(
+            url=set_image or hembed_image
+        )
+        hembed.set_thumbnail(
+            url=f"{set_thumbnail or hembed_thumbnail}".replace("{host.avatar_url}", f"{ctx.author.avatar_url}").replace("{guild.icon_url}", f"{ctx.guild.icon_url}").replace("removed", "")
+        )
+        hembed.add_field(
+            name=hsponsor_field["name"] or hembed_sponsor_field_name,
+            value=f"{hsponsor_field['value'] or hembed_sponsor_field_value}".replace("{sponsor}", f"{sponsor}"),
+            inline=hsponsor_field["inline"]
+        )
+        hembed.add_field(
+            name=hamount_field["name"] or hembed_amount_field_name,
+            value=f"{hamount_field['value'] or hembed_amount_field_value}".replace("{amount}", f"{amount}"),
+            inline=hamount_field["inline"]
+        )
+        
+        if await self.config.guild(ctx.guild).heist_embed.checklist_toggle():
+            hembed.add_field(
+                name="Checklist:",
+                value="` - ` Have a life saver on your inventory.\n` - ` Withdraw at least **1** coin.\n` - ` Press the big green `JOIN HEIST` button.\n` - ` Lastly don't get caught.",
+                inline=False
+            )
+        
+        hembed.add_field(
+            name=hrequirements_field["name"] or hembed_requirements_field_name,
+            value=f"{hrequirements_field['value'] or hembed_requirements_field_value}".replace("{requirements}", f"{requirements}"),
+            inline=False
+        )
+        hembed.add_field(
+            name=hmessage_field["name"] or hembed_message_field_name,
+            value=f"{hmessage_field['value'] or hembed_message_field_value}".replace("{message}", f"{message}"),
+            inline=False
+        )
+        
+        if show_footer:
+            hembed.set_footer(
+                text=f"{set_footer_text or hembed_footer_text}".replace("{host}", f"{ctx.author}").replace("{host.id}", f"{ctx.author.id}").replace("{guild}", f"{ctx.guild.name}"),
+                icon_url=f"{set_footer_icon or hembed_footer_icon}".replace("{host.avatar_url}", f"{ctx.author.avatar_url}").replace("{guild.icon_url}", f"{ctx.guild.icon_url}").replace("removed", "")
+            )
         
         if await self.config.guild(ctx.guild).auto_delete_commands():
             with contextlib.suppress(Exception):
                 await ctx.message.delete()
-        
-        if not await self.config.guild(ctx.guild).auto_delete_commands():
-            with contextlib.suppress(Exception):
-                await ctx.tick()
-                
-        hlogchan = ctx.guild.get_channel(settings["heist_log_channel_id"])
-        hpingrole = ctx.guild.get_role(settings["heist_ping_role_id"])
-        
-        hembed = discord.Embed(
-            title="Server Heist Time!",
-            colour=await ctx.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc),
-        )
-        hembed.set_footer(text=f"Hosted by: {ctx.author} (ID: {ctx.author.id})", icon_url=ctx.author.avatar_url)
-        hembed.set_thumbnail(url=ctx.guild.icon_url)
-        hembed.add_field(name="Heist Sponsor:", value=heists[0], inline=True)
-        hembed.add_field(name="Amount:", value=heists[1], inline=True)
-        hembed.add_field(name="Requirements:", value=heists[2], inline=False)
-        hembed.add_field(name="Checklist:", value="` - ` Have a life saver on your inventory.\n` - ` Withdraw at least **1** coin.\n` - ` Press the big green `JOIN HEIST` button.", inline=False)
-        hembed.add_field(name="Message:", value=heists[3], inline=False)
         
         if not hpingrole:
             try:
@@ -1090,11 +2186,11 @@ class ManagerUtils(commands.Cog):
                     colour=ctx.author.colour,
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
-                embed.set_footer(text=f"Host ID: {ctx.author.id}", icon_url=ctx.author.avatar_url)
+                embed.set_footer(text=f"Host: {ctx.author} (ID: {ctx.author.id})", icon_url=ctx.author.avatar_url)
                 embed.set_thumbnail(url=ctx.guild.icon_url)
                 
                 button = url_button.URLButton(
-                    "Jump To Heist Ping",
+                    "Jump To Message",
                     hlog.jump_url,
                 )
                 await url_button.send_message(

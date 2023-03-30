@@ -1,15 +1,4 @@
 # <----- GIVEAWAYS EMBED DATA ----->
-# AVAILABLE VARIABLES:
-# {prize} - the giveaway prize
-# {sponsor} - the sponsor
-# {message} - the sponsor message
-# {host} - the host username
-# {host.name} - the host name
-# {host.display_name} - the host guild nickname
-# {host.mention} - mentions the host
-# {host.id} - the host ID
-# {guild} - the guild name
-# {guild.icon_url} - the guild image
 
 gembed_description = "**Prize:** {prize}\n**Sponsor:** {sponsor}\n**Message:** {message}"
 gembed_footer_icon = "{host.avatar_url}"
@@ -19,17 +8,6 @@ gembed_thumbnail = ""
 gembed_title = "Server Giveaway Time!"
 
 # <----- EVENTS EMBED DATA ----->
-# {host} - the host
-# {host.name} - The host name
-# {host.display_name} - the host guild nickname
-# {host.mention} - mentions the host
-# {host.id} - the host ID
-# {guild} - the guild name
-# {guild.icon_url} - The guild image
-# {sponsor} - the sponsor
-# {eventname} - the name of the event
-# {prize} - the event prize
-# {message} - the sponsor message
 
 eembed_description = ""
 eembed_footer_icon = "{host.avatar_url}"
@@ -40,24 +18,13 @@ eembed_title = "Server Event Time!"
 eembed_sponsor_field_name = "Event Sponsor:"
 eembed_sponsor_field_value = "{sponsor}"
 eembed_name_field_name = "Event Name:"
-eembed_name_field_value = "{eventname}"
+eembed_name_field_value = "{name}"
 eembed_prize_field_name = "Event Prize:"
 eembed_prize_field_value = "{prize}"
 eembed_message_field_name = "Message:"
 eembed_message_field_value = "{message}"
 
 # <----- HEISTS EMBED DATA ----->
-# {host} - the host
-# {host.name} - The host name
-# {host.display_name} - the host guild nickname
-# {host.mention} - mentions the host
-# {host.id} - the host ID
-# {guild} - the guild name
-# {guild.icon_url} - The guild image
-# {sponsor} - the sponsor
-# {amount} - the heist amount
-# {requirements} - the requirements
-# {message} - the sponsor message
 
 hembed_description = ""
 hembed_footer_icon = "{host.avatar_url}"

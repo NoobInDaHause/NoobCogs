@@ -1,6 +1,8 @@
 from redbot.core import commands
 from redbot.core.utils import mod
 
+# credits go to cray for these custom checks
+
 def is_gman():
     async def predicate(ctx):
         gmans = await ctx.cog.config.guild(ctx.guild).giveaway_manager_ids()

@@ -8,6 +8,6 @@ with open(Path(__file__).parent / "info.json") as fp:
 
 from .managerutils import ManagerUtils
 
-def setup(bot: Red):
+async def setup(bot: Red):
     n = ManagerUtils(bot)
     bot.add_cog(n)
