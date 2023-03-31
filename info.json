@@ -7,6 +7,9 @@
     "author": [
         "Noobindahause#2808"
     ],
+    "min_bot_version": "3.4.0",
+    "hidden": false,
+    "disabled": false,
     "required_cogs": {},
     "requirements": [],
     "tags": [],
