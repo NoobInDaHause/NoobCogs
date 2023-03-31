@@ -8,6 +8,7 @@
         "Noobindahause#2808"
     ],
     "min_bot_version": "3.4.0",
+    "max_bot_version": "3.4.99",
     "hidden": false,
     "disabled": false,
     "required_cogs": {},

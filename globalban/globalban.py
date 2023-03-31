@@ -28,7 +28,7 @@ class GlobalBan(commands.Cog):
         default_global = {"banlist": [], "create_modlog": False}
         self.config.register_global(**default_global)
         
-    __version__ = "1.1.2"
+    __version__ = "1.1.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
