@@ -27,7 +27,7 @@ class GlobalBan(commands.Cog):
         default_global = {"banlist": [], "create_modlog": False}
         self.config.register_global(**default_global)
         
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -109,14 +109,14 @@ class GlobalBan(commands.Cog):
             except discord.HTTPException:
                 errors.append(f"**{guild}**")
                 
-        await ctx.send(f"Global banned that user in **{len(guilds)}** guilds.")
+        await ctx.send(f"Globally banned **{member}** in **{len(guilds)}** guilds.")
         
         if errors:
             humanize_globalban = humanize_list(errors)
             embeds = []
             for page in pagify(humanize_globalban, delims=["\n"], page_length=1000):
                 embed = discord.Embed(
-                    title="An error occured when banning that user in these guild(s)",
+                    title=f"An error occured while banning {member} in these guild(s)",
                     description=page,
                     colour=await ctx.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
@@ -161,14 +161,14 @@ class GlobalBan(commands.Cog):
             except discord.HTTPException:
                 errors.append(f"**{guild}**")
                 
-        await ctx.send(f"Global unbanned that user in **{len(guilds)}** guilds.")
+        await ctx.send(f"Globally unbanned **{member}** in **{len(guilds)}** guilds.")
         
         if errors:
             humanize_globalunban = humanize_list(errors)
             embeds = []
             for page in pagify(humanize_globalunban, delims=["\n"], page_length=1000):
                 embed = discord.Embed(
-                    title="An error occured when unbanning that user in these guild(s)",
+                    title=f"An error occured while unbanning {member} in these guild(s)",
                     description=page,
                     colour=await ctx.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
