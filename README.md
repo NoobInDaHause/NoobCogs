@@ -1,8 +1,8 @@
 # WintersCogs
 
-some random cogs for red made by me a noob at python.
+Some random cogs for red discord bot made by a noob at python.
 
-some of the cogs are badly coded and buggy so handle these cogs with care.
+Some of the cogs are badly coded and buggy so handle these cogs with care.
 
 ## Installation
 
@@ -20,6 +20,7 @@ some of the cogs are badly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
+| GlobalBan       |  v1.0.0   | Globally ban or unban a user from guilds the bot is in.          |
 | ManagerUtils    |  v2.0.2   | Some utility commands that are useful for managers from servers. |
 | ServerDonations |  v1.2.18  | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v2.1.23  | A fun split or steal game.                                       |
