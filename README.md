@@ -20,7 +20,7 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| GlobalBan       |  v1.1.3   | Globally ban or unban a user from guilds the bot is in.          |
+| GlobalBan       |  v1.1.4   | Globally ban or unban a user from guilds the bot is in.          |
 | ManagerUtils    |  v2.0.3   | Some utility commands that are useful for managers from servers. |
 | ServerDonations |  v1.2.19  | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v2.1.24  | A fun split or steal game.                                       |

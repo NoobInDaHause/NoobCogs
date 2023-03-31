@@ -24,11 +24,15 @@ class GlobalBan(commands.Cog):
     
     def __init__(self, bot: Red) -> None:
         self.bot = bot
+
         self.config = Config.get_conf(self, identifier=74654871231365754648, force_registration=True)
-        default_global = {"banlist": [], "create_modlog": False}
+        default_global = {
+            "banlist": [],
+            "create_modlog": False
+        }
         self.config.register_global(**default_global)
         
-    __version__ = "1.1.3"
+    __version__ = "1.1.4"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -107,6 +111,7 @@ class GlobalBan(commands.Cog):
                     )
                 async with self.config.banlist() as bl:
                     bl.append(user_id)
+                await asyncio.sleep(5)
             except discord.HTTPException:
                 errors.append(f"**{guild}**")
                 
@@ -159,6 +164,7 @@ class GlobalBan(commands.Cog):
                 async with self.config.banlist() as bl:
                     index = bl.index(user_id)
                     bl.pop(index)
+                await asyncio.sleep(5)
             except discord.HTTPException:
                 errors.append(f"**{guild}**")
                 
