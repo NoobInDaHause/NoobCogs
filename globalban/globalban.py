@@ -24,10 +24,10 @@ class GlobalBan(commands.Cog):
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         self.config = Config.get_conf(self, identifier=74654871231365754648, force_registration=True)
-        default_global = {"banlist": []}
+        default_global = {"banlist": [], "create_modlog": False}
         self.config.register_global(**default_global)
         
-    __version__ = "1.0.0"
+    __version__ = "1.1.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -92,17 +92,18 @@ class GlobalBan(commands.Cog):
             try:
                 guilds.append(guild)
                 await guild.ban(member, reason=f"Global Ban authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}")
-                await modlog.create_case(
-                bot=ctx.bot,
-                guild=guild,
-                created_at=datetime.datetime.now(datetime.timezone.utc),
-                action_type="globalban",
-                user=member,
-                moderator=ctx.bot.user,
-                reason=f"Authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}",
-                until=None,
-                channel=None,
-                )
+                if await self.config.create_modlog():
+                    await modlog.create_case(
+                    bot=ctx.bot,
+                    guild=guild,
+                    created_at=datetime.datetime.now(datetime.timezone.utc),
+                    action_type="globalban",
+                    user=member,
+                    moderator=ctx.bot.user,
+                    reason=f"Authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}",
+                    until=None,
+                    channel=None,
+                    )
                 async with self.config.banlist() as bl:
                     bl.append(user_id)
             except discord.HTTPException:
@@ -142,17 +143,18 @@ class GlobalBan(commands.Cog):
             try:
                 guilds.append(guild)
                 await guild.unban(member, reason=f"Global UnBan authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}")
-                await modlog.create_case(
-                bot=ctx.bot,
-                guild=guild,
-                created_at=datetime.datetime.now(datetime.timezone.utc),
-                action_type="globalunban",
-                user=member,
-                moderator=ctx.bot.user,
-                reason=f"Authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}",
-                until=None,
-                channel=None,
-                )
+                if await self.config.create_modlog():
+                    await modlog.create_case(
+                    bot=ctx.bot,
+                    guild=guild,
+                    created_at=datetime.datetime.now(datetime.timezone.utc),
+                    action_type="globalunban",
+                    user=member,
+                    moderator=ctx.bot.user,
+                    reason=f"Authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}",
+                    until=None,
+                    channel=None,
+                    )
                 async with self.config.banlist() as bl:
                     index = bl.index(user_id)
                     bl.pop(index)
@@ -216,3 +218,13 @@ class GlobalBan(commands.Cog):
             await ctx.send("Successfully resetted the globalban cog.")
         else:
             await ctx.send("Alright not doing that then.")
+    
+    @globalban.command(name="createmodlog")
+    async def globalban_createmodlog(self, ctx):
+        """
+        Toggle whether to make a modlog case when you globally ban or unban a user.
+        """
+        current = await self.config.create_modlog()
+        await self.config.create_modlog.set(not current)
+        status = "will not" if current else "will"
+        await ctx.send(f"I {status} make a modlog case whenever you globally ban or unban a user.")
