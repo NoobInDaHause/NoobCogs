@@ -42,7 +42,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.7"
+    __version__ = "1.3.8"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -124,7 +124,7 @@ class Afk(commands.Cog):
                 continue
             
             async with self.config.member(afk_user).pinglogs() as pl:
-                ping = f"` - ` {message.author.mention} [has pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message Content:** {message.content}"
+                ping = f"` - ` {message.author.mention} [pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message Content:** {message.content}"
                 pl.append(ping)
             
             embed = discord.Embed(
