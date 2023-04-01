@@ -126,7 +126,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "2.0.4"
+    __version__ = "2.0.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -2116,7 +2116,7 @@ class ManagerUtils(commands.Cog):
         
         hembed = discord.Embed(
             title=f"{set_title or hembed_title}".replace("{guild}", f"{ctx.guild.name}"),
-            description=f"{set_description or hembed_description}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{requirements}", f"{requirements}"),
+            description=f"{set_description or hembed_description}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{requirements}", f"{requirements}").replace("{amount}", f"{amount}"),
             colour=set_colour or await ctx.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc),
         )
