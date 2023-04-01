@@ -40,7 +40,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.1.5"
+    __version__ = "1.1.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -204,7 +204,7 @@ class Afk(commands.Cog):
             try:
                 await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
             except discord.HTTPException:
-                    await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manager nicknames permission.")
+                await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manager nicknames permission.")
 
             if not tl:
                 return await self.config.member(member).pinglogs.clear()
