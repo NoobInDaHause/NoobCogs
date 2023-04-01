@@ -20,7 +20,7 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| Afk             |  v1.2.2   | Notify users whenever you go AFK with pings logging.             |
+| Afk             |  v1.3.0   | Notify users whenever you go AFK with pings logging.             |
 | GlobalBan       |  v1.1.4   | Globally ban or unban a user from guilds the bot is in.          |
 | ManagerUtils    |  v2.0.6   | Some utility commands that are useful for managers from servers. |
 | ServerDonations |  v1.2.19  | Donate bot currencies or other things to servers.                |

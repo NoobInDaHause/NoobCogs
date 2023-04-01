@@ -42,7 +42,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.2.2"
+    __version__ = "1.3.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -316,6 +316,28 @@ class Afk(commands.Cog):
         await self.config.guild(ctx.guild).nick.set(not current)
         status = "will not" if current else "will"
         await ctx.send(f"I {status} edit the users nick whenever they go AFK.")
+    
+    @afkset.command(name="resetcog")
+    @commands.is_owner()
+    async def afkset_resetcog(self, ctx):
+        """
+        Reset the AFK cogs configuration.
+
+        Bot owners only.
+        """
+        await ctx.send("This will reset the AFK cogs whole configuration, do you want to continue? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond, cancelling.")
+
+        if pred.result:
+            await Config.clear_all()
+            return await ctx.send("Successfully cleared the AFK cogs configuration.")
+        else:
+            await ctx.send("Alright not doing that then.")
     
     @afkset.command(name="showsetting", aliases=["showsettings", "ss", "showset"])
     async def afkset_showsettings(self, ctx):
