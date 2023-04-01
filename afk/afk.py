@@ -42,7 +42,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.2.1"
+    __version__ = "1.2.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -206,7 +206,7 @@ class Afk(commands.Cog):
             await ctx.send(f"Forcefully removed **{member}**'s AFK status.")
             if await self.config.guild(ctx.guild).nick():
                 try:
-                    await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
+                    await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason=f"Forcefully removedd AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
                 except discord.HTTPException:
                     await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.")
 
@@ -237,7 +237,7 @@ class Afk(commands.Cog):
         await ctx.send(f"Forcefully added **{member}**'s AFK status.")
         if await self.config.guild(ctx.guild).nick():
             try:
-                await member.edit(nick=f"[AFK] {member.display_name}", reason=f"User is AFK. Requested by: {ctx.author}")
+                await member.edit(nick=f"[AFK] {member.display_name}", reason=f"Forcefully added AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
             except discord.HTTPException:
                 await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.")
     
