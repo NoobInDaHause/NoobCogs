@@ -40,7 +40,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.1.8"
+    __version__ = "1.1.9"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -140,6 +140,7 @@ class Afk(commands.Cog):
     
     @commands.command(name="afk", aliases=["away"])
     @commands.guild_only()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(manage_nicknames=True, embed_links=True)
     async def afk(self, ctx: commands.Context, *, reason: Optional[str] =  "No reason given."):
         """
@@ -156,7 +157,7 @@ class Afk(commands.Cog):
 
         await self.config.member(ctx.author).afk.set(True)
         await self.config.member(ctx.author).reason.set(reason)
-
+        await ctx.send("You are now AFK. Any member that pings you will now get notified.")
         try:
             await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}", reason="User is AFK.")
         except discord.HTTPException:
@@ -164,8 +165,6 @@ class Afk(commands.Cog):
                 await ctx.send("Could not change your nick cause you are the guild owner.")
             else:
                 await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.")
-            
-        await ctx.send("You are now AFK. Any member that pings you will now get notified.")
         
         
     @commands.group(name="afkset", aliases=["awayset"])
