@@ -126,7 +126,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "2.0.6"
+    __version__ = "2.0.7"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -1694,6 +1694,28 @@ class ManagerUtils(commands.Cog):
         
         embeds = [em1, em2, em3, em4, em5]
         await menu(ctx, embeds, controls=DEFAULT_CONTROLS, timeout=60)
+    
+    @managerutilsset.command(name="resetcog")
+    @commands.is_owner()
+    async def managerutilsset_resetcog(self, ctx):
+        """
+        Reset the managerutils cogs configuration.
+
+        Bot owners only.
+        """
+        await ctx.send("This will reset the managerutils cogs whole configuration, do you want to continue? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond, cancelling.")
+
+        if pred.result:
+            await self.config.clear_all()
+            return await ctx.send("Successfully cleared the managerutils cogs configuration.")
+        else:
+            await ctx.send("Alright not doing that then.")
     
     @managerutilsset.command(name="reset")
     async def managerutils_reset(self, ctx):

@@ -235,3 +235,25 @@ class GlobalBan(commands.Cog):
         await self.config.create_modlog.set(not current)
         status = "will not" if current else "will"
         await ctx.send(f"I {status} make a modlog case whenever you globally ban or unban a user.")
+
+    @globalban.command(name="resetcog")
+    @commands.is_owner()
+    async def globalban_resetcog(self, ctx):
+        """
+        Reset the globalban cogs configuration.
+
+        Bot owners only.
+        """
+        await ctx.send("This will reset the globalban cogs whole configuration, do you want to continue? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond, cancelling.")
+
+        if pred.result:
+            await self.config.clear_all()
+            return await ctx.send("Successfully cleared the globalban cogs configuration.")
+        else:
+            await ctx.send("Alright not doing that then.")

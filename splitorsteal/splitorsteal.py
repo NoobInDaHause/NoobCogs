@@ -37,7 +37,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.SplitOrSteal")
         
-    __version__ = "2.1.24"
+    __version__ = "2.1.25"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -61,6 +61,28 @@ class SplitOrSteal(commands.Cog):
         """
         Settings for split or steal.
         """
+    
+    @splitorstealset.command(name="resetcog")
+    @commands.is_owner()
+    async def splitorstealset_resetcog(self, ctx):
+        """
+        Reset the splitorsteal cogs configuration.
+
+        Bot owners only.
+        """
+        await ctx.send("This will reset the splitorsteal cogs whole configuration, do you want to continue? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond, cancelling.")
+
+        if pred.result:
+            await self.config.clear_all()
+            return await ctx.send("Successfully cleared the splitorsteal cogs configuration.")
+        else:
+            await ctx.send("Alright not doing that then.")
     
     @splitorstealset.command(name="clearactive")
     async def splitorstealset_clearactive(

@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.2.19"
+    __version__ = "1.2.20"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -409,6 +409,28 @@ class ServerDonations(commands.Cog):
         await self.config.guild(ctx.guild).hchannel_id.set(channel.id)
         await ctx.send(f"Successfully set {channel.mention} as the heist donation request channel.")
             
+    @serverdonationsset.command(name="resetcog")
+    @commands.is_owner()
+    async def serverdonationsset_resetcog(self, ctx):
+        """
+        Reset the AFK cogs configuration.
+
+        Bot owners only.
+        """
+        await ctx.send("This will reset the serverdonations cogs whole configuration, do you want to continue? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond, cancelling.")
+
+        if pred.result:
+            await self.config.clear_all()
+            return await ctx.send("Successfully cleared the serverdonations cogs configuration.")
+        else:
+            await ctx.send("Alright not doing that then.")
+    
     @serverdonationsset.command(name="showsetting", aliases=["showset", "ss", "showsettings"])
     async def serverdonationsset_showsetting(self, ctx):
         """

@@ -11,7 +11,7 @@ try:
 except ModuleNotFoundError:
     from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from redbot.core.bot import Red
-from redbot.core import commands, Config
+from redbot.core import commands, Config 
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 from redbot.core.utils.predicates import MessagePredicate
 
@@ -42,7 +42,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.2"
+    __version__ = "1.3.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -56,12 +56,15 @@ class Afk(commands.Cog):
         self, *, requester: RequestType, user_id: int
     ) -> None:
         """
-        This cog stores data provided by users for the express purpose of notifying users whenever they go AFK and only for that reason. It does not store user data which was not provided through a command. Users may remove their own content without making a data removal request. This cog does not support data requests, but will respect deletion requests.
+        This cog stores data provided by users for the express purpose of notifying users whenever they go AFK and only for that reason.
+        It does not store user data which was not provided through a command.
+        Users may remove their own content without making a data removal request.
+        This cog does not support data requests, but will respect deletion requests.
         
-        Also thanks sravan!
+        Also thanks sravan and aikaterna for the end user data statement!
         """
-        super().red_delete_data_for_user(requester=requester, user_id=user_id)
         await self.config.user_from_id(user_id).clear()
+        super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     async def initialize(self, bot: Red):
         await bot.wait_until_red_ready()
