@@ -42,7 +42,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.5"
+    __version__ = "1.3.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -86,9 +86,9 @@ class Afk(commands.Cog):
                     await message.author.edit(nick=f"{message.author.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
                 except discord.HTTPException:
                     if message.author.id == message.guild.owner.id:
-                        await message.channel.send("Could not change your nick cause you are the guild owner.")
+                        await message.channel.send("Could not change your nick cause you are the guild owner.", delete_after=10)
                     else:
-                        await message.channel.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.")
+                        await message.channel.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
             
             if not await self.config.member(message.author).toggle_logs():
                 return await self.config.member(message.author).pinglogs.clear()
@@ -169,9 +169,9 @@ class Afk(commands.Cog):
                 await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}", reason="User is AFK.")
             except discord.HTTPException:
                 if ctx.author.id == ctx.guild.owner.id:
-                    await ctx.send("Could not change your nick cause you are the guild owner.")
+                    await ctx.send("Could not change your nick cause you are the guild owner.", delete_after=10)
                 else:
-                    await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.")
+                    await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
         
     @commands.group(name="afkset", aliases=["awayset"])
     @commands.guild_only()
@@ -211,7 +211,7 @@ class Afk(commands.Cog):
                 try:
                     await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason=f"Forcefully removedd AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
                 except discord.HTTPException:
-                    await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.")
+                    await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
 
             if not tl:
                 return await self.config.member(member).pinglogs.clear()
@@ -242,7 +242,7 @@ class Afk(commands.Cog):
             try:
                 await member.edit(nick=f"[AFK] {member.display_name}", reason=f"Forcefully added AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
             except discord.HTTPException:
-                await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.")
+                await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
     
     @afkset.command(name="sticky")
     async def afkset_sticky(self, ctx):
