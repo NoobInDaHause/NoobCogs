@@ -36,11 +36,11 @@ class Afk(commands.Cog):
             "reason": None,
             "pinglogs": []
         }
-        self.config.regist_guild(**default_guild)
+        self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -127,7 +127,7 @@ class Afk(commands.Cog):
             )
             embed.set_thumbnail(url=afk_user.avatar_url)
             
-            da = await self.config.member(afk_user).delete_after()
+            da = await self.config.guild(message.guild).delete_after()
             
             if da == 0:
                 await message.channel.send(
@@ -261,7 +261,7 @@ class Afk(commands.Cog):
             await ctx.send(f"Your current delete after settings is set to {da} seconds.")
         
         if seconds == 0:
-            await self.config.guildr(ctx.guild).delete_after.set(seconds)
+            await self.config.guild(ctx.guild).delete_after.set(seconds)
             return await ctx.send("The delete after has been disabled.")
         
         if seconds > 120:
