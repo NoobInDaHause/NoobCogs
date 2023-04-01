@@ -42,7 +42,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -204,7 +204,7 @@ class Afk(commands.Cog):
             await self.config.member(member).afk.set(False)
             await self.config.member(member).reason.clear()
             await ctx.send(f"Forcefully removed **{member}**'s AFK status.")
-            if await self.config.guild(message.guild).nick():
+            if await self.config.guild(ctx.guild).nick():
                 try:
                     await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
                 except discord.HTTPException:
