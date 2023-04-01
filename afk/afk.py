@@ -200,11 +200,11 @@ class Afk(commands.Cog):
         if is_afk:
             await self.config.member(member).afk.set(False)
             await self.config.member(member).reason.clear()
+            await ctx.send(f"Forcefully removed **{member}**'s AFK status.")
             try:
                 await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
             except discord.HTTPException:
-                    await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manager nicknames permission.")
-            await ctx.send(f"Forcefully removed **{member}**'s AFK status.")
+                    await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manager nicknames permission.")
 
             if not tl:
                 return await self.config.member(member).pinglogs.clear()
@@ -230,11 +230,11 @@ class Afk(commands.Cog):
 
         await self.config.member(member).afk.set(True)
         await self.config.member(member).reason.set(reason)
+        await ctx.send(f"Forcefully added **{member}**'s AFK status.")
         try:
-            await member.edit(nick=f"{message.author.display_name}".replace("[AFK]", ""), reason=f"User is AFK. Requested by: {ctx.author}")
+            await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason=f"User is AFK. Requested by: {ctx.author}")
         except discord.HTTPException:
                 await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.")
-        await ctx.send(f"Forcefully added **{member}**'s AFK status.")
     
     @afkset.command(name="sticky")
     async def afkset_sticky(self, ctx):
