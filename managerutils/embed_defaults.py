@@ -6,6 +6,7 @@ gembed_footer_text = "Hosted by: {host}"
 gembed_image = ""
 gembed_thumbnail = ""
 gembed_title = "Server Giveaway Time!"
+gembed_content = "{role}"
 
 # <----- EVENTS EMBED DATA ----->
 
@@ -23,6 +24,7 @@ eembed_prize_field_name = "Event Prize:"
 eembed_prize_field_value = "{prize}"
 eembed_message_field_name = "Message:"
 eembed_message_field_value = "{message}"
+eembed_content = "{role}"
 
 # <----- HEISTS EMBED DATA ----->
 
@@ -42,3 +44,4 @@ hembed_checklist_field_name = "Checklist:"
 hembed_checklist_field_value = "` - ` Have a life saver on your inventory.\n` - ` Withdraw at least **1** coin.\n` - ` Press the big green `JOIN HEIST` button."
 hembed_message_field_name = "Message:"
 hembed_message_field_value = "{message}"
+hembed_content = "{role}"

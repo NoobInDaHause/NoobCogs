@@ -50,6 +50,7 @@ class ManagerUtils(commands.Cog):
             "heist_announcement_channel_ids": [],
             "giveaway_embed": {
                 "title": None,
+                "content": None,
                 "colour_value": None,
                 "str_colour": None,
                 "footer_text": None,
@@ -61,6 +62,7 @@ class ManagerUtils(commands.Cog):
             },
             "event_embed": {
                 "title": None,
+                "content": None,
                 "description": None,
                 "colour_value": None,
                 "str_colour": None,
@@ -92,6 +94,7 @@ class ManagerUtils(commands.Cog):
             },
             "heist_embed": {
                 "title": None,
+                "content": None,
                 "description": None,
                 "colour_value": None,
                 "str_colour": None,
@@ -126,7 +129,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "2.1.0"
+    __version__ = "2.2.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -165,6 +168,26 @@ class ManagerUtils(commands.Cog):
         Customize the giveaway embed to your liking.
         """
         
+    @managerutilsset_embed_giveaways.command(name="content")
+    async def managerutilsset_embed_giveaways_content(self, ctx: commands.Context, *, content = None):
+        """
+        Customize the message content above the giveaways embed.
+        
+        Available variables:
+        ` - ` {role} - the pingrole
+        ` - ` {sponsor} - the sponsor
+        ` - ` {prize} - the prize
+        ` - ` {host} - the host
+        ` - ` {message} - the sponsors message
+        ` - ` {guild} - the guild name
+        """
+        if not content:
+            await self.config.guild(ctx.guild).giveaway_embed.content.clear()
+            return await ctx.send("Successfully resetted the giveaway embed message content.")
+        
+        await self.config.guild(ctx.guild).giveaway_embed.content.set(content)
+        await ctx.send(f"Successfully set the giveaway embed message content to:\n{box(content, 'py')}")
+    
     @managerutilsset_embed_giveaways.command(name="colour", aliases=["color"])
     async def managerutilsset_embed_giveaways_colour(self, ctx: commands.Context, colour: discord.Colour = None):
         """
@@ -330,6 +353,27 @@ class ManagerUtils(commands.Cog):
         """
         Customize the event embed to your liking.
         """
+    
+    @managerutilsset_embed_events.command(name="content")
+    async def managerutilsset_embed_events_content(self, ctx: commands.Context, *, content = None):
+        """
+        Customize the message content above the events embed.
+        
+        Available variables:
+        ` - ` {role} - the pingrole
+        ` - ` {sponsor} - the sponsor
+        ` - ` {name} - the event name
+        ` - ` {prize} - the prize
+        ` - ` {host} - the host
+        ` - ` {message} - the sponsors message
+        ` - ` {guild} - the guild name
+        """
+        if not content:
+            await self.config.guild(ctx.guild).event_embed.content.clear()
+            return await ctx.send("Successfully resetted the event embed message content.")
+        
+        await self.config.guild(ctx.guild).event_embed.content.set(content)
+        await ctx.send(f"Successfully set the event embed message content to:\n{box(content, 'py')}")
     
     @managerutilsset_embed_events.command(name="title")
     async def managerutilsset_embed_events_title(self, ctx: commands.Context, *, title = None):
@@ -678,6 +722,27 @@ class ManagerUtils(commands.Cog):
         """
         Customize the heist embed to your liking.
         """
+    
+    @managerutilsset_embed_heists.command(name="content")
+    async def managerutilsset_embed_heists_content(self, ctx: commands.Context, *, content = None):
+        """
+        Customize the message content above the heists embed.
+        
+        Available variables:
+        ` - ` {role} - the pingrole
+        ` - ` {sponsor} - the sponsor
+        ` - ` {name} - the event name
+        ` - ` {prize} - the prize
+        ` - ` {host} - the host
+        ` - ` {message} - the sponsors message
+        ` - ` {guild} - the guild name
+        """
+        if not content:
+            await self.config.guild(ctx.guild).heist_embed.content.clear()
+            return await ctx.send("Successfully resetted the heist embed message content.")
+        
+        await self.config.guild(ctx.guild).heist_embed.content.set(content)
+        await ctx.send(f"Successfully set the heist embed message content to:\n{box(content, 'py')}")
     
     @managerutilsset_embed_heists.command(name="colour", aliases=["color"])
     async def managerutilsset_embed_heists_colour(self, ctx: commands.Context, colour: discord.Colour = None):
@@ -1869,7 +1934,10 @@ class ManagerUtils(commands.Cog):
         message.replace(" ", "")
 
         glogchan = ctx.guild.get_channel(settings["giveaway_log_channel_id"])
-        gpingrole = ctx.guild.get_role(settings["giveaway_ping_role_id"])
+        role = (
+            f"<@&{settings['giveaway_ping_role_id']}>"
+            or f"No giveaway ping role set. Use `{ctx.prefix}muset pingrole giveaways` to set one."
+        )
         set_footer_icon = await self.config.guild(ctx.guild).giveaway_embed.footer_icon()
         set_footer_text = await self.config.guild(ctx.guild).giveaway_embed.footer_text()
         set_title = await self.config.guild(ctx.guild).giveaway_embed.title()
@@ -1878,7 +1946,8 @@ class ManagerUtils(commands.Cog):
         set_thumbnail = await self.config.guild(ctx.guild).giveaway_embed.thumbnail()
         set_colour = await self.config.guild(ctx.guild).giveaway_embed.colour_value()
         show_footer = await self.config.guild(ctx.guild).giveaway_embed.show_footer()
-        
+        set_content = await self.config.guild(ctx.guild).giveaway_embed.content()
+
         gembed = discord.Embed(
             title=f"{set_title or gembed_title}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{prize}", f"{prize}"),
             description=f"{set_description or gembed_description}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{prize}", f"{prize}"),
@@ -1902,19 +1971,16 @@ class ManagerUtils(commands.Cog):
             with contextlib.suppress(Exception):
                 await ctx.message.delete()
 
-        if not gpingrole:
-            try:
-                glog = await ctx.send(content=f"No giveaway ping role set. Use `{ctx.prefix}muset pingrole grole` to set one.", embed=gembed)
-            except Exception:
-                return await ctx.author.send("It appears that I not have permission to send a message from that channel.")
-
-        if gpingrole:
-            try:
-                am = discord.AllowedMentions(roles=True, users=False, everyone=False)
-                glog = await ctx.send(embed=gembed, content=gpingrole.mention, allowed_mentions=am)
-            except Exception:
-                return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-
+        try:
+            am = discord.AllowedMentions(roles=True, users=True, everyone=False)
+            glog = await ctx.send(
+                embed=gembed,
+                content=f"{set_content or gembed_content}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{prize}", f"{prize}").replace("{role}", f"{role}"),
+                allowed_mentions=am
+            )
+        except Exception:
+            return await ctx.author.send("It appears that I not have permission to send a message from that channel.")
+        
         if glogchan:
             try:
                 embed = discord.Embed(
@@ -1984,7 +2050,10 @@ class ManagerUtils(commands.Cog):
         message.replace(" ", "")
 
         elogchan = ctx.guild.get_channel(settings["event_log_channel_id"])
-        epingrole = ctx.guild.get_role(settings["event_ping_role_id"])
+        role = (
+            f"<@&{settings['event_ping_role_id']}>"
+            or f"No event ping role set. Use `{ctx.prefix}muset pingrole events` to set one."
+        )
         set_footer_icon = await self.config.guild(ctx.guild).event_embed.footer_icon()
         set_footer_text = await self.config.guild(ctx.guild).event_embed.footer_text()
         set_title = await self.config.guild(ctx.guild).event_embed.title()
@@ -1997,6 +2066,7 @@ class ManagerUtils(commands.Cog):
         name_field = await self.config.guild(ctx.guild).event_embed.name_field.all()
         prize_field = await self.config.guild(ctx.guild).event_embed.prize_field.all()
         message_field = await self.config.guild(ctx.guild).event_embed.message_field.all()
+        set_content = await self.config.guild(ctx.guild).event_embed.content()
         
         eembed = discord.Embed(
             title=f"{set_title or eembed_title}".replace("{guild}", f"{ctx.guild.name}"),
@@ -2040,19 +2110,16 @@ class ManagerUtils(commands.Cog):
             with contextlib.suppress(Exception):
                 await ctx.message.delete()
 
-        if not epingrole:
-            try:
-                elog = await ctx.send(content=f"No event ping role set. Use `{ctx.prefix}muset pingrole erole` to set one.", embed=eembed)
-            except Exception:
-                return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-
-        if epingrole:
-            try:
-                am = discord.AllowedMentions(roles=True, users=False, everyone=False)
-                elog = await ctx.send(embed=eembed, content=epingrole.mention, allowed_mentions=am)
-            except Exception:
-                return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-
+        try:
+            am = discord.AllowedMentions(roles=True, users=True, everyone=False)
+            elog = await ctx.send(
+                embed=eembed,
+                content=f"{set_content or eembed_content}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{prize}", f"{prize}").replace("{name}", f"{name}").replace("{guild}", f"{ctx.guild.name}").replace("{role}", f"{role}"),
+                allowed_mentions=am
+            )
+        except Exception:
+            return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
+        
         if elogchan:
             try:
                 embed = discord.Embed(
@@ -2122,7 +2189,10 @@ class ManagerUtils(commands.Cog):
         message.replace(" ", "")
         
         hlogchan = ctx.guild.get_channel(settings["heist_log_channel_id"])
-        hpingrole = ctx.guild.get_role(settings["heist_ping_role_id"])
+        role = (
+            f"<@&{settings['heist_ping_role_id']}>"
+            or f"No heist ping role set. Use `{ctx.prefix}muset pingrole heists` to set one."
+        )
         set_footer_icon = await self.config.guild(ctx.guild).heist_embed.footer_icon()
         set_footer_text = await self.config.guild(ctx.guild).heist_embed.footer_text()
         set_title = await self.config.guild(ctx.guild).heist_embed.title()
@@ -2135,6 +2205,7 @@ class ManagerUtils(commands.Cog):
         hamount_field = await self.config.guild(ctx.guild).heist_embed.hamount_field.all()
         hrequirements_field = await self.config.guild(ctx.guild).heist_embed.hrequirements_field.all()
         hmessage_field = await self.config.guild(ctx.guild).heist_embed.hmessage_field.all()
+        set_content = await self.config.guild(ctx.guild).heist_embed.content()
         
         hembed = discord.Embed(
             title=f"{set_title or hembed_title}".replace("{guild}", f"{ctx.guild.name}"),
@@ -2187,18 +2258,15 @@ class ManagerUtils(commands.Cog):
             with contextlib.suppress(Exception):
                 await ctx.message.delete()
         
-        if not hpingrole:
-            try:
-                hlog = await ctx.send(content=f"No heist ping role set. Use `{ctx.prefix}muset pingrole hrole` to set one.", embed=hembed)
-            except Exception:
-                return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-        
-        if hpingrole:
-            try:
-                am = discord.AllowedMentions(roles=True, users=False, everyone=False)
-                hlog = await ctx.send(embed=hembed, content=hpingrole.mention, allowed_mentions=am)
-            except Exception:
-                return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
+        try:
+            am = discord.AllowedMentions(roles=True, users=True, everyone=False)
+            hlog = await ctx.send(
+                embed=hembed,
+                content=f"{set_content or hembed_content}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{requirements}", f"{requirements}").replace("{amount}", f"{amount}").replace("{guild}", f"{ctx.guild.name}").replace("{role}", f"{role}"),
+                allowed_mentions=am
+            )
+        except Exception:
+            return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
         
         if hlogchan:
             try:
