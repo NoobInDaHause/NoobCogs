@@ -30,7 +30,7 @@ class FirstToReact(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.FirstToReact")
     
-    __version__ = "1.0.6"
+    __version__ = "1.0.7"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -99,7 +99,8 @@ class FirstToReact(commands.Cog):
                 description=f"This First To React Game has ended.\nWinner: None\nHosted by: {ctx.author.mention}",
                 colour=discord.Embed.Empty,
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
-            ).set_footer(text="Ended at")
+            )
+            failembed.set_footer(text="Ended at")
             await message.edit(embed=failembed)
             return await message.reply("It appears nobody wants to play.")
         
@@ -108,6 +109,7 @@ class FirstToReact(commands.Cog):
             description=f"This First To React Game has ended.\nWinner: {user.mention}\nHosted by: {ctx.author.mention}",
             colour=discord.Embed.Empty,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
-        ).set_footer(text="Ended at")
+        )
+        endembed.set_footer(text="Ended at")
         await message.edit(embed=endembed)
         await message.reply(f"Congratulations {user.mention}! You have reacted first and won the game!")

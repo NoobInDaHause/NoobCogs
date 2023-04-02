@@ -21,7 +21,7 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
 | Afk             |  v1.3.8   | Notify users whenever you go AFK with pings logging.             |
-| FirstToReact    |  v1.0.6   | Play a first to react wins game.                                 |
+| FirstToReact    |  v1.0.7   | Play a first to react wins game.                                 |
 | GlobalBan       |  v1.2.0   | Globally ban or unban a user from guilds the bot is in.          |
 | ManagerUtils    |  v2.1.0   | Some utility commands that are useful for managers from servers. |
 | ServerDonations |  v1.3.0   | Donate bot currencies or other things to servers.                |
