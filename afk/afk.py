@@ -42,7 +42,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.8"
+    __version__ = "1.3.9"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -170,16 +170,9 @@ class Afk(commands.Cog):
                     await ctx.send("Could not change your nick cause you are the guild owner.", delete_after=10)
                 else:
                     await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
-        
-    @commands.group(name="afkset", aliases=["awayset"])
-    @commands.guild_only()
-    @commands.bot_has_permissions(embed_links=True)
-    async def afkset(self, ctx):
-        """
-        Settings for the AFK cog.
-        """
     
-    @afkset.command(name="forceafk", aliases=["forceaway"])
+    @commands.command(name="forceafk", aliases=["forceaway"])
+    @commands.guild_only()
     @commands.bot_has_permissions(manage_nicknames=True)
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
     async def forceafk(self, ctx: commands.Context, member: discord.Member, *, reason: Optional[str] = "No reason given."):
@@ -239,6 +232,14 @@ class Afk(commands.Cog):
                 await member.edit(nick=f"[AFK] {member.display_name}", reason=f"Forcefully added AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
             except discord.HTTPException:
                 await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
+    
+    @commands.group(name="afkset", aliases=["awayset"])
+    @commands.guild_only()
+    @commands.bot_has_permissions(embed_links=True)
+    async def afkset(self, ctx):
+        """
+        Settings for the AFK cog.
+        """
     
     @afkset.command(name="sticky")
     async def afkset_sticky(self, ctx):
