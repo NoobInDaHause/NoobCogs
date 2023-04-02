@@ -42,7 +42,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.9"
+    __version__ = "1.3.10"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -171,20 +171,29 @@ class Afk(commands.Cog):
                 else:
                     await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
     
-    @commands.command(name="forceafk", aliases=["forceaway"])
+    @commands.group(name="afkset", aliases=["awayset"])
     @commands.guild_only()
+    @commands.bot_has_permissions(embed_links=True)
+    async def afkset(self, ctx):
+        """
+        Settings for the AFK cog.
+        """
+    
+    @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.bot_has_permissions(manage_nicknames=True)
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
     async def forceafk(self, ctx: commands.Context, member: discord.Member, *, reason: Optional[str] = "No reason given."):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        if ctx.author.id == ctx.guild.owner.id:
-            pass
-        elif member.id == ctx.guild.owner.id:
+        if member.id == ctx.guild.owner.id:
             return await ctx.send("I'm afraid you can not do that to the guild owner.")
+        elif member.id == ctx.author.id:
+            return await ctx.send(f"Why would you force AFK yourself? Please use `{ctx.prefix}afk`.")
         elif member.bot:
             return await ctx.send("I'm afraid you can not do that to bots.")
+        elif ctx.author.id == ctx.guild.owner.id:
+            pass
         elif member.top_role >= ctx.author.top_role:
             return await ctx.send("I'm afraid you can not do that due to role hierarchy.")
         
@@ -232,14 +241,6 @@ class Afk(commands.Cog):
                 await member.edit(nick=f"[AFK] {member.display_name}", reason=f"Forcefully added AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
             except discord.HTTPException:
                 await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
-    
-    @commands.group(name="afkset", aliases=["awayset"])
-    @commands.guild_only()
-    @commands.bot_has_permissions(embed_links=True)
-    async def afkset(self, ctx):
-        """
-        Settings for the AFK cog.
-        """
     
     @afkset.command(name="sticky")
     async def afkset_sticky(self, ctx):
