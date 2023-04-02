@@ -32,7 +32,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.2.1"
+    __version__ = "1.2.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -90,6 +90,9 @@ class GlobalBan(commands.Cog):
         if not reason:
             reason = "No reason provided."
         
+        async with self.config.banlist() as bl:
+            bl.append(user_id)
+        
         errors = []
         guilds = []
         member = await ctx.bot.fetch_user(user_id)
@@ -109,8 +112,6 @@ class GlobalBan(commands.Cog):
                     until=None,
                     channel=None,
                     )
-                async with self.config.banlist() as bl:
-                    bl.append(user_id)
                 await asyncio.sleep(5)
             except discord.HTTPException:
                 errors.append(f"**{guild}**")
@@ -142,6 +143,10 @@ class GlobalBan(commands.Cog):
         if not reason:
             reason = "No reason provided."
             
+        async with self.config.banlist() as bl:
+            index = bl.index(user_id)
+            bl.pop(index)
+        
         errors = []
         guilds = []
         member = await ctx.bot.fetch_user(user_id)
@@ -161,9 +166,6 @@ class GlobalBan(commands.Cog):
                     until=None,
                     channel=None,
                     )
-                async with self.config.banlist() as bl:
-                    index = bl.index(user_id)
-                    bl.pop(index)
                 await asyncio.sleep(5)
             except discord.HTTPException:
                 errors.append(f"**{guild}**")
