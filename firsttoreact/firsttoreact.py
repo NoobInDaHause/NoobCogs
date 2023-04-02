@@ -30,7 +30,7 @@ class FirstToReact(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.FirstToReact")
     
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -47,7 +47,6 @@ class FirstToReact(commands.Cog):
     
     @commands.group(name="ftrset")
     @commands.guild_only()
-    @commands.bot_has_permissions(add_reactions=True, use_external_emojis=True)
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
     async def ftrset(self, ctx):
         """
@@ -55,6 +54,7 @@ class FirstToReact(commands.Cog):
         """
     
     @ftrset.command(name="emoji")
+    @commands.bot_has_permissions(add_reactions=True, use_external_emojis=True)
     async def ftrset_emoji(self, ctx: commands.Context, emoji: Optional[EmojiConverter]):
         """
         Change the emoji reaction.
