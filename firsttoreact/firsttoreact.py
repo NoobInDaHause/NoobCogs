@@ -30,7 +30,7 @@ class FirstToReact(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.FirstToReact")
     
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -81,7 +81,6 @@ class FirstToReact(commands.Cog):
             title="First To React Game",
             description=f"React with {emoji} as soon as you see it!\nHosted by: {ctx.author.mention}",
             color=discord.Color.random(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
         message = await ctx.send(embed=embed)
         await asyncio.sleep(5)
@@ -98,7 +97,7 @@ class FirstToReact(commands.Cog):
                 description=f"This First To React Game has ended.\nWinner: None\nHosted by: {ctx.author.mention}",
                 colour=discord.Embed.Empty,
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
+            ).set_footer(text="Ended at")
             await message.edit(embed=failembed)
             return await ctx.send("It appears nobody wants to play.")
         
@@ -107,6 +106,6 @@ class FirstToReact(commands.Cog):
             description=f"This First To React Game has ended.\nWinner: {user.mention}\nHosted by: {ctx.author.mention}",
             colour=discord.Embed.Empty,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
-        )
+        ).set_footer(text="Ended at")
         await message.edit(embed=endembed)
         await ctx.send(f"Congratulations {user.mention}! You have reacted first and won the game!")
