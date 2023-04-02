@@ -30,7 +30,7 @@ class FirstToReact(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.FirstToReact")
     
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -76,10 +76,12 @@ class FirstToReact(commands.Cog):
         """
         Start a first to react game.
         """
+        timestamp = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=30)
+        timestamp = int(datetime.datetime.timestamp(timestamp))
         emoji = await self.config.guild(ctx.guild).emoji()
         embed = discord.Embed(
             title="First To React Game",
-            description=f"React with {emoji} as soon as you see it!\nHosted by: {ctx.author.mention}",
+            description=f"React with {emoji} as soon as you see it!\nGame will end <t:{timestamp}:R> if no one reacts.\nHosted by: {ctx.author.mention}",
             color=discord.Color.random(),
         )
         message = await ctx.send(embed=embed)
