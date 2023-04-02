@@ -32,7 +32,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -45,7 +45,7 @@ class GlobalBan(commands.Cog):
     async def red_delete_data_for_user(
         self, *, requester: RequestType, user_id: int
     ) -> None:
-        # This cog does not store any end user data whatsoever. Also thanks sravan!
+        # This cog does not store any end user data whatsoever. But it stores user ID's for the ban list! Also thanks sravan!
         super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     async def initialize(self, bot: Red):
