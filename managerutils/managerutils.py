@@ -129,7 +129,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "2.2.0"
+    __version__ = "2.2.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -563,9 +563,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(sfield)
 
         if maxargs > 3:
-            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+            return await ctx.send("Argument error, perhaps you added an extra `|`.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+            return await ctx.send("Argument error, perhaps you are missing a `|`.", delete_after=10)
         
         sponsor_name = sfield[0]
         sponsor_name.replace(" ", "")
@@ -607,9 +607,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(nfield)
 
         if maxargs > 3:
-            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+            return await ctx.send("Argument error, perhaps you added an extra `|`.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+            return await ctx.send("Argument error, perhaps you are missing a `|`.", delete_after=10)
         
         name_name = nfield[0]
         name_name.replace(" ", "")
@@ -651,9 +651,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(pfield)
 
         if maxargs > 3:
-            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+            return await ctx.send("Argument error, perhaps you added an extra `|`.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+            return await ctx.send("Argument error, perhaps you are missing a `|`.", delete_after=10)
         
         prize_name = pfield[0]
         prize_name.replace(" ", "")
@@ -695,9 +695,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(mfield)
 
         if maxargs > 3:
-            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+            return await ctx.send("Argument error, perhaps you added an extra `|`.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+            return await ctx.send("Argument error, perhaps you are missing a `|`.", delete_after=10)
         
         message_name = mfield[0]
         message_name.replace(" ", "")
@@ -932,9 +932,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(hsfield)
 
         if maxargs > 3:
-            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+            return await ctx.send("Argument error, perhaps you added an extra `|`.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+            return await ctx.send("Argument error, perhaps you are missing a `|`.", delete_after=10)
         
         sponsor_name = hsfield[0]
         sponsor_name.replace(" ", "")
@@ -976,9 +976,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(asfield)
 
         if maxargs > 3:
-            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+            return await ctx.send("Argument error, perhaps you added an extra `|`.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+            return await ctx.send("Argument error, perhaps you are missing a `|`.", delete_after=10)
         
         amount_name = asfield[0]
         amount_name.replace(" ", "")
@@ -1020,9 +1020,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(rsfield)
 
         if maxargs > 3:
-            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+            return await ctx.send("Argument error, perhaps you added an extra `|`.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+            return await ctx.send("Argument error, perhaps you are missing a `|`.", delete_after=10)
         
         requirements_name = rsfield[0]
         requirements_name.replace(" ", "")
@@ -1064,9 +1064,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(hmfield)
 
         if maxargs > 3:
-            return await ctx.send("Argument error, perhaps you added an extra `|`.")
+            return await ctx.send("Argument error, perhaps you added an extra `|`.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send("Argument error, perhaps you are missing a `|`.")
+            return await ctx.send("Argument error, perhaps you are missing a `|`.", delete_after=10)
         
         message_name = hmfield[0]
         message_name.replace(" ", "")
@@ -1922,9 +1922,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(giveaways)
 
         if maxargs > 3:
-            return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
+            return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.", delete_after=10)
         if maxargs < 3:
-            return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
+            return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.", delete_after=10)
 
         sponsor = giveaways[0]
         sponsor.replace(" ", "")
@@ -2036,9 +2036,9 @@ class ManagerUtils(commands.Cog):
         maxargs = len(events)
 
         if maxargs > 4:
-            return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
+            return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.", delete_after=10)
         if maxargs < 4:
-            return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
+            return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.", delete_after=10)
 
         sponsor = events[0]
         sponsor.replace(" ", "")
