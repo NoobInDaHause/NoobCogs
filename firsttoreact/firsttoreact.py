@@ -30,7 +30,7 @@ class FirstToReact(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.FirstToReact")
     
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -58,6 +58,8 @@ class FirstToReact(commands.Cog):
     async def ftrset_emoji(self, ctx: commands.Context, emoji: Optional[EmojiConverter]):
         """
         Change the emoji reaction.
+
+        Pass without emoji to reset it to default which is \U0001F680.
         """
         if not emoji:
             await self.config.guild(ctx.guild).emoji.clear()
