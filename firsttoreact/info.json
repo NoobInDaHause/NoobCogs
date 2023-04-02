@@ -1,0 +1,22 @@
+{
+    "name": "FirstToReact",
+    "short": "Play a first to react wins game.",
+    "description": "Play a first to react game and whoever reacts first wins.",
+    "end_user_data_statement": "This cog does not store any end user data whatsoever.",
+    "install_msg": "Thank you for installing FirstToReact. Load the cog with `[p]load firsttoreact`.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "min_bot_version": "3.4.0",
+    "max_bot_version": "3.4.99",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": ["emoji"],
+    "tags": [
+        "reaction",
+        "react",
+        "firsttoreact"
+    ],
+    "type": "COG"
+}
