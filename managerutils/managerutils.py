@@ -17,7 +17,6 @@ from redbot.core.utils.predicates import MessagePredicate
 
 from . import url_button
 from .embed_defaults import *
-from .utils import *
 
 from typing import Literal
 
@@ -130,7 +129,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "2.2.2"
+    __version__ = "2.2.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
