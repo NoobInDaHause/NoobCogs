@@ -28,11 +28,12 @@ class GlobalBan(commands.Cog):
         self.config = Config.get_conf(self, identifier=74654871231365754648, force_registration=True)
         default_global = {
             "banlist": [],
+            "globalbanlogs": [],
             "create_modlog": False
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.2.3"
+    __version__ = "1.3.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -91,6 +92,12 @@ class GlobalBan(commands.Cog):
         if not reason:
             reason = "No reason provided."
         
+        logs = await self.config.globalbanlogs()
+        
+        async with self.config.globalbanlogs as gbl:
+            log = f"` - ` GlobalBan Logs Case #{len(logs) + 1}\nBan Type: GlobalBan\nUser ID: {user_id}\nAuthorized by: {ctx.author}\nReason: {reason}"
+            gbl.append(log)
+        
         async with self.config.banlist() as bl:
             bl.append(user_id)
         
@@ -144,6 +151,12 @@ class GlobalBan(commands.Cog):
         if not reason:
             reason = "No reason provided."
             
+        logs = await self.config.globalbanlogs()
+        
+        async with self.config.globalbanlogs as gbl:
+            log = f"` - ` GlobalBan Logs Case #{len(logs) + 1}\nBan Type: GlobalUnBan\nUser ID: {user_id}\nAuthorized by: {ctx.author}\nReason: {reason}"
+            gbl.append(log)
+        
         async with self.config.banlist() as bl:
             index = bl.index(user_id)
             bl.pop(index)
@@ -176,7 +189,7 @@ class GlobalBan(commands.Cog):
         if errors:
             humanize_globalunban = humanize_list(errors)
             embeds = []
-            for page in pagify(humanize_globalunban, delims=["\n"], page_length=1000):
+            for page in pagify(humanize_globalunban, delims=[""], page_length=1000):
                 embed = discord.Embed(
                     title=f"An error occured while unbanning {member} in these guild(s)",
                     description=page,
@@ -187,28 +200,57 @@ class GlobalBan(commands.Cog):
         
             await menu(ctx, embeds, controls=DEFAULT_CONTROLS, timeout=60)
             
-    @globalban.command(name="list")
-    async def globalban_list(self, ctx):
+    @globalban.command(name="banlogs")
+    async def globalban_banlogs(self, ctx):
         """
-        Show the ban list.
+        Show the global ban or unban logs.
         """
-        banlist = await self.config.banlist()
+        logs = await self.config.globalbanlogs()
         
-        if not banlist:
-            return await ctx.send("No users were globally banned.")
+        if not logs:
+            return await ctx.send("It appears there are no cases logged.")
         
-        humanize_banlist = humanize_list(banlist)
-        embeds = []
-        for page in pagify(humanize_banlist, delims=["\n"], page_length=1000):
+        banlogs = """\n\n""".join(logs)
+        pages = list(pagify(banlogs, delims=[" "], page_length=2000))
+        final_page = {}
+        
+        for ind, page in enumerate(pages, 1):
             embed = discord.Embed(
-                title="Globalban List",
+                title="Globalban Case Logs",
                 description=page,
                 colour=await ctx.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc),
             )
-            embeds.append(embed)
+            embed.set_footer(text=f"Page ({ind}/{len(pages)})")
+            final_page[ind - 1] = embed
         
-        await menu(ctx, embeds, controls=DEFAULT_CONTROLS, timeout=60)
+        await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=60)
+    
+    @globalban.command(name="banlist")
+    async def globalban_banlist(self, ctx):
+        """
+        Show the ban list.
+        """
+        bans = await self.config.banlist()
+        
+        if not bans:
+            return await ctx.send("No users were globally banned.")
+        
+        banlist = ", ".join(bans)
+        pages = list(pagify(banlist, delims=[" "], page_length=2000))
+        final_page = {}
+        
+        for ind, page in enumerate(pages, 1):
+            embed = discord.Embed(
+                title="Globalban Ban List",
+                description=page,
+                colour=await ctx.embed_colour(),
+                timestamp=datetime.datetime.now(datetime.timezone.utc),
+            )
+            embed.set_footer(text=f"Page ({ind}/{len(pages)})")
+            final_page[ind - 1] = embed
+        
+        await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=60)
         
     @globalban.command(name="reset")
     async def globalban_reset(self, ctx):
