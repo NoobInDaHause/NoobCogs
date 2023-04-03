@@ -28,8 +28,12 @@ class Afk(commands.Cog):
         self.bot = bot
         
         self.config = Config.get_conf(self, identifier=54646544526864548, force_registration=True)
-        default_guild = {"nick": True}
-        default_global = {"delete_after": 10}
+        default_guild = {
+            "nick": True
+        }
+        default_global = {
+            "delete_after": 10
+        }
         default_member = {
             "afk": False,
             "sticky": False,
@@ -42,7 +46,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.10"
+    __version__ = "1.3.11"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -124,7 +128,7 @@ class Afk(commands.Cog):
                 continue
             
             async with self.config.member(afk_user).pinglogs() as pl:
-                ping = f"` - ` {message.author.mention} [pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message Content:** {message.content}"
+                ping = f"` - ` {message.author.mention} [pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message:** {message.content}"
                 pl.append(ping)
             
             embed = discord.Embed(
@@ -148,7 +152,7 @@ class Afk(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(manage_nicknames=True, embed_links=True)
-    async def afk(self, ctx: commands.Context, *, reason: Optional[str] =  "No reason given."):
+    async def afk(self, ctx: commands.Context, *, reason: Optional[str]):
         """
         Be afk and notify users whenever they ping you.
         
@@ -156,6 +160,9 @@ class Afk(commands.Cog):
         """
         is_afk = await self.config.member(ctx.author).afk()
 
+        if not reason:
+            reason = "No reason given."
+        
         if is_afk:
             return await ctx.send("It appears you are already AFK.")
 
@@ -182,7 +189,7 @@ class Afk(commands.Cog):
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.bot_has_permissions(manage_nicknames=True)
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
-    async def forceafk(self, ctx: commands.Context, member: discord.Member, *, reason: Optional[str] = "No reason given."):
+    async def forceafk(self, ctx: commands.Context, member: discord.Member, *, reason: Optional[str]):
         """
         Forcefully add or remove an AFK status on a user.
         """
@@ -197,6 +204,9 @@ class Afk(commands.Cog):
         elif member.top_role >= ctx.author.top_role:
             return await ctx.send("I'm afraid you can not do that due to role hierarchy.")
         
+        if not reason:
+            reason = "No reason given."
+        
         is_afk = await self.config.member(member).afk()
         pings = await self.config.member(member).pinglogs()
         tl = await self.config.member(member).toggle_logs()
@@ -207,7 +217,7 @@ class Afk(commands.Cog):
             await ctx.send(f"Forcefully removed **{member}**'s AFK status.")
             if await self.config.guild(ctx.guild).nick():
                 try:
-                    await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason=f"Forcefully removedd AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
+                    await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason=f"Forcefully removed AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
                 except discord.HTTPException:
                     await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
 
@@ -264,7 +274,7 @@ class Afk(commands.Cog):
         """
         if showsetting == "show":
             da = await self.config.delete_after()
-            return await ctx.send(f"Your current delete after settings is set to {da} seconds.")
+            return await ctx.send(f"Your current delete after settings is set to **__{da}__** seconds.")
         else:
             return await ctx.send("Your answer for the showsetting parameter should only be `show`.")
         
@@ -272,7 +282,7 @@ class Afk(commands.Cog):
             await self.config.delete_after.set(seconds)
             return await ctx.send("The delete after has been disabled.")
         
-        if seconds >= 120:
+        if seconds >= 121:
             return await ctx.send("The maximum seconds of delete after is 120 seconds.")
         
         await self.config.delete_after.set(seconds)
@@ -351,11 +361,10 @@ class Afk(commands.Cog):
         is_sticky = await self.config.member(ctx.author).sticky()
         tl = await self.config.member(ctx.author).toggle_logs()
         nick = await self.config.guild(ctx.guild).nick()
-        nickname = f"**Nick change:**\n{nick}" if ctx.author.guild_permissions.administrator else ""
         
         embed = discord.Embed(
             title=f"{ctx.author.name}'s AFK settings.",
-            description=f"**Is afk:**\n{is_afk}\n**Is sticky:**\n{is_sticky}\n**Ping logging:**\n{tl}\n{nickname}",
+            description=f"**Is afk:** {is_afk}\n**Is sticky:** {is_sticky}\n**Ping logging:** {tl}\n{f"**Nick change:** {nick}" if ctx.author.guild_permissions.administrator else ""}",
             colour=ctx.author.colour,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
