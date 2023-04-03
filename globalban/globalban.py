@@ -33,7 +33,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.3.2"
+    __version__ = "1.3.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -90,7 +90,7 @@ class GlobalBan(commands.Cog):
         except discord.errors.NotFound:
             return await ctx.send("It appears that ID is not a valid user ID.")
 
-        if user_id in await self.config.banlist():
+        if str(user_id) in await self.config.banlist():
             return await ctx.send(f"**{member}** is already globally banned.")
         if user_id == ctx.author.id:
             return await ctx.send("I can not let you globally ban yourself.")
@@ -107,6 +107,8 @@ class GlobalBan(commands.Cog):
 
         if not pred.result:
             return await ctx.send("Alright not doing that then.")
+        
+        await ctx.send("Alright this might take a while.")
         
         logs = await self.config.globalbanlogs()
         
@@ -165,7 +167,7 @@ class GlobalBan(commands.Cog):
         except discord.errors.NotFound:
             return await ctx.send("It appears that is not a valid user ID.")
 
-        if user_id not in await self.config.banlist():
+        if str(user_id) not in await self.config.banlist():
             return await ctx.send(f"**{member}** is not globally banned.")
         
         if not reason:
@@ -181,6 +183,8 @@ class GlobalBan(commands.Cog):
 
         if not pred.result:
             return await ctx.send("Alright not doing that then.")
+        
+        await ctx.send("Alright this might take a while.")
         
         logs = await self.config.globalbanlogs()
         
