@@ -46,7 +46,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.11"
+    __version__ = "1.3.12"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -361,10 +361,11 @@ class Afk(commands.Cog):
         is_sticky = await self.config.member(ctx.author).sticky()
         tl = await self.config.member(ctx.author).toggle_logs()
         nick = await self.config.guild(ctx.guild).nick()
+        nickname = f"**Nick change:** {nick}" if ctx.author.guild_permissions.administrator else ""
         
         embed = discord.Embed(
             title=f"{ctx.author.name}'s AFK settings.",
-            description=f"**Is afk:** {is_afk}\n**Is sticky:** {is_sticky}\n**Ping logging:** {tl}\n{f"**Nick change:** {nick}" if ctx.author.guild_permissions.administrator else ""}",
+            description=f"**Is afk:** {is_afk}\n**Is sticky:** {is_sticky}\n**Ping logging:** {tl}\n{nickname}",
             colour=ctx.author.colour,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
