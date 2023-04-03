@@ -111,11 +111,11 @@ class GlobalBan(commands.Cog):
         logs = await self.config.globalbanlogs()
         
         async with self.config.globalbanlogs() as gbl:
-            log = f"` - ` GlobalBan Logs Case #{len(logs) + 1}\nBan Type: GlobalBan\nUser ID: {user_id}\nAuthorized by: {ctx.author}\nReason: {reason}"
+            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n__Ban Type:__ GlobalBan\n__User ID:__ {user_id}\n__Authorized by:__ {ctx.author}\n__Reason:__ {reason}"
             gbl.append(log)
         
         async with self.config.banlist() as bl:
-            bl.append(user_id)
+            bl.append(str(user_id))
         
         errors = []
         guilds = []
@@ -185,11 +185,11 @@ class GlobalBan(commands.Cog):
         logs = await self.config.globalbanlogs()
         
         async with self.config.globalbanlogs() as gbl:
-            log = f"` - ` GlobalBan Logs Case #{len(logs) + 1}\nBan Type: GlobalUnBan\nUser ID: {user_id}\nAuthorized by: {ctx.author}\nReason: {reason}"
+            log = f"> GlobalBan Logs Case #{len(logs) + 1}\n__Ban Type:__ GlobalUnBan\n__User ID:__ {user_id}\n__Authorized by:__ {ctx.author}\n__Reason:__ {reason}"
             gbl.append(log)
         
         async with self.config.banlist() as bl:
-            index = bl.index(user_id)
+            index = bl.index(str(user_id))
             bl.pop(index)
         
         errors = []
