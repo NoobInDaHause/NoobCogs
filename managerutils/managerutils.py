@@ -11,6 +11,7 @@ except ModuleNotFoundError:
     from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from redbot.core import Config, commands
 from redbot.core.bot import Red
+from redbot.core.utils import mod
 from redbot.core.utils.chat_formatting import humanize_list, box
 from redbot.core.utils.predicates import MessagePredicate
 
@@ -129,7 +130,7 @@ class ManagerUtils(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ManagerUtils")
         
-    __version__ = "2.2.1"
+    __version__ = "2.2.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -1892,7 +1893,6 @@ class ManagerUtils(commands.Cog):
     
     @commands.command(name="giveawayping", aliases=["gping"], usage="<sponsor> | <prize> | [message]")
     @commands.guild_only()
-    @is_gman()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(mention_everyone=True, embed_links=True)
     async def giveawayping(
@@ -1910,11 +1910,21 @@ class ManagerUtils(commands.Cog):
         Requires set Giveaway Manager role to use this command.
         """
         settings = await self.config.guild(ctx.guild).all()
-        authorizedchans = await self.config.guild(ctx.guild).giveaway_announcement_channel_ids()
+        authorizedchans = settings["giveaway_announcement_channel_ids"]
+        gmans = settings["giveaway_manager_ids"]
+        
+        if await mod.is_mod_or_superior(ctx.bot, ctx.author):
+            pass
+        elif ctx.author.guild_permissions.administrator:
+            pass
+        elif not gmans:
+            return await ctx.send("No mangers set, must be moderator or ask an admin to add a manager.")
+        elif gmans:
+            if any(role.id in gmans for role in ctx.author.roles):
+                pass
 
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized giveaway announcement channels. Ask an admin to add one.")
-
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
 
@@ -2007,7 +2017,6 @@ class ManagerUtils(commands.Cog):
             
     @commands.command(name="eventping", aliases=["eping"], usage="<sponsor> | <event_name> | <prize> | [message]")
     @commands.guild_only()
-    @is_eman()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(mention_everyone=True, embed_links=True)
     async def eventping(
@@ -2024,11 +2033,21 @@ class ManagerUtils(commands.Cog):
         Requires set Event Manager role to use this command.
         """
         settings = await self.config.guild(ctx.guild).all()
-        authorizedchans = await self.config.guild(ctx.guild).event_announcement_channel_ids()
-
+        authorizedchans = settings["event_announcement_channel_ids"]
+        emans = settings["event_manager_ids"]
+        
+        if await mod.is_mod_or_superior(ctx.bot, ctx.author):
+            pass
+        elif ctx.author.guild_permissions.administrator:
+            pass
+        elif not emans:
+            return await ctx.send("No mangers set, must be moderator or ask an admin to add a manager.")
+        elif emans:
+            if any(role.id in emans for role in ctx.author.roles):
+                pass
+        
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized event announcement channels. Ask an admin to add one.")
-
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
 
@@ -2146,7 +2165,6 @@ class ManagerUtils(commands.Cog):
             
     @commands.command(name="heistping", aliases=["hping"], usage="<sponsor> | <amount> | [requirements] | [message]")
     @commands.guild_only()
-    @is_hman()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(mention_everyone=True, embed_links=True)
     async def heistping(
@@ -2163,11 +2181,21 @@ class ManagerUtils(commands.Cog):
         Requires set Heist Manager role to use this command.
         """
         settings = await self.config.guild(ctx.guild).all()
-        authorizedchans = await self.config.guild(ctx.guild).heist_announcement_channel_ids()
+        authorizedchans = settings["heist_announcement_channel_ids"]
+        hmans = settings["heist_manager_ids"]
+        
+        if await mod.is_mod_or_superior(ctx.bot, ctx.author):
+            pass
+        elif ctx.author.guild_permissions.administrator:
+            pass
+        elif not gmans:
+            return await ctx.send("No mangers set, must be moderator or ask an admin to add a manager.")
+        elif gmans:
+            if any(role.id in hmans for role in ctx.author.roles):
+                pass
         
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized heist announcement channels. Ask an admin to add one.")
-        
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
         
