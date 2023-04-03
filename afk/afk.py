@@ -46,7 +46,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.13"
+    __version__ = "1.3.14"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -244,7 +244,7 @@ class Afk(commands.Cog):
             return
 
         await self.config.member(member).afk.set(True)
-        await self.config.member(member).reason.set(f"{ctx.author.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{reason}")
+        await self.config.member(member).reason.set(f"{member.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{reason}")
         await ctx.send(f"Forcefully added **{member}**'s AFK status.")
         if await self.config.guild(ctx.guild).nick():
             try:
