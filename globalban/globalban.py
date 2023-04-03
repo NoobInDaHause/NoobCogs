@@ -33,7 +33,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.3.0"
+    __version__ = "1.3.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -85,16 +85,32 @@ class GlobalBan(commands.Cog):
         """
         Globally ban a user.
         """
+        try:
+            member = await ctx.bot.fetch_user(user_id)
+        except discord.errors.NotFound:
+            return await ctx.send("It appears that ID is not a valid user ID.")
+
         if user_id in await self.config.banlist():
-            return await ctx.send("That user is already globally banned.")
+            return await ctx.send(f"**{member}** is already globally banned.")
         if user_id == ctx.author.id:
             return await ctx.send("I can not let you globally ban yourself.")
         if not reason:
             reason = "No reason provided."
         
+        await ctx.send(f"Are you sure you want to globally ban **{member}**? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond, cancelling.")
+
+        if not pred.result:
+            return await ctx.send("Alright not doing that then.")
+        
         logs = await self.config.globalbanlogs()
         
-        async with self.config.globalbanlogs as gbl:
+        async with self.config.globalbanlogs() as gbl:
             log = f"` - ` GlobalBan Logs Case #{len(logs) + 1}\nBan Type: GlobalBan\nUser ID: {user_id}\nAuthorized by: {ctx.author}\nReason: {reason}"
             gbl.append(log)
         
@@ -103,7 +119,6 @@ class GlobalBan(commands.Cog):
         
         errors = []
         guilds = []
-        member = await ctx.bot.fetch_user(user_id)
         for guild in ctx.bot.guilds:
             try:
                 guilds.append(guild)
@@ -145,15 +160,31 @@ class GlobalBan(commands.Cog):
         """
         Globally unban a user.
         """
+        try:
+            member = await ctx.bot.fetch_user(user_id)
+        except discord.errors.NotFound:
+            return await ctx.send("It appears that is not a valid user ID.")
+
         if user_id not in await self.config.banlist():
-            return await ctx.send("That user is not globally banned.")
+            return await ctx.send(f"**{member}** is not globally banned.")
         
         if not reason:
             reason = "No reason provided."
             
+        await ctx.send(f"Are you sure you want to globally unban **{member}**? (`yes`/`no`)")
+
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond, cancelling.")
+
+        if not pred.result:
+            return await ctx.send("Alright not doing that then.")
+        
         logs = await self.config.globalbanlogs()
         
-        async with self.config.globalbanlogs as gbl:
+        async with self.config.globalbanlogs() as gbl:
             log = f"` - ` GlobalBan Logs Case #{len(logs) + 1}\nBan Type: GlobalUnBan\nUser ID: {user_id}\nAuthorized by: {ctx.author}\nReason: {reason}"
             gbl.append(log)
         
@@ -163,7 +194,6 @@ class GlobalBan(commands.Cog):
         
         errors = []
         guilds = []
-        member = await ctx.bot.fetch_user(user_id)
         for guild in ctx.bot.guilds:
             try:
                 guilds.append(guild)
