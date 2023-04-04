@@ -33,7 +33,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.3.7"
+    __version__ = "1.3.8"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -115,7 +115,7 @@ class GlobalBan(commands.Cog):
         logs = await self.config.globalbanlogs()
         
         async with self.config.globalbanlogs() as gbl:
-            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`User:`{member} ({user_id})\n`Authorized by:` {ctx.author} ({ctx.author.id})\n`Reason:` {reason}"
+            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`User:`{member} ({user_id})\n`Authorized by:` {ctx.author} ({ctx.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
             gbl.append(log)
         
         async with self.config.banlist() as bl:
