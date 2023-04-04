@@ -33,7 +33,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.3.5"
+    __version__ = "1.3.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -94,6 +94,8 @@ class GlobalBan(commands.Cog):
             return await ctx.send(f"**{member}** is already globally banned.")
         if user_id == ctx.author.id:
             return await ctx.send("I can not let you globally ban yourself.")
+        if uesr_id == ctx.bot.user.id:
+            return await ctx.send("You can not globally ban me! >:C")
         if not reason:
             reason = "No reason provided."
         
