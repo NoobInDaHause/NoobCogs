@@ -30,14 +30,14 @@ class FirstToReact(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.FirstToReact")
     
-    __version__ = "1.0.8"
+    __version__ = "1.0.9"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
         """
-        p = "s" if len(self.__authors__) != 1 else ""
+        p = "s" if len(self.__author__) != 1 else ""
         return f"{super().format_help_for_context(ctx)}\n\nCog Version: {self.__version__}\nCog Author{p}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
