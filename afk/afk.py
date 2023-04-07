@@ -46,7 +46,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.18"
+    __version__ = "1.3.19"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -264,7 +264,7 @@ class Afk(commands.Cog):
         
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.is_owner()
-    async def afkset_deleteafter(self, ctx: commands.Context, seconds: Optional[int], showsetting: Optional[str]):
+    async def afkset_deleteafter(self, ctx: commands.Context, showsetting: Optional[str], seconds: Optional[int]):
         """
         Change the delete after on every AFK response on users.
         
@@ -272,15 +272,15 @@ class Afk(commands.Cog):
         Put `0` on seconds to disable.
         Default is 10 seconds.
         """
+        if showsetting != "show":
+            return await ctx.send("Your answer for the showsetting parameter should only be `show`.")
+        
         if seconds == 0:
             await self.config.delete_after.set(seconds)
             return await ctx.send("The delete after has been disabled.")
-
+        
         if seconds >= 121:
             return await ctx.send("The maximum seconds of delete after is 120 seconds.")
-
-        if showsetting != "show":
-            return await ctx.send("Your answer for the showsetting parameter should only be `show`.")
 
         da = await self.config.delete_after()
         return await ctx.send(f"Your current delete after settings is set to **__{da}__** seconds.")
