@@ -46,7 +46,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.21"
+    __version__ = "1.3.22"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -273,21 +273,19 @@ class Afk(commands.Cog):
         Default is 10 seconds.
         """
         da = await self.config.delete_after()
-
-        if not showsetting:
-            pass
-        elif showsetting != "show":
-            return await ctx.send("Your answer for the showsetting parameter should only be `show`.")
-        elif showsetting == "show":
+        
+        if not seconds:
             return await ctx.send(f"Your current delete after settings is set to **__{da}__** seconds.")
-        elif seconds == 0:
+        
+        if seconds == 0:
             await self.config.delete_after.set(seconds)
             return await ctx.send("The delete after has been disabled.")
-        elif seconds >= 121:
+        
+        if seconds >= 121:
             return await ctx.send("The maximum seconds of delete after is 120 seconds.")
-        else:
-            await self.config.delete_after.set(seconds)
-            return await ctx.send(f"Your current delete after settings is set to **__{da}__** seconds.")
+        
+        await self.config.delete_after.set(seconds)
+        await ctx.send(f"Successfully set the delete after to {seconds} seconds.")
         
     @afkset.command(name="togglelogs")
     async def afkset_togglelogs(self, ctx):
