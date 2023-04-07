@@ -39,15 +39,15 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.3.1"
+    __version__ = "1.3.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
         """
-        pre_processed = super().format_help_for_context(ctx)
-        return f"{pre_processed}\n\nCog Version: {self.__version__}\nCog Author: {humanize_list(self.__author__)}"
+        p = "s" if len(self.__authors__) != 1 else ""
+        return f"{super().format_help_for_context(ctx)}\n\nCog Version: {self.__version__}\nCog Author{p}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
         self, *, requester: RequestType, user_id: int

@@ -20,12 +20,12 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| Afk             |  v1.3.15  | Notify users whenever you go AFK with pings logging.             |
-| FirstToReact    |  v1.0.7   | Play a first to react wins game.                                 |
-| GlobalBan       |  v1.3.10  | Globally ban or unban a user from guilds the bot is in.          |
-| ManagerUtils    |  v2.2.4   | Some utility commands that are useful for managers from servers. |
-| ServerDonations |  v1.3.1   | Donate bot currencies or other things to servers.                |
-| SplitOrSteal    |  v2.2.1   | A fun split or steal game.                                       |
+| Afk             |  v1.3.16  | Notify users whenever you go AFK with pings logging.             |
+| FirstToReact    |  v1.0.8   | Play a first to react wins game.                                 |
+| GlobalBan       |  v1.3.11  | Globally ban or unban a user from guilds the bot is in.          |
+| ManagerUtils    |  v2.2.5   | Some utility commands that are useful for managers from servers. |
+| ServerDonations |  v1.3.2   | Donate bot currencies or other things to servers.                |
+| SplitOrSteal    |  v2.2.2   | A fun split or steal game.                                       |
 
 ## Credits
 
