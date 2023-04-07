@@ -46,7 +46,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.19"
+    __version__ = "1.3.20"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -264,7 +264,7 @@ class Afk(commands.Cog):
         
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.is_owner()
-    async def afkset_deleteafter(self, ctx: commands.Context, showsetting: Optional[str], seconds: Optional[int]):
+    async def afkset_deleteafter(self, ctx: commands.Context, seconds: Optional[int], showsetting: Optional[str]):
         """
         Change the delete after on every AFK response on users.
         
