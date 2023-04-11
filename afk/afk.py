@@ -46,7 +46,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.23"
+    __version__ = "1.3.24"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -151,7 +151,7 @@ class Afk(commands.Cog):
     @commands.command(name="afk", aliases=["away"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.bot_has_permissions(manage_nicknames=True, embed_links=True)
+    @commands.bot_has_permissions(embed_links=True)
     async def afk(self, ctx: commands.Context, *, reason: Optional[str]):
         """
         Be afk and notify users whenever they ping you.
@@ -187,7 +187,6 @@ class Afk(commands.Cog):
         """
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
-    @commands.bot_has_permissions(manage_nicknames=True)
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
     async def forceafk(self, ctx: commands.Context, member: discord.Member, *, reason: Optional[str]):
         """
