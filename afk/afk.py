@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.32"
+    __version__ = "1.3.33"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -70,16 +70,65 @@ class Afk(commands.Cog):
     async def initialize(self, bot: Red):
         await bot.wait_until_red_ready()
     
-    async def start_afk(self, ctx, author: discord.Member, reason: str):
-        """"""
+    async def start_afk(self, ctx: commands.Context, author: discord.Member, reason: str):
+        """
+        Start AFK status.
+        """
         afk_reason = f"{author.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{reason}"
         await self.config.member(author).afk.set(True)
         await self.config.member(author).reason.set(afk_reason)
         await ctx.send("You are now AFK. Any member that pings you will now get notified.")
+
+        if await self.config.guild(ctx.guild).nick():
+            try:
+                await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}", reason="User is AFK.")
+            except discord.HTTPException:
+                if author.id == ctx.guild.owner.id:
+                    await ctx.send("Could not change your nick cause you are the guild owner.", delete_after=10)
+                else:
+                    await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
+    
+    async def end_afk(self, ctx: commands.Context, author: discord.Member):
+        """
+        End AFK status.
+        """
+        await ctx.send(f"Welcome back {author.name}! I have removed your AFK status.")
+        await self.config.member(author).afk.set(False)
+        await self.config.member(author).reason.clear()
+
+        if await self.config.guild(ctx.guild).nick():
+            try:
+                await author.edit(nick=f"{author.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
+            except discord.HTTPException:
+                if author.id == ctx.guild.owner.id:
+                    await ctx.send("Could not change your nick cause you are the guild owner.", delete_after=10)
+                else:
+                    await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
+
+        if not await self.config.member(author).toggle_logs():
+            return await self.config.member(author).pinglogs.clear()
+
+        pings = await self.config.member(author).pinglogs()
+
+        if pings:
+            pinglist = """\n""".join(pings)
+            pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
+            final_page = {}
+
+            for ind, page in enumerate(pages, 1):
+                embed = discord.Embed(
+                    title=f"You have recieved some pings while you were AFK, {author.name}.",
+                    description=page,
+                    color=discord.Colour.random()
+                )
+                embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=author.avatar_url)
+                final_page[ind - 1] = embed
+
+            await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=120)
+            await self.config.member(author).pinglogs.clear()
     
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, message):
-        # sourcery skip: low-code-quality
         if not message.guild:
             return
         
@@ -89,40 +138,8 @@ class Afk(commands.Cog):
         if await self.config.member(message.author).sticky():
             pass
         elif await self.config.member(message.author).afk():
-            await message.channel.send(f"Welcome back {message.author.name}! I have removed your AFK status.")
-            await self.config.member(message.author).afk.set(False)
-            await self.config.member(message.author).reason.clear()
-            if await self.config.guild(message.guild).nick():
-                try:
-                    await message.author.edit(nick=f"{message.author.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
-                except discord.HTTPException:
-                    if message.author.id == message.guild.owner.id:
-                        await message.channel.send("Could not change your nick cause you are the guild owner.", delete_after=10)
-                    else:
-                        await message.channel.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
-            
-            if not await self.config.member(message.author).toggle_logs():
-                return await self.config.member(message.author).pinglogs.clear()
-            
-            pings = await self.config.member(message.author).pinglogs()
-            
-            if pings:
-                pinglist = """\n""".join(pings)
-                pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
-                final_page = {}
-            
-                for ind, page in enumerate(pages, 1):
-                    embed = discord.Embed(
-                        title=f"You have recieved some pings while you were AFK, {message.author.name}.",
-                        description=page,
-                        color=discord.Colour.random()
-                    )
-                    embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=message.author.avatar_url)
-                    final_page[ind - 1] = embed
-                
-                ctx = await self.bot.get_context(message)
-                await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=120)
-                await self.config.member(message.author).pinglogs.clear()
+            ctx = await self.bot.get_context(message)
+            await self.end_afk(ctx, message.author)
         
         if not message.mentions:
             return
@@ -165,24 +182,13 @@ class Afk(commands.Cog):
         
         The reason is optional.
         """
-        is_afk = await self.config.member(ctx.author).afk()
+        if await self.config.member(ctx.author).afk():
+            return await ctx.send("It appears you are already AFK.")
 
         if not reason:
             reason = "No reason given."
-        
-        if is_afk:
-            return await ctx.send("It appears you are already AFK.")
 
         await self.start_afk(ctx, ctx.author, reason)
-
-        if await self.config.guild(ctx.guild).nick():
-            try:
-                await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}", reason="User is AFK.")
-            except discord.HTTPException:
-                if ctx.author.id == ctx.guild.owner.id:
-                    await ctx.send("Could not change your nick cause you are the guild owner.", delete_after=10)
-                else:
-                    await ctx.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
     
     @commands.group(name="afkset", aliases=["awayset"])
     @commands.guild_only()
