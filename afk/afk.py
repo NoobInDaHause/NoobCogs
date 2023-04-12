@@ -29,9 +29,7 @@ class Afk(commands.Cog):
         
         self.config = Config.get_conf(self, identifier=54646544526864548, force_registration=True)
         default_guild = {
-            "nick": True
-        }
-        default_global = {
+            "nick": True,
             "delete_after": 10
         }
         default_member = {
@@ -42,11 +40,10 @@ class Afk(commands.Cog):
             "pinglogs": []
         }
         self.config.register_guild(**default_guild)
-        self.config.register_global(**default_global)
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.24"
+    __version__ = "1.3.25"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -76,7 +73,10 @@ class Afk(commands.Cog):
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, message):
         # sourcery skip: low-code-quality
-        if message.author.bot or not message.guild:
+        if not message.guild:
+            return
+        
+        if message.author.bot
             return
 
         if await self.config.member(message.author).sticky():
@@ -137,15 +137,15 @@ class Afk(commands.Cog):
             )
             embed.set_thumbnail(url=afk_user.avatar_url)
             
-            da = await self.config.delete_after()
+            da = await self.config.guild(message.guild).delete_after()
             
-            if da == 0:
+            if da != 0:
                 await message.channel.send(
-                    embed=embed, reference=message, mention_author=False
+                    embed=embed, reference=message, mention_author=False,  delete_after=da
                 )
             else:
                 await message.channel.send(
-                    embed=embed, reference=message, mention_author=False, delete_after=da
+                    embed=embed, reference=message, mention_author=False
                 )
     
     @commands.command(name="afk", aliases=["away"])
@@ -262,27 +262,24 @@ class Afk(commands.Cog):
         await ctx.send(f"I {status} sticky your AFK.")
         
     @afkset.command(name="deleteafter", aliases=["da"])
-    @commands.is_owner()
+    @commands.admin_or_permissions(manage_guild=True, administrator=True)
     async def afkset_deleteafter(self, ctx: commands.Context, seconds: Optional[int]):
         """
         Change the delete after on every AFK response on users.
         
-        Put `0` on seconds to disable.
+        Put `0` to disable.
         Default is 10 seconds.
         """
-        da = await self.config.delete_after()
-        
-        if seconds == 0:
-            await self.config.delete_after.set(seconds)
-            return await ctx.send("The delete after has been disabled.")
+        da = await self.config.guild(ctx.guild).delete_after()
         
         if not seconds:
-            return await ctx.send(f"Your current delete after settings is set to **__{da}__** seconds.")
+            await self.config.guild(ctx.guild).delete_after.set(0)
+            return await ctx.send("The delete after has been disabled.")
         
         if seconds >= 121:
             return await ctx.send("The maximum seconds of delete after is 120 seconds.")
         
-        await self.config.delete_after.set(seconds)
+        await self.config.guild(ctx.guild).delete_after.set(seconds)
         await ctx.send(f"Successfully set the delete after to {seconds} seconds.")
         
     @afkset.command(name="togglelogs")
@@ -358,11 +355,13 @@ class Afk(commands.Cog):
         is_sticky = await self.config.member(ctx.author).sticky()
         tl = await self.config.member(ctx.author).toggle_logs()
         nick = await self.config.guild(ctx.guild).nick()
+        da = await self.config.guild(ctx.guild).delete_after()
         nickname = f"\n> Guild settings\n**Nick change:** {nick}" if ctx.author.guild_permissions.administrator else ""
+        da = f"\nDelete after: {da} seconds" if ctx.author.guild_permissions.administrator else ""
         
         embed = discord.Embed(
             title=f"{ctx.author.name}'s AFK settings.",
-            description=f"**Is afk:** {is_afk}\n**Is sticky:** {is_sticky}\n**Ping logging:** {tl}\n{nickname}",
+            description=f"**Is afk:** {is_afk}\n**Is sticky:** {is_sticky}\n**Ping logging:** {tl}\n{nickname}\n{da}",
             colour=ctx.author.colour,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
