@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.28"
+    __version__ = "1.3.29"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -69,7 +69,7 @@ class Afk(commands.Cog):
     
     async def initialize(self, bot: Red):
         await bot.wait_until_red_ready()
-        
+    
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, message):
         # sourcery skip: low-code-quality
@@ -351,17 +351,15 @@ class Afk(commands.Cog):
         """
         See your AFK settings.
         """
-        is_afk = await self.config.member(ctx.author).afk()
-        is_sticky = await self.config.member(ctx.author).sticky()
-        tl = await self.config.member(ctx.author).toggle_logs()
-        nick = await self.config.guild(ctx.guild).nick()
-        da = await self.config.guild(ctx.guild).delete_after()
+        member_settings = await self.config.member(ctx.author).all()
+        guild_settings = await self.config.guild(ctx.guild).all()
+        da = guild_settings["delete_after"]
         da2 = f"{da} seconds." if da != 0 else "Disabled."
-        nickda = f"\n> Guild settings (only admins+ can see this)\n**Nick change:** {nick}\n**Delete after:** {da2}" if ctx.bot.is_owner(ctx.author) or ctx.author.guild_permissions.administrator else ""
+        nickda = f"\n> Guild settings\n**Nick change:** {guild_settings['nick']}\n**Delete after:** {da2}" if ctx.bot.is_owner(ctx.author) or ctx.author.guild_permissions.administrator else ""
         
         embed = discord.Embed(
             title=f"{ctx.author.name}'s AFK settings.",
-            description=f"**Is afk:** {is_afk}\n**Is sticky:** {is_sticky}\n**Ping logging:** {tl}\n{nickda}",
+            description=f"**Is afk:** {member_settings['afk']}\n**Is sticky:** {member_settings['sticky']}\n**Ping logging:** {member_settings['toggle_logs']}\n{nickda}",
             colour=ctx.author.colour,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
