@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.0"
+    __version__ = "1.4.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -125,35 +125,6 @@ class Afk(commands.Cog):
             await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=120)
             await self.config.member(author).pinglogs.clear()
     
-    async def add_ping_log(self, author: discord.Member, message: discord.Message):
-        """
-        Add pings to pinglogs.
-        """
-        async with self.config.member(author).pinglogs() as pl:
-            ping = f"` - ` {message.author.mention} [pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message:** {message.content}"
-            pl.append(ping)
-    
-    async def notify_member(self, author: discord.Member, message: discord.Message):
-        """
-        Notify users when they ping a user that is AFK.
-        """
-        embed = discord.Embed(
-            description=await self.config.member(author).reason(),
-            colour=author.colour
-        )
-        embed.set_thumbnail(url=author.avatar_url)
-
-        da = await self.config.guild(message.guild).delete_after()
-
-        if da != 0:
-            await message.channel.send(
-                embed=embed, reference=message, mention_author=False,  delete_after=da
-            )
-        else:
-            await message.channel.send(
-                embed=embed, reference=message, mention_author=False
-            )
-    
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, message):
         ctx = await self.bot.get_context(message)
@@ -180,8 +151,26 @@ class Afk(commands.Cog):
             if not await self.config.member(afk_user).afk():
                 continue
             
-            await self.add_ping_log(ctx, afk_user, message)
-            await self.notify_member(ctx, afk_user, message)
+            async with self.config.member(afk_user).pinglogs() as pl:
+                ping = f"` - ` {message.author.mention} [pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message:** {message.content}"
+                pl.append(ping)
+            
+            embed = discord.Embed(
+                description=await self.config.member(afk_user).reason(),
+                colour=afk_user.colour
+            )
+            embed.set_thumbnail(url=afk_user.avatar_url)
+            
+            da = await self.config.guild(message.guild).delete_after()
+            
+            if da != 0:
+                await message.channel.send(
+                    embed=embed, reference=message, mention_author=False,  delete_after=da
+                )
+            else:
+                await message.channel.send(
+                    embed=embed, reference=message, mention_author=False
+                )
     
     @commands.command(name="afk", aliases=["away"])
     @commands.guild_only()
