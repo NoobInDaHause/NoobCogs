@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.30"
+    __version__ = "1.3.31"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -69,6 +69,13 @@ class Afk(commands.Cog):
     
     async def initialize(self, bot: Red):
         await bot.wait_until_red_ready()
+    
+    async def start_afk(self, ctx, author: discord.Member, reason: str):
+        """"""
+        afk_reason = f"{author.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{reason}"
+        await self.config.member(author).afk.set(True)
+        await self.config.member(author).reason.set(afk_reason)
+        await ctx.send("You are now AFK. Any member that pings you will now get notified.")
     
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, message):
@@ -166,9 +173,8 @@ class Afk(commands.Cog):
         if is_afk:
             return await ctx.send("It appears you are already AFK.")
 
-        await self.config.member(ctx.author).afk.set(True)
-        await self.config.member(ctx.author).reason.set(f"{ctx.author.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{reason}")
-        await ctx.send("You are now AFK. Any member that pings you will now get notified.")
+        await self.start_afk(self, ctx, ctx.author, reason)
+
         if await self.config.guild(ctx.guild).nick():
             try:
                 await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}", reason="User is AFK.")
