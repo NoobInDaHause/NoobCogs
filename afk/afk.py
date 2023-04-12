@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.34"
+    __version__ = "1.3.35"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -80,7 +80,7 @@ class Afk(commands.Cog):
 
         if await self.config.guild(ctx.guild).nick():
             try:
-                await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}", reason="User is AFK.")
+                await ctx.author.edit(nick=f"[AFK] {author.display_name}", reason="User is AFK.")
             except discord.HTTPException:
                 if author.id == ctx.guild.owner.id:
                     await ctx.send("Could not change your nick cause you are the guild owner.", delete_after=10)
