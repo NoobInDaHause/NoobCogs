@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.25"
+    __version__ = "1.3.26"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -76,7 +76,7 @@ class Afk(commands.Cog):
         if not message.guild:
             return
         
-        if message.author.bot
+        if message.author.bot:
             return
 
         if await self.config.member(message.author).sticky():
