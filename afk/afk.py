@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.3.33"
+    __version__ = "1.3.34"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -77,7 +77,6 @@ class Afk(commands.Cog):
         afk_reason = f"{author.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{reason}"
         await self.config.member(author).afk.set(True)
         await self.config.member(author).reason.set(afk_reason)
-        await ctx.send("You are now AFK. Any member that pings you will now get notified.")
 
         if await self.config.guild(ctx.guild).nick():
             try:
@@ -92,7 +91,6 @@ class Afk(commands.Cog):
         """
         End AFK status.
         """
-        await ctx.send(f"Welcome back {author.name}! I have removed your AFK status.")
         await self.config.member(author).afk.set(False)
         await self.config.member(author).reason.clear()
 
@@ -139,6 +137,7 @@ class Afk(commands.Cog):
             pass
         elif await self.config.member(message.author).afk():
             ctx = await self.bot.get_context(message)
+            await message.channel.send(f"Welcome back {message.author.name}! I have removed your AFK status.")
             await self.end_afk(ctx, message.author)
         
         if not message.mentions:
@@ -188,6 +187,7 @@ class Afk(commands.Cog):
         if not reason:
             reason = "No reason given."
 
+        await ctx.send("You are now AFK. Any member that pings you will now get notified.")
         await self.start_afk(ctx, ctx.author, reason)
     
     @commands.group(name="afkset", aliases=["awayset"])
@@ -217,51 +217,13 @@ class Afk(commands.Cog):
         
         if not reason:
             reason = "No reason given."
-        
-        is_afk = await self.config.member(member).afk()
-        pings = await self.config.member(member).pinglogs()
-        tl = await self.config.member(member).toggle_logs()
 
-        if is_afk:
-            await self.config.member(member).afk.set(False)
-            await self.config.member(member).reason.clear()
+        if await self.config.member(member).afk():
             await ctx.send(f"Forcefully removed **{member}**'s AFK status.")
-            if await self.config.guild(ctx.guild).nick():
-                try:
-                    await member.edit(nick=f"{member.display_name}".replace("[AFK]", ""), reason=f"Forcefully removed AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
-                except discord.HTTPException:
-                    await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
+            return await self.end_afk(ctx, member)
 
-            if not tl:
-                return await self.config.member(member).pinglogs.clear()
-            
-            if pings:
-                pinglist = """\n""".join(pings)
-                pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
-                final_page = {}
-
-                for ind, page in enumerate(pages, 1):
-                    embed = discord.Embed(
-                        title=f"You have recieved some pings while you were AFK, {member.name}.",
-                        description=page,
-                        color=discord.Colour.random()
-                    )
-                    embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=member.avatar_url)
-                    final_page[ind - 1] = embed
-
-                await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=120)
-                await self.config.member(member).pinglogs.clear()
-                
-            return
-
-        await self.config.member(member).afk.set(True)
-        await self.config.member(member).reason.set(f"{member.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{reason}")
         await ctx.send(f"Forcefully added **{member}**'s AFK status.")
-        if await self.config.guild(ctx.guild).nick():
-            try:
-                await member.edit(nick=f"[AFK] {member.display_name}", reason=f"Forcefully added AFK status to user. Authorized by: {ctx.author} (ID: {ctx.author.id})")
-            except discord.HTTPException:
-                await ctx.send(f"Could not change {member}'s nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
+        await self.start_afk(ctx, member, reason)
     
     @afkset.command(name="sticky")
     async def afkset_sticky(self, ctx):
