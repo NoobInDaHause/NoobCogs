@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.2"
+    __version__ = "1.4.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -125,7 +125,7 @@ class Afk(commands.Cog):
             await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=120)
             await self.config.member(author).pinglogs.clear()
     
-    async def notify_and_log_ping(self, author: discord.Member, embed: discord.Embed, ping_log: str):
+    async def notify_and_log_ping(self, author: discord.Member, channel: discord.TextChannel, embed: discord.Embed, ping_log: str):
         """
         Notify and log pings.
         """
@@ -135,11 +135,11 @@ class Afk(commands.Cog):
             pl.append(ping_log)
         
         if da != 0:
-            await ctx.send(
+            await channel.send(
                 embed=embed, reference=ctx.message, mention_author=False,  delete_after=da
             )
         else:
-            await ctx.send(
+            await channel.send(
                 embed=embed, reference=ctx.message, mention_author=False
             )
     
@@ -171,13 +171,15 @@ class Afk(commands.Cog):
             
             ping_log = f"` - ` {message.author.mention} [pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message:** {message.content}"
             
+            chan = message.channel
+            
             embed = discord.Embed(
                 description=await self.config.member(afk_user).reason(),
                 colour=afk_user.colour
             )
             embed.set_thumbnail(url=afk_user.avatar_url)
             
-            await self.notify_and_log_ping(ctx, afk_user, embed, ping_log)
+            await self.notify_and_log_ping(ctx, afk_user, chan, embed, ping_log)
     
     @commands.command(name="afk", aliases=["away"])
     @commands.guild_only()
