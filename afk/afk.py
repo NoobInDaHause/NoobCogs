@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.5"
+    __version__ = "1.4.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -133,8 +133,8 @@ class Afk(commands.Cog):
             pl.append(ping_log)
 
         da = await self.config.guild(message.guild).delete_after()
-
-        notify = await message.channel.send(embed=embed, reference=message, mention_author=False,  delete_after=da) if da != 0 else await message.channel.send(embed=embed, reference=message, mention_author=False,  delete_after=da)
+        
+        notify = await message.channel.send(embed=embed, reference=message, mention_author=False,  delete_after=da) if da != 0 else await message.channel.send(embed=embed, reference=message, mention_author=False)
 
         return notify
     
