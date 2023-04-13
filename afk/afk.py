@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.7"
+    __version__ = "1.4.8"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -144,8 +144,6 @@ class Afk(commands.Cog):
 
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, message):
-        ctx = await self.bot.get_context(message)
-
         if not message.guild:
             return
         
@@ -156,13 +154,14 @@ class Afk(commands.Cog):
             pass
         elif await self.config.member(message.author).afk():
             await message.channel.send(f"Welcome back {message.author.name}! I have removed your AFK status.")
+            ctx = await self.bot.get_context(message)
             await self.end_afk(ctx, message.author)
         
         if not message.mentions:
             return
 
         for afk_user in message.mentions:
-            if afk_user == message.author:
+            if afk_user.id == message.author.id:
                 continue
 
             if not await self.config.member(afk_user).afk():
