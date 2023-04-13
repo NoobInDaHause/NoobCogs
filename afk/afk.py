@@ -43,7 +43,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.6"
+    __version__ = "1.4.7"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -125,19 +125,23 @@ class Afk(commands.Cog):
             await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=120)
             await self.config.member(author).pinglogs.clear()
     
-    async def log_and_notify(self, ctx: commands.Context, author: discord.Member, message: discord.Message, embed: discord.Embed, ping_log):
+    async def log_and_notify(self, author: discord.Member, message: discord.Message, ping_log):
         """
         Log pings and at the same time notify members when they mentioned an AFK memebr.
         """
         async with self.config.member(author).pinglogs() as pl:
             pl.append(ping_log)
 
+        embed = discord.Embed(
+            description=await self.config.member(author).reason(),
+            colour=author.colour
+        )
+        embed.set_thumbnail(url=author.avatar_url)
+        
         da = await self.config.guild(message.guild).delete_after()
         
-        notify = await message.channel.send(embed=embed, reference=message, mention_author=False,  delete_after=da) if da != 0 else await message.channel.send(embed=embed, reference=message, mention_author=False)
+        return await message.channel.send(embed=embed, reference=message, mention_author=False,  delete_after=da) if da != 0 else await message.channel.send(embed=embed, reference=message, mention_author=False)
 
-        return notify
-    
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, message):
         ctx = await self.bot.get_context(message)
@@ -166,13 +170,7 @@ class Afk(commands.Cog):
 
             ping_log = f"` - ` {message.author.mention} [pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message:** {message.content}"
             
-            embed = discord.Embed(
-                description=await self.config.member(afk_user).reason(),
-                colour=afk_user.colour
-            )
-            embed.set_thumbnail(url=afk_user.avatar_url)
-            
-            await self.log_and_notify(ctx, afk_user, message, embed, ping_log)
+            await self.log_and_notify(afk_user, message, ping_log)
     
     @commands.command(name="afk", aliases=["away"])
     @commands.guild_only()
