@@ -16,8 +16,6 @@ from redbot.core.utils.predicates import MessagePredicate
 from .sosgifs import *
 from typing import Literal
 
-RequestType = Literal["discord_deleted_user", "owner", "user", "user_strict"]
-
 class SplitOrSteal(commands.Cog):
     """
     A fun split or steal game.
@@ -37,7 +35,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.SplitOrSteal")
         
-    __version__ = "2.2.3"
+    __version__ = "2.2.4"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -48,7 +46,7 @@ class SplitOrSteal(commands.Cog):
         return f"{super().format_help_for_context(ctx)}\n\nCog Version: {self.__version__}\nCog Author{p}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
-        self, *, requester: RequestType, user_id: int
+        self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever. Also thanks sravan!
         super().red_delete_data_for_user(requester=requester, user_id=user_id)

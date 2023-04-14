@@ -4,7 +4,8 @@ import discord
 from discord.http import Route
 from redbot.core.bot import Red
 
-
+# https://github.com/Honkertonken/Honkertonken-Cogs/blob/master/buttoninvite/url_button.py
+# modified the code a little bit
 class URLButton:
     """
     Send a message with a URL button, with pure dpy 1.7.

@@ -15,8 +15,6 @@ from redbot.core import commands, Config
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 from redbot.core.utils.predicates import MessagePredicate
 
-RequestType = Literal["discord_deleted_user", "owner", "user", "user_strict"]
-
 class Afk(commands.Cog):
     """
     Notify users whenever you go AFK with pings logging.
@@ -43,7 +41,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.8"
+    __version__ = "1.4.9"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -54,8 +52,8 @@ class Afk(commands.Cog):
         return f"{super().format_help_for_context(ctx)}\n\nCog Version: {self.__version__}\nCog Author{p}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
-        self, *, requester: RequestType, user_id: int
-    ) -> None:
+        self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
+    ):
         """
         This cog stores data provided by users for the express purpose of notifying users whenever they go AFK and only for that reason.
         It does not store user data which was not provided through a command.
@@ -65,7 +63,6 @@ class Afk(commands.Cog):
         Also thanks sravan and aikaterna for the end user data statement!
         """
         await self.config.user_from_id(user_id).clear()
-        super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     async def initialize(self, bot: Red):
         await bot.wait_until_red_ready()

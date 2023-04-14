@@ -15,8 +15,6 @@ from redbot.core.utils.predicates import MessagePredicate
 
 from typing import Literal
 
-RequestType = Literal["discord_deleted_user", "owner", "user", "user_strict"]
-
 class ServerDonations(commands.Cog):
     """
     Donate bot currencies or other things to servers.
@@ -39,7 +37,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.ServerDonations")
         
-    __version__ = "1.3.3"
+    __version__ = "1.3.4"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -50,7 +48,7 @@ class ServerDonations(commands.Cog):
         return f"{super().format_help_for_context(ctx)}\n\nCog Version: {self.__version__}\nCog Author{p}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
-        self, *, requester: RequestType, user_id: int
+        self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever. Also thanks sravan!
         super().red_delete_data_for_user(requester=requester, user_id=user_id)

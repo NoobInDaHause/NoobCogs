@@ -15,8 +15,6 @@ from redbot.core import modlog, commands, Config
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 from redbot.core.utils.predicates import MessagePredicate
 
-RequestType = Literal["discord_deleted_user", "owner", "user", "user_strict"]
-
 class GlobalBan(commands.Cog):
     """
     Globally ban a user from all the guilds the bot is in.
@@ -33,7 +31,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.3.12"
+    __version__ = "1.3.13"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -44,7 +42,7 @@ class GlobalBan(commands.Cog):
         return f"{super().format_help_for_context(ctx)}\n\nCog Version: {self.__version__}\nCog Author{p}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
-        self, *, requester: RequestType, user_id: int
+        self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever. But it stores user ID's for the ban list! Also thanks sravan!
         super().red_delete_data_for_user(requester=requester, user_id=user_id)
