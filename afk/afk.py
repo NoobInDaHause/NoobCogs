@@ -41,7 +41,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.9"
+    __version__ = "1.4.10"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -63,9 +63,6 @@ class Afk(commands.Cog):
         Also thanks sravan and aikaterna for the end user data statement!
         """
         await self.config.user_from_id(user_id).clear()
-    
-    async def initialize(self, bot: Red):
-        await bot.wait_until_red_ready()
     
     async def start_afk(self, ctx: commands.Context, author: discord.Member, reason: str):
         """

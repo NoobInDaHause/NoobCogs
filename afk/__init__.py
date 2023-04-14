@@ -15,5 +15,4 @@ from .afk import Afk
 
 async def setup(bot: Red):
     cog = Afk(bot)
-    await cog.initialize(bot)
     bot.add_cog(cog)
