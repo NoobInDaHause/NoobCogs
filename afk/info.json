@@ -1,0 +1,22 @@
+{
+    "name": "Afk",
+    "short": "Notify users whenever you go AFK with pings logging.",
+    "description": "Be afk and notify users who ping you with a reason of your choice. This cog is inspired by sravan and Andy's afk cog.",
+    "end_user_data_statement": "This cog stores data provided by users for the express purpose of notifying users whenever they go AFK and only for that reason. It does not store user data which was not provided through a command. Users may remove their own content without making a data removal request. This cog does not support data requests, but will respect deletion requests.",
+    "install_msg": "Thank you for installing Afk. Load the cog with `[p]load afk`. This cog is inspired by sravan and Andy's afk cog.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "min_bot_version": "3.4.0",
+    "max_bot_version": "3.5.99",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "Afk",
+        "Away",
+        "awayfromkeyboard"
+    ],
+    "type": "COG"
+}
