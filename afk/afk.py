@@ -41,7 +41,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.10"
+    __version__ = "1.4.11"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -238,8 +238,6 @@ class Afk(commands.Cog):
         Put `0` to disable.
         Default is 10 seconds.
         """
-        da = await self.config.guild(ctx.guild).delete_after()
-        
         if not seconds:
             await self.config.guild(ctx.guild).delete_after.set(0)
             return await ctx.send("The delete after has been disabled.")
