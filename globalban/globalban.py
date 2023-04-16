@@ -31,7 +31,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.4.0"
+    __version__ = "1.4.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -137,7 +137,7 @@ class GlobalBan(commands.Cog):
                     until=None,
                     channel=None,
                     )
-                await asyncio.sleep(5)
+                await asyncio.sleep(10)
             except discord.HTTPException:
                 errors.append(f"**{guild}**")
                 
@@ -214,7 +214,7 @@ class GlobalBan(commands.Cog):
                     until=None,
                     channel=None,
                     )
-                await asyncio.sleep(5)
+                await asyncio.sleep(10)
             except discord.HTTPException:
                 errors.append(f"**{guild}**")
                 
