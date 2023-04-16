@@ -26,12 +26,12 @@ class GlobalBan(commands.Cog):
         self.config = Config.get_conf(self, identifier=74654871231365754648, force_registration=True)
         default_global = {
             "banlist": [],
-            "globalbanlogs": [],
+            "banlogs": [],
             "create_modlog": False
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.3.13"
+    __version__ = "1.4.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -110,9 +110,9 @@ class GlobalBan(commands.Cog):
         
         await ctx.send("Alright this might take a while.")
         
-        logs = await self.config.globalbanlogs()
+        logs = await self.config.banlogs()
         
-        async with self.config.globalbanlogs() as gbl:
+        async with self.config.banlogs() as gbl:
             log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`User:`{member} ({user_id})\n`Authorized by:` {ctx.author} ({ctx.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
             gbl.append(log)
         
@@ -186,9 +186,9 @@ class GlobalBan(commands.Cog):
         
         await ctx.send("Alright this might take a while.")
         
-        logs = await self.config.globalbanlogs()
+        logs = await self.config.banlogs()
         
-        async with self.config.globalbanlogs() as gbl:
+        async with self.config.banlogs() as gbl:
             log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalUnBan\n`User:`{member} ({user_id})\n`Authorized by:` {ctx.author} ({ctx.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
             gbl.append(log)
         
@@ -239,7 +239,7 @@ class GlobalBan(commands.Cog):
         """
         Show the global ban or unban logs.
         """
-        logs = await self.config.globalbanlogs()
+        logs = await self.config.banlogs()
         
         if not logs:
             return await ctx.send("It appears there are no cases logged.")
@@ -286,12 +286,20 @@ class GlobalBan(commands.Cog):
         
         await menu(ctx, list(final_page.values()), controls=DEFAULT_CONTROLS, timeout=60)
         
-    @globalban.command(name="reset")
+    @globalban.group(name="reset")
     async def globalban_reset(self, ctx):
         """
-        Reset the globalban cog.
+        Reset any of the globalban config.
         """
-        await ctx.send("Are you sure you want to reset the globalban cog? (`yes`/`no`)")
+    
+    @globalban_reset.command(name="banlist")
+    async def globalban_reset_banlist(self, ctx):
+        """
+        Reset or clear the ban list.
+
+        Note: This will not unban any of the users that were globally banned.
+        """
+        await ctx.send("Are you sure you want to reset the globalban banlist? (`yes`/`no`)")
         
         pred = MessagePredicate.yes_or_no(ctx)
         try:
@@ -301,27 +309,37 @@ class GlobalBan(commands.Cog):
         
         if pred.result:
             await self.config.banlist.clear()
-            await ctx.send("Successfully resetted the globalban cog.")
+            await ctx.send("Successfully resetted the globalban banlist.")
         else:
             await ctx.send("Alright not doing that then.")
     
-    @globalban.command(name="createmodlog")
-    async def globalban_createmodlog(self, ctx):
+    @globalban_reset.command(name="banlogs")
+    async def globalban_reset_banlogs(self, ctx):
         """
-        Toggle whether to make a modlog case when you globally ban or unban a user.
-        """
-        current = await self.config.create_modlog()
-        await self.config.create_modlog.set(not current)
-        status = "will not" if current else "will"
-        await ctx.send(f"I {status} make a modlog case whenever you globally ban or unban a user.")
+        Reset or clear the ban logs.
 
-    @globalban.command(name="resetcog")
-    @commands.is_owner()
-    async def globalban_resetcog(self, ctx):
+        Note: This will not unban any of the users that were globally banned.
         """
-        Reset the globalban cogs configuration.
+        await ctx.send("Are you sure you want to reset the globalban banlogs? (`yes`/`no`)")
+        
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await ctx.bot.wait_for("message", check=pred, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long to respond. Cancelling.")
+        
+        if pred.result:
+            await self.config.banlogs.clear()
+            await ctx.send("Successfully resetted the globalban banlogs.")
+        else:
+            await ctx.send("Alright not doing that then.")
+    
+    @globalban_reset.command(name="cog")
+    async def globalban_reset_cog(self, ctx):
+        """
+        Reset the globalban cogs whole configuration.
 
-        Bot owners only.
+        Note: This will not unban any of the users that were globally banned.
         """
         await ctx.send("This will reset the globalban cogs whole configuration, do you want to continue? (`yes`/`no`)")
 
@@ -336,3 +354,13 @@ class GlobalBan(commands.Cog):
             return await ctx.send("Successfully cleared the globalban cogs configuration.")
         else:
             await ctx.send("Alright not doing that then.")
+    
+    @globalban.command(name="createmodlog")
+    async def globalban_createmodlog(self, ctx):
+        """
+        Toggle whether to make a modlog case when you globally ban or unban a user.
+        """
+        current = await self.config.create_modlog()
+        await self.config.create_modlog.set(not current)
+        status = "will not" if current else "will"
+        await ctx.send(f"I {status} make a modlog case whenever you globally ban or unban a user.")
