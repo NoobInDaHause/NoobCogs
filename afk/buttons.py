@@ -1,11 +1,8 @@
 from __future__ import annotations
-from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING, Union
+from typing import Dict, Optional, Union, List, Any, Union
 
 import discord
 from discord.ext import commands
-
-if TYPE_CHECKING:
-    from discord import Message, InteractionMessage, WebhookMessage
 
 __all__ = (
     "Paginator",
@@ -37,7 +34,7 @@ class Paginator(discord.ui.View):
     next_page(interaction: Interaction, button: Button): Navigates to the next page.
     start(obj: Union[Context, Interaction]): Starts the paginator and sends the first page. Returns the message object representing the current page.
     """
-    message: Optional[Message] = None
+    message: Optional[discord.Message] = None
 
     def __init__(
         self,
@@ -140,7 +137,7 @@ class Paginator(discord.ui.View):
     
     async def start(
         self, obj: Union[commands.Context, discord.Interaction]
-    ) -> Optional[Union[Message, InteractionMessage, WebhookMessage]]:
+    ) -> Optional[Union[discord.Message, discord.InteractionMessage, discord.WebhookMessage]]:
         if isinstance(obj, commands.Context):
             self.ctx = obj
             self.interaction = None
