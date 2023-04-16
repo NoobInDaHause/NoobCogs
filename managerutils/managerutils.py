@@ -1909,14 +1909,14 @@ class ManagerUtils(commands.Cog):
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = settings["giveaway_announcement_channel_ids"]
         gmans = settings["giveaway_manager_ids"]
-        
+
         if await mod.is_mod_or_superior(ctx.bot, ctx.author):
             pass
         elif ctx.author.guild_permissions.administrator:
             pass
         elif not gmans:
             return await ctx.send("No mangers set, must be moderator or ask an admin to add a manager.")
-        elif gmans:
+        else:
             if any(role.id in gmans for role in ctx.author.roles):
                 pass
 
@@ -1987,7 +1987,7 @@ class ManagerUtils(commands.Cog):
             )
         except Exception:
             return await ctx.author.send("It appears that I not have permission to send a message from that channel.")
-        
+
         if glogchan:
             try:
                 embed = discord.Embed(
@@ -2032,17 +2032,17 @@ class ManagerUtils(commands.Cog):
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = settings["event_announcement_channel_ids"]
         emans = settings["event_manager_ids"]
-        
+
         if await mod.is_mod_or_superior(ctx.bot, ctx.author):
             pass
         elif ctx.author.guild_permissions.administrator:
             pass
         elif not emans:
             return await ctx.send("No mangers set, must be moderator or ask an admin to add a manager.")
-        elif emans:
+        else:
             if any(role.id in emans for role in ctx.author.roles):
                 pass
-        
+
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized event announcement channels. Ask an admin to add one.")
         if ctx.channel.id not in authorizedchans:
@@ -2083,7 +2083,7 @@ class ManagerUtils(commands.Cog):
         prize_field = await self.config.guild(ctx.guild).event_embed.prize_field.all()
         message_field = await self.config.guild(ctx.guild).event_embed.message_field.all()
         set_content = await self.config.guild(ctx.guild).event_embed.content()
-        
+
         eembed = discord.Embed(
             title=f"{set_title or eembed_title}".replace("{guild}", f"{ctx.guild.name}"),
             description=f"{set_description or eembed_description}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{prize}", f"{prize}").replace("{name}", f"{name}").replace("{guild}", f"{ctx.guild.name}"),
@@ -2135,7 +2135,7 @@ class ManagerUtils(commands.Cog):
             )
         except Exception:
             return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-        
+
         if elogchan:
             try:
                 embed = discord.Embed(
@@ -2169,7 +2169,7 @@ class ManagerUtils(commands.Cog):
         ctx: commands.Context,
         *,
         heists
-    ):  # sourcery skip: low-code-quality
+    ):    # sourcery skip: low-code-quality
         """
         Ping for server heists.
         
@@ -2180,30 +2180,30 @@ class ManagerUtils(commands.Cog):
         settings = await self.config.guild(ctx.guild).all()
         authorizedchans = settings["heist_announcement_channel_ids"]
         hmans = settings["heist_manager_ids"]
-        
+
         if await mod.is_mod_or_superior(ctx.bot, ctx.author):
             pass
         elif ctx.author.guild_permissions.administrator:
             pass
         elif not gmans:
             return await ctx.send("No mangers set, must be moderator or ask an admin to add a manager.")
-        elif gmans:
+        else:
             if any(role.id in hmans for role in ctx.author.roles):
                 pass
-        
+
         if not authorizedchans:
             return await ctx.send("It appears there are no authorized heist announcement channels. Ask an admin to add one.")
         if ctx.channel.id not in authorizedchans:
             return await ctx.send(f"You can not run this command in an unauthorized channel.\nAuthorized channels: {humanize_list([f'<#{channel}>' for channel in authorizedchans])}")
-        
+
         heists = heists.split("|")
         maxargs = len(heists)
-        
+
         if maxargs > 4:
             return await ctx.send(f"Argument error, perhaps you added an extra `|`, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
         if maxargs < 4:
             return await ctx.send(f"Argument error, see `{ctx.prefix}muhelp` to know how to use managerutils commands.")
-               
+
         sponsor = heists[0]
         sponsor.replace(" ", "")
         amount = heists[1]
@@ -2212,7 +2212,7 @@ class ManagerUtils(commands.Cog):
         requirements.replace(" ", "")
         message = heists[3]
         message.replace(" ", "")
-        
+
         hlogchan = ctx.guild.get_channel(settings["heist_log_channel_id"])
         role = (
             f"<@&{settings['heist_ping_role_id']}>"
@@ -2231,7 +2231,7 @@ class ManagerUtils(commands.Cog):
         hrequirements_field = await self.config.guild(ctx.guild).heist_embed.hrequirements_field.all()
         hmessage_field = await self.config.guild(ctx.guild).heist_embed.hmessage_field.all()
         set_content = await self.config.guild(ctx.guild).heist_embed.content()
-        
+
         hembed = discord.Embed(
             title=f"{set_title or hembed_title}".replace("{guild}", f"{ctx.guild.name}"),
             description=f"{set_description or hembed_description}".replace("{sponsor}", f"{sponsor}").replace("{host}", f"{ctx.author.mention}").replace("{message}", f"{message}").replace("{requirements}", f"{requirements}").replace("{amount}", f"{amount}").replace("{guild}", f"{ctx.guild.name}"),
@@ -2254,14 +2254,14 @@ class ManagerUtils(commands.Cog):
             value=f"{hamount_field['value'] or hembed_amount_field_value}".replace("{amount}", f"{amount}"),
             inline=hamount_field["inline"]
         )
-        
+
         if await self.config.guild(ctx.guild).heist_embed.checklist_toggle():
             hembed.add_field(
                 name="Checklist:",
                 value="` - ` Have a life saver on your inventory.\n` - ` Withdraw at least **1** coin.\n` - ` Press the big green `JOIN HEIST` button.\n` - ` Lastly don't get caught.",
                 inline=False
             )
-        
+
         hembed.add_field(
             name=hrequirements_field["name"] or hembed_requirements_field_name,
             value=f"{hrequirements_field['value'] or hembed_requirements_field_value}".replace("{requirements}", f"{requirements}"),
@@ -2272,17 +2272,17 @@ class ManagerUtils(commands.Cog):
             value=f"{hmessage_field['value'] or hembed_message_field_value}".replace("{message}", f"{message}"),
             inline=False
         )
-        
+
         if show_footer:
             hembed.set_footer(
                 text=f"{set_footer_text or hembed_footer_text}".replace("{host}", f"{ctx.author}").replace("{host.id}", f"{ctx.author.id}").replace("{guild}", f"{ctx.guild.name}"),
                 icon_url=f"{set_footer_icon or hembed_footer_icon}".replace("{host.avatar_url}", f"{ctx.author.avatar_url}").replace("{guild.icon_url}", f"{ctx.guild.icon_url}").replace("removed", "")
             )
-        
+
         if await self.config.guild(ctx.guild).auto_delete_commands():
             with contextlib.suppress(Exception):
                 await ctx.message.delete()
-        
+
         try:
             am = discord.AllowedMentions(roles=True, users=True, everyone=False)
             hlog = await ctx.send(
@@ -2292,7 +2292,7 @@ class ManagerUtils(commands.Cog):
             )
         except Exception:
             return await ctx.author.send("It appears that I do not have permission to send a message from that channel.")
-        
+
         if hlogchan:
             try:
                 embed = discord.Embed(
@@ -2303,7 +2303,7 @@ class ManagerUtils(commands.Cog):
                 )
                 embed.set_footer(text=f"Host: {ctx.author} (ID: {ctx.author.id})", icon_url=ctx.author.avatar_url)
                 embed.set_thumbnail(url=ctx.guild.icon_url)
-                
+
                 button = url_button.URLButton(
                     "Jump To Message",
                     hlog.jump_url,
