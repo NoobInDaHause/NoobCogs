@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING, Sequence, Union
+from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING, Union
 
-from discord import Embed, ButtonStyle, utils, Interaction, Member
-from discord.ui import View, button, Button
-from discord.ext.commands import Context
+import discord
+from discord.ext import commands
 
 if TYPE_CHECKING:
     from discord import Message, InteractionMessage, WebhookMessage
@@ -14,7 +13,7 @@ __all__ = (
 # Paginator originally from PranoyMajumdar
 # https://github.com/PranoyMajumdar/dispie/blob/main/dispie/paginator/__init__.py
 # modified by me
-class Paginator(View):
+class Paginator(discord.ui.View):
     """
     The Paginator class is used for paginating through a list of items, such as list of embeds.
     It allows for easy navigation between pages using the "previous" and "next" buttons.
@@ -43,10 +42,10 @@ class Paginator(View):
     def __init__(
         self,
         bot,
-        author: Member,
+        author: discord.Member,
         pages: List[Any],
         *,
-        timeout: Optional[int] = 60,
+        timeout: Optional[float] = 60,
         delete_message_after: bool = False,
         per_page: int = 1,
     ):
@@ -56,8 +55,8 @@ class Paginator(View):
         self.delete_message_after: bool = delete_message_after
         self.current_page: int = 0
 
-        self.ctx: Optional[Context] = None
-        self.interaction: Optional[Interaction] = None
+        self.ctx: Optional[commands.Context] = None
+        self.interaction: Optional[discord.Interaction] = None
         self.per_page: int = per_page
         self.pages: Any = pages
         total_pages, left_over = divmod(len(self.pages), self.per_page)
@@ -83,15 +82,15 @@ class Paginator(View):
         return page
     
     async def get_page_kwargs(self, page: Any) -> Dict[str, Any]:
-        formatted_page = await utils.maybe_coroutine(self.format_page, page)
+        formatted_page = await discord.utils.maybe_coroutine(self.format_page, page)
 
         kwargs = {"content": None, "embeds": [], "view": self}
         if isinstance(formatted_page, str):
             kwargs["content"] = formatted_page
-        elif isinstance(formatted_page, Embed):
+        elif isinstance(formatted_page, discord.Embed):
             kwargs["embeds"] = [formatted_page]
         elif isinstance(formatted_page, list):
-            if not all(isinstance(embed, Embed) for embed in formatted_page):
+            if not all(isinstance(embed, discord.Embed) for embed in formatted_page):
                 raise TypeError(
                     "All elements in the list must be of type Embed")
 
@@ -101,7 +100,7 @@ class Paginator(View):
 
         return kwargs
 
-    async def update_page(self, interaction: Interaction) -> None:
+    async def update_page(self, interaction: discord.Interaction) -> None:
         if self.message is None:
             self.message = interaction.message
 
@@ -112,37 +111,37 @@ class Paginator(View):
         self.last_page.disabled = self.current_page >= self.max_pages - 1
         await interaction.response.edit_message(**kwargs)
 
-    @button(emoji="\U000023EA", style=ButtonStyle.grey)
-    async def first_page(self, interaction: Interaction, button: Button) -> None:
+    @discord.ui.button(emoji="\U000023EA", style=discord.ButtonStyle.grey)
+    async def first_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         self.current_page = 0
         await self.update_page(interaction)
     
-    @button(emoji="\U000025C0", style=ButtonStyle.gray)
-    async def previous_page(self, interaction: Interaction, button: Button) -> None:
+    @discord.ui.button(emoji="\U000025C0", style=discord.ButtonStyle.gray)
+    async def previous_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         self.current_page -= 1
         await self.update_page(interaction)
 
-    @button(emoji="\U0000274C", style=ButtonStyle.grey)
-    async def stop_page(self, interaction: Interaction, button: Button) -> None:
+    @discord.ui.button(emoji="\U0000274C", style=discord.ButtonStyle.grey)
+    async def stop_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         for x in self.children:
             x.disabled = True
         self.stop()
         await interaction.response.edit_message(view=self)
     
-    @button(emoji="\U000025B6", style=ButtonStyle.gray)
-    async def next_page(self, interaction: Interaction, button: Button) -> None:
+    @discord.ui.button(emoji="\U000025B6", style=discord.ButtonStyle.gray)
+    async def next_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         self.current_page += 1
         await self.update_page(interaction)
         
-    @button(emoji="\U000023E9", style=ButtonStyle.grey)
-    async def last_page(self, interaction: Interaction, button: Button) -> None:
+    @discord.ui.button(emoji="\U000023E9", style=discord.ButtonStyle.grey)
+    async def last_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         self.current_page = self.max_pages - 1
         await self.update_page(interaction)
     
     async def start(
-        self, obj: Union[Context, Interaction]
+        self, obj: Union[commands.Context, discord.Interaction]
     ) -> Optional[Union[Message, InteractionMessage, WebhookMessage]]:
-        if isinstance(obj, Context):
+        if isinstance(obj, commands.Context):
             self.ctx = obj
             self.interaction = None
         else:
@@ -165,11 +164,11 @@ class Paginator(View):
                     self.message = await self.interaction.original_response()
             else:
                 raise RuntimeError(
-                    "Cannot start a paginator without a context or interaction.")
-
+                    "Cannot start a paginator without a context or interaction."
+                )
         return self.message
     
-    async def interaction_check(self, interaction: Interaction) -> bool:
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
         if await self.bot.is_owner(owner):
             return True
@@ -184,31 +183,37 @@ class Paginator(View):
         self.stop()
         await self.message.edit(view=self)
 
-class ButtonConfirmation(View):
-    def __init__(self, bot, author: Member, timeout: float, confirm_action):
+class Confirmation(discord.ui.View):
+    def __init__(
+        self,
+        bot,
+        author: discord.Member,
+        timeout: float,
+        confirm_action
+    ):
         super().__init__(timeout=timeout)
         self.bot = bot
         self.author = author
         self.confirm_action = confirm_action
         self.value = None
         
-    @button(label="Yes", style=ButtonStyle.green)
-    async def yes(self, interaction: Interaction, button: Button):
+    @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
+    async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
         for x in self.children:
             x.disabled = True
         self.value = "yes"
         self.stop()
         await interaction.response.edit_message(content=self.confirm_action, view=self)
         
-    @button(label="No", style=ButtonStyle.red)
-    async def no(self, interaction: Interaction, button: Button):
+    @discord.ui.button(label="No", style=discord.ButtonStyle.red)
+    async def no(self, interaction: discord.Interaction, button: discord.ui.Button):
         for x in self.children:
             x.disabled = True
         self.value = "no"
         self.stop()
         await interaction.response.edit_message(content="Alright not doing that then.", view=self)
         
-    async def interaction_check(self, interaction: Interaction) -> bool:
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
         if await self.bot.is_owner(owner):
             return True
