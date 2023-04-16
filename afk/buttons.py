@@ -7,7 +7,7 @@ from discord.ext import commands
 __all__ = (
     "Paginator",
 )
-# Paginator originally from PranoyMajumdar
+# Paginator originally by PranoyMajumdar
 # https://github.com/PranoyMajumdar/dispie/blob/main/dispie/paginator/__init__.py
 # modified by me
 class Paginator(discord.ui.View):
