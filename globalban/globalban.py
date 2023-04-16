@@ -31,7 +31,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.4.1"
+    __version__ = "1.4.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -113,7 +113,7 @@ class GlobalBan(commands.Cog):
         logs = await self.config.banlogs()
         
         async with self.config.banlogs() as gbl:
-            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`User:`{member} ({user_id})\n`Authorized by:` {ctx.author} ({ctx.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`User:` {member} ({user_id})\n`Authorized by:` {ctx.author} ({ctx.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
             gbl.append(log)
         
         async with self.config.banlist() as bl:
@@ -147,9 +147,9 @@ class GlobalBan(commands.Cog):
             humanize_globalban = humanize_list(errors)
             embeds = []
             for page in pagify(humanize_globalban, delims=["\n"], page_length=1000):
+                desc = f"An error occured when banning {member}.\nMost likely that I don't have ban permission or the user is already banned in these guild(s):\n{page}"
                 embed = discord.Embed(
-                    title=f"An error occured while banning {member} in these guild(s)",
-                    description=page,
+                    description=desc,
                     colour=await ctx.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
@@ -224,9 +224,9 @@ class GlobalBan(commands.Cog):
             humanize_globalunban = humanize_list(errors)
             embeds = []
             for page in pagify(humanize_globalunban, delims=[""], page_length=1000):
+                desc = f"An error occured when unbanning {member}.\nMost likely that I don't have ban permission or the user is not banned in these guild(s):\n{page}"
                 embed = discord.Embed(
-                    title=f"An error occured while unbanning {member} in these guild(s)",
-                    description=page,
+                    description=desc,
                     colour=await ctx.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
                 )
