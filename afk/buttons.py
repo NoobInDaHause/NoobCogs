@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Optional, Union, List, Any, Union
+from typing import Dict, Optional, Union, List, Any
 
 import discord
 from discord.ext import commands
