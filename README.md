@@ -1,7 +1,9 @@
 # WintersCogs
 
 Some random cogs for red discord bot made by a noob at python.
+
 These cogs are for red-discordbot with discord.py version 2 and above.
+
 Some of the cogs are badly coded and buggy so handle these cogs with care.
 
 ## Installation
