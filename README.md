@@ -11,7 +11,7 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 ```
 [p]load downloader
 
-[p]repo add WintersCogs https://github.com/NoobInDaHause/WintersCogs
+[p]repo add WintersCogs https://github.com/NoobInDaHause/WintersCogs/tree/dpy2
 
 [p]cog install WintersCogs <cogs...>
 
