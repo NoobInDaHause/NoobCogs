@@ -31,7 +31,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.4.2"
+    __version__ = "1.4.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -124,7 +124,7 @@ class GlobalBan(commands.Cog):
         for guild in ctx.bot.guilds:
             try:
                 guilds.append(guild)
-                await guild.ban(member, reason=f"Global Ban authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}")
+                await guild.ban(member, reason=f"Global Ban authorized by {ctx.author} (ID: {ctx.author.id}). | Reason: {reason}")
                 if await self.config.create_modlog():
                     await modlog.create_case(
                     bot=ctx.bot,
@@ -133,7 +133,7 @@ class GlobalBan(commands.Cog):
                     action_type="globalban",
                     user=member,
                     moderator=ctx.bot.user,
-                    reason=f"Authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}",
+                    reason=f"Authorized by {ctx.author} (ID: {ctx.author.id}). | Reason: {reason}",
                     until=None,
                     channel=None,
                     )
@@ -201,7 +201,7 @@ class GlobalBan(commands.Cog):
         for guild in ctx.bot.guilds:
             try:
                 guilds.append(guild)
-                await guild.unban(member, reason=f"Global UnBan authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}")
+                await guild.unban(member, reason=f"Global UnBan authorized by {ctx.author} (ID: {ctx.author.id}). | Reason: {reason}")
                 if await self.config.create_modlog():
                     await modlog.create_case(
                     bot=ctx.bot,
@@ -210,7 +210,7 @@ class GlobalBan(commands.Cog):
                     action_type="globalunban",
                     user=member,
                     moderator=ctx.bot.user,
-                    reason=f"Authorized by {ctx.author} (ID: {ctx.author.id}).\nReason: {reason}",
+                    reason=f"Authorized by {ctx.author} (ID: {ctx.author.id}). | Reason: {reason}",
                     until=None,
                     channel=None,
                     )
