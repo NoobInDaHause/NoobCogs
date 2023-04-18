@@ -33,7 +33,7 @@ class Paginator(discord.ui.View):
         self.delete_message_after: bool = delete_message_after
         self.current_page: int = 0
 
-        self.ctx: Optional[commands.Context] = None
+        self.context: Optional[commands.Context] = None
         self.interaction: Optional[discord.Interaction] = None
         self.per_page: int = per_page
         self.pages: Any = pages
@@ -120,10 +120,10 @@ class Paginator(discord.ui.View):
         self, obj: Union[commands.Context, discord.Interaction]
     ) -> Optional[Union[discord.Message, discord.InteractionMessage, discord.WebhookMessage]]:
         if isinstance(obj, commands.Context):
-            self.ctx = obj
+            self.context = obj
             self.interaction = None
         else:
-            self.ctx = None
+            self.context = None
             self.interaction = obj
 
         if self.message is not None and self.interaction is not None:
@@ -132,8 +132,8 @@ class Paginator(discord.ui.View):
             self.first_page.disabled = self.current_page <= 0
             self.previous_page.disabled = self.current_page <= 0
             kwargs = await self.get_page_kwargs(self.get_page(self.current_page))
-            if self.ctx is not None:
-                self.message = await self.ctx.send(**kwargs)
+            if self.context is not None:
+                self.message = await self.context.send(**kwargs)
             elif self.interaction is not None:
                 if self.interaction.response.is_done():
                     self.message = await self.interaction.followup.send(**kwargs, view=self)
