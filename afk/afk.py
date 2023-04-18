@@ -3,7 +3,7 @@ import discord
 import logging
 
 from discord import app_commands
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 from redbot.core.bot import Red
 from redbot.core import commands, Config
@@ -202,7 +202,7 @@ class Afk(commands.Cog):
     async def forceafk(
         self,
         context: commands.Context,
-        member: discord.Member,
+        member: Union[discord.Member, discord.User],
         *,
         reason: Optional[str] = "No reason given."
     ):
@@ -333,7 +333,7 @@ class Afk(commands.Cog):
         if view.value == "yes":
             await self.config.clear_all()
     
-    @afkset.command(name="showsetting", aliases=["showsettings", "ss", "showset"])
+    @afkset.command(name="showsettings", aliases=["showsetting", "ss", "showset"])
     async def afkset_showsettings(self, context: commands.Context):
         """
         See your AFK settings.
