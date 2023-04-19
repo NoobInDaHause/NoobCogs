@@ -9,7 +9,7 @@ from redbot.core.bot import Red
 from redbot.core import modlog, commands, Config
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 
-from .buttons import Confirmation, Paginator
+from .buttons import Confirmation, Paginator, GbanViewReset
 
 class GlobalBan(commands.Cog):
     """
@@ -327,49 +327,14 @@ class GlobalBan(commands.Cog):
         await pages.start(context)
         
     @globalban.command(name="reset")
-    @discord.app_commands.describe(
-        type="The type of config that you want to reset."
-    )
-    @discord.app_commands.choices(
-        type=[
-            discord.app_commands.Choice(name="list", value=1),
-            discord.app_commands.Choice(name="logs", value=2),
-            discord.app_commands.Choice(name="cog", value=3)
-        ]
-    )
-    async def globalban_reset(self, context: commands.Context, type: discord.app_commands.Choice[int]):
+    async def globalban_reset(self, context: commands.Context):
         """
         Reset any of the globalban config.
         """
-        if type.value == 1:
-            confirm_action = "Successfully resetted the globalban banlist."
-            view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-            view.message = await context.send("Are you sure you want to reset the globalban banlist?", view=view)
+        view = GbanViewReset(bot=self.bot, author=context.author, config=self.config, timeout=30)
+        view.message = await context.send(content="Choose what config to reset.", view=view)
         
-            await view.wait()
-        
-            if view.value == "yes":
-                return await self.config.banlist.clear()
-            
-        elif type.value == 2:
-            confirm_action = "Successfully resetted the globalban banlogs."
-            view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-            view.message = await context.send("Are you sure you want to reset the globalban banlogs?", view=view)
-        
-            await view.wait()
-        
-            if view.value == "yes":
-                return await self.config.banlogs.clear()
-            
-        elif type.value == 3:
-            confirm_action = "Successfully cleared the globalban cogs configuration."
-            view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-            view.message = await context.send("This will reset the globalban cogs whole configuration, do you want to continue?", view=view)
-        
-            await view.wait()
-        
-            if view.value == "yes":
-                return await self.config.clear_all()
+        await view.wait()
     
     @globalban.command(name="createmodlog")
     @discord.app_commands.describe(

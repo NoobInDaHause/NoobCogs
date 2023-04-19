@@ -205,3 +205,71 @@ class Confirmation(discord.ui.View):
             x.disabled = True
         self.stop()
         await self.message.edit(content="You took too long to respond.", view=self)
+        
+class GbanViewReset(discord.ui.View):
+    def __init__(
+        self,
+        bot,
+        author: Union[discord.Member, discord.User],
+        config,
+        timeout: int,
+    ):
+        super().__init__(timeout=timeout)
+        self.bot = bot
+        self.author = author
+        self.config = config
+        
+    @discord.ui.select(
+        min_values=1,
+        max_values=1,
+        options=[
+            discord.SelectOption(label="List", emoji="📰", description="Reset the cogs banlist config."),
+            discord.SelectOption(label="Logs", emoji="📜", description="Reset the cogs banlogs config."),
+            discord.SelectOption(label="Cog", emoji="⚙️", description="Reset the whole cogs config.")
+        ]
+    )
+    
+    async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        select.disabled = True
+        await interaction.response.edit_message(content="Menu no longer available.", view=self)
+        
+        if select.values[0] == "List":
+            confirm_action = "Successfully resetted the globalban banlist."
+            confview = Confirmation(bot=self.bot, author=self.author, timeout=30, confirm_action=confirm_action)
+            confview.message = await interaction.followup.send("Are you sure you want to reset the globalban banlogs?", view=confview)
+            
+            await confview.wait()
+            
+            if confview.value == "yes":
+                await self.config.banlist.clear()
+        if select.values[0] == "Logs":
+            confirm_action = "Successfully resetted the globalban banlogs."
+            confview = Confirmation(bot=self.bot, author=self.author, timeout=30, confirm_action=confirm_action)
+            confview.message = await interaction.followup.send("Are you sure you want to reset the globalban banlogs?", view=confview)
+
+            await confview.wait()
+            
+            if confview.value == "yes":
+                await self.config.banlogs.clear()
+        if select.values[0] == "Cog":
+            confirm_action = "Successfully cleared the globalban cogs configuration."
+            confview = Confirmation(bot=self.bot, author=self.author, timeout=30, confirm_action=confirm_action)
+            confview.message = await interaction.followup.send("This will reset the globalban cogs whole configuration, do you want to continue?", view=confview)
+
+            await confview.wait()
+            
+            if confview.value == "yes":
+                await self.config.clear_all()
+            
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        owner = await self.bot.fetch_user(interaction.user.id)
+        if await self.bot.is_owner(owner):
+            return True
+        elif interaction.user.id != self.author.id:
+            await interaction.response.send_message(content="You are not the author of this interaction.", ephemeral=True)
+            return False
+        return True
+    
+    async def on_timeout(self):
+        self.disabled = True
+        await self.message.edit(view=self)
