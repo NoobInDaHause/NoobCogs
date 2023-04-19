@@ -132,7 +132,7 @@ class GlobalBan(commands.Cog):
             await asyncio.sleep(10)
             try:
                 await guild.fetch_ban(member)
-                errors.append(f"**{guild}**")
+                errors.append(f"**{guild} (ID: {guild.id})**")
             except discord.errors.NotFound:
                 try:
                     guilds.append(guild)
@@ -150,7 +150,7 @@ class GlobalBan(commands.Cog):
                         channel=None,
                         )
                 except discord.HTTPException:
-                    errors.append(f"**{guild}**")
+                    errors.append(f"**{guild} (ID: {guild.id})**")
                 
         await context.send(f"Globally banned **{member}** in **{len(guilds)}** guilds.")
         
@@ -239,7 +239,7 @@ class GlobalBan(commands.Cog):
                     )
                 await asyncio.sleep(10)
             except discord.HTTPException:
-                errors.append(f"**{guild}**")
+                errors.append(f"**{guild} (ID: {guild.id})**")
                 
         await context.send(f"Globally unbanned **{member}** in **{len(guilds)}** guilds.")
         
