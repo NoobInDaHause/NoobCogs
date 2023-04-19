@@ -23,6 +23,7 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
 | Afk             |  v1.0.0   | Notify users whenever you go AFK with pings logging.             |
+| GlobalBan       |  v1.0.0   | 
 
 ## Credits
 

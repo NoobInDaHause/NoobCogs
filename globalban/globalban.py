@@ -90,6 +90,8 @@ class GlobalBan(commands.Cog):
         Globally ban a user. (Bot owners only)
         """
         try:
+            if isinstance(user_id, str):
+                return await context.send("Please input a valid user ID.")
             member = await context.bot.fetch_user(user_id)
         except discord.errors.NotFound:
             return await context.send("It appears that ID is not a valid user ID.")
@@ -179,6 +181,8 @@ class GlobalBan(commands.Cog):
         Globally unban a user.
         """
         try:
+            if isinstance(user_id, str):
+                return await context.send("Please input a valid user ID.")
             member = await context.bot.fetch_user(user_id)
         except discord.errors.NotFound:
             return await context.send("It appears that is not a valid user ID.")
