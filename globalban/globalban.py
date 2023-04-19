@@ -82,7 +82,7 @@ class GlobalBan(commands.Cog):
     async def globalban_ban(
         self,
         context: commands.Context,
-        user_id: int,
+        user_id,
         *,
         reason: Optional[str] = "No reason provided."
     ):
@@ -171,7 +171,7 @@ class GlobalBan(commands.Cog):
     async def globalban_unban(
         self,
         context: commands.Context,
-        user_id: int,
+        user_id,
         *,
         reason: Optional[str] = "No reason provided."
     ):
