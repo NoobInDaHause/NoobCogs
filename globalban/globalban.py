@@ -129,24 +129,28 @@ class GlobalBan(commands.Cog):
         errors = []
         guilds = []
         for guild in context.bot.guilds:
+            await asyncio.sleep(10)
             try:
-                guilds.append(guild)
-                await guild.ban(member, reason=f"Global Ban authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
-                if await self.config.create_modlog():
-                    await modlog.create_case(
-                    bot=context.bot,
-                    guild=guild,
-                    created_at=datetime.datetime.now(datetime.timezone.utc),
-                    action_type="globalban",
-                    user=member,
-                    moderator=context.bot.user,
-                    reason=f"Authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}",
-                    until=None,
-                    channel=None,
-                    )
-                await asyncio.sleep(10)
-            except discord.HTTPException:
+                await guild.fetch_ban(member)
                 errors.append(f"**{guild}**")
+            except discord.errors.NotFound:
+                try:
+                    guilds.append(guild)
+                    await guild.ban(member, reason=f"Global Ban authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
+                    if await self.config.create_modlog():
+                        await modlog.create_case(
+                        bot=context.bot,
+                        guild=guild,
+                        created_at=datetime.datetime.now(datetime.timezone.utc),
+                        action_type="globalban",
+                        user=member,
+                        moderator=context.bot.user,
+                        reason=f"Authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}",
+                        until=None,
+                        channel=None,
+                        )
+                except discord.HTTPException:
+                    errors.append(f"**{guild}**")
                 
         await context.send(f"Globally banned **{member}** in **{len(guilds)}** guilds.")
         
