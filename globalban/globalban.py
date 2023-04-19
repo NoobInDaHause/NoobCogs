@@ -73,6 +73,8 @@ class GlobalBan(commands.Cog):
         """
         Base commands for the GlobalBan Cog. (Bot owners only)
         """
+        if not await context.bot.is_owner(context.author):
+            return await context.reply("You do not have permission to run this command.", ephemeral=True)
     
     @globalban.command(name="ban")
     @discord.app_commands.describe(
@@ -89,9 +91,6 @@ class GlobalBan(commands.Cog):
         """
         Globally ban a user. (Bot owners only)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
-        
         try:
             user_id = int(user_id)
         except ValueError:
@@ -191,9 +190,6 @@ class GlobalBan(commands.Cog):
         """
         Globally unban a user.
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
-
         try:
             user_id = int(user_id)
         except ValueError:
@@ -274,9 +270,6 @@ class GlobalBan(commands.Cog):
         """
         Show the global ban or unban logs.
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
-
         logs = await self.config.banlogs()
         
         if not logs:
@@ -304,9 +297,6 @@ class GlobalBan(commands.Cog):
         """
         Show the ban list.
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
-
         bans = await self.config.banlist()
         
         if not bans:
@@ -343,9 +333,6 @@ class GlobalBan(commands.Cog):
         """
         Reset any of the globalban config.
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
-        
         view = GbanViewReset(bot=self.bot, author=context.author, config=self.config, timeout=30)
         view.message = await context.send(content="Choose what config to reset.", view=view)
         
@@ -359,9 +346,6 @@ class GlobalBan(commands.Cog):
         """
         Toggle whether to make a modlog case when you globally ban or unban a user.
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
-        
         await self.config.create_modlog.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} make a modlog case whenever you globally ban or unban a user.")
