@@ -273,7 +273,7 @@ class GlobalBan(commands.Cog):
         if not logs:
             return await context.send("It appears there are no cases logged.")
         
-        banlogs = """\n""".join(logs)
+        banlogs = """\n\n""".join(logs)
         pages = list(pagify(banlogs, delims=["> "], page_length=2000))
         final_page = {}
         
