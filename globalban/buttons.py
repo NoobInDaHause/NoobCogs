@@ -133,7 +133,7 @@ class Paginator(discord.ui.View):
             self.previous_page.disabled = self.current_page <= 0
             kwargs = await self.get_page_kwargs(self.get_page(self.current_page))
             if self.context is not None:
-                self.message = await self.context.send(**kwargs)
+                self.message = await self.context.channel.send(**kwargs)
             elif self.interaction is not None:
                 if self.interaction.response.is_done():
                     self.message = await self.interaction.followup.send(**kwargs, view=self)
