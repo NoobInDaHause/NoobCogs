@@ -44,8 +44,8 @@ class Afk(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        p = "s" if len(self.__author__) != 1 else ""
-        return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{p}: {humanize_list(self.__author__)}"
+        plural = "s" if len(self.__author__) != 1 else ""
+        return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{plural}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
