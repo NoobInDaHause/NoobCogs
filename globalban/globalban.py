@@ -135,8 +135,8 @@ class GlobalBan(commands.Cog):
                 errors.append(f"**{guild} (ID: {guild.id})**")
             except discord.errors.NotFound:
                 try:
-                    guilds.append(guild)
                     await guild.ban(member, reason=f"Global Ban authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
+                    guilds.append(guild)
                     if await self.config.create_modlog():
                         await modlog.create_case(
                         bot=context.bot,
