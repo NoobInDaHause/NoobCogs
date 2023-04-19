@@ -209,6 +209,9 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+        
         if member.id == context.guild.owner.id:
             return await context.send("I'm afraid you can not do that to the guild owner.")
         elif member.id == context.author.id:
@@ -259,6 +262,9 @@ class Afk(commands.Cog):
         Put `0` to disable.
         Default is 10 seconds.
         """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+
         if not seconds:
             await self.config.guild(context.guild).delete_after.set(0)
             return await context.send("The delete after has been disabled.")
@@ -314,6 +320,9 @@ class Afk(commands.Cog):
         
         This defaults to `True`.
         """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+
         await self.config.guild(context.guild).nick.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} edit the users nick whenever they go AFK.")
@@ -324,6 +333,9 @@ class Afk(commands.Cog):
         """
         Reset the AFK cogs configuration. (Bot owners only.)
         """
+        if not context.bot.is_owner(context.author):
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+        
         confirm_action = "Successfully resetted the AFK cogs configuration."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
         view.message = await context.send("Are you sure you want to reset the AFK cogs whole configuration?", view=view)
@@ -341,7 +353,7 @@ class Afk(commands.Cog):
         member_settings = await self.config.member(context.author).all()
         guild_settings = await self.config.guild(context.guild).all()
         da = f"{guild_settings['delete_after']} seconds." if guild_settings['delete_after'] != 0 else "Disabled."
-        gset = f"\n> Guild settings\n**Nick change:** {guild_settings['nick']}\n**Delete after:** {da}" if await context.bot.is_owner(context.author) or context.author.guild_permissions.administrator else ""
+        gset = f"\n> Guild settings\n**Nick change:** {guild_settings['nick']}\n**Delete after:** {da}" if await context.bot.is_owner(context.author) or context.author.guild_permissions.manage_guild else ""
         
         embed = discord.Embed(
             title=f"{context.author.name}'s AFK settings.",
