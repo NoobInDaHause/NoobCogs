@@ -73,9 +73,9 @@ class Afk(commands.Cog):
                 await author.edit(nick=f"[AFK] {author.display_name}", reason="User is AFK.")
             except discord.HTTPException:
                 if author.id == context.guild.owner.id:
-                    await context.send("Could not change your nick cause you are the guild owner.", delete_after=10)
+                    await context.channel.send("Could not change your nick cause you are the guild owner.", delete_after=10)
                 else:
-                    await context.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
+                    await context.channel.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
     
     async def end_afk(self, context: commands.Context, author: discord.Member):
         """
