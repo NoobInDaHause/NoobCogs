@@ -160,8 +160,9 @@ class GlobalBan(commands.Cog):
             final_page = {}
             
             for ind, page in enumerate(pages, 1):
-                desc = f"An error occured when banning {member}.\nMost likely that I don't have ban permission or the user is already banned in these guild(s):\n{page}"
+                desc = f"Most likely that I don't have ban permission or the user is already banned.\nErrored guild(s):\n{page}"
                 embed = discord.Embed(
+                    title=f"An error occured when banning {member}.",
                     description=desc,
                     colour=await context.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
@@ -249,8 +250,9 @@ class GlobalBan(commands.Cog):
             final_page = {}
             
             for ind, page in enumerate(pages, 1):
-                desc = f"An error occured when unbanning {member}.\nMost likely that I don't have ban permission or the user is not banned in these guild(s):\n{page}"
+                desc = f"Most likely that I don't have ban permission or the user is not banned.\nErrored guild(s):\n{page}"
                 embed = discord.Embed(
+                    title=f"An error occured when unbanning {member}.",
                     description=desc,
                     colour=await context.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc),
