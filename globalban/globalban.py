@@ -222,9 +222,10 @@ class GlobalBan(commands.Cog):
         errors = []
         guilds = []
         for guild in context.bot.guilds:
+            await asyncio.sleep(10)
             try:
-                guilds.append(guild)
                 await guild.unban(member, reason=f"Global UnBan authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
+                guilds.append(guild)
                 if await self.config.create_modlog():
                     await modlog.create_case(
                     bot=context.bot,
@@ -237,7 +238,6 @@ class GlobalBan(commands.Cog):
                     until=None,
                     channel=None,
                     )
-                await asyncio.sleep(10)
             except discord.HTTPException:
                 errors.append(f"**{guild} (ID: {guild.id})**")
                 
