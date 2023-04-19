@@ -66,9 +66,16 @@ class GlobalBan(commands.Cog):
         with contextlib.suppress(RuntimeError):
             await modlog.register_casetypes(globalban_types)
             
+    def check_if_owner(self, interaction: discord.Interaction) -> bool:
+        owner = await self.bot.fetch_user(interaction.user.id)
+        if not await self.bot.is_owner(owner):
+            return False
+        return True
+    
     @commands.hybrid_group(name="globalban", aliases=["gban"])
     @commands.is_owner()
     @commands.bot_has_permissions(embed_links=True)
+    @discord.app_commands.check(check_if_owner)
     async def globalban(self, context: commands.Context):
         """
         Base commands for the GlobalBan Cog. (Bot owners only)
