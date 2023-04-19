@@ -66,7 +66,7 @@ class GlobalBan(commands.Cog):
         with contextlib.suppress(RuntimeError):
             await modlog.register_casetypes(globalban_types)
             
-    def check_if_owner(self, interaction: discord.Interaction) -> bool:
+    async def check_if_owner(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
         if not await self.bot.is_owner(owner):
             return False
