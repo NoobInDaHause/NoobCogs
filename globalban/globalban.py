@@ -188,7 +188,7 @@ class GlobalBan(commands.Cog):
         reason: Optional[str] = "No reason provided."
     ):
         """
-        Globally unban a user.
+        Globally unban a user. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
@@ -270,7 +270,7 @@ class GlobalBan(commands.Cog):
     @globalban.command(name="logs")
     async def globalban_logs(self, context: commands.Context):
         """
-        Show the global ban or unban logs.
+        Show the global ban or unban logs. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
@@ -299,7 +299,7 @@ class GlobalBan(commands.Cog):
     @globalban.command(name="list")
     async def globalban_list(self, context: commands.Context):
         """
-        Show the ban list.
+        Show the ban list. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
@@ -337,7 +337,7 @@ class GlobalBan(commands.Cog):
     @globalban.command(name="reset")
     async def globalban_reset(self, context: commands.Context):
         """
-        Reset any of the globalban config.
+        Reset any of the globalban config. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
@@ -352,7 +352,7 @@ class GlobalBan(commands.Cog):
     )
     async def globalban_createmodlog(self, context: commands.Context, state: bool):
         """
-        Toggle whether to make a modlog case when you globally ban or unban a user.
+        Toggle whether to make a modlog case when you globally ban or unban a user. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
