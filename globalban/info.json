@@ -1,0 +1,23 @@
+{
+    "name": "GlobalBan",
+    "short": "Global ban or unban a user.",
+    "description": "Globally ban or unban a user from all the guilds the bot is in.",
+    "end_user_data_statement": "This cog does not store end user data.",
+    "install_msg": "Thank you for installing GlobalBan. Load the cog with `[p]load globalban`. Please note that this cog can be API intense and might get your bot rate limited.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "min_bot_version": "3.4.0",
+    "max_bot_version": "3.5.99",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "ban",
+        "unban",
+        "globalban",
+        "globalunban"
+    ],
+    "type": "COG"
+}
