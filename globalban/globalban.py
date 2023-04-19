@@ -43,7 +43,7 @@ class GlobalBan(commands.Cog):
         # This cog does not store any end user data whatsoever. But it stores user ID's for the ban list! Also thanks sravan!
         super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
-    async def cog_load(self, bot: Red):
+    async def cog_load(self, self.bot):
         await bot.wait_until_red_ready()
         await self.register_casetypes()
 
