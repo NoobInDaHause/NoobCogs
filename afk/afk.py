@@ -209,7 +209,7 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        if not context.author.guild_permissions.manage_guild:
+        if context.author.guild_permissions.manage_guild != True:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
         
         if member.id == context.guild.owner.id:
@@ -262,7 +262,7 @@ class Afk(commands.Cog):
         Put `0` to disable.
         Default is 10 seconds.
         """
-        if not context.author.guild_permissions.manage_guild:
+        if context.author.guild_permissions.manage_guild != True:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
 
         if not seconds:
@@ -320,7 +320,7 @@ class Afk(commands.Cog):
         
         This defaults to `True`.
         """
-        if not context.author.guild_permissions.manage_guild:
+        if context.author.guild_permissions.manage_guild != True:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
 
         await self.config.guild(context.guild).nick.set(state)
