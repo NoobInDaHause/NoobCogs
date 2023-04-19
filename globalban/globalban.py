@@ -3,7 +3,7 @@ import contextlib
 import datetime
 import discord
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 from redbot.core.bot import Red
 from redbot.core import modlog, commands, Config
@@ -332,16 +332,46 @@ class GlobalBan(commands.Cog):
     )
     @discord.app_commands.choices(
         type=[
-            discord.app_commands.Choice(name="list", value=1),
-            discord.app_commands.Choice(name="logs", value=2),
-            discord.app_commands.Choice(name="cog", value=3)
+            discord.app_commands.Choice(name="list", value="1"),
+            discord.app_commands.Choice(name="logs", value="2"),
+            discord.app_commands.Choice(name="cog", value="3")
         ]
     )
-    async def globalban_reset(self, context: commands.Context, type: discord.app_commands.Choice[int]):
+    async def globalban_reset(self, context: commands.Context, type: Union[str, discord.app_commands.Choice[str]]):
         """
         Reset any of the globalban config.
         """
-        if type.value == 1:
+        if type.lower() == "list":
+            confirm_action = "Successfully resetted the globalban banlist."
+            view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
+            view.message = await context.send("Are you sure you want to reset the globalban banlist?", view=view)
+        
+            await view.wait()
+        
+            if view.value == "yes":
+                return await self.config.banlist.clear()
+
+        elif type.lower() == "logs":
+            confirm_action = "Successfully resetted the globalban banlogs."
+            view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
+            view.message = await context.send("Are you sure you want to reset the globalban banlogs?", view=view)
+        
+            await view.wait()
+        
+            if view.value == "yes":
+                return await self.config.banlogs.clear()
+        
+        elif type.lower() == "cog":
+            confirm_action = "Successfully cleared the globalban cogs configuration."
+            view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
+            view.message = await context.send("This will reset the globalban cogs whole configuration, do you want to continue?", view=view)
+        
+            await view.wait()
+        
+            if view.value == "yes":
+                return await self.config.clear_all()
+        
+        elif type.value == "1":
             confirm_action = "Successfully resetted the globalban banlist."
             view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
             view.message = await context.send("Are you sure you want to reset the globalban banlist?", view=view)
@@ -351,7 +381,7 @@ class GlobalBan(commands.Cog):
             if view.value == "yes":
                 return await self.config.banlist.clear()
             
-        elif type.value == 2:
+        elif type.value == "2":
             confirm_action = "Successfully resetted the globalban banlogs."
             view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
             view.message = await context.send("Are you sure you want to reset the globalban banlogs?", view=view)
@@ -361,7 +391,7 @@ class GlobalBan(commands.Cog):
             if view.value == "yes":
                 return await self.config.banlogs.clear()
             
-        elif type.value == 3:
+        elif type.value == "3":
             confirm_action = "Successfully cleared the globalban cogs configuration."
             view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
             view.message = await context.send("This will reset the globalban cogs whole configuration, do you want to continue?", view=view)
@@ -370,6 +400,9 @@ class GlobalBan(commands.Cog):
         
             if view.value == "yes":
                 return await self.config.clear_all()
+        
+        else:
+            return await ctx.send("Your answer for the type should only be `list`, `logs` or `cog`.")
     
     @globalban.command(name="createmodlog")
     @discord.app_commands.describe(
