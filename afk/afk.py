@@ -116,7 +116,7 @@ class Afk(commands.Cog):
             await pages.start(context)
             await self.config.member(author).pinglogs.clear()
     
-    async def log_and_notify(self, author: discord.Member, message: discord.Message, ping_log):
+    async def log_and_notify(self, author: discord.Member, payload: discord.Message, ping_log):
         """
         Log pings and at the same time notify members when they mentioned an AFK memebr.
         """
@@ -128,38 +128,38 @@ class Afk(commands.Cog):
             colour=author.colour
         ).set_thumbnail(url=author.avatar.url)
         
-        da = await self.config.guild(message.guild).delete_after()
+        da = await self.config.guild(payload.guild).delete_after()
         
-        return await message.channel.send(embed=embed, reference=message, mention_author=False,  delete_after=da) if da != 0 else await message.channel.send(embed=embed, reference=message, mention_author=False)
+        return await payload.channel.send(embed=embed, reference=payload, mention_author=False,  delete_after=da) if da != 0 else await payload.channel.send(embed=embed, reference=payload, mention_author=False)
 
     @commands.Cog.listener("on_message_without_command")
-    async def on_message_without_command(self, message):
-        if not message.guild:
+    async def on_message_without_command(self, payload):
+        if not payload.guild:
             return
         
-        if message.author.bot:
+        if payload.author.bot:
             return
 
-        if await self.config.member(message.author).sticky():
+        if await self.config.member(payload.author).sticky():
             pass
-        elif await self.config.member(message.author).afk():
-            await message.channel.send(f"Welcome back {message.author.name}! I have removed your AFK status.")
-            context = await self.bot.get_context(message)
-            await self.end_afk(context, message.author)
+        elif await self.config.member(payload.author).afk():
+            await payload.channel.send(f"Welcome back {payload.author.name}! I have removed your AFK status.")
+            context = await self.bot.get_context(payload)
+            await self.end_afk(context, payload.author)
         
-        if not message.mentions:
+        if not payload.mentions:
             return
 
-        for afk_user in message.mentions:
-            if afk_user.id == message.author.id:
+        for afk_user in payload.mentions:
+            if afk_user.id == payload.author.id:
                 continue
 
             if not await self.config.member(afk_user).afk():
                 continue
 
-            ping_log = f"` - ` {message.author.mention} [pinged you in]({message.jump_url}) {message.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message:** {message.content}"
+            ping_log = f"` - ` {payload.author.mention} [pinged you in]({payload.jump_url}) {payload.channel.mention} <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n**Message:** {payload.content}"
             
-            await self.log_and_notify(afk_user, message, ping_log)
+            await self.log_and_notify(afk_user, payload, ping_log)
     
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
