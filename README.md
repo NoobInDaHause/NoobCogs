@@ -22,7 +22,7 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 | --------------- | --------- | ---------------------------------------------------------------- |
 | Afk             |  v1.4.13  | Notify users whenever you go AFK with pings logging.             |
 | FirstToReact    |  v1.0.11  | Play a first to react wins game.                                 |
-| GlobalBan       |  v1.4.4   | Globally ban or unban a user from guilds the bot is in.          |
+| GlobalBan       |  v1.4.5   | Globally ban or unban a user from guilds the bot is in.          |
 | ManagerUtils    |  v2.2.9   | Some utility commands that are useful for managers from servers. |
 | ServerDonations |  v1.3.5   | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v2.2.5   | A fun split or steal game.                                       |

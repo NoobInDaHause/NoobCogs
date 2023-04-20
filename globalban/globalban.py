@@ -31,7 +31,7 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         
-    __version__ = "1.4.4"
+    __version__ = "1.4.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -48,7 +48,6 @@ class GlobalBan(commands.Cog):
         super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     async def initialize(self, bot: Red):
-        await bot.wait_until_red_ready()
         await self.register_casetypes()
 
     @staticmethod
