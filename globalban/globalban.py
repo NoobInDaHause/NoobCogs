@@ -44,7 +44,6 @@ class GlobalBan(commands.Cog):
         super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     async def initialize(self, bot: Red):
-        await bot.wait_until_red_ready()
         await self.register_casetypes()
 
     @staticmethod
