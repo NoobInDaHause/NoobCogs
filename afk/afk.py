@@ -165,6 +165,7 @@ class Afk(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
+    @discord.app_commands.guild_only()
     @discord.app_commands.describe(
         reason="The optional reason for the AFK."
     )
@@ -195,6 +196,7 @@ class Afk(commands.Cog):
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @discord.app_commands.guild_only()
     @discord.app_commands.describe(
         member="The member that you want to forcefully set or remove an AFK status to.",
         reason="The optional reason for the AFK."
@@ -231,6 +233,7 @@ class Afk(commands.Cog):
         await self.start_afk(context, member, reason)
     
     @afkset.command(name="sticky")
+    @discord.app_commands.guild_only()
     @discord.app_commands.describe(
         state="True or False."
     )
@@ -276,6 +279,7 @@ class Afk(commands.Cog):
         await context.send(f"Successfully set the delete after to {seconds} seconds.")
         
     @afkset.command(name="togglelogs")
+    @discord.app_commands.guild_only()
     @discord.app_commands.describe(
         state="True or False."
     )
@@ -292,6 +296,7 @@ class Afk(commands.Cog):
         await context.send(f"I {status} log all the pings you recieved.")
     
     @afkset.command(name="reset")
+    @discord.app_commands.guild_only()
     async def afkset_reset(self, context: commands.Context):
         """
         Reset your AFK settings to default.
@@ -307,6 +312,7 @@ class Afk(commands.Cog):
     
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @discord.app_commands.guild_only()
     @discord.app_commands.describe(
         state="True or False."
     )
@@ -346,6 +352,7 @@ class Afk(commands.Cog):
             await self.config.clear_all()
     
     @afkset.command(name="showsettings", aliases=["showsetting", "ss", "showset"])
+    @discord.app_commands.guild_only()
     async def afkset_showsettings(self, context: commands.Context):
         """
         See your AFK settings.
