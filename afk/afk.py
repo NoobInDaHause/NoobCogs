@@ -27,8 +27,7 @@ class Afk(commands.Cog):
         
         self.config = Config.get_conf(self, identifier=54646544526864548, force_registration=True)
         default_guild = {
-            "nick": True,
-            "delete_after": 10
+            "nick": True
         }
         default_member = {
             "afk": False,
@@ -37,11 +36,15 @@ class Afk(commands.Cog):
             "reason": None,
             "pinglogs": []
         }
+        default_global = {
+            "delete_after": 10
+        }
+        self.config.register_global(**default_global)
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.13"
+    __version__ = "1.4.14"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -62,7 +65,8 @@ class Afk(commands.Cog):
         
         Also thanks sravan and aikaterna for the end user data statement!
         """
-        await self.config.user_from_id(user_id).clear()
+        for guild in self.bot.guilds:
+            await self.config.member_from_id(guild.id, user_id).clear()
     
     async def start_afk(self, ctx: commands.Context, author: discord.Member, reason: str):
         """
@@ -198,7 +202,9 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        if member.id == ctx.guild.owner.id:
+        if ctx.bot.is_owner(ctx.author):
+            pass
+        elif member.id == ctx.guild.owner.id:
             return await ctx.send("I'm afraid you can not do that to the guild owner.")
         elif member.id == ctx.author.id:
             return await ctx.send(f"Why would you force AFK yourself? Please use `{ctx.prefix}afk`.")
@@ -230,7 +236,7 @@ class Afk(commands.Cog):
         await ctx.send(f"I {status} sticky your AFK.")
         
     @afkset.command(name="deleteafter", aliases=["da"])
-    @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @commands.is_owner()
     async def afkset_deleteafter(self, ctx: commands.Context, seconds: Optional[int]):
         """
         Change the delete after on every AFK response on users.
@@ -239,13 +245,13 @@ class Afk(commands.Cog):
         Default is 10 seconds.
         """
         if not seconds:
-            await self.config.guild(ctx.guild).delete_after.set(0)
+            await self.config.delete_after.set(0)
             return await ctx.send("The delete after has been disabled.")
         
         if seconds >= 121:
             return await ctx.send("The maximum seconds of delete after is 120 seconds.")
         
-        await self.config.guild(ctx.guild).delete_after.set(seconds)
+        await self.config.delete_after.set(seconds)
         await ctx.send(f"Successfully set the delete after to {seconds} seconds.")
         
     @afkset.command(name="togglelogs")
@@ -319,13 +325,14 @@ class Afk(commands.Cog):
         """
         member_settings = await self.config.member(ctx.author).all()
         guild_settings = await self.config.guild(ctx.guild).all()
-        da = guild_settings["delete_after"]
-        da2 = f"{da} seconds." if da != 0 else "Disabled."
-        nickda = f"\n> Guild settings\n**Nick change:** {guild_settings['nick']}\n**Delete after:** {da2}" if await ctx.bot.is_owner(ctx.author) or ctx.author.guild_permissions.administrator else ""
+        global_settings = await self.config.all()
+        da = f"{global_settings['delete_after']} seconds." if global_settings['delete_after'] != 0 else "Disabled."
+        gset = f"\n> Guild settings\n**Nick change:** {guild_settings['nick']}" if await ctx.bot.is_owner(ctx.author) or ctx.author.guild_permissions.administrator else ""
+        globe = f"\n> Global settings\n**Delete after:** {da}" if await ctx.bot.is_owner(ctx.author) else ""
         
         embed = discord.Embed(
             title=f"{ctx.author.name}'s AFK settings.",
-            description=f"**Is afk:** {member_settings['afk']}\n**Is sticky:** {member_settings['sticky']}\n**Ping logging:** {member_settings['toggle_logs']}\n{nickda}",
+            description=f"**Is afk:** {member_settings['afk']}\n**Is sticky:** {member_settings['sticky']}\n**Ping logging:** {member_settings['toggle_logs']}\n{gset}\n{globe}",
             colour=ctx.author.colour,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
