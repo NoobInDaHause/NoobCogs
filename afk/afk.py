@@ -44,7 +44,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.14"
+    __version__ = "1.4.15"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -327,7 +327,7 @@ class Afk(commands.Cog):
         guild_settings = await self.config.guild(ctx.guild).all()
         global_settings = await self.config.all()
         da = f"{global_settings['delete_after']} seconds." if global_settings['delete_after'] != 0 else "Disabled."
-        gset = f"\n> Guild settings\n**Nick change:** {guild_settings['nick']}" if await ctx.bot.is_owner(ctx.author) or ctx.author.guild_permissions.administrator else ""
+        gset = f"\n> Guild settings\n**Nick change:** {guild_settings['nick']}" if await ctx.bot.is_owner(ctx.author) or ctx.author.guild_permissions.manage_guild else ""
         globe = f"\n> Global settings\n**Delete after:** {da}" if await ctx.bot.is_owner(ctx.author) else ""
         
         embed = discord.Embed(
