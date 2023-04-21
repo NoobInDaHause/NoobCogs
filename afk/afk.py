@@ -44,7 +44,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.15"
+    __version__ = "1.4.16"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -136,7 +136,7 @@ class Afk(commands.Cog):
         )
         embed.set_thumbnail(url=author.avatar_url)
         
-        da = await self.config.guild(payload.guild).delete_after()
+        da = await self.config.delete_after()
         
         return await payload.channel.send(embed=embed, reference=payload, mention_author=False,  delete_after=da) if da != 0 else await payload.channel.send(embed=embed, reference=payload, mention_author=False)
 
