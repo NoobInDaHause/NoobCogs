@@ -201,7 +201,7 @@ class Afk(commands.Cog):
         member="The member that you want to forcefully set or remove an AFK status to.",
         reason="The optional reason for the AFK."
     )
-    async def forceafk(
+    async def afkset_forceafk(
         self,
         context: commands.Context,
         member: Union[discord.Member, discord.User],
