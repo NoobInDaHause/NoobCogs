@@ -90,6 +90,7 @@ class GlobalBan(commands.Cog):
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
+        
         try:
             user_id = int(user_id)
         except ValueError:
@@ -121,7 +122,7 @@ class GlobalBan(commands.Cog):
         logs = await self.config.banlogs()
         
         async with self.config.banlogs() as gbl:
-            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`User:` {member} ({user_id})\n`Authorized by:` {context.author} ({context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`Offender:` {member} (ID: {user_id})\n`Authorized by:` {context.author} (ID: {context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
             gbl.append(log)
         
         async with self.config.banlist() as bl:
@@ -136,7 +137,7 @@ class GlobalBan(commands.Cog):
                 errors.append(f"**{guild} (ID: {guild.id})**")
             except discord.errors.NotFound:
                 try:
-                    await guild.ban(member, reason=f"Global Ban authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
+                    await guild.ban(member, reason=f"{context.bot.user.name} Global Ban authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
                     guilds.append(guild)
                     if await self.config.create_modlog():
                         await modlog.create_case(
@@ -150,7 +151,7 @@ class GlobalBan(commands.Cog):
                         until=None,
                         channel=None,
                         )
-                except discord.HTTPException:
+                except discord.errors.HTTPException:
                     errors.append(f"**{guild} (ID: {guild.id})**")
                 
         await context.send(f"Globally banned **{member}** in **{len(guilds)}** guilds.")
@@ -191,6 +192,7 @@ class GlobalBan(commands.Cog):
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
+        
         try:
             user_id = int(user_id)
         except ValueError:
@@ -202,7 +204,7 @@ class GlobalBan(commands.Cog):
             return await context.send("It appears that is not a valid user ID.")
 
         if user_id not in await self.config.banlist():
-            return await context.send(f"**{member}** is not globally banned.")
+            return await context.send(f"It appears **{member}** is not globally banned.")
             
         confirm_action = "Alright this might take a while."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
@@ -216,7 +218,7 @@ class GlobalBan(commands.Cog):
         logs = await self.config.banlogs()
         
         async with self.config.banlogs() as gbl:
-            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalUnBan\n`User:` {member} ({user_id})\n`Authorized by:` {context.author} ({context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalUnBan\n`Offender:` {member} (ID: {user_id})\n`Authorized by:` {context.author} (ID: {context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
             gbl.append(log)
         
         async with self.config.banlist() as bl:
@@ -228,7 +230,7 @@ class GlobalBan(commands.Cog):
         for guild in context.bot.guilds:
             await asyncio.sleep(10)
             try:
-                await guild.unban(member, reason=f"Global UnBan authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
+                await guild.unban(member, reason=f"{context.bot.user.name} Global UnBan authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
                 guilds.append(guild)
                 if await self.config.create_modlog():
                     await modlog.create_case(
@@ -242,7 +244,7 @@ class GlobalBan(commands.Cog):
                     until=None,
                     channel=None,
                     )
-            except discord.HTTPException:
+            except discord.errors.HTTPException:
                 errors.append(f"**{guild} (ID: {guild.id})**")
                 
         await context.send(f"Globally unbanned **{member}** in **{len(guilds)}** guilds.")
@@ -273,6 +275,7 @@ class GlobalBan(commands.Cog):
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
+        
         logs = await self.config.banlogs()
         
         if not logs:
@@ -302,6 +305,7 @@ class GlobalBan(commands.Cog):
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
+        
         bans = await self.config.banlist()
         
         if not bans:
@@ -340,6 +344,7 @@ class GlobalBan(commands.Cog):
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
+        
         view = GbanViewReset(bot=self.bot, author=context.author, config=self.config, timeout=30)
         view.message = await context.send(content="Choose what config to reset.", view=view)
         
@@ -355,6 +360,7 @@ class GlobalBan(commands.Cog):
         """
         if not await context.bot.is_owner(context.author):
             return await context.reply("You do not have permission to run this command.", ephemeral=True)
+        
         await self.config.create_modlog.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} make a modlog case whenever you globally ban or unban a user.")
