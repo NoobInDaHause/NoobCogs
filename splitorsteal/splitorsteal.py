@@ -257,7 +257,7 @@ class SplitOrSteal(commands.Cog):
         
         If you can not start a game on a channel even if there is no game running use this command.
         """
-        if context.author.guild_permissions.manage_guild != True:
+        if not context.author.guild_permissions.manage_guild:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
         
         active = await self.config.guild(context.guild).activechan()
@@ -280,7 +280,7 @@ class SplitOrSteal(commands.Cog):
         """
         Reset the guild settings to default.
         """
-        if context.author.guild_permissions.manage_guild != True:
+        if not context.author.guild_permissions.manage_guild:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
         
         confirm_action = "Successfully resetted the SplitOrSteal guild settings."
@@ -301,7 +301,7 @@ class SplitOrSteal(commands.Cog):
         """
         Toggle whether to restrict the `[p]splitorsteal` command to the set manager roles.
         """
-        if context.author.guild_permissions.manage_guild != True:
+        if not context.author.guild_permissions.manage_guild:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
         
         await self.config.guild(context.guild).manager_only.set(state)
@@ -314,7 +314,7 @@ class SplitOrSteal(commands.Cog):
         """
         See the settings of SplitOrSteal.
         """
-        if context.author.guild_permissions.manage_guild != True:
+        if not context.author.guild_permissions.manage_guild:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
         
         settings = await self.config.guild(context.guild).all()
@@ -334,7 +334,7 @@ class SplitOrSteal(commands.Cog):
         """
         Add or remove a manager role.
         """
-        if context.author.guild_permissions.manage_guild != True:
+        if not context.author.guild_permissions.manage_guild:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
         
         embed = discord.Embed(

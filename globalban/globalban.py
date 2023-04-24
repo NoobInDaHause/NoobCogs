@@ -9,7 +9,7 @@ from redbot.core.bot import Red
 from redbot.core import modlog, commands, Config
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 
-from .buttons import Confirmation, Paginator, GbanViewReset
+from .views import Confirmation, Paginator, GbanViewReset
 
 class GlobalBan(commands.Cog):
     """

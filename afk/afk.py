@@ -9,7 +9,7 @@ from redbot.core.bot import Red
 from redbot.core import commands, Config
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 
-from .buttons import Paginator, Confirmation
+from .views import Paginator, Confirmation
 
 class Afk(commands.Cog):
     """
@@ -211,7 +211,7 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        if context.author.guild_permissions.manage_guild != True:
+        if not context.author.guild_permissions.manage_guild:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
         
         if member.id == context.guild.owner.id:
@@ -265,7 +265,7 @@ class Afk(commands.Cog):
         Put `0` to disable.
         Default is 10 seconds.
         """
-        if context.author.guild_permissions.manage_guild != True:
+        if not context.author.guild_permissions.manage_guild:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
 
         if not seconds:
@@ -326,7 +326,7 @@ class Afk(commands.Cog):
         
         This defaults to `True`.
         """
-        if context.author.guild_permissions.manage_guild != True:
+        if not context.author.guild_permissions.manage_guild:
             return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
 
         await self.config.guild(context.guild).nick.set(state)
