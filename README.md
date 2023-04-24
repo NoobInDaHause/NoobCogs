@@ -27,6 +27,10 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 | ServerDonations |  v1.3.5   | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v2.2.5   | A fun split or steal game.                                       |
 
+## License
+
+This repository is licensed under MIT License.
+
 ## Credits
 
 Special thanks to the authors of some of the codes that I got from, all credits goes to them.
