@@ -210,7 +210,7 @@ class GbanViewReset(discord.ui.View):
     def __init__(
         self,
         bot,
-        author: Union[discord.Member, discord.User],
+        author: discord.Member,
         config,
         timeout: int,
     ):

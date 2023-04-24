@@ -8,10 +8,10 @@ from redbot.core.bot import Red
 from redbot.core.utils import mod
 from redbot.core.utils.chat_formatting import humanize_list
 
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 
-from .sosmodels import SosGifs, SosHelp
-from .views import Confirmation, SosManager, Paginator, SosButton
+from .models import SosGifs, SosHelp
+from .views import Confirmation, Paginator, SosManager, SosButton
 
 class SplitOrSteal(commands.Cog):
     """
@@ -50,9 +50,9 @@ class SplitOrSteal(commands.Cog):
     async def _start_sos(
         self,
         context: commands.Context,
-        host: Union[discord.Member, discord.User],
-        player_1: Union[discord.Member, discord.User],
-        player_2: Union[discord.Member, discord.User],
+        host: discord.Member,
+        player_1: discord.Member,
+        player_2: discord.Member,
         prize
     ):
         """
@@ -112,7 +112,7 @@ class SplitOrSteal(commands.Cog):
         
         return await self._end_sos_game(context=context, host=host, player_1=player_1, player_2=player_2, prize=prize, answer1=answer1, answer2=answer2)
     
-    async def _get_player_answer(self, player: Union[discord.Member, discord.User], prize):
+    async def _get_player_answer(self, player: discord.Member, prize):
         """
         Get the player answer.
         """
@@ -133,9 +133,9 @@ class SplitOrSteal(commands.Cog):
     async def _end_sos_game(
         self,
         context: commands.Context,
-        host: Union[discord.Member, discord.User],
-        player_1: Union[discord.Member, discord.User],
-        player_2: Union[discord.Member, discord.User],
+        host: discord.Member,
+        player_1: discord.Member,
+        player_2: discord.Member,
         prize,
         answer1,
         answer2
@@ -392,8 +392,8 @@ class SplitOrSteal(commands.Cog):
     async def splitorsteal(
         self,
         context: commands.Context,
-        player_1: Union[discord.Member, discord.User],
-        player_2: Union[discord.Member, discord.User],
+        player_1: discord.Member,
+        player_2: discord.Member,
         *,
         prize: str
     ):

@@ -22,7 +22,7 @@ class Paginator(discord.ui.View):
     def __init__(
         self,
         bot,
-        author: Union[discord.Member, discord.User],
+        author: discord.Member,
         pages: List[Any],
         *,
         timeout: Optional[float] = 60,
@@ -243,7 +243,7 @@ class SosManager(discord.ui.View):
         self,
         bot,
         context,
-        author: Union[discord.Member, discord.User],
+        author: discord.Member,
         config,
         timeout: int,
     ):
@@ -354,7 +354,7 @@ class SosManager(discord.ui.View):
         await self.message.edit(view=self)
         
 class SosButton(discord.ui.View):
-    def __init__(self, author: Union[discord.Member, discord.User]):
+    def __init__(self, author: discord.Member):
         super().__init__(timeout=30.0)
         self.author = author
         self.value = None

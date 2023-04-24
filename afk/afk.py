@@ -2,12 +2,11 @@ import datetime
 import discord
 import logging
 
-from discord import app_commands
-from typing import Literal, Optional, Union
-
 from redbot.core.bot import Red
 from redbot.core import commands, Config
 from redbot.core.utils.chat_formatting import humanize_list, pagify
+
+from typing import Literal, Optional
 
 from .views import Paginator, Confirmation
 
@@ -204,7 +203,7 @@ class Afk(commands.Cog):
     async def afkset_forceafk(
         self,
         context: commands.Context,
-        member: Union[discord.Member, discord.User],
+        member: discord.Member,
         *,
         reason: Optional[str] = "No reason given."
     ):
