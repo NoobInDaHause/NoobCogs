@@ -1,10 +1,13 @@
 from __future__ import annotations
-from typing import Dict, Optional, Union, List, Any
+from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING
 
 import discord
 from discord.ext import commands
 
 from redbot.core.utils.chat_formatting import humanize_list
+
+if TYPE_CHECKING:
+    from discord import Message, InteractionMessage, WebhookMessage
 
 __all__ = (
     "Paginator",
@@ -17,7 +20,7 @@ class Paginator(discord.ui.View):
     
     modified by me
     """
-    message: Optional[discord.Message] = None
+    message: Optional[Message] = None
 
     def __init__(
         self,
@@ -120,7 +123,7 @@ class Paginator(discord.ui.View):
     
     async def start(
         self, obj: Union[commands.Context, discord.Interaction]
-    ) -> Optional[Union[discord.Message, discord.InteractionMessage, discord.WebhookMessage]]:
+    ) -> Optional[Union[Message, InteractionMessage, WebhookMessage]]:
         if isinstance(obj, commands.Context):
             self.context = obj
             self.interaction = None
