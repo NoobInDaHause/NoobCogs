@@ -5,8 +5,8 @@ import discord
 
 from typing import Literal, Optional
 
+from redbot.core import modlog, commands, app_commands, Config
 from redbot.core.bot import Red
-from redbot.core import modlog, commands, Config
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 
 from .views import Confirmation, Paginator, GbanViewReset
@@ -74,7 +74,7 @@ class GlobalBan(commands.Cog):
         """
     
     @globalban.command(name="ban")
-    @discord.app_commands.describe(
+    @app_commands.describe(
         user_id="The ID of the User that you want to globally ban.",
         reason="The Optional reason for this global ban."
     )
@@ -176,7 +176,7 @@ class GlobalBan(commands.Cog):
             await pages.start(context)
             
     @globalban.command(name="unban")
-    @discord.app_commands.describe(
+    @app_commands.describe(
         user_id="The ID of the User that you want to globally unban.",
         reason="The Optional reason for this global unban."
     )
@@ -351,7 +351,7 @@ class GlobalBan(commands.Cog):
         await view.wait()
     
     @globalban.command(name="createmodlog")
-    @discord.app_commands.describe(
+    @app_commands.describe(
         state="True or False."
     )
     async def globalban_createmodlog(self, context: commands.Context, state: bool):

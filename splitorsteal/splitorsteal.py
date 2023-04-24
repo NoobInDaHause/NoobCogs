@@ -3,7 +3,7 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, Config
+from redbot.core import commands, app_commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils import mod
 from redbot.core.utils.chat_formatting import humanize_list
@@ -247,8 +247,8 @@ class SplitOrSteal(commands.Cog):
             await self.config.clear_all()
             
     @splitorstealset.command(name="clearactive")
-    @discord.app_commands.guild_only()
-    @discord.app_commands.describe(
+    @app_commands.guild_only()
+    @app_commands.describe(
         channel="The channel that you want to reset."
     )
     async def splitorstealset_clearactive(self, context: commands.Context, channel: Optional[discord.TextChannel]):
@@ -275,7 +275,7 @@ class SplitOrSteal(commands.Cog):
         await context.send(f"Successfully removed the active game in {channel.mention}.")
         
     @splitorstealset.command(name="reset")
-    @discord.app_commands.guild_only()
+    @app_commands.guild_only()
     async def splitorstealset_reset(self, context: commands.Context):
         """
         Reset the guild settings to default.
@@ -293,8 +293,8 @@ class SplitOrSteal(commands.Cog):
             await self.config.guild(context.guild).clear()
             
     @splitorstealset.command(name="manageronly")
-    @discord.app_commands.guild_only()
-    @discord.app_commands.describe(
+    @app_commands.guild_only()
+    @app_commands.describe(
         state="True or False"
     )
     async def splitorstealset_manageronly(self, context: commands.Context, state: bool):
@@ -309,7 +309,7 @@ class SplitOrSteal(commands.Cog):
         await context.send(f"Manager only setting for splitorsteal has been {status}.")
         
     @splitorstealset.command(name="showsetting", aliases=["ss", "showset", "showsettings"])
-    @discord.app_commands.guild_only()
+    @app_commands.guild_only()
     async def splitorstealset_showsetting(self, context: commands.Context):
         """
         See the settings of SplitOrSteal.
@@ -329,7 +329,7 @@ class SplitOrSteal(commands.Cog):
         await context.send(embed=embed)
         
     @splitorstealset.command(name="manager", aliases=["managers"])
-    @discord.app_commands.guild_only()
+    @app_commands.guild_only()
     async def splitorstealset_manager(self, context: commands.Context):
         """
         Add or remove a manager role.
@@ -383,8 +383,8 @@ class SplitOrSteal(commands.Cog):
     @commands.hybrid_command(name="splitorsteal", aliases=["sos"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @discord.app_commands.guild_only()
-    @discord.app_commands.describe(
+    @app_commands.guild_only()
+    @app_commands.describe(
         player_1="The first player of the game.",
         player_2="The second player of the game.",
         prize="The prize of the game."
