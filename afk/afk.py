@@ -163,7 +163,7 @@ class Afk(commands.Cog):
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.bot_has_permissions(embed_links=True)
+    @commands.bot_has_permissions(embed_links=True, manage_nicknames=True)
     @discord.app_commands.guild_only()
     @discord.app_commands.describe(
         reason="The optional reason for the AFK."
@@ -204,7 +204,7 @@ class Afk(commands.Cog):
         seconds: Optional[int]
     ):
         """
-        Change the delete after on every AFK response on users.
+        Change the delete after on every AFK notify.
         
         Put `0` to disable.
         Default is 10 seconds.
@@ -262,6 +262,7 @@ class Afk(commands.Cog):
     
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @commands.bot_has_permissions(manage_nicknames=True)
     @discord.app_commands.guild_only()
     @discord.app_commands.describe(
         state="True or False."
@@ -320,7 +321,7 @@ class Afk(commands.Cog):
     @discord.app_commands.guild_only()
     async def afkset_showsettings(self, context: commands.Context):
         """
-        See your AFK settings.
+        See your AFK settings and Guild settings (if manage_guild+).
         """
         member_settings = await self.config.member(context.author).all()
         guild_settings = await self.config.guild(context.guild).all()
@@ -346,13 +347,13 @@ class Afk(commands.Cog):
         state: bool
     ):
         """
-        Toggle whether to sticky your afk
+        Toggle whether to sticky your afk or not.
         """
         await self.config.member(context.author).sticky.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} sticky your AFK.")
         
-    @afkset.command(name="togglelogs")
+    @afkset.command(name="togglelogs", aliases=["tl"])
     @discord.app_commands.guild_only()
     @discord.app_commands.describe(
         state="True or False."
