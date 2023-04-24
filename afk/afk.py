@@ -193,6 +193,35 @@ class Afk(commands.Cog):
         Settings for the AFK cog.
         """
     
+    @afkset.command(name="deleteafter", aliases=["da"])
+    @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @discord.app_commands.describe(
+        seconds="The amount of seconds before the notify embed gets deleted."
+    )
+    async def afkset_deleteafter(
+        self,
+        context: commands.Context,
+        seconds: Optional[int]
+    ):
+        """
+        Change the delete after on every AFK response on users.
+        
+        Put `0` to disable.
+        Default is 10 seconds.
+        """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+
+        if not seconds:
+            await self.config.guild(context.guild).delete_after.set(0)
+            return await context.send("The delete after has been disabled.")
+        
+        if seconds >= 121:
+            return await context.send("The maximum seconds of delete after is 120 seconds.")
+        
+        await self.config.guild(context.guild).delete_after.set(seconds)
+        await context.send(f"Successfully set the delete after to {seconds} seconds.")
+    
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
     @discord.app_commands.guild_only()
@@ -231,84 +260,6 @@ class Afk(commands.Cog):
         await context.send(f"Forcefully added **{member}**'s AFK status.")
         await self.start_afk(context, member, reason)
     
-    @afkset.command(name="sticky")
-    @discord.app_commands.guild_only()
-    @discord.app_commands.describe(
-        state="True or False."
-    )
-    async def afkset_sticky(
-        self,
-        context: commands.Context,
-        state: bool
-    ):
-        """
-        Toggle whether to sticky your afk
-        """
-        await self.config.member(context.author).sticky.set(state)
-        status = "will now" if state else "will not"
-        await context.send(f"I {status} sticky your AFK.")
-        
-    @afkset.command(name="deleteafter", aliases=["da"])
-    @commands.admin_or_permissions(manage_guild=True, administrator=True)
-    @discord.app_commands.describe(
-        seconds="The amount of seconds before the notify embed gets deleted."
-    )
-    async def afkset_deleteafter(
-        self,
-        context: commands.Context,
-        seconds: Optional[int]
-    ):
-        """
-        Change the delete after on every AFK response on users.
-        
-        Put `0` to disable.
-        Default is 10 seconds.
-        """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-
-        if not seconds:
-            await self.config.guild(context.guild).delete_after.set(0)
-            return await context.send("The delete after has been disabled.")
-        
-        if seconds >= 121:
-            return await context.send("The maximum seconds of delete after is 120 seconds.")
-        
-        await self.config.guild(context.guild).delete_after.set(seconds)
-        await context.send(f"Successfully set the delete after to {seconds} seconds.")
-        
-    @afkset.command(name="togglelogs")
-    @discord.app_commands.guild_only()
-    @discord.app_commands.describe(
-        state="True or False."
-    )
-    async def afkset_togglelogs(
-        self,
-        context: commands.Context,
-        state: bool
-    ):
-        """
-        Toggle whether to log all pings you recieved or not.
-        """
-        await self.config.member(context.author).toggle_logs.set(state)
-        status = "will now" if state else "will not"
-        await context.send(f"I {status} log all the pings you recieved.")
-    
-    @afkset.command(name="reset")
-    @discord.app_commands.guild_only()
-    async def afkset_reset(self, context: commands.Context):
-        """
-        Reset your AFK settings to default.
-        """
-        confirm_action = "Successfully resetted your AFK settings."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send("Are you sure you want to reset your AFK settings?", view=view)
-        
-        await view.wait()
-        
-        if view.value == "yes":
-            await self.config.member(context.author).clear()
-    
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
     @discord.app_commands.guild_only()
@@ -331,6 +282,21 @@ class Afk(commands.Cog):
         await self.config.guild(context.guild).nick.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} edit the users nick whenever they go AFK.")
+    
+    @afkset.command(name="reset")
+    @discord.app_commands.guild_only()
+    async def afkset_reset(self, context: commands.Context):
+        """
+        Reset your AFK settings to default.
+        """
+        confirm_action = "Successfully resetted your AFK settings."
+        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
+        view.message = await context.send("Are you sure you want to reset your AFK settings?", view=view)
+        
+        await view.wait()
+        
+        if view.value == "yes":
+            await self.config.member(context.author).clear()
     
     @afkset.command(name="resetcog")
     @commands.is_owner()
@@ -368,3 +334,37 @@ class Afk(commands.Cog):
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
         await context.send(embed=embed)
+    
+    @afkset.command(name="sticky")
+    @discord.app_commands.guild_only()
+    @discord.app_commands.describe(
+        state="True or False."
+    )
+    async def afkset_sticky(
+        self,
+        context: commands.Context,
+        state: bool
+    ):
+        """
+        Toggle whether to sticky your afk
+        """
+        await self.config.member(context.author).sticky.set(state)
+        status = "will now" if state else "will not"
+        await context.send(f"I {status} sticky your AFK.")
+        
+    @afkset.command(name="togglelogs")
+    @discord.app_commands.guild_only()
+    @discord.app_commands.describe(
+        state="True or False."
+    )
+    async def afkset_togglelogs(
+        self,
+        context: commands.Context,
+        state: bool
+    ):
+        """
+        Toggle whether to log all pings you recieved or not.
+        """
+        await self.config.member(context.author).toggle_logs.set(state)
+        status = "will now" if state else "will not"
+        await context.send(f"I {status} log all the pings you recieved.")
