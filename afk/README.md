@@ -2,7 +2,9 @@
 
 Be afk and notify users who ping you with a reason of your choice. This cog is inspired by sravan and Andy's afk cog.
 
-## Hybrid Commands 
+## [Hybrid Commands] 
+Below are Hybrid Commands can be run with legacy prefix commands or slash commands.
+
 `[p]` is your bots prefix.
 
 Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
@@ -15,7 +17,9 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Checks:` guild_only
  - `Description:` Be afk and notify users whenever they ping you.
 
-## Hybrid Group
+## [Hybrid Group]
+Below are Hybrid Group Commands can be run with legacy prefix commands or slash commands.
+
 `[p]` is your bots prefix.
 
 Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
