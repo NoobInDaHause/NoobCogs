@@ -10,7 +10,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 
 from typing import Literal, Optional
 
-from .models import SosGifs, SosHelp
+from .constants import SosGifs, SosHelp
 from .views import Confirmation, Paginator, SosManager, SosButton
 
 class SplitOrSteal(commands.Cog):
