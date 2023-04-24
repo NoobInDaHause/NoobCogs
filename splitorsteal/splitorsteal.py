@@ -82,7 +82,7 @@ class SplitOrSteal(commands.Cog):
         sotembed.set_author(name=f"Hosted by: {host}", icon_url=host.avatar.url)
         sotam = discord.AllowedMentions(roles=False, users=True, everyone=False)
         await context.channel.send(content=f"{player_1.mention} and {player_2.mention}", embed=sotembed, allowed_mentions=sotam)
-        await asyncio.sleep(5)
+        await asyncio.sleep(60)
         
         await context.channel.send(
             f"Time is up! I will now DM the players if they want to either split 🤝 or steal ⚔️.\n{player_1.mention} and {player_2.mention} make sure you have your DM's open for me to send message."
