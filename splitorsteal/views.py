@@ -226,9 +226,6 @@ class SosManagerAdd(discord.ui.Modal):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.send_message(content="Successfully submitted.", ephemeral=True)
         
-    async def on_timeout(self):
-        self.role_ids.value = "None"
-        
 class SosManagerRemove(discord.ui.Modal):
     def __init__(self, *, title: str = "Please provide a role ID to remove.", timeout: float = 30.0) -> None:
         super().__init__(title=title, timeout=timeout)
@@ -243,9 +240,6 @@ class SosManagerRemove(discord.ui.Modal):
     
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.send_message(content="Successfully submitted.", ephemeral=True)
-        
-    async def on_timeout(self):
-        self.role_ids.value = "None"
 
 class SosManager(discord.ui.View):
     def __init__(
@@ -281,10 +275,10 @@ class SosManager(discord.ui.View):
 
             await addview.wait()
 
-            if addview.role_ids.value == "None":
+            if not addview.role_ids.value:
                 return
 
-            val = maybe.split(",")
+            val = addview.role_ids.value.split(",")
             
             added_roles = []
             failed_roles = []
@@ -322,7 +316,7 @@ class SosManager(discord.ui.View):
 
             await removeview.wait()
 
-            if removeview.role_ids.value == "None":
+            if not removeview.role_ids.value:
                 return
 
             val = removeview.role_ids.value.split(",")
