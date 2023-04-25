@@ -297,13 +297,15 @@ class SosManager(discord.ui.View):
                 )
                 await self.message.edit(embed=embed)
 
-                if failed_roles is not None:
-                    embed = discord.Embed(
-                        title="Some roles have failed to add.",
-                        description=f"Most likely that the role doesn't exist or ValueError or role is already a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles])}",
-                        colour=await self.context.embed_colour()
-                    )
-                    await interaction.followup.send(embed=embed, ephemeral=True)
+                if not failed_roles:
+                    return
+                
+                embed = discord.Embed(
+                    title="Some roles have failed to add.",
+                    description=f"Most likely that the role doesn't exist or ValueError or role is already a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles])}",
+                    colour=await self.context.embed_colour()
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
 
         if select.values[0] == "Remove":
             removeview = SosManagerRemove()
@@ -335,13 +337,15 @@ class SosManager(discord.ui.View):
                 )
                 await self.message.edit(embed=embed)
                 
-                if failed_roles is not None:
-                    embed = discord.Embed(
-                        title="Some roles have failed to remove.",
-                        description=f"Most likely that the role doesn't exist or ValueError or role is not a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles])}",
-                        colour=await self.context.embed_colour()
-                    )
-                    await interaction.followup.send(embed=embed, ephemeral=True)
+                if not failed_roles:
+                    return
+
+                embed = discord.Embed(
+                    title="Some roles have failed to remove.",
+                    description=f"Most likely that the role doesn't exist or ValueError or role is not a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles])}",
+                    colour=await self.context.embed_colour()
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
             
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
