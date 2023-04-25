@@ -297,7 +297,7 @@ class SosManager(discord.ui.View):
                 )
                 await self.message.edit(embed=embed)
 
-                if not added_roles:
+                if added_roles:
                     if failed_roles:
                         embed = discord.Embed(
                             title="Some roles have failed to add.",
@@ -336,7 +336,7 @@ class SosManager(discord.ui.View):
                 )
                 await self.message.edit(embed=embed)
                 
-                if not removed_roles:
+                if removed_roles:
                     if failed_roles:
                         embed = discord.Embed(
                             title="Some roles have failed to remove.",
