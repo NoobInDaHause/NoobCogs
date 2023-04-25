@@ -227,7 +227,7 @@ class SosManagerAdd(discord.ui.Modal):
         await interaction.response.send_message(content="Successfully submitted.", ephemeral=True)
         
     async def on_timeout(self):
-        self.role_ids.value = None
+        self.role_ids.value = "None"
         
 class SosManagerRemove(discord.ui.Modal):
     def __init__(self, *, title: str = "Please provide a role ID to remove.", timeout: float = 30.0) -> None:
@@ -245,7 +245,7 @@ class SosManagerRemove(discord.ui.Modal):
         await interaction.response.send_message(content="Successfully submitted.", ephemeral=True)
         
     async def on_timeout(self):
-        self.role_ids.value = None
+        self.role_ids.value = "None"
 
 class SosManager(discord.ui.View):
     def __init__(
@@ -283,7 +283,7 @@ class SosManager(discord.ui.View):
 
             val = addview.role_ids.value.split(",")
 
-            if not val:
+            if val == "None":
                 return
 
             added_roles = []
@@ -313,7 +313,7 @@ class SosManager(discord.ui.View):
                     description=f"Most likely that the role doesn't exist or ValueError or role is already a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles]) or '`None`'}",
                     colour=await self.context.embed_colour()
                 )
-                await self.message.reply(embed=embed, ephemeral=True)
+                await interaction.followup.send(embed=embed, ephemeral=True)
 
         if select.values[0] == "Remove":
             removeview = SosManagerRemove()
@@ -324,7 +324,7 @@ class SosManager(discord.ui.View):
 
             val = removeview.role_ids.value.split(",")
 
-            if not val:
+            if val == "None":
                 return
 
             removed_roles = []
@@ -355,7 +355,7 @@ class SosManager(discord.ui.View):
                     description=f"Most likely that the role doesn't exist or ValueError or role is not a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles]) or '`None`'}",
                     colour=await self.context.embed_colour()
                 )
-                await self.message.reply(embed=embed, ephemeral=True)
+                await interaction.followup.send(embed=embed, ephemeral=True)
             
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
