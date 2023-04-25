@@ -226,6 +226,9 @@ class SosManagerAdd(discord.ui.Modal):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.send_message(content="Successfully submitted.", ephemeral=True)
         
+    async def on_timeout(self):
+        self.role_ids.value = None
+        
 class SosManagerRemove(discord.ui.Modal):
     def __init__(self, *, title: str = "Please provide a role ID to remove.", timeout: float = 30.0) -> None:
         super().__init__(title=title, timeout=timeout)
@@ -240,6 +243,9 @@ class SosManagerRemove(discord.ui.Modal):
     
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.send_message(content="Successfully submitted.", ephemeral=True)
+        
+    async def on_timeout(self):
+        self.role_ids.value = None
 
 class SosManager(discord.ui.View):
     def __init__(
@@ -260,8 +266,8 @@ class SosManager(discord.ui.View):
         min_values=1,
         max_values=1,
         options=[
-            discord.SelectOption(label="Add", emoji="➕", description="Add managers."),
-            discord.SelectOption(label="Remove", emoji="➖", description="Remove managers.")
+            discord.SelectOption(label="Add", emoji="📥", description="Add managers."),
+            discord.SelectOption(label="Remove", emoji="📤", description="Remove managers.")
         ]
     )
     async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
@@ -274,74 +280,82 @@ class SosManager(discord.ui.View):
             await interaction.response.send_modal(addview)
 
             await addview.wait()
-            
-            if role_ids := addview.role_ids.value.split(","):
-                added_roles = []
-                failed_roles = []
-                for i in role_ids:
-                    try:
-                        sosman = await self.config.guild(interaction.guild).sosmanager_ids()
-                        interaction.guild.get_role(int(i))
-                        if int(i) in sosman:
-                            failed_roles.append(i)
-                            continue
-                        async with self.config.guild(interaction.guild).sosmanager_ids() as sosmanids:
-                            sosmanids.append(int(i))
-                        added_roles.append(i)
-                    except Exception:
+
+            val = addview.role_ids.value.split(",")
+
+            if not val:
+                return
+
+            added_roles = []
+            failed_roles = []
+            for i in val:
+                try:
+                    sosman = await self.config.guild(interaction.guild).sosmanager_ids()
+                    interaction.guild.get_role(int(i))
+                    if int(i) in sosman:
                         failed_roles.append(i)
+                        continue
+                    async with self.config.guild(interaction.guild).sosmanager_ids() as sosmanids:
+                        sosmanids.append(int(i))
+                    added_roles.append(i)
+                except Exception:
+                    failed_roles.append(i)
 
+            embed = discord.Embed(
+                description=f"{humanize_list([f'<@&{role}>' for role in added_roles]) or '`None`'} were added to the manager list.",
+                color=await self.context.embed_colour()
+            )
+            await self.message.edit(embed=embed)
+
+            if failed_roles:
                 embed = discord.Embed(
-                    description=f"{humanize_list([f'<@&{role}>' for role in added_roles]) or '`None`'} were added to the manager list.",
-                    color=await self.context.embed_colour()
+                    title="Some roles have failed to add.",
+                    description=f"Most likely that the role doesn't exist or ValueError or role is already a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles]) or '`None`'}",
+                    colour=await self.context.embed_colour()
                 )
-                await self.message.edit(embed=embed)
-
-                if failed_roles is not None:
-                    embed = discord.Embed(
-                        title="Some roles have failed to add.",
-                        description=f"Most likely that the role doesn't exist or ValueError or role is already a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles]) or '`None`'}",
-                        colour=await self.context.embed_colour()
-                    )
-                    await interaction.followup.send(embed=embed, ephemeral=True)
+                await interaction.followup.send(embed=embed, ephemeral=True)
 
         if select.values[0] == "Remove":
             removeview = SosManagerRemove()
             await self.message.edit(view=self)
             await interaction.response.send_modal(removeview)
-            
+
             await removeview.wait()
-            
-            if role_ids := removeview.role_ids.value.split(","):
-                removed_roles = []
-                failed_roles = []
-                for i in role_ids:
-                    try:
-                        sosman = await self.config.guild(interaction.guild).sosmanager_ids()
-                        interaction.guild.get_role(int(i))
-                        if int(i) not in sosman:
-                            failed_roles.append(i)
-                            continue
-                        async with self.config.guild(interaction.guild).sosmanager_ids() as sosmanids:
-                            index = sosmanids.index(int(i))
-                            sosmanids.pop(index)
-                        removed_roles.append(i)
-                    except Exception:
+
+            val = removeview.role_ids.value.split(",")
+
+            if not val:
+                return
+
+            removed_roles = []
+            failed_roles = []
+            for i in val:
+                try:
+                    sosman = await self.config.guild(interaction.guild).sosmanager_ids()
+                    interaction.guild.get_role(int(i))
+                    if int(i) not in sosman:
                         failed_roles.append(i)
-                        
+                        continue
+                    async with self.config.guild(interaction.guild).sosmanager_ids() as sosmanids:
+                        index = sosmanids.index(int(i))
+                        sosmanids.pop(index)
+                    removed_roles.append(i)
+                except Exception:
+                    failed_roles.append(i)
+
+            embed = discord.Embed(
+                description=f"{humanize_list([f'<@&{role}>' for role in removed_roles]) or '`None`'} were removed from the manager list.",
+                color=await self.context.embed_colour()
+            )
+            await self.message.edit(embed=embed)
+
+            if failed_roles:
                 embed = discord.Embed(
-                    description=f"{humanize_list([f'<@&{role}>' for role in removed_roles]) or '`None`'} were removed from the manager list.",
-                    color=await self.context.embed_colour()
+                    title="Some roles have failed to remove.",
+                    description=f"Most likely that the role doesn't exist or ValueError or role is not a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles]) or '`None`'}",
+                    colour=await self.context.embed_colour()
                 )
-                await self.message.edit(embed=embed)
-                
-                if failed_roles:
-                    embed = discord.Embed(
-                        title="Some roles have failed to remove.",
-                        description=f"Most likely that the role doesn't exist or ValueError or role is not a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles]) or '`None`'}",
-                        colour=await self.context.embed_colour()
-                    )
-                    await interaction.followup.send(embed=embed, ephemeral=True)
+                await interaction.followup.send(embed=embed, ephemeral=True)
             
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
