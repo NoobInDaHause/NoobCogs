@@ -361,7 +361,8 @@ class SosManager(discord.ui.View):
         return True
     
     async def on_timeout(self):
-        self.select.disabled = True
+        for x in self.children:
+            x.disabled = True
         await self.message.edit(view=self)
         
 class SosButton(discord.ui.View):
