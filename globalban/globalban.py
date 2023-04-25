@@ -72,11 +72,11 @@ class GlobalBan(commands.Cog):
         logs = await self.config.banlogs()
 
         async with self.config.banlogs() as gblog:
-            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`Offender:` {member} (ID: {user_id})\n`Authorized by:` {context.author} (ID: {context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`Offender:` {member} (ID: {member.id})\n`Authorized by:` {context.author} (ID: {context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
             gblog.append(log)
         
         async with self.config.banlist() as gblist:
-            gblist.append(user_id)
+            gblist.append(member.id)
 
         errors = []
         guilds = []
@@ -132,11 +132,11 @@ class GlobalBan(commands.Cog):
         logs = await self.config.banlogs()
         
         async with self.config.banlogs() as gblogs:
-            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalUnBan\n`Offender:` {member} (ID: {user_id})\n`Authorized by:` {context.author} (ID: {context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalUnBan\n`Offender:` {member} (ID: {member.id})\n`Authorized by:` {context.author} (ID: {context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
             gblogs.append(log)
         
         async with self.config.banlist() as gblist:
-            index = gblist.index(user_id)
+            index = gblist.index(member.id)
             gblist.pop(index)
         
         errors = []
