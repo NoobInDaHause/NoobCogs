@@ -281,11 +281,11 @@ class SosManager(discord.ui.View):
 
             await addview.wait()
 
-            val = addview.role_ids.value.split(",")
-
-            if val == "None":
+            if addview.role_ids.value == "None":
                 return
 
+            val = maybe.split(",")
+            
             added_roles = []
             failed_roles = []
             for i in val:
@@ -322,10 +322,10 @@ class SosManager(discord.ui.View):
 
             await removeview.wait()
 
-            val = removeview.role_ids.value.split(",")
-
-            if val == "None":
+            if removeview.role_ids.value == "None":
                 return
+
+            val = removeview.role_ids.value.split(",")
 
             removed_roles = []
             failed_roles = []
