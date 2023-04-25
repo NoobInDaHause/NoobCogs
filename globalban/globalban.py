@@ -2,6 +2,7 @@ import asyncio
 import contextlib
 import datetime
 import discord
+import logging
 
 from typing import Literal, Optional
 
@@ -26,6 +27,7 @@ class GlobalBan(commands.Cog):
             "create_modlog": False
         }
         self.config.register_global(**default_global)
+        self.log = logging.getLogger("red.WintersCogs.GlobalBan")
         
     __version__ = "1.0.0"
     __author__ = ["Noobindahause#2808"]
@@ -43,7 +45,7 @@ class GlobalBan(commands.Cog):
         # This cog does not store any end user data whatsoever. But it stores user ID's for the ban list! Also thanks sravan!
         super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
-    async def initialize(self, bot: Red):
+    async def initialize(self):
         await self.register_casetypes()
 
     @staticmethod
@@ -105,6 +107,9 @@ class GlobalBan(commands.Cog):
                     errors.append(f"**{guild} (ID: {guild.id})**")
 
         await context.send(f"Globally banned **{member}** in **{len(guilds)}** guilds.")
+        self.log.info(
+            f"{context.author} (ID: {context.author.id}) Globally Banned {member} (ID: {member.id}) in {len(guilds)} guilds."
+        )
 
         if errors:
             em = ", ".join(errors)
@@ -162,6 +167,9 @@ class GlobalBan(commands.Cog):
                 errors.append(f"**{guild} (ID: {guild.id})**")
                 
         await context.send(f"Globally unbanned **{member}** in **{len(guilds)}** guilds.")
+        self.log.info(
+            f"{context.author} (ID: {context.author.id}) Globally UnBanned {member} (ID: {member.id}) in {len(guilds)} guilds."
+        )
         
         if errors:
             em = ", ".join(errors)

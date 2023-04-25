@@ -57,7 +57,8 @@ class Afk(commands.Cog):
         
         Also thanks sravan and aikaterna for the end user data statement!
         """
-        await self.config.user_from_id(user_id).clear()
+        for guild in self.bot.guilds:
+            await self.config.member_from_id(guild.id, user_id).clear()
     
     async def start_afk(self, context: commands.Context, author: discord.Member, reason: str):
         """
