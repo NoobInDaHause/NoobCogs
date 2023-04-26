@@ -287,13 +287,13 @@ class SosManager(discord.ui.View):
             for i in val:
                 try:
                     sosman = await self.config.guild(interaction.guild).sosmanager_ids()
-                    interaction.guild.get_role(int(i))
-                    if int(i) in sosman:
-                        failed_roles.append(i)
+                    rol = interaction.guild.get_role(int(i))
+                    if rol.id in sosman:
+                        failed_roles.append(rol.id)
                         continue
                     async with self.config.guild(interaction.guild).sosmanager_ids() as sosmanids:
-                        sosmanids.append(int(i))
-                    added_roles.append(i)
+                        sosmanids.append(rol.id)
+                    added_roles.append(rol.id)
                 except Exception:
                     failed_roles.append(i)
 
@@ -327,14 +327,14 @@ class SosManager(discord.ui.View):
             for i in val:
                 try:
                     sosman = await self.config.guild(interaction.guild).sosmanager_ids()
-                    interaction.guild.get_role(int(i))
-                    if int(i) not in sosman:
-                        failed_roles.append(i)
+                    rol = interaction.guild.get_role(int(i))
+                    if rol.id not in sosman:
+                        failed_roles.append(rol.id)
                         continue
                     async with self.config.guild(interaction.guild).sosmanager_ids() as sosmanids:
-                        index = sosmanids.index(int(i))
+                        index = sosmanids.index(rol.id)
                         sosmanids.pop(index)
-                    removed_roles.append(i)
+                    removed_roles.append(rol.id)
                 except Exception:
                     failed_roles.append(i)
 
