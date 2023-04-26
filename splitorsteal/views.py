@@ -212,12 +212,12 @@ class Confirmation(discord.ui.View):
         await self.message.edit(content="You took too long to respond.", view=self)
         
 class SosManagerAdd(discord.ui.Modal):
-    def __init__(self, *, title: str = "Please provide a role ID to add.", timeout: float = 30.0) -> None:
+    def __init__(self, *, title: str = "Add manager roles.", timeout: float = 60.0) -> None:
         super().__init__(title=title, timeout=timeout)
         
     role_ids = discord.ui.TextInput(
         style=discord.TextStyle.long,
-        label="Add Role ID's.",
+        label="Please provide a role ID to add.",
         required=True,
         placeholder="Provide a role ID, Split them with `,` if you want to add multiple roles.",
         max_length=500
@@ -227,12 +227,12 @@ class SosManagerAdd(discord.ui.Modal):
         await interaction.response.send_message(content="Successfully submitted.", ephemeral=True)
         
 class SosManagerRemove(discord.ui.Modal):
-    def __init__(self, *, title: str = "Please provide a role ID to remove.", timeout: float = 30.0) -> None:
+    def __init__(self, *, title: str = "Remove manager roles.", timeout: float = 60.0) -> None:
         super().__init__(title=title, timeout=timeout)
     
     role_ids = discord.ui.TextInput(
         style=discord.TextStyle.long,
-        label="Remove Role ID's.",
+        label="Please provide a role ID to remove.",
         required=True,
         placeholder="Provide a role ID, Split them with `,` if you want to remove multiple roles.",
         max_length=500
@@ -266,11 +266,13 @@ class SosManager(discord.ui.View):
     )
     async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         # sourcery skip: low-code-quality
-        select.disabled = True
+        for x in self.children:
+            x.disabled = True
 
+        await self.message.edit(view=self)
+        
         if select.values[0] == "Add":
             addview = SosManagerAdd()
-            await self.message.edit(view=self)
             await interaction.response.send_modal(addview)
 
             await addview.wait()
@@ -311,7 +313,6 @@ class SosManager(discord.ui.View):
 
         if select.values[0] == "Remove":
             removeview = SosManagerRemove()
-            await self.message.edit(view=self)
             await interaction.response.send_modal(removeview)
 
             await removeview.wait()
