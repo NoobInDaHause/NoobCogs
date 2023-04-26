@@ -171,12 +171,12 @@ class Afk(commands.Cog):
     
     # https://github.com/phenom4n4n/phen-cogs/blob/8727d6ee74b40709c7eb9300713dc22b88a17915/roleutils/utils.py#L34
     async def is_allowed_by_hierarchy(
-        self, user: discord.Member, member: discord.Member
+        self, author: discord.Member, member: discord.Member
     ) -> bool:
         return (
-            user.guild.owner.id == user.id
-            or user.top_role > member.top_role
-            or await self.bot.is_owner(user)
+            author.guild.owner.id == author.id
+            or author.top_role > member.top_role
+            or await self.bot.is_owner(author)
         )
     
     @commands.command(name="afk", aliases=["away"])
