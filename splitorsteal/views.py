@@ -307,7 +307,7 @@ class SosManager(discord.ui.View):
 
             if failed_roles:
                 embed = discord.Embed(
-                    title="Some roles have failed to add.",
+                    title="Failed to add some roles.",
                     description=f"Most likely that the role does not exist or Typo or role is already a manager.",
                     colour=await self.context.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc)
@@ -351,7 +351,7 @@ class SosManager(discord.ui.View):
 
             if failed_roles:
                 embed = discord.Embed(
-                    title="Some roles have failed to remove.",
+                    title="Failed to remove some roles.",
                     description=f"Most likely that the role does not exist or Typo or role is not a manager.",
                     colour=await self.context.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc)
