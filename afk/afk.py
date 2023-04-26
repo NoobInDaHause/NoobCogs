@@ -213,14 +213,16 @@ class Afk(commands.Cog):
         Forcefully add or remove an AFK status on a user.
         """
         check = await self.is_allowed_by_hierarchy(ctx.author, member)
-        if member.bot:
+        if check:
+            pass
+        elif member.bot:
             return await ctx.send("I'm afraid you can not do that to bots.")
         elif member.id == ctx.guild.owner.id:
             return await ctx.send("I'm afraid you can not do that to the guild owner.")
-        elif not check:
-            return await ctx.send("I'm afraid you can not do that due to role hierarchy.")
         elif member.id == ctx.author.id:
             return await ctx.send(f"Why would you force AFK yourself? Please use `{ctx.prefix}afk`.")
+        else:
+            return await ctx.send("I'm afraid you can not do that due to role hierarchy.")
         
         if not reason:
             reason = "No reason given."
