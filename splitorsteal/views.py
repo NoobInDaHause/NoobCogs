@@ -6,7 +6,7 @@ import discord
 
 from discord.ext import commands
 
-from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core.utils.chat_formatting import humanize_list, box
 
 if TYPE_CHECKING:
     from discord import Message, InteractionMessage, WebhookMessage
@@ -312,7 +312,7 @@ class SosManager(discord.ui.View):
                     colour=await self.context.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc)
                 )
-                embed.add_field(name="Raw Input:", value=addview.role_ids.value, inline=False)
+                embed.add_field(name="Raw Input:", value=box(addview.role_ids.value, "py"), inline=False)
                 embed.add_field(name="Failed Roles:", value=humanize_list([f'<@&{role}>' for role in failed_roles]), inline=False)
                 await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -356,7 +356,7 @@ class SosManager(discord.ui.View):
                     colour=await self.context.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc)
                 )
-                embed.add_field(name="Raw Input:", value=removeview.role_ids.value, inline=False)
+                embed.add_field(name="Raw Input:", value=box(removeview.role_ids.value, "py"), inline=False)
                 embed.add_field(name="Failed Roles:", value=humanize_list([f'<@&{role}>' for role in failed_roles]), inline=False)
                 await interaction.followup.send(embed=embed, ephemeral=True)
             
