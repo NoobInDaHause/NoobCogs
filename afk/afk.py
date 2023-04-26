@@ -44,7 +44,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.24"
+    __version__ = "1.4.25"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -171,12 +171,12 @@ class Afk(commands.Cog):
     
     # https://github.com/phenom4n4n/phen-cogs/blob/8727d6ee74b40709c7eb9300713dc22b88a17915/roleutils/utils.py#L34
     async def is_allowed_by_hierarchy(
-        bot: Red, user: discord.Member, member: discord.Member
+        self, user: discord.Member, member: discord.Member
     ) -> bool:
         return (
             user.guild.owner.id == user.id
             or user.top_role > member.top_role
-            or await bot.is_owner(user)
+            or await self.bot.is_owner(user)
         )
     
     @commands.command(name="afk", aliases=["away"])
@@ -212,7 +212,7 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        check = await self.is_allowed_by_hierarchy(ctx.bot, ctx.author, member)
+        check = await self.is_allowed_by_hierarchy(ctx.author, member)
         if member.bot:
             return await ctx.send("I'm afraid you can not do that to bots.")
         elif member.id == ctx.guild.owner.id:
