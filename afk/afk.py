@@ -131,6 +131,15 @@ class Afk(commands.Cog):
         
         return await payload.channel.send(embed=embed, reference=payload, mention_author=False,  delete_after=da) if da != 0 else await payload.channel.send(embed=embed, reference=payload, mention_author=False)
 
+    async def is_allowed_by_hierarchy(
+        self, author: discord.Member, member: discord.Member
+    ) -> bool:
+        return (
+            author.guild.owner.id == author.id
+            or author.top_role > member.top_role
+            or await self.bot.is_owner(author)
+        )
+    
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, payload):
         if not payload.guild:
@@ -239,19 +248,19 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
-        if member.id == context.guild.owner.id:
-            return await context.send("I'm afraid you can not do that to the guild owner.")
-        elif member.id == context.author.id:
-            return await context.send(f"Why would you force AFK yourself? Please use `{context.prefix}afk`.")
-        elif member.bot:
-            return await context.send("I'm afraid you can not do that to bots.")
-        elif context.author.id == context.guild.owner.id:
+        check = await self.is_allowed_by_hierarchy(context.author, member)
+        if check:
             pass
-        elif member.top_role >= context.author.top_role:
-            return await context.send("I'm afraid you can not do that due to role hierarchy.")
+        elif not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True, mention_author=False)
+        elif member.bot:
+            return await context.reply(content="I'm afraid you can not do that to bots.", ephemeral=True, mention_author=False)
+        elif member.id == context.guild.owner.id:
+            return await context.reply(content="I'm afraid you can not do that to the guild owner.", ephemeral=True, mention_author=False)
+        elif member.id == context.author.id:
+            return await context.reply(content=f"Why would you force AFK yourself? Please use `{context.prefix}afk`.", ephemeral=True, mention_author=False)
+        elif not check:
+            return await context.reply(content="I'm afraid you can not do that due to role hierarchy.", ephemeral=True, mention_author=False)
 
         if await self.config.member(member).afk():
             await context.send(f"Forcefully removed **{member}**'s AFK status.")
