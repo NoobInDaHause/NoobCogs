@@ -44,7 +44,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.16"
+    __version__ = "1.4.17"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -212,7 +212,7 @@ class Afk(commands.Cog):
             return await ctx.send("I'm afraid you can not do that to bots.")
         elif ctx.author.id == ctx.guild.owner.id:
             pass
-        elif member.top_role >= ctx.author.top_role:
+        elif member.top_role > ctx.author.top_role:
             return await ctx.send("I'm afraid you can not do that due to role hierarchy.")
         
         if not reason:
