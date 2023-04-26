@@ -44,7 +44,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.22"
+    __version__ = "1.4.23"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -169,6 +169,16 @@ class Afk(commands.Cog):
             
             await self.log_and_notify(afk_user, payload, ping_log)
     
+    # https://github.com/phenom4n4n/phen-cogs/blob/8727d6ee74b40709c7eb9300713dc22b88a17915/roleutils/utils.py#L34
+    async def is_allowed_by_hierarchy(
+        bot: Red, user: discord.Member, member: discord.Member
+    ) -> bool:
+        return (
+            or user.guild.owner.id == user.id
+            or user.top_role > member.top_role
+            or await bot.is_owner(user)
+        )
+    
     @commands.command(name="afk", aliases=["away"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -202,13 +212,14 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        if member.id == ctx.guild.owner.id:
-            return await ctx.send("I'm afraid you can not do that to the guild owner.")
+        check = await self.is_allowed_by_hierarchy(ctx.bot, ctx.author, member)
         if member.bot:
             return await ctx.send("I'm afraid you can not do that to bots.")
-        if member.top_role > ctx.author.top_role:
+        elif member.id == ctx.guild.owner.id:
+            return await ctx.send("I'm afraid you can not do that to the guild owner.")
+        elif not check:
             return await ctx.send("I'm afraid you can not do that due to role hierarchy.")
-        if member.id == ctx.author.id:
+        elif member.id == ctx.author.id:
             return await ctx.send(f"Why would you force AFK yourself? Please use `{ctx.prefix}afk`.")
         
         if not reason:
