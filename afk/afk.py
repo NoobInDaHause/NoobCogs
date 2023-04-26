@@ -44,7 +44,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.21"
+    __version__ = "1.4.22"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -202,15 +202,13 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        if ctx.bot.is_owner(ctx.author):
-            pass
-        elif member.id == ctx.guild.owner.id:
+        if member.id == ctx.guild.owner.id:
             return await ctx.send("I'm afraid you can not do that to the guild owner.")
-        elif member.bot:
+        if member.bot:
             return await ctx.send("I'm afraid you can not do that to bots.")
-        elif member.top_role > ctx.author.top_role:
+        if member.top_role > ctx.author.top_role:
             return await ctx.send("I'm afraid you can not do that due to role hierarchy.")
-        elif member.id == ctx.author.id:
+        if member.id == ctx.author.id:
             return await ctx.send(f"Why would you force AFK yourself? Please use `{ctx.prefix}afk`.")
         
         if not reason:
