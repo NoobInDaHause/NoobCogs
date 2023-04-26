@@ -44,7 +44,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.4.23"
+    __version__ = "1.4.24"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -174,7 +174,7 @@ class Afk(commands.Cog):
         bot: Red, user: discord.Member, member: discord.Member
     ) -> bool:
         return (
-            or user.guild.owner.id == user.id
+            user.guild.owner.id == user.id
             or user.top_role > member.top_role
             or await bot.is_owner(user)
         )

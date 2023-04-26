@@ -20,7 +20,7 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| Afk             |  v1.4.23  | Notify users whenever you go AFK with pings logging.             |
+| Afk             |  v1.4.24  | Notify users whenever you go AFK with pings logging.             |
 | FirstToReact    |  v1.0.11  | Play a first to react wins game.                                 |
 | GlobalBan       |  v1.4.5   | Globally ban or unban a user from guilds the bot is in.          |
 | ManagerUtils    |  v2.2.9   | Some utility commands that are useful for managers from servers. |
