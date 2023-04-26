@@ -219,7 +219,7 @@ class SosManagerAdd(discord.ui.Modal):
         style=discord.TextStyle.long,
         label="Please provide a role ID to add.",
         required=True,
-        placeholder="Provide a role ID, Split them with `,` if you want to add multiple roles.",
+        placeholder="Split them with `,` (no spaces) if you want to add multiple roles.",
         max_length=500
     )
     
@@ -234,7 +234,7 @@ class SosManagerRemove(discord.ui.Modal):
         style=discord.TextStyle.long,
         label="Please provide a role ID to remove.",
         required=True,
-        placeholder="Provide a role ID, Split them with `,` if you want to remove multiple roles.",
+        placeholder="Split them with `,` (no spaces) if you want to remove multiple roles.",
         max_length=500
     )
     
