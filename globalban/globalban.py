@@ -16,7 +16,6 @@ class GlobalBan(commands.Cog):
     """
     Globally ban a user from all the guilds the bot is in.
     """
-    
     def __init__(self, bot: Red) -> None:
         self.bot = bot
 

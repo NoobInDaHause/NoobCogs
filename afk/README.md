@@ -72,9 +72,9 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Checks:` Any
  - `Description:` Reset the AFK cogs configuration.
 
-# [p]afkset showsetting
- - `Usage:` [p]afkset showsetting
- - `Aliases:` [p]afkset showsettings, [p]afkset showset, [p]afkset ss
+# [p]afkset showsettings
+ - `Usage:` [p]afkset showsettings
+ - `Aliases:` [p]afkset ss
  - `User permission(s):` None
  - `Bot permission(s):` None
  - `Checks:` guild_only

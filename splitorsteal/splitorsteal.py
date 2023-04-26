@@ -219,168 +219,8 @@ class SplitOrSteal(commands.Cog):
         
         return await context.channel.send(content=host.mention, embed=embed)
     
-    @commands.hybrid_group(name="splitorstealset", aliases=["sosset"])
-    @commands.guild_only()
-    @commands.bot_has_permissions(embed_links=True)
-    @commands.admin_or_permissions(administrator=True, manage_guild=True)
-    async def splitorstealset(self, context: commands.Context):
-        """
-        Settings for split or steal cog.
-        """
-        
-    @splitorstealset.command(name="resetcog")
-    @commands.is_owner()
-    async def splitorstealset_resetcog(self, context: commands.Context):
-        """
-        Reset the splitorsteal cogs configuration. (Bot owners only.)
-        """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
-        confirm_action = "Successfully cleared the splitorsteal cogs configuration."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send("This will reset the splitorsteal cogs whole configuration, do you want to continue?", view=view)
-        
-        await view.wait()
-        
-        if view.value == "yes":
-            await self.config.clear_all()
-            
-    @splitorstealset.command(name="clearactive")
-    @app_commands.guild_only()
-    @app_commands.describe(
-        channel="The channel that you want to reset."
-    )
-    async def splitorstealset_clearactive(self, context: commands.Context, channel: Optional[discord.TextChannel]):
-        """
-        Clear an active game on a channel.
-        
-        If you can not start a game on a channel even if there is no game running use this command.
-        """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
-        active = await self.config.guild(context.guild).activechan()
-        
-        if not channel:
-            channel = context.channel
-        
-        if channel.id not in active:
-            return await context.send("No active games found in that channel.")
-        
-        async with self.config.guild(context.guild).activechan() as achan:
-            index = achan.index(channel.id)
-            achan.pop(index)
-            
-        await context.send(f"Successfully removed the active game in {channel.mention}.")
-        
-    @splitorstealset.command(name="reset")
-    @app_commands.guild_only()
-    async def splitorstealset_reset(self, context: commands.Context):
-        """
-        Reset the guild settings to default.
-        """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
-        confirm_action = "Successfully resetted the SplitOrSteal guild settings."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send("Are you sure you want to reset the splitorsteal guild settings?", view=view)
-        
-        await view.wait()
-        
-        if view.value == "yes":
-            await self.config.guild(context.guild).clear()
-            
-    @splitorstealset.command(name="manageronly")
-    @app_commands.guild_only()
-    @app_commands.describe(
-        state="True or False"
-    )
-    async def splitorstealset_manageronly(self, context: commands.Context, state: bool):
-        """
-        Toggle whether to restrict the `[p]splitorsteal` command to the set manager roles.
-        """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
-        await self.config.guild(context.guild).manager_only.set(state)
-        status = "enabled" if state else "disabled"
-        await context.send(f"Manager only setting for splitorsteal has been {status}.")
-        
-    @splitorstealset.command(name="showsetting", aliases=["ss", "showset", "showsettings"])
-    @app_commands.guild_only()
-    async def splitorstealset_showsetting(self, context: commands.Context):
-        """
-        See the settings of SplitOrSteal.
-        """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
-        settings = await self.config.guild(context.guild).all()
-        
-        embed = discord.Embed(
-            title=f"Settings for {context.guild}",
-            colour=await context.embed_colour()
-        )
-        embed.add_field(name="Sos Manager roles:", value=humanize_list([f'<@&{role}>' for role in settings["sosmanager_ids"]]) or "None", inline=False)
-        embed.add_field(name="Sos manager only:", value=settings["manager_only"], inline=False)
-        
-        await context.send(embed=embed)
-        
-    @splitorstealset.command(name="manager", aliases=["managers"])
-    @app_commands.guild_only()
-    async def splitorstealset_manager(self, context: commands.Context):
-        """
-        Add or remove a manager role.
-        """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
-        embed = discord.Embed(
-            description="Choose whether to add or remove splitorsteal manager roles.",
-            colour=await context.embed_colour()
-        )
-        view = SosManager(bot=self.bot, context=context, author=context.author, config=self.config, timeout=30)
-        view.message = await context.send(embed=embed, view=view)
-        
-        await view.wait()
-        
-    @commands.hybrid_command(name="splitorstealhelp", aliases=["soshelp"])
-    async def splitorstealhelp(self, context: commands.Context):
-        """
-        Some useful information about split or steal.
-
-        Know how to play or what the rules of split or steal game is.
-        And know some of the commands.
-        """
-        await context.reply(content="SplitOrSteal help menu sent.", ephemeral=True, mention_author=False)
-        
-        em1 = discord.Embed(
-            title="***__What is Split or Steal__***",
-            description=SosHelp.em1desc,
-            colour=await context.embed_colour()
-        )
-        em1.set_footer(text=f"Command executed by: {context.author} | Page 1/3", icon_url=context.author.avatar.url)
-
-        em2 = discord.Embed(
-            title="***__Rules of Split or Seal__***",
-            description=SosHelp.em2desc,
-            colour=await context.embed_colour()
-        )
-        em2.set_footer(text=f"Command executed by: {context.author} | Page 2/3", icon_url=context.author.avatar.url)
-
-        em3 = discord.Embed(
-            title="***__How Split or Steal works__***",
-            description=SosHelp.em3desc.replace("[p]", f"{context.prefix}"),
-            colour=await context.embed_colour()
-        )
-        em3.set_footer(text=f"Command executed by: {context.author} | Page 3/3", icon_url=context.author.avatar.url)
-        pag = [em1, em2, em3]
-        pages = Paginator(bot=self.bot, author=context.author, pages=pag, timeout=60)
-        await pages.start(context)
-    
     @commands.hybrid_command(name="splitorsteal", aliases=["sos"])
+    @commands.bot_has_permissions(embed_links=True)
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @app_commands.guild_only()
@@ -424,3 +264,165 @@ class SplitOrSteal(commands.Cog):
             achan.append(context.channel.id)
         
         await self._start_sos(context=context, host=context.author, player_1=player_1, player_2=player_2, prize=prize)
+    
+    @commands.hybrid_command(name="splitorstealhelp", aliases=["soshelp"])
+    @commands.bot_has_permissions(embed_links=True)
+    async def splitorstealhelp(self, context: commands.Context):
+        """
+        Some useful information about split or steal.
+
+        Know how to play or what the rules of split or steal game is.
+        And know some of the commands.
+        """
+        await context.reply(content="SplitOrSteal help menu sent.", ephemeral=True, mention_author=False)
+        
+        em1 = discord.Embed(
+            title="***__What is Split or Steal__***",
+            description=SosHelp.em1desc,
+            colour=await context.embed_colour()
+        )
+        em1.set_footer(text=f"Command executed by: {context.author} | Page 1/3", icon_url=context.author.avatar.url)
+
+        em2 = discord.Embed(
+            title="***__Rules of Split or Seal__***",
+            description=SosHelp.em2desc,
+            colour=await context.embed_colour()
+        )
+        em2.set_footer(text=f"Command executed by: {context.author} | Page 2/3", icon_url=context.author.avatar.url)
+
+        em3 = discord.Embed(
+            title="***__How Split or Steal works__***",
+            description=SosHelp.em3desc.replace("[p]", f"{context.prefix}"),
+            colour=await context.embed_colour()
+        )
+        em3.set_footer(text=f"Command executed by: {context.author} | Page 3/3", icon_url=context.author.avatar.url)
+        pag = [em1, em2, em3]
+        pages = Paginator(bot=self.bot, author=context.author, pages=pag, timeout=60)
+        await pages.start(context)
+    
+    @commands.hybrid_group(name="splitorstealset", aliases=["sosset"])
+    @commands.guild_only()
+    @commands.bot_has_permissions(embed_links=True)
+    @commands.admin_or_permissions(administrator=True, manage_guild=True)
+    async def splitorstealset(self, context: commands.Context):
+        """
+        Settings for split or steal cog.
+        """
+        
+    @splitorstealset.command(name="clearactive", aliases=["ca"])
+    @app_commands.guild_only()
+    @app_commands.describe(
+        channel="The channel that you want to reset."
+    )
+    async def splitorstealset_clearactive(self, context: commands.Context, channel: Optional[discord.TextChannel]):
+        """
+        Clear an active game on a channel if bot thinks there is one in that.
+        
+        If you can not start a game on a channel even if there is no game running use this command.
+        """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+        
+        active = await self.config.guild(context.guild).activechan()
+        
+        if not channel:
+            channel = context.channel
+        
+        if channel.id not in active:
+            return await context.send("No active games found in that channel.")
+        
+        async with self.config.guild(context.guild).activechan() as achan:
+            index = achan.index(channel.id)
+            achan.pop(index)
+            
+        await context.send(f"Successfully removed the active game in {channel.mention}.")
+    
+    @splitorstealset.command(name="manager")
+    @app_commands.guild_only()
+    async def splitorstealset_manager(self, context: commands.Context):
+        """
+        Add or remove a manager role.
+        """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+        
+        embed = discord.Embed(
+            description="Choose whether to add or remove splitorsteal manager roles.",
+            colour=await context.embed_colour()
+        )
+        view = SosManager(bot=self.bot, context=context, author=context.author, config=self.config, timeout=30)
+        view.message = await context.send(embed=embed, view=view)
+        
+        await view.wait()
+    
+    @splitorstealset.command(name="manageronly", aliases=["mo"])
+    @app_commands.guild_only()
+    @app_commands.describe(
+        state="True or False"
+    )
+    async def splitorstealset_manageronly(self, context: commands.Context, state: bool):
+        """
+        Toggle whether to restrict the `[p]splitorsteal` command to the set manager roles.
+        """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+        
+        await self.config.guild(context.guild).manager_only.set(state)
+        status = "enabled" if state else "disabled"
+        await context.send(f"Manager only setting for splitorsteal has been {status}.")
+        
+    @splitorstealset.command(name="reset")
+    @app_commands.guild_only()
+    async def splitorstealset_reset(self, context: commands.Context):
+        """
+        Reset the guild settings to default.
+        """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+        
+        confirm_action = "Successfully resetted the SplitOrSteal guild settings."
+        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
+        view.message = await context.send("Are you sure you want to reset the splitorsteal guild settings?", view=view)
+        
+        await view.wait()
+        
+        if view.value == "yes":
+            await self.config.guild(context.guild).clear()
+        
+    @splitorstealset.command(name="resetcog")
+    @commands.is_owner()
+    async def splitorstealset_resetcog(self, context: commands.Context):
+        """
+        Reset the splitorsteal cogs configuration. (Bot owners only)
+        """
+        if not await context.bot.is_owner(context.author):
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+        
+        confirm_action = "Successfully cleared the splitorsteal cogs configuration."
+        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
+        view.message = await context.send("This will reset the splitorsteal cogs whole configuration, do you want to continue?", view=view)
+        
+        await view.wait()
+        
+        if view.value == "yes":
+            await self.config.clear_all()
+    
+    @splitorstealset.command(name="showsettings", aliases=["ss"])
+    @app_commands.guild_only()
+    async def splitorstealset_showsetting(self, context: commands.Context):
+        """
+        See the settings of SplitOrSteal.
+        """
+        if not context.author.guild_permissions.manage_guild:
+            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
+        
+        settings = await self.config.guild(context.guild).all()
+        
+        embed = discord.Embed(
+            title=f"Settings for {context.guild}",
+            colour=await context.embed_colour()
+        )
+        embed.add_field(name="Sos Manager roles:", value=humanize_list([f'<@&{role}>' for role in settings["sosmanager_ids"]]) or "None", inline=False)
+        embed.add_field(name="Sos manager only:", value=settings["manager_only"], inline=False)
+        
+        await context.send(embed=embed)

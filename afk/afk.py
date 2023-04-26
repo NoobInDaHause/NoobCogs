@@ -16,7 +16,6 @@ class Afk(commands.Cog):
     
     Be afk and notify users who ping you with a reason of your choice. This cog is inspired by sravan and Andy's afk cog.
     """
-    
     def __init__(self, bot: Red) -> None:
         self.bot = bot
         
@@ -318,7 +317,7 @@ class Afk(commands.Cog):
         if view.value == "yes":
             await self.config.clear_all()
     
-    @afkset.command(name="showsettings", aliases=["showsetting", "ss", "showset"])
+    @afkset.command(name="showsettings", aliases=["ss"])
     @app_commands.guild_only()
     async def afkset_showsettings(self, context: commands.Context):
         """

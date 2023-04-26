@@ -26,6 +26,10 @@ Some of the cogs are badly coded and buggy so handle these cogs with care.
 | GlobalBan       |  v1.0.0   | Globally ban a user from all the guilds the bot is in.           |
 | SplitOrSteal    |  v1.0.0   | A fun split or steal game.                                       |
 
+## License
+
+This repository is licensed under MIT LICENSE.
+
 ## Credits
 
 Special thanks to the authors of some of the codes that I got from, all credits goes to them.
