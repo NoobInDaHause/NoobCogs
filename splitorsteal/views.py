@@ -306,9 +306,10 @@ class SosManager(discord.ui.View):
             if failed_roles:
                 embed = discord.Embed(
                     title="Some roles have failed to add.",
-                    description=f"Most likely that the role doesn't exist or ValueError or role is already a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles]) or '`None`'}",
+                    description=f"Most likely that the role does not exist or Typo or role is already a manager.",
                     colour=await self.context.embed_colour()
                 )
+                embed.add_field(name="Failed Roles:", value=humanize_list([f'<@&{role}>' for role in failed_roles]), inline=False)
                 await interaction.followup.send(embed=embed, ephemeral=True)
 
         if select.values[0] == "Remove":
@@ -347,9 +348,10 @@ class SosManager(discord.ui.View):
             if failed_roles:
                 embed = discord.Embed(
                     title="Some roles have failed to remove.",
-                    description=f"Most likely that the role doesn't exist or ValueError or role is not a manager.\n**Failed Roles:**\n{humanize_list([f'<@&{role}>' for role in failed_roles]) or '`None`'}",
+                    description=f"Most likely that the role does not exist or Typo or role is not a manager.",
                     colour=await self.context.embed_colour()
                 )
+                embed.add_field(name="Failed Roles:", value=humanize_list([f'<@&{role}>' for role in failed_roles]), inline=False)
                 await interaction.followup.send(embed=embed, ephemeral=True)
             
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
