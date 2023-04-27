@@ -249,8 +249,8 @@ class Afk(commands.Cog):
                 await context.reply(content=f"Forcefully removed **{member}**'s AFK status.", ephemeral=True, mention_author=False)
                 return await self.end_afk(context, member)
 
-            await context.reply(content=f"Forcefully added **{member}**'s AFK status.", ephemeral=True, mention_author=False)
             await self.start_afk(context, member, reason)
+            return await context.reply(content=f"Forcefully added **{member}**'s AFK status.", ephemeral=True, mention_author=False)
         
         if member.bot:
             return await context.reply(content="I'm afraid you can not do that to bots.", ephemeral=True, mention_author=False)
@@ -262,11 +262,11 @@ class Afk(commands.Cog):
             return await context.reply(content="I'm afraid you can not do that due to role hierarchy.", ephemeral=True, mention_author=False)
 
         if await self.config.member(member).afk():
-            await context.send(f"Forcefully removed **{member}**'s AFK status.")
-            return await self.end_afk(context, member)
+            await self.end_afk(context, member)
+            return await context.send(f"Forcefully removed **{member}**'s AFK status.")
 
-        await context.send(f"Forcefully added **{member}**'s AFK status.")
         await self.start_afk(context, member, reason)
+        await context.send(f"Forcefully added **{member}**'s AFK status.")
     
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
