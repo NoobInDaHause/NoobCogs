@@ -2,11 +2,10 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, Config
+from redbot.core import app_commands, commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 
-from discord.ext import app_commands
 from typing import Literal, Optional
 
 from .views import Paginator, Confirmation
@@ -203,7 +202,6 @@ class Afk(commands.Cog):
     
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
-    @app_commands.checks.has_permissions(manage_guild=True, administrator=True)
     @app_commands.guild_only()
     @app_commands.describe(
         seconds="The amount of seconds before the notify embed gets deleted."
@@ -232,9 +230,12 @@ class Afk(commands.Cog):
         await self.config.guild(context.guild).delete_after.set(seconds)
         await context.send(f"Successfully set the delete after to {seconds} seconds.")
     
+    @afkset_deleteafter.error
+    async def on_afkset_deleteafter_error(interaction: discord.Interaction, error):
+        await interaction.response.send_message(content=self.access_denied(), ephemeral=True)
+    
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
-    @app_commands.checks.has_permissions(manage_guild=True, administrator=True)
     @app_commands.guild_only()
     @app_commands.describe(
         member="The member that you want to forcefully set or remove an AFK status to.",
@@ -273,7 +274,6 @@ class Afk(commands.Cog):
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
     @commands.bot_has_permissions(manage_nicknames=True)
-    @app_commands.checks.has_permissions(manage_guild=True, administrator=True)
     @app_commands.guild_only()
     @app_commands.describe(
         state="True or False."
