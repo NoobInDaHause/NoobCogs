@@ -62,8 +62,8 @@ class Afk(commands.Cog):
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
-    def inter_check(interaction: discord.Interaction) -> bool:
-        return interaction.user.guild_permissions.manage_guild
+    async def perm_check(self, context: commands.Context) -> bool:
+        return context.author.guild_permissions.manage_guild or await context.bot.is_owner(context.author)
     
     async def start_afk(self, context: commands.Context, author: discord.Member, reason: str):
         """
@@ -201,7 +201,7 @@ class Afk(commands.Cog):
         pass
     
     @afkset.command(name="deleteafter", aliases=["da"])
-    @commands.has_permissions(manage_guild=True, administrator=True)
+    @perm_check()
     @app_commands.guild_only()
     @app_commands.describe(
         seconds="The amount of seconds before the notify embed gets deleted."
@@ -228,7 +228,7 @@ class Afk(commands.Cog):
         await context.send(f"Successfully set the delete after to {seconds} seconds.")
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
-    @commands.has_permissions(manage_guild=True, administrator=True)
+    @perm_check()
     @app_commands.guild_only()
     @app_commands.describe(
         member="The member that you want to forcefully set or remove an AFK status to.",
@@ -269,7 +269,7 @@ class Afk(commands.Cog):
         await context.send(f"Forcefully added **{member}**'s AFK status.")
     
     @afkset.command(name="nick")
-    @commands.has_permissions(manage_guild=True, administrator=True)
+    @perm_check()
     @commands.bot_has_permissions(manage_nicknames=True)
     @app_commands.guild_only()
     @app_commands.describe(
