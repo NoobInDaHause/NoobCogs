@@ -155,7 +155,7 @@ class SplitOrSteal(commands.Cog):
         
         elif answer1 == "forfeit":
             field_value = f"{player_2.mention} has won the **{prize}** prize since {player_1.mention} has forfeited."
-            desc = f"Split or Steal game has ended.\n[Player 1] {player_1.mention} has forfeited!\n[Player 2] {player_2.mention} chose {answer2.title()}!"
+            desc = f"Split or Steal game has ended thanks for playing!\n[Player 1] {player_1.mention} has forfeited!\n[Player 2] {player_2.mention} chose {answer2.title()}!"
             embed = discord.Embed(
                 title="Game over",
                 colour=0x00FF00,
@@ -163,14 +163,14 @@ class SplitOrSteal(commands.Cog):
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
             embed.add_field(name="Result:", value=field_value, inline=False)
-            embed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar.url)
+            embed.set_footer(text=f"Hosted by: {host}", icon_url=host.avatar.url)
             embed.set_image(url=SosGifs.forfeitgif)
             
             return await context.channel.send(content=host.mention, embed=embed)
         
         elif answer2 == "forfeit":
             field_value = f"{player_1.mention} has won the **{prize}** prize since {player_2.mention} has forfeited."
-            desc = f"Split or Steal game has ended.\n[Player 1] {player_1.mention} chose {answer1.title()}!\n[Player 2] {player_2.mention} has forfeited!"
+            desc = f"Split or Steal game has ended thanks for playing!\n[Player 1] {player_1.mention} chose {answer1.title()}!\n[Player 2] {player_2.mention} has forfeited!"
             embed = discord.Embed(
                 title="Game over",
                 colour=0x00FF00,
@@ -178,7 +178,7 @@ class SplitOrSteal(commands.Cog):
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
             embed.add_field(name="Result:", value=field_value, inline=False)
-            embed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar.url)
+            embed.set_footer(text=f"Hosted by: {host}", icon_url=host.avatar.url)
             embed.set_image(url=SosGifs.forfeitgif)
             
             return await context.channel.send(content=host.mention, embed=embed)
@@ -204,7 +204,7 @@ class SplitOrSteal(commands.Cog):
         elif answer1 and answer2 == "steal":
             field_value = f"Both players chose Steal! Nobody has won the **{prize}** prize ❌!"
             colour = 0x2F3136
-            desc = f"Split or Steal game has ended.\n[Player 1] {player_1.mention} chose {answer1.title()}!\n[Player 2] {player_2.mention} chose {answer2.title()}!"
+            desc = f"Split or Steal game has ended thanks for playing!\n[Player 1] {player_1.mention} chose {answer1.title()}!\n[Player 2] {player_2.mention} chose {answer2.title()}!"
             image = SosGifs.losergif
             
         embed = discord.Embed(
@@ -214,7 +214,7 @@ class SplitOrSteal(commands.Cog):
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
         embed.add_field(name="Result:", value=field_value, inline=False)
-        embed.set_footer(text=f"Thanks for playing! | Hosted by: {host}", icon_url=host.avatar.url)
+        embed.set_footer(text=f"Hosted by: {host}", icon_url=host.avatar.url)
         embed.set_image(url=image)
         
         return await context.channel.send(content=host.mention, embed=embed)
