@@ -214,9 +214,6 @@ class Afk(commands.Cog):
         Put `0` to disable.
         Default is 10 seconds.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-        
         if not seconds:
             await self.config.guild(context.guild).delete_after.set(0)
             return await context.send("The delete after has been disabled.")
@@ -252,8 +249,6 @@ class Afk(commands.Cog):
             await self.start_afk(context, member, reason)
             return await context.reply(content=f"Forcefully added **{member}**'s AFK status.", ephemeral=True, mention_author=False)
         
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         if member.bot:
             return await context.reply(content="I'm afraid you can not do that to bots.", ephemeral=True, mention_author=False)
         if member.id == context.guild.owner.id:
@@ -287,9 +282,6 @@ class Afk(commands.Cog):
         
         This defaults to `True`.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-        
         await self.config.guild(context.guild).nick.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} edit the users nick whenever they go AFK.")
@@ -315,9 +307,6 @@ class Afk(commands.Cog):
         """
         Reset the AFK cogs configuration. (Bot owners only.)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-        
         confirm_action = "Successfully resetted the AFK cogs configuration."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
         view.message = await context.send("Are you sure you want to reset the AFK cogs whole configuration?", view=view)
@@ -379,3 +368,25 @@ class Afk(commands.Cog):
         await self.config.member(context.author).toggle_logs.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} log all the pings you recieved.")
+
+    # ------------------------------------------
+
+    @afkset_resetcog.error
+    async def afkset_resetcog_error(self, context: commands.Context, error):
+        if context.prefix == "/":
+            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+
+    @afkset_deleteafter.error
+    async def afkset_deleteafter_error(self, context: commands.Context, error):
+        if context.prefix == "/":
+            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+
+    @afkset_nick.error
+    async def afkset_nick_error(self, context: commands.Context, error):
+        if context.prefix == "/":
+            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+
+    @afkset_forceafk.error
+    async def afkset_forceafk_error(self, context: commands.Context, error):
+        if context.prefix == "/":
+            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
