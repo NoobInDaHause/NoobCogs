@@ -131,6 +131,7 @@ class Afk(commands.Cog):
         
         return await payload.channel.send(embed=embed, reference=payload, mention_author=False,  delete_after=da) if da != 0 else await payload.channel.send(embed=embed, reference=payload, mention_author=False)
 
+    # https://github.com/phenom4n4n/phen-cogs/blob/8727d6ee74b40709c7eb9300713dc22b88a17915/roleutils/utils.py#L34
     async def is_allowed_by_hierarchy(
         self, author: discord.Member, member: discord.Member
     ) -> bool:
