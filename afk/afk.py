@@ -133,16 +133,6 @@ class Afk(commands.Cog):
         da = await self.config.guild(payload.guild).delete_after()
         
         return await payload.channel.send(embed=embed, reference=payload, mention_author=False,  delete_after=da) if da != 0 else await payload.channel.send(embed=embed, reference=payload, mention_author=False)
-
-    # https://github.com/phenom4n4n/phen-cogs/blob/8727d6ee74b40709c7eb9300713dc22b88a17915/roleutils/utils.py#L34
-    async def is_allowed_by_hierarchy(
-        self, author: discord.Member, member: discord.Member
-    ) -> bool:
-        return (
-            author.guild.owner.id == author.id
-            or author.top_role > member.top_role
-            or await self.bot.is_owner(author)
-        )
     
     @commands.Cog.listener("on_message_without_command")
     async def on_message_without_command(self, payload):
@@ -252,18 +242,17 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        check = await self.is_allowed_by_hierarchy(context.author, member)
-        if check:
+        if await context.bot.is_owner(context.author):
             pass
         elif not context.author.guild_permissions.manage_guild:
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_authpr=False)
         elif member.bot:
             return await context.reply(content="I'm afraid you can not do that to bots.", ephemeral=True, mention_author=False)
         elif member.id == context.guild.owner.id:
             return await context.reply(content="I'm afraid you can not do that to the guild owner.", ephemeral=True, mention_author=False)
         elif member.id == context.author.id:
             return await context.reply(content=f"Why would you force AFK yourself? Please use `{context.prefix}afk`.", ephemeral=True, mention_author=False)
-        elif not check:
+        elif member.top_role > context.author.top_role:
             return await context.reply(content="I'm afraid you can not do that due to role hierarchy.", ephemeral=True, mention_author=False)
 
         if await self.config.member(member).afk():
@@ -290,8 +279,8 @@ class Afk(commands.Cog):
         
         This defaults to `True`.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content=self.access_denied(), ephemeral=True)
+        if await context.bot.is_owner(context.author) or not context.author.guild_permissions.manage_guild:
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_authpr=False)
 
         await self.config.guild(context.guild).nick.set(state)
         status = "will now" if state else "will not"
@@ -318,7 +307,7 @@ class Afk(commands.Cog):
         """
         Reset the AFK cogs configuration. (Bot owners only.)
         """
-        if not context.bot.is_owner(context.author):
+        if not await context.bot.is_owner(context.author):
             return await context.reply(content=self.access_denied(), ephemeral=True)
         
         confirm_action = "Successfully resetted the AFK cogs configuration."
