@@ -201,7 +201,7 @@ class Afk(commands.Cog):
         pass
     
     @afkset.command(name="deleteafter", aliases=["da"])
-    @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @commands.has_permissions(manage_guild=True, administrator=True)
     @app_commands.guild_only()
     @app_commands.describe(
         seconds="The amount of seconds before the notify embed gets deleted."
@@ -228,7 +228,7 @@ class Afk(commands.Cog):
         await context.send(f"Successfully set the delete after to {seconds} seconds.")
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
-    @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @commands.has_permissions(manage_guild=True, administrator=True)
     @app_commands.guild_only()
     @app_commands.describe(
         member="The member that you want to forcefully set or remove an AFK status to.",
@@ -269,7 +269,7 @@ class Afk(commands.Cog):
         await context.send(f"Forcefully added **{member}**'s AFK status.")
     
     @afkset.command(name="nick")
-    @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @commands.has_permissions(manage_guild=True, administrator=True)
     @commands.bot_has_permissions(manage_nicknames=True)
     @app_commands.guild_only()
     @app_commands.describe(
