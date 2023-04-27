@@ -59,7 +59,7 @@ class Afk(commands.Cog):
         for guild in self.bot.guilds:
             await self.config.member_from_id(guild.id, user_id).clear()
     
-    async def access_denied(self):
+    def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
     async def start_afk(self, context: commands.Context, author: discord.Member, reason: str):
@@ -223,7 +223,7 @@ class Afk(commands.Cog):
         Default is 10 seconds.
         """
         if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content=await self.access_denied(), ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
 
         if not seconds:
             await self.config.guild(context.guild).delete_after.set(0)
@@ -256,7 +256,7 @@ class Afk(commands.Cog):
         if check:
             pass
         elif not context.author.guild_permissions.manage_guild:
-            return await context.reply(content=await self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         elif member.bot:
             return await context.reply(content="I'm afraid you can not do that to bots.", ephemeral=True, mention_author=False)
         elif member.id == context.guild.owner.id:
@@ -291,7 +291,7 @@ class Afk(commands.Cog):
         This defaults to `True`.
         """
         if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content=await self.access_denied(), ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
 
         await self.config.guild(context.guild).nick.set(state)
         status = "will now" if state else "will not"
@@ -319,7 +319,7 @@ class Afk(commands.Cog):
         Reset the AFK cogs configuration. (Bot owners only.)
         """
         if not context.bot.is_owner(context.author):
-            return await context.reply(content=await self.access_denied(), ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
         
         confirm_action = "Successfully resetted the AFK cogs configuration."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
