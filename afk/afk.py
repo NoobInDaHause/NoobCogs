@@ -202,7 +202,7 @@ class Afk(commands.Cog):
     
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
-    @app_commands.has_permissions(manage_guild=True, administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True, administrator=True)
     @app_commands.guild_only()
     @app_commands.describe(
         seconds="The amount of seconds before the notify embed gets deleted."
@@ -233,7 +233,7 @@ class Afk(commands.Cog):
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
-    @app_commands.has_permissions(manage_guild=True, administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True, administrator=True)
     @app_commands.guild_only()
     @app_commands.describe(
         member="The member that you want to forcefully set or remove an AFK status to.",
@@ -272,7 +272,7 @@ class Afk(commands.Cog):
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
     @commands.bot_has_permissions(manage_nicknames=True)
-    @app_commands.has_permissions(manage_guild=True, administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True, administrator=True)
     @app_commands.guild_only()
     @app_commands.describe(
         state="True or False."
