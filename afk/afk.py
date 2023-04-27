@@ -60,7 +60,7 @@ class Afk(commands.Cog):
             await self.config.member_from_id(guild.id, user_id).clear()
     
     def access_denied(self):
-        return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
+        return "||https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4||"
     
     def perm_check():
         async def predicate(context: commands.Context):
@@ -263,9 +263,9 @@ class Afk(commands.Cog):
             return await context.reply(content="I'm afraid you can not do that to bots.", ephemeral=True, mention_author=False)
         if member.id == context.guild.owner.id:
             return await context.reply(content="I'm afraid you can not do that to the guild owner.", ephemeral=True, mention_author=False)
-        elif member.id == context.author.id:
+        if member.id == context.author.id:
             return await context.reply(content=f"Why would you force AFK yourself? Please use `{context.prefix}afk`.", ephemeral=True, mention_author=False)
-        elif member.top_role > context.author.top_role:
+        if member.top_role > context.author.top_role:
             return await context.reply(content="I'm afraid you can not do that due to role hierarchy.", ephemeral=True, mention_author=False)
 
         if await self.config.member(member).afk():
@@ -379,7 +379,7 @@ class Afk(commands.Cog):
         status = "will now" if state else "will not"
         await context.send(f"I {status} log all the pings you recieved.")
 
-    # <----- App command errors ----->
+    # <----- App command permission errors ----->
 
     @afkset_deleteafter.error
     async def afkset_deleteafter_error(self, context: commands.Context, error):
