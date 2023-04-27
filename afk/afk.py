@@ -62,6 +62,9 @@ class Afk(commands.Cog):
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
+    def inter_check(interaction: discord.Interaction) -> bool:
+        return interaction.user.guild_permissions.manage_guild
+    
     async def start_afk(self, context: commands.Context, author: discord.Member, reason: str):
         """
         Start AFK status.
@@ -198,6 +201,7 @@ class Afk(commands.Cog):
     
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.admin_or_permissions(manage_guild=True, administrator=True)
+    @app_commands.check(inter_check)
     @app_commands.describe(
         seconds="The amount of seconds before the notify embed gets deleted."
     )
