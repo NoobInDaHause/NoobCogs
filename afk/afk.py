@@ -265,7 +265,7 @@ class Afk(commands.Cog):
             return await context.reply(content="I'm afraid you can not do that to the guild owner.", ephemeral=True, mention_author=False)
         if member.id == context.author.id:
             return await context.reply(content=f"Why would you force AFK yourself? Please use `{context.prefix}afk`.", ephemeral=True, mention_author=False)
-        if member.top_role > context.author.top_role:
+        if member.top_role >= context.author.top_role:
             return await context.reply(content="I'm afraid you can not do that due to role hierarchy.", ephemeral=True, mention_author=False)
 
         if await self.config.member(member).afk():
