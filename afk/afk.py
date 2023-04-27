@@ -376,21 +376,17 @@ class Afk(commands.Cog):
     # <----- App command permission errors ----->
 
     @afkset_deleteafter.error
-    async def afkset_deleteafter_error(self, context: commands.Context, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.AppCommandError):
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+    async def afkset_deleteafter_error(self, context: commands.Context, error):
+        await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
     
     @afkset_resetcog.error
-    async def afkset_resetcog_error(self, context: commands.Context, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.AppCommandError):
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+    async def afkset_resetcog_error(self, context: commands.Context, error):
+        await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
     @afkset_nick.error
-    async def afkset_nick_error(self, context: commands.Context, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.AppCommandError):
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+    async def afkset_nick_error(self, context: commands.Context, error):
+        await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
     @afkset_forceafk.error
-    async def afkset_forceafk_error(self, context: commands.Context, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.AppCommandError):
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+    async def afkset_forceafk_error(self, context: commands.Context, error):
+        await context.reply(content=f"{self.access_denied()}, {error}", ephemeral=True, mention_author=False)
