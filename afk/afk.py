@@ -2,10 +2,11 @@ import datetime
 import discord
 import logging
 
-from redbot.core import app_commands, commands, Config
+from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 
+from discord import app_commands
 from typing import Literal, Optional
 
 from .views import Paginator, Confirmation
@@ -61,16 +62,6 @@ class Afk(commands.Cog):
     
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
-    
-    def perm_check():
-        async def predicate(context: commands.Context):
-            if not context.guild:
-                return False
-            elif await context.bot.is_owner(context.author):
-                return True
-            elif context.author.guild_permissions.manage_guild:
-                return True
-        return commands.check(predicate)
     
     async def start_afk(self, context: commands.Context, author: discord.Member, reason: str):
         """
@@ -208,7 +199,8 @@ class Afk(commands.Cog):
         pass
     
     @afkset.command(name="deleteafter", aliases=["da"])
-    @perm_check()
+    @commands.has_permissions(manage_guild=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     @app_commands.guild_only()
     @app_commands.describe(
         seconds="The amount of seconds before the notify embed gets deleted."
@@ -235,7 +227,8 @@ class Afk(commands.Cog):
         await context.send(f"Successfully set the delete after to {seconds} seconds.")
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
-    @perm_check()
+    @commands.has_permissions(manage_guild=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     @app_commands.guild_only()
     @app_commands.describe(
         member="The member that you want to forcefully set or remove an AFK status to.",
@@ -276,7 +269,8 @@ class Afk(commands.Cog):
         await context.send(f"Forcefully added **{member}**'s AFK status.")
     
     @afkset.command(name="nick")
-    @perm_check()
+    @commands.has_permissions(manage_guild=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_nicknames=True)
     @app_commands.guild_only()
     @app_commands.describe(
