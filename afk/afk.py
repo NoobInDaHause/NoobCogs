@@ -60,7 +60,7 @@ class Afk(commands.Cog):
             await self.config.member_from_id(guild.id, user_id).clear()
     
     def access_denied(self):
-        return "||https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4||"
+        return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
     def perm_check():
         async def predicate(context: commands.Context):
