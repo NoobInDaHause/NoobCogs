@@ -2,10 +2,11 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, app_commands, Config
+from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 
+from discord.ext import app_commands
 from typing import Literal, Optional
 
 from .views import Paginator, Confirmation
