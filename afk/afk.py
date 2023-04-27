@@ -231,7 +231,7 @@ class Afk(commands.Cog):
         await context.send(f"Successfully set the delete after to {seconds} seconds.")
     
     @afkset_deleteafter.error
-    async def on_afkset_deleteafter_error(interaction: discord.Interaction, error):
+    async def on_afkset_deleteafter_error(interaction: discord.Interaction):
         await interaction.response.send_message(content=self.access_denied(), ephemeral=True)
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
