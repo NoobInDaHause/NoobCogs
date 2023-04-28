@@ -52,7 +52,7 @@ class RainbowRole(commands.Cog):
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
-    async def cog_load(self):
+    def cog_load(self):
         self.log.info("Rainbowrole task started!")
     
     async def cog_unload(self):
