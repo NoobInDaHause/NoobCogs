@@ -71,9 +71,9 @@ class RainbowRole(commands.Cog):
             try:
                 rainbowrole = guild.get_role(settings["role"])
                 await rainbowrole.edit(colour=discord.Colour.random(), reason="Rainbow Role.")
-            except Exception as e:
-                self.log.exception(f"Exception has occured in {guild}: {e}", exc_info=e)
-    
+            except Exception:
+                continue
+
     @change_rainbowrole_color.before_loop
     async def change_rainbowrole_color_before_loop(self):
         await self.bot.wait_until_red_ready()
