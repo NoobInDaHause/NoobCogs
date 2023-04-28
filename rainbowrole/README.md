@@ -34,7 +34,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Description:` Reset the RainbowRole cogs whole config. (Bot owners only)
 
 # [p]rainbowroleset role
- - `Usage:` [p]rainbowroleset role
+ - `Usage:` [p]rainbowroleset role <role>
  - `Aliases:` None
  - `User permission(s):` Administrator
  - `Bot permission(s):` manage_roles
@@ -42,7 +42,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Description:` Set the guilds rainbow role.
 
 # [p]rainbowroleset status
- - `Usage:` [p]rainbowroleset status
+ - `Usage:` [p]rainbowroleset status <state>
  - `Aliases:` None
  - `User permission(s):` Administrator
  - `Bot permission(s):` None
