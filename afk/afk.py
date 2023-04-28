@@ -86,7 +86,7 @@ class Afk(commands.Cog):
         await self.config.member(payload.author).afk.set(False)
         await self.config.member(payload.author).reason.clear()
 
-        if await self.config.guild(context.guild).nick():
+        if await self.config.guild(payload.guild).nick():
             try:
                 await payload.author.edit(nick=f"{payload.author.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
             except discord.errors.Forbidden:
@@ -95,29 +95,28 @@ class Afk(commands.Cog):
                 else:
                     await payload.channel.send(content="Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10, ephemeral=True)
 
-        if not await self.config.member(payload.author).toggle_logs():
+        pings = await self.config.member(payload.author).pinglogs()
+        
+        if not pings:
             return await self.config.member(payload.author).pinglogs.clear()
 
-        pings = await self.config.member(payload.author).pinglogs()
+        pinglist = """\n""".join(pings)
+        pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
+        final_page = {}
 
-        if pings:
-            pinglist = """\n""".join(pings)
-            pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
-            final_page = {}
+        for ind, page in enumerate(pages, 1):
+            embed = discord.Embed(
+                title=f"You have recieved some pings while you were AFK, {payload.author.name}.",
+                description=page,
+                color=discord.Colour.random()
+            )
+            embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=payload.author.avatar.url)
+            final_page[ind - 1] = embed
 
-            for ind, page in enumerate(pages, 1):
-                embed = discord.Embed(
-                    title=f"You have recieved some pings while you were AFK, {payload.author.name}.",
-                    description=page,
-                    color=discord.Colour.random()
-                )
-                embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=payload.author.avatar.url)
-                final_page[ind - 1] = embed
-
-            pages = Paginator(bot=self.bot, author=payload.author, pages=list(final_page.values()), timeout=60)
-            context = await self.bot.get_context(payload)
-            await pages.start(context)
-            await self.config.member(payload.author).pinglogs.clear()
+        pages = Paginator(bot=self.bot, author=payload.author, pages=list(final_page.values()), timeout=60)
+        context = await self.bot.get_context(payload)
+        await pages.start(context)
+        await self.config.member(payload.author).pinglogs.clear()
     
     async def log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
         """
