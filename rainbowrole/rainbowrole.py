@@ -53,10 +53,10 @@ class RainbowRole(commands.Cog):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
     def cog_load(self):
-        self.log.info("Rainbowrole task started!")
+        self.log.info("Cog loaded: Rainbowrole task started!")
     
     async def cog_unload(self):
-        self.log.info("Rainbowrole task cancelled.")
+        self.log.info("Cog unloaded: Rainbowrole task cancelled.")
         await self.bot.loop.create_task(self.change_rainbowrole_color.cancel())
     
     @tasks.loop(minutes=10)
