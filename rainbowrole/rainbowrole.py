@@ -19,6 +19,7 @@ class RainbowRole(commands.Cog):
     May or may not be API intense but the cog is cool.
     Due to API rate limits you can only have 1 rainbowrole pre guild.
     The role color changes every 10 minutes or so depending on how many guilds the bot is in.
+    [Click here](https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/rainbowrole/README.md) to see all of the available commands for RainbowRole.
     """
     def __init__(self, bot: Red):
         self.bot = bot

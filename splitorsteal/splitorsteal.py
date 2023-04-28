@@ -18,6 +18,7 @@ class SplitOrSteal(commands.Cog):
     A fun split or steal game.
 
     A very fun game to play on an event. This game can shatter friendships!
+    [Click here](https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/splitorsteal/README.md) to see all the available commands for SplitOrSteal.
     """
     def __init__(self, bot: Red) -> None:
         self.bot = bot

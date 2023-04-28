@@ -15,6 +15,8 @@ from .views import Confirmation, Paginator, GbanViewReset
 class GlobalBan(commands.Cog):
     """
     Globally ban a user from all the guilds the bot is in.
+
+    [Click here](https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md) to see all the available commands for GlobalBan.
     """
     def __init__(self, bot: Red) -> None:
         self.bot = bot

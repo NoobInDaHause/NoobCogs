@@ -15,6 +15,7 @@ class Afk(commands.Cog):
     Notify users whenever you go AFK with pings logging.
     
     Be afk and notify users who ping you with a reason of your choice. This cog is inspired by sravan and Andy's afk cog.
+    [Click here](https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md) to see all the commands available for Afk.
     """
     def __init__(self, bot: Red) -> None:
         self.bot = bot
