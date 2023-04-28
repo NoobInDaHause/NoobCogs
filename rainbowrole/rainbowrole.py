@@ -160,7 +160,7 @@ class RainbowRole(commands.Cog):
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
-        embed.add_field(name="Role:", value=f"<@&{settings['role']}>", inline=True)
+        embed.add_field(name="Role:", value=f"<@&{settings['role']}>" if settings['role'] else "None", inline=True)
         embed.add_field(name="Status:", value=settings['status'], inline=True)
         await context.send(embed=embed)
         
