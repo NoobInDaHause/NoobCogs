@@ -137,6 +137,7 @@ class RainbowRole(commands.Cog):
         
     @rainbowroleset.command(name="status")
     @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
     @app_commands.guild_only()
     @app_commands.describe(
@@ -166,6 +167,10 @@ class RainbowRole(commands.Cog):
         )
         embed.add_field(name="Role:", value=f"<@&{settings['role']}>" if settings['role'] else "None", inline=True)
         embed.add_field(name="Status:", value=settings['status'], inline=True)
+        if not context.guild.me.guild_permissions.manage_roles:
+            embed.add_field(
+                name="⚠️ Warning", value="I do not have `manage_roles` permission! RainbowRole will not work.", inline=False
+            )
         await context.send(embed=embed)
         
     # ---------------------------------------------------------------------------
