@@ -96,11 +96,10 @@ class Afk(commands.Cog):
                 else:
                     await payload.channel.send(content="Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10, ephemeral=True)
 
-        pings = await self.config.member(user).pinglogs()
-        
-        if not pings:
+        if not await self.config.member(user).toggle_logs():
             return await self.config.member(user).pinglogs.clear()
 
+        pings = await self.config.member(user).pinglogs()
         pinglist = """\n""".join(pings)
         pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
         final_page = {}
