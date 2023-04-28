@@ -1,6 +1,6 @@
 {
     "name": "RainbowRole",
-    "short": "Have a role that changes colour every 5 minutes.",
+    "short": "Have a role that changes colour every 10 minutes.",
     "description": "May or may not be API intense but the cog is cool.",
     "end_user_data_statement": "This cog does not store any end user data whatsoever.",
     "install_msg": "Thank you for installing RainbowRole. Load the cog with `[p]load RainbowRole`. This cog can be API intense sometimes depending on how many guilds the bot is in.",

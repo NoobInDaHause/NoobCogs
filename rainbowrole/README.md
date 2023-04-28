@@ -1,6 +1,6 @@
 # Welcome to the RainbowRole Cogs help README.
 
-Have a role that changes colour every 5 minutes.
+Have a role that changes colour every 10 minutes.
 
 ## [Hybrid Group]
 Below are Hybrid Group Commands can be run with legacy prefix commands or slash commands.

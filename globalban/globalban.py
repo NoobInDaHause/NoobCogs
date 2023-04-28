@@ -4,11 +4,11 @@ import datetime
 import discord
 import logging
 
-from typing import Literal, Optional
-
 from redbot.core import modlog, commands, app_commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
+
+from typing import Literal, Optional
 
 from .views import Confirmation, Paginator, GbanViewReset
 
@@ -42,9 +42,12 @@ class GlobalBan(commands.Cog):
         self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever. But it stores user ID's for the ban list! Also thanks sravan!
-        super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return
     
-    async def initialize(self):
+    def access_denied(self):
+        return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
+    
+    async def cog_load(self):
         await self.register_casetypes()
 
     @staticmethod
@@ -213,26 +216,26 @@ class GlobalBan(commands.Cog):
         Globally ban a user. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
         
         try:
             user_id = int(user_id)
         except ValueError:
-            return await context.reply("Please input a valid user ID.", ephemeral=True, mention_author=False)
+            return await context.reply(content="Please input a valid user ID.", ephemeral=True, mention_author=False)
         
         try:
             member = await context.bot.fetch_user(user_id)
         except discord.errors.NotFound:
-            return await context.reply("It appears that ID is not a valid user ID.", ephemeral=True, mention_author=False)
+            return await context.reply(content="It appears that ID is not a valid user ID.", ephemeral=True, mention_author=False)
 
         if user_id in await self.config.banlist():
-            return await context.reply(f"It appears **{member}** is already globally banned.", ephemeral=True, mention_author=False)
+            return await context.reply(content=f"It appears **{member}** is already globally banned.", ephemeral=True, mention_author=False)
         if user_id == context.author.id:
-            return await context.reply("I can not let you globally ban yourself.", ephemeral=True, mention_author=False)
+            return await context.reply(content="I can not let you globally ban yourself.", ephemeral=True, mention_author=False)
         if await context.bot.is_owner(member):
-            return await context.reply("You can not globally ban other bot owners.", ephemeral=True, mention_author=False)
+            return await context.reply(content="You can not globally ban other bot owners.", ephemeral=True, mention_author=False)
         if user_id == context.bot.user.id:
-            return await context.reply("You can not globally ban me... Dumb. >:C", ephemeral=True, mention_author=False)
+            return await context.reply(content="You can not globally ban me... Dumb. >:C", ephemeral=True, mention_author=False)
         
         confirm_action = "Alright this might take a while."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
@@ -252,7 +255,7 @@ class GlobalBan(commands.Cog):
         Toggle whether to make a modlog case when you globally ban or unban a user. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
         
         await self.config.create_modlog.set(state)
         status = "will now" if state else "will not"
@@ -264,7 +267,7 @@ class GlobalBan(commands.Cog):
         Show the globalban ban list. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
         
         bans = await self.config.banlist()
         
@@ -303,7 +306,7 @@ class GlobalBan(commands.Cog):
         Show the globalban logs. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
         
         logs = await self.config.banlogs()
         
@@ -333,7 +336,7 @@ class GlobalBan(commands.Cog):
         Reset any of the globalban config. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
         
         view = GbanViewReset(bot=self.bot, author=context.author, config=self.config, timeout=30)
         view.message = await context.send(content="Choose what config to reset.", view=view)
@@ -356,20 +359,20 @@ class GlobalBan(commands.Cog):
         Globally unban a user. (Bot owners only)
         """
         if not await context.bot.is_owner(context.author):
-            return await context.reply("You do not have permission to run this command.", ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
         
         try:
             user_id = int(user_id)
         except ValueError:
-            return await context.send("Please input a valid user ID.")
+            return await context.reply(content="Please input a valid user ID.", ephemeral=True, mention_author=False)
         
         try:
             member = await context.bot.fetch_user(user_id)
         except discord.errors.NotFound:
-            return await context.send("It appears that is not a valid user ID.")
+            return await context.reply(content="It appears that is not a valid user ID.", ephemeral=True, mention_author=False)
 
         if user_id not in await self.config.banlist():
-            return await context.send(f"It appears **{member}** is not globally banned.")
+            return await context.reply(content=f"It appears **{member}** is not globally banned.", ephemeral=True, mention_author=False)
             
         confirm_action = "Alright this might take a while."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)

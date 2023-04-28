@@ -14,11 +14,11 @@ from .views import Confirmation
 
 class RainbowRole(commands.Cog):
     """
-    Have a role that changes colour every 5 minutes.
+    Have a role that changes colour every 10 minutes.
     
     May or may not be API intense but the cog is cool.
     Due to API rate limits you can only have 1 rainbowrole pre guild.
-    The role color changes every 5 minutes or so depending on how many guilds the bot is in.
+    The role color changes every 10 minutes or so depending on how many guilds the bot is in.
     """
     def __init__(self, bot: Red):
         self.bot = bot
@@ -46,7 +46,7 @@ class RainbowRole(commands.Cog):
         self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever.
-        super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return
         
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
@@ -55,21 +55,20 @@ class RainbowRole(commands.Cog):
         s = self.change_rainbowrole_color.stop()
         self.bot.loop.create_task(s)
     
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=10)
     async def change_rainbowrole_color(self):
         for guild in self.bot.guilds:
-            await asyncio.sleep(10)
+            await asyncio.sleep(5)
             settings = await self.config.guild(guild).all()
             if not settings["status"]:
                 continue
             if not settings["role"]:
                 continue
-            rainbowrole = guild.get_role(settings["role"])
             try:
+                rainbowrole = guild.get_role(settings["role"])
                 await rainbowrole.edit(colour=discord.Colour.random(), reason="Rainbow Role.")
             except Exception as e:
                 self.log.exception(f"Exception has occured: {e}", exc_info=e)
-                continue
     
     @change_rainbowrole_color.before_loop
     async def change_rainbowrole_color_before_loop(self):
