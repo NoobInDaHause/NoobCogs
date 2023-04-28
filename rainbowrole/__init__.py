@@ -7,4 +7,5 @@ from .rainbowrole import RainbowRole
 
 async def setup(bot: Red):
     cog = RainbowRole(bot)
+    cog.cog_load()
     await bot.add_cog(cog)
