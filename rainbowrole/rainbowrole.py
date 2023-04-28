@@ -57,8 +57,7 @@ class RainbowRole(commands.Cog):
     
     async def cog_unload(self):
         self.log.info("Rainbowrole task cancelled.")
-        s = self.change_rainbowrole_color.cancel()
-        await self.bot.loop.create_task(s)
+        await self.bot.loop.create_task(self.change_rainbowrole_color.cancel())
     
     @tasks.loop(minutes=10)
     async def change_rainbowrole_color(self):
