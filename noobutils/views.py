@@ -264,7 +264,7 @@ class Calculator(discord.ui.View):
         for x in self.children:
             x.disabled = True
         self.stop()
-        await interaction.edit_original_response(view=self)
+        await interaction.response.edit_message(view=self)
         
     @discord.ui.button(label="4", style=discord.ButtonStyle.grey)
     async def four(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -306,7 +306,7 @@ class Calculator(discord.ui.View):
             return await interaction.followup.send(content="You can not erase a number anymore, please add more.", ephemeral=True)
         self.value_list.pop()
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py")if merged else "0")
+        await interaction.edit_original_response(content=box(merged, "py")if merged else box("0", "py"))
         
     @discord.ui.button(label="7", style=discord.ButtonStyle.grey)
     async def seven(self, interaction: discord.Interaction, button: discord.ui.Button):
