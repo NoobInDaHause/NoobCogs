@@ -43,10 +43,10 @@ class SplitOrSteal(commands.Cog):
         return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{plural}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
-        self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
+        self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever. Also thanks sravan!
-        super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return
     
     async def _start_sos(
         self,
@@ -140,7 +140,7 @@ class SplitOrSteal(commands.Cog):
         prize,
         answer1,
         answer2
-    ):
+    ):  # sourcery skip: low-code-quality
         """
         End the split or steal game.
         """
@@ -250,9 +250,10 @@ class SplitOrSteal(commands.Cog):
                 pass
             elif await mod.is_mod_or_superior(context.bot, context.author):
                 pass
-            elif any(role.id in settings["sosmanager_ids"] for role in context.author.roles):
-                pass
-            else:
+            elif all(
+                role.id not in settings["sosmanager_ids"]
+                for role in context.author.roles
+            ):
                 return await context.reply("You do not have permission to use this command since an admin turned on Manager Only setting.", ephemeral=True, mention_author=False)
         if context.channel.id in settings["activechan"]:
             return await context.reply(content=f"A game of SplitOrSteal is already running from this channel. Wait for that one to finish.\nIf you think this is a mistake ask an admin to run `{context.prefix}splitorstealset clearactive <channel>` on this channel.", ephemeral=True, mention_author=False)
@@ -260,10 +261,10 @@ class SplitOrSteal(commands.Cog):
             return await context.reply(content="This game requires 2 users to play.", ephemeral=True, mention_author=False)
         if player_1.bot or player_2.bot:
             return await context.reply(content="The game can not be played with bots.", ephemeral=True, mention_author=False)
-        
+
         async with self.config.guild(context.guild).activechan() as achan:
             achan.append(context.channel.id)
-        
+
         await self._start_sos(context=context, host=context.author, player_1=player_1, player_2=player_2, prize=prize)
     
     @commands.hybrid_command(name="splitorstealhelp", aliases=["soshelp"])
@@ -309,6 +310,7 @@ class SplitOrSteal(commands.Cog):
         """
         Settings for split or steal cog.
         """
+        await context.send_help(command="splitorstealset")
         
     @splitorstealset.command(name="clearactive", aliases=["ca"])
     @app_commands.guild_only()

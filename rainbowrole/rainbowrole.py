@@ -43,7 +43,7 @@ class RainbowRole(commands.Cog):
         return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{plural}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
-        self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
+        self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever.
         return
@@ -87,7 +87,7 @@ class RainbowRole(commands.Cog):
         """
         Settings for the RainbowRole cog.
         """
-        pass
+        await context.send_help("rainbowroleset")
     
     @rainbowroleset.command(name="reset")
     @commands.has_permissions(administrator=True)
@@ -165,8 +165,8 @@ class RainbowRole(commands.Cog):
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
-        embed.add_field(name="Role:", value=f"<@&{settings['role']}>" if settings['role'] else "None", inline=True)
-        embed.add_field(name="Status:", value=settings['status'], inline=True)
+        embed.add_field(name="Role:", value=f"<@&{settings['role']}>" if settings['role'] else "None", inline=False)
+        embed.add_field(name="Status:", value=settings['status'], inline=False)
         if not context.guild.me.guild_permissions.manage_roles:
             embed.add_field(
                 name="⚠️ Warning", value="I do not have `manage_roles` permission! RainbowRole will not work.", inline=False

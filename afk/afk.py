@@ -47,7 +47,7 @@ class Afk(commands.Cog):
         return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{plural}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
-        self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
+        self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ):
         """
         This cog stores data provided by users for the express purpose of notifying users whenever they go AFK and only for that reason.
@@ -58,7 +58,7 @@ class Afk(commands.Cog):
         Also thanks sravan and aikaterna for the end user data statement!
         """
         for guild in self.bot.guilds:
-            await self.config.member_from_id(guild.id, user_id).clear()
+            await self.config.member_from_ids(guild_id=guild.id, member_id=user_id).clear()
     
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
@@ -89,7 +89,7 @@ class Afk(commands.Cog):
 
         if await self.config.guild(payload.guild).nick():
             try:
-                await uesr.edit(nick=f"{user.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
+                await user.edit(nick=f"{user.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
             except discord.errors.Forbidden:
                 if user.id == payload.guild.owner.id:
                     await payload.channel.send(content="Could not change your nick cause you are the guild owner.", delete_after=10, ephemeral=True)
@@ -203,7 +203,7 @@ class Afk(commands.Cog):
         """
         Settings for the AFK cog.
         """
-        pass
+        await context.send_help(command="afkset")
     
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.has_permissions(manage_guild=True)
@@ -323,6 +323,7 @@ class Afk(commands.Cog):
         
         if view.value == "yes":
             await self.config.clear_all()
+            await self.config.clear_all_members()
     
     @afkset.command(name="showsettings", aliases=["ss"])
     @app_commands.guild_only()

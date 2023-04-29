@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING
 
 import discord
-from discord.ext import commands
+
+from redbot.core import commands
+
+from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from discord import Message, InteractionMessage, WebhookMessage

@@ -41,7 +41,7 @@ class GlobalBan(commands.Cog):
         return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{plural}: {humanize_list(self.__author__)}"
     
     async def red_delete_data_for_user(
-        self, *, requester: Literal["discord", "owner", "user", "user_strict"], user_id: int
+        self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever. But it stores user ID's for the ban list! Also thanks sravan!
         return
@@ -201,6 +201,7 @@ class GlobalBan(commands.Cog):
         """
         Base commands for the GlobalBan Cog. (Bot owners only)
         """
+        await context.send_help("globalban")
     
     @globalban.command(name="ban")
     @app_commands.describe(
@@ -237,7 +238,7 @@ class GlobalBan(commands.Cog):
         if await context.bot.is_owner(member):
             return await context.reply(content="You can not globally ban other bot owners.", ephemeral=True, mention_author=False)
         if user_id == context.bot.user.id:
-            return await context.reply(content="You can not globally ban me... Dumb. >:C", ephemeral=True, mention_author=False)
+            return await context.reply(content="You can not globally ban me... Dumbass. >:V", ephemeral=True, mention_author=False)
         
         confirm_action = "Alright this might take a while."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
@@ -283,7 +284,8 @@ class GlobalBan(commands.Cog):
                 l = f"` #{len(users) + 1} ` {member} (ID: {member.id})"
                 users.append(l)
             except discord.errors.NotFound:
-                continue
+                l = f"` #{len(users) + 1} ` Unknown User (ID: {mem})"
+                users.append(l)
         
         banlist = "\n".join(users)
         pages = list(pagify(banlist, delims=["` #"], page_length=2000))
