@@ -424,7 +424,7 @@ class CookieClicker(discord.ui.View):
         button.label = len(self.clicked)
         await interaction.edit_original_response(view=self)
 
-    @discord.ui.button(emoji="❌", label="Quit", style=discord.ButtonStyle.danger)
+    @discord.ui.button(emoji="❎", label="Quit", style=discord.ButtonStyle.danger)
     async def quit(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Quit cookie clicker."""
         for x in self.children:
