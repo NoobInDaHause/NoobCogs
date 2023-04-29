@@ -55,9 +55,9 @@ class RainbowRole(commands.Cog):
     def cog_load(self):
         self.log.info("Cog loaded: Rainbowrole task started!")
     
-    async def cog_unload(self):
+    def cog_unload(self):
         self.log.info("Cog unloaded: Rainbowrole task cancelled.")
-        await asyncio.create_task(self.change_rainbowrole_color.cancel())
+        self.bot.loop.create_task(self.change_rainbowrole_color.cancel())
     
     @tasks.loop(minutes=10)
     async def change_rainbowrole_color(self):
