@@ -233,28 +233,28 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="2", style=discord.ButtonStyle.grey, row=2)
+    @discord.ui.button(label="2", style=discord.ButtonStyle.grey, row=1)
     async def two(self, interaction: discord.Interaction, button: discord.ui.Button):
         """2"""
         self.value_list.append("2")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="3", style=discord.ButtonStyle.grey, row=3)
+    @discord.ui.button(label="3", style=discord.ButtonStyle.grey, row=1)
     async def three(self, interaction: discord.Interaction, button: discord.ui.Button):
         """3"""
         self.value_list.append("3")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="+", style=discord.ButtonStyle.blurple, row=4)
+    @discord.ui.button(label="+", style=discord.ButtonStyle.blurple, row=1)
     async def plus(self, interaction: discord.Interaction, button: discord.ui.Button):
         """"""
         self.value_list.append("+")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
     
-    @discord.ui.button(label="Exit", style=discord.ButtonStyle.danger, row=5)
+    @discord.ui.button(label="Exit", style=discord.ButtonStyle.danger, row=1)
     async def exit(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Exit"""
         for x in self.children:
@@ -262,104 +262,104 @@ class Calculator(discord.ui.View):
         self.stop()
         await interaction.response.edit_message(view=self)
         
-    @discord.ui.button(label="4", style=discord.ButtonStyle.grey, row=6)
+    @discord.ui.button(label="4", style=discord.ButtonStyle.grey, row=2)
     async def four(self, interaction: discord.Interaction, button: discord.ui.Button):
         """4"""
         self.value_list.append("4")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="5", style=discord.ButtonStyle.grey, row=7)
+    @discord.ui.button(label="5", style=discord.ButtonStyle.grey, row=2)
     async def five(self, interaction: discord.Interaction, button: discord.ui.Button):
         """5"""
         self.value_list.append("5")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="6", style=discord.ButtonStyle.grey, row=8)
+    @discord.ui.button(label="6", style=discord.ButtonStyle.grey, row=2)
     async def six(self, interaction: discord.Interaction, button: discord.ui.Button):
         """6"""
         self.value_list.append("6")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="-", style=discord.ButtonStyle.blurple, row=9)
+    @discord.ui.button(label="-", style=discord.ButtonStyle.blurple, row=2)
     async def minus(self, interaction: discord.Interaction, button: discord.ui.Button):
         """-"""
         self.value_list.append("-")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
     
-    @discord.ui.button(label="\u232B", style=discord.ButtonStyle.danger, row=10)
+    @discord.ui.button(label="\u232B", style=discord.ButtonStyle.danger, row=2)
     async def erase(self, interaction: discord.Interaction, button: discord.ui.Button):
         """\u232B"""
         self.value_list.pop()
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="7", style=discord.ButtonStyle.grey, row=11)
+    @discord.ui.button(label="7", style=discord.ButtonStyle.grey, row=3)
     async def seven(self, interaction: discord.Interaction, button: discord.ui.Button):
         """7"""
         self.value_list.append("7")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="8", style=discord.ButtonStyle.grey, row=12)
+    @discord.ui.button(label="8", style=discord.ButtonStyle.grey, row=3)
     async def eight(self, interaction: discord.Interaction, button: discord.ui.Button):
         """8"""
         self.value_list.append("8")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="9", style=discord.ButtonStyle.grey, row=13)
+    @discord.ui.button(label="9", style=discord.ButtonStyle.grey, row=3)
     async def nine(self, interaction: discord.Interaction, button: discord.ui.Button):
         """9"""
         self.value_list.append("9")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="*", style=discord.ButtonStyle.blurple, row=14)
+    @discord.ui.button(label="*", style=discord.ButtonStyle.blurple, row=3)
     async def times(self, interaction: discord.Interaction, button: discord.ui.Button):
         """*"""
         self.value_list.append("*")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="Clear", style=discord.ButtonStyle.danger, row=15)
+    @discord.ui.button(label="Clear", style=discord.ButtonStyle.danger, row=3)
     async def clear(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Clear"""
         self.value_list.clear()
         await self.message.edit(content=box("0", "py"))
         
-    @discord.ui.button(label="00", style=discord.ButtonStyle.grey, row=16)
+    @discord.ui.button(label="00", style=discord.ButtonStyle.grey, row=4)
     async def double_zero(self, interaction: discord.Interaction, button: discord.ui.Button):
         """00"""
         self.value_list.append("00")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="0", style=discord.ButtonStyle.grey, row=17)
+    @discord.ui.button(label="0", style=discord.ButtonStyle.grey, row=4)
     async def zero(self, interaction: discord.Interaction, button: discord.ui.Button):
         """0"""
         self.value_list.append("0")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label=".", style=discord.ButtonStyle.grey, row=18)
+    @discord.ui.button(label=".", style=discord.ButtonStyle.grey, row=4)
     async def dot(self, interaction: discord.Interaction, button: discord.ui.Button):
         """."""
         self.value_list.append(".")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="/", style=discord.ButtonStyle.blurple, row=19)
+    @discord.ui.button(label="/", style=discord.ButtonStyle.blurple, row=4)
     async def divide(self, interaction: discord.Interaction, button: discord.ui.Button):
         """/"""
         self.value_list.append("/")
         merged = "".join(self.value_list)
         await self.message.edit(content=box(merged, "py"))
         
-    @discord.ui.button(label="=", style=discord.ButtonStyle.success, row=20)
+    @discord.ui.button(label="=", style=discord.ButtonStyle.success, row=4)
     async def equals(self, interaction: discord.Interaction, button: discord.ui.Button):
         """="""
         merged = "".join(self.value_list)
