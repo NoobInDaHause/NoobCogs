@@ -9,6 +9,14 @@ Below are Hybrid Commands can be run with legacy prefix commands or slash comman
 
 Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
 
+# [p]math
+ - `Usage:` [p]math <expression>
+ - `Aliases:` None
+ - `User permission(s):` None
+ - `Bot permission(s):` None
+ - `Checks:` Any
+ - `Description:` Do noob math.
+
 # [p]membercount
  - `Usage:` [p]membercount
  - `Aliases:` [p]mcount
