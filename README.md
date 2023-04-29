@@ -1,4 +1,4 @@
-# WintersCogs
+# NoobCogs
 
 Some random cogs for red discord bot made by a noob at python.
 
@@ -13,7 +13,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 
 [p]repo add NoobCogs https://github.com/NoobInDaHause/NoobCogs/tree/dpy2
 
-[p]cog install WintersCogs <cogs...>
+[p]cog install NoobCogs <cogs...>
 
 [p]load <cogs...>
 ```
