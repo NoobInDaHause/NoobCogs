@@ -72,7 +72,7 @@ class NoobUtils(commands.Cog):
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
             .add_field(name="Input:", value=box(expression, "py"), inline=False)
-            .add_field(name="Output:", value=box(x, "py"), inline=False)
+            .add_field(name="Output:", value=box(humanize_number(x), "py"), inline=False)
         )
         await context.send(embed=embed)
     
