@@ -422,7 +422,7 @@ class CookieClicker(discord.ui.View):
         await interaction.response.defer()
         self.clicked.append(len(self.clicked) + 1)
         button.label = len(self.clicked)
-        await interaction.response.edit_message(content=len(self.clicked), view=self)
+        await interaction.edit_original_response(content=len(self.clicked), view=self)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
