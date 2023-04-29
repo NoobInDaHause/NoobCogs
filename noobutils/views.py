@@ -424,6 +424,13 @@ class CookieClicker(discord.ui.View):
         button.label = len(self.clicked)
         await interaction.edit_original_response(view=self)
 
+    @discord.ui.button(emoji="❌", label="Quit", style=discord.ButtonStyle.danger)
+    async def quit(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Quit cookie clicker."""
+        for x in self.children:
+            x.disabled = True
+        await interaction.response.edit_message(view=self)
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
         if await self.bot.is_owner(owner):
