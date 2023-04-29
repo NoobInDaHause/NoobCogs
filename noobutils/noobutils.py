@@ -91,13 +91,12 @@ class NoobUtils(commands.Cog):
         Useless command to show/test error. (Bot owner only)
         
         This command can not be used in slash command.
-        This raises a harmless `NotImplementedError` error.
         """
         if context.prefix == "/":
             return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
         
         await context.tick()
-        raise NotImplementedError("The error works!")
+        await context.send(error)
     
     @commands.hybrid_command(name="testaccessdenied", aliases=["taccd"])
     async def testaccessdenied(self, context: commands.Context):
