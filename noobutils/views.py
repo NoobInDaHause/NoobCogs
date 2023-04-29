@@ -407,3 +407,34 @@ class Calculator(discord.ui.View):
             x.disabled = True
         self.stop()
         await self.message.edit(view=self)
+
+class CookieClicker(discord.ui.View):
+    def __init__(self, bot: Red, author: discord.Member):
+        super().__init__(timeout=30.0)
+        self.bot = bot
+        self.author = author
+        self.message: discord.message = None
+        self.clicked = []
+
+    @discord.ui.button(emoji="🍪", label="0", style=discord.ButtonStyle.success)
+    async def cookieclicker(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Cookie clicker."""
+        await interaction.response.defer()
+        self.clicked.append(len(self.clicked) + 1)
+        button.label = len(self.clicked)
+        await interaction.response.edit_message(content=len(self.clicked), view=self)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        owner = await self.bot.fetch_user(interaction.user.id)
+        if await self.bot.is_owner(owner):
+            return True
+        elif interaction.user.id != self.author.id:
+            await interaction.response.send_message(content="You are not the author of this interaction.", ephemeral=True)
+            return False
+        return True
+    
+    async def on_timeout(self):
+        for x in self.children:
+            x.disabled = True
+        self.stop()
+        await self.message.edit(view=self)

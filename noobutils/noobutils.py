@@ -8,7 +8,7 @@ from redbot.core.utils.chat_formatting import humanize_list, humanize_number, bo
 
 from typing import Literal
 
-from .views import Calculator
+from .views import Calculator, CookieClicker
 
 class NoobUtils(commands.Cog):
     """
@@ -48,6 +48,14 @@ class NoobUtils(commands.Cog):
         """
         view = Calculator(bot=self.bot, author=context.author)
         view.message = await context.send(content=box("0", "py"), view=view)
+    
+    @commands.hybrid_command(name="cookieclicker")
+    async def cookieclicker(self, context: commands.Context):
+        """
+        Cookie clicker.
+        """
+        view = CookieClicker(bot=self.bot, author=context.author)
+        view.message = await context.send(view=view)
     
     @commands.hybrid_command(name="membercount", aliases=["mcount"])
     @commands.guild_only()

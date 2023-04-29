@@ -17,6 +17,14 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Checks:` Any
  - `Description:` Calculate with buttons.
 
+# [p]cookieclicker
+ - `Usage:` [p]cookieclicker
+ - `Aliases:` None
+ - `User permission(s):` None
+ - `Bot permission(s):` None
+ - `Checks:` Any
+ - `Description:` Cookie clicker.
+
 # [p]membercount
  - `Usage:` [p]membercount
  - `Aliases:` [p]mcount
