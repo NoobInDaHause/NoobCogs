@@ -31,6 +31,7 @@ class RainbowRole(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.RainbowRole")
+        self.change_rainbowrole_color.start()
         
     __version__ = "1.0.0"
     __author__ = ["Noobindahause#2808"]
@@ -53,7 +54,6 @@ class RainbowRole(commands.Cog):
     
     def cog_load(self):
         self.log.info("Cog loaded: Rainbowrole task started!")
-        self.change_rainbowrole_color.start()
     
     async def cog_unload(self):
         self.log.info("Cog unloaded: Rainbowrole task cancelled.")
