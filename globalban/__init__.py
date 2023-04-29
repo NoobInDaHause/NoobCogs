@@ -7,5 +7,4 @@ from .globalban import GlobalBan
 
 async def setup(bot: Red):
     cog = GlobalBan(bot)
-    await cog.cog_load()
     await bot.add_cog(cog)
