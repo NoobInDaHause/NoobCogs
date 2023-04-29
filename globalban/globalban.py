@@ -194,14 +194,14 @@ class GlobalBan(commands.Cog):
             pages = Paginator(bot=self.bot, author=context.author, pages=list(final_page.values()), timeout=60)
             return await pages.start(context)
     
-    @commands.hybrid_group(name="globalban", aliases=["gban"])
+    @commands.hybrid_group(name="globalban", invoke_without_command=True, aliases=["gban"])
     @commands.is_owner()
     @commands.bot_has_permissions(embed_links=True)
     async def globalban(self, context: commands.Context):
         """
         Base commands for the GlobalBan Cog. (Bot owners only)
         """
-        await context.send_help("globalban")
+        await context.send_help()
     
     @globalban.command(name="ban")
     @app_commands.describe(

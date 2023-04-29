@@ -78,7 +78,7 @@ class RainbowRole(commands.Cog):
     async def change_rainbowrole_color_before_loop(self):
         await self.bot.wait_until_red_ready()
     
-    @commands.hybrid_group(name="rainbowroleset", aliases=["rrset"])
+    @commands.hybrid_group(name="rainbowroleset", invoke_without_command=True, aliases=["rrset"])
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
@@ -87,7 +87,7 @@ class RainbowRole(commands.Cog):
         """
         Settings for the RainbowRole cog.
         """
-        await context.send_help("rainbowroleset")
+        await context.send_help()
     
     @rainbowroleset.command(name="reset")
     @commands.has_permissions(administrator=True)

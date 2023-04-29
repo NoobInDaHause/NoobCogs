@@ -302,7 +302,7 @@ class SplitOrSteal(commands.Cog):
         pages = Paginator(bot=self.bot, author=context.author, pages=pag, timeout=60)
         await pages.start(context)
     
-    @commands.hybrid_group(name="splitorstealset", aliases=["sosset"])
+    @commands.hybrid_group(name="splitorstealset", invoke_without_command=True, aliases=["sosset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     @commands.admin_or_permissions(administrator=True, manage_guild=True)
@@ -310,7 +310,7 @@ class SplitOrSteal(commands.Cog):
         """
         Settings for split or steal cog.
         """
-        await context.send_help(command="splitorstealset")
+        await context.send_help()
         
     @splitorstealset.command(name="clearactive", aliases=["ca"])
     @app_commands.guild_only()

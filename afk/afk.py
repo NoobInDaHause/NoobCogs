@@ -196,14 +196,14 @@ class Afk(commands.Cog):
         await context.send("You are now AFK. Any member that pings you will now get notified.")
         await self.start_afk(payload=context.message, user=context.author, reason=reason)
     
-    @commands.hybrid_group(name="afkset", aliases=["awayset"])
+    @commands.hybrid_group(name="afkset", invoke_without_command=True, aliases=["awayset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def afkset(self, context: commands.Context):
         """
         Settings for the AFK cog.
         """
-        await context.send_help(command="afkset")
+        await context.send_help()
     
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.has_permissions(manage_guild=True)
