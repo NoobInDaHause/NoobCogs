@@ -1,0 +1,22 @@
+{
+    "name": "NoobUtils",
+    "short": "Some maybe useful or useless commands.",
+    "description": "Cog made by a noob at python with interesting useful or useless commands.",
+    "end_user_data_statement": "This cog does not store any end user data whatsoever.",
+    "install_msg": "Thank you for installing NoobUtils. Load the cog with `[p]load noobutils`.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "min_bot_version": "3.5.0.dev339+g896d5e92",
+    "max_bot_version": "3.5.99",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "Noob",
+        "Utils",
+        "NoobUtils"
+    ],
+    "type": "COG"
+}
