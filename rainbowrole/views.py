@@ -3,6 +3,7 @@ from __future__ import annotations
 import discord
 
 from redbot.core import commands
+from redbot.core.bot import Red
 
 from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING
 
@@ -24,7 +25,7 @@ class Paginator(discord.ui.View):
 
     def __init__(
         self,
-        bot,
+        bot: Red,
         author: discord.Member,
         pages: List[Any],
         *,
@@ -169,7 +170,7 @@ class Paginator(discord.ui.View):
 class Confirmation(discord.ui.View):
     def __init__(
         self,
-        bot,
+        bot: Red,
         author: discord.Member,
         timeout: float,
         confirm_action
@@ -178,6 +179,7 @@ class Confirmation(discord.ui.View):
         self.bot = bot
         self.author = author
         self.confirm_action = confirm_action
+        self.message: discord.Message = None
         self.value = None
         
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)

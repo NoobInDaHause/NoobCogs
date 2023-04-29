@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import discord
 
-from redbot.core import commands
+from redbot.core import commands, Config
+from redbot.core.bot import Red
 
 from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING
 
@@ -24,7 +25,7 @@ class Paginator(discord.ui.View):
 
     def __init__(
         self,
-        bot,
+        bot: Red,
         author: discord.Member,
         pages: List[Any],
         *,
@@ -169,7 +170,7 @@ class Paginator(discord.ui.View):
 class Confirmation(discord.ui.View):
     def __init__(
         self,
-        bot,
+        bot: Red,
         author: discord.Member,
         timeout: float,
         confirm_action
@@ -178,6 +179,7 @@ class Confirmation(discord.ui.View):
         self.bot = bot
         self.author = author
         self.confirm_action = confirm_action
+        self.message: discord.Message = None
         self.value = None
         
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
@@ -214,14 +216,15 @@ class Confirmation(discord.ui.View):
 class GbanViewReset(discord.ui.View):
     def __init__(
         self,
-        bot,
+        bot: Red,
         author: discord.Member,
-        config,
+        config: Config,
         timeout: int,
     ):
         super().__init__(timeout=timeout)
         self.bot = bot
         self.author = author
+        self.message: discord.Message = None
         self.config = config
         
     @discord.ui.select(
@@ -276,5 +279,7 @@ class GbanViewReset(discord.ui.View):
         return True
     
     async def on_timeout(self):
-        self.disabled = True
+        for x in self.children:
+            x.disabled = True
+        self.stop()
         await self.message.edit(view=self)

@@ -4,8 +4,8 @@ from typing import Dict, Optional, Union, List, Any, TYPE_CHECKING
 import datetime
 import discord
 
-from discord.ext import commands
-
+from redbot.core import commands
+from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, box
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ class Paginator(discord.ui.View):
 
     def __init__(
         self,
-        bot,
+        bot: Red,
         author: discord.Member,
         pages: List[Any],
         *,
@@ -171,7 +171,7 @@ class Paginator(discord.ui.View):
 class Confirmation(discord.ui.View):
     def __init__(
         self,
-        bot,
+        bot: Red,
         author: discord.Member,
         timeout: float,
         confirm_action
@@ -180,6 +180,7 @@ class Confirmation(discord.ui.View):
         self.bot = bot
         self.author = author
         self.confirm_action = confirm_action
+        self.message: discord.Message = None
         self.value = None
         
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
@@ -246,7 +247,7 @@ class SosManagerRemove(discord.ui.Modal):
 class SosManager(discord.ui.View):
     def __init__(
         self,
-        bot,
+        bot: Red,
         context,
         author: discord.Member,
         config,
@@ -256,6 +257,7 @@ class SosManager(discord.ui.View):
         self.bot = bot
         self.context = context
         self.author = author
+        self.message: discord.Message = None
         self.config = config
         
     @discord.ui.select(
@@ -308,7 +310,7 @@ class SosManager(discord.ui.View):
             if failed_roles:
                 embed = discord.Embed(
                     title="Failed to add some roles.",
-                    description=f"Most likely that the role does not exist or Typo or role is already a manager.",
+                    description="Most likely that the role does not exist or Typo or role is already a manager.",
                     colour=await self.context.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc)
                 )
@@ -352,7 +354,7 @@ class SosManager(discord.ui.View):
             if failed_roles:
                 embed = discord.Embed(
                     title="Failed to remove some roles.",
-                    description=f"Most likely that the role does not exist or Typo or role is not a manager.",
+                    description="Most likely that the role does not exist or Typo or role is not a manager.",
                     colour=await self.context.embed_colour(),
                     timestamp=datetime.datetime.now(datetime.timezone.utc)
                 )
@@ -372,12 +374,14 @@ class SosManager(discord.ui.View):
     async def on_timeout(self):
         for x in self.children:
             x.disabled = True
+        self.stop()
         await self.message.edit(view=self)
         
 class SosButton(discord.ui.View):
     def __init__(self, author: discord.Member):
         super().__init__(timeout=30.0)
         self.author = author
+        self.message: discord.Message = None
         self.value = None
         
     @discord.ui.button(label="Split", emoji="🤝", style=discord.ButtonStyle.success)
@@ -412,5 +416,5 @@ class SosButton(discord.ui.View):
             x.disabled = True
         self.value = "forfeit"
         self.stop()
-        await self.message.edit(view=self)
         await self.author.send(content="You took too long to respond! Therefor you automatically choose forfeit.")
+        await self.message.edit(view=self)

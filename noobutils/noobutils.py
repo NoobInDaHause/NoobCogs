@@ -8,6 +8,8 @@ from redbot.core.utils.chat_formatting import humanize_list, humanize_number, bo
 
 from typing import Literal
 
+from .views import Calculator
+
 class NoobUtils(commands.Cog):
     """
     Some maybe useful or useless commands.
@@ -37,45 +39,13 @@ class NoobUtils(commands.Cog):
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
-    @commands.hybrid_command(name="math")
-    async def math(self, context: commands.Context, *, expression: str):
+    @commands.hybrid_command(name="calculator")
+    async def calculator(self, context: commands.Context):
         """
-        Do noob math.
-
-        `+` - Add.
-        `-` - Subtract.
-        `*` - Multiply.
-        `/` - Divide.
-
-        Examples:
-        `[p]math 420-69
-        [p]math 69+69-69*69/69
-        [p]math 60.69*0.001`
+        Calculate with buttons.
         """
-        try:
-            x = eval(expression)
-        except Exception as e:
-            errorembed = (
-                discord.Embed(
-                    title="Syntax Error",
-                    colour=await context.embed_colour(),
-                    timestamp=datetime.datetime.now(datetime.timezone.utc)
-                )
-                .add_field(name="Raw input:", value=box(expression, "py"), inline=False)
-                .add_field(name="Error:", value=box(e, "py"), inline=False)
-            )
-            return await context.send(embed=errorembed)
-        embed = (
-            discord.Embed(
-                title="Noob Math",
-                colour=await context.embed_colour(),
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            .add_field(name="Raw input:", value=box(expression, "py"), inline=False)
-            .add_field(name="Raw output:", value=x, inline=False)
-            .add_field(name="Raw humanized output:", value=box(humanize_number(x), "py"), inline=False)
-        )
-        await context.send(embed=embed)
+        view = Calculator(bot=self.bot, author=context.author)
+        view.message = await context.send(box("0", "py"))
     
     @commands.hybrid_command(name="membercount", aliases=["mcount"])
     @commands.guild_only()
