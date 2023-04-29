@@ -351,7 +351,8 @@ class Calculator(discord.ui.View):
     async def double_zero(self, interaction: discord.Interaction, button: discord.ui.Button):
         """00"""
         await interaction.response.defer()
-        self.value_list.append("00")
+        self.value_list.append("0")
+        self.value_list.append("0")
         merged = "".join(self.value_list)
         await interaction.edit_original_response(content=box(merged, "py"))
         
