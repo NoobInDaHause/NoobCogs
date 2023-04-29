@@ -409,7 +409,11 @@ class Calculator(discord.ui.View):
         await self.message.edit(view=self)
 
 class CookieClicker(discord.ui.View):
-    def __init__(self, bot: Red, author: discord.Member):
+    def __init__(
+        self,
+        bot: Red,
+        author: discord.Member
+    ):
         super().__init__(timeout=60.0)
         self.bot = bot
         self.author = author
