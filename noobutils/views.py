@@ -302,6 +302,8 @@ class Calculator(discord.ui.View):
     async def erase(self, interaction: discord.Interaction, button: discord.ui.Button):
         """\u232B"""
         await interaction.response.defer()
+        if not self.value_list:
+            return await interaction.followup.send(content="You can not erase a number anymore, please add more.", ephemeral=True)
         self.value_list.pop()
         merged = "".join(self.value_list)
         await interaction.edit_original_response(content=box(merged, "py"))

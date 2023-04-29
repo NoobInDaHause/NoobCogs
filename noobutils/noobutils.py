@@ -40,13 +40,14 @@ class NoobUtils(commands.Cog):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
     @commands.hybrid_command(name="calculator")
+    @commands.cooldown(1, 60, commands.BucketType.user)
+    @app_commands.Cooldown(1, 60)
     async def calculator(self, context: commands.Context):
         """
         Calculate with buttons.
         """
         view = Calculator(bot=self.bot, author=context.author)
-        msg = await context.send(box("0", "py"), view=view)
-        view.message = msg
+        view.message = await context.send(content=box("0", "py"), view=view)
     
     @commands.hybrid_command(name="membercount", aliases=["mcount"])
     @commands.guild_only()
