@@ -11,7 +11,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 ```
 [p]load downloader
 
-[p]repo add WintersCogs https://github.com/NoobInDaHause/WintersCogs/tree/dpy2
+[p]repo add NoobCogs https://github.com/NoobInDaHause/NoobCogs/tree/dpy2
 
 [p]cog install WintersCogs <cogs...>
 
@@ -24,6 +24,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | --------------- | --------- | ---------------------------------------------------------------- |
 | Afk             |  v1.0.0   | Notify users whenever you go AFK with pings logging.             |
 | GlobalBan       |  v1.0.0   | Globally ban a user from all the guilds the bot is in.           |
+| NoobUtils       |  v1.0.0   | Some maybe useful or useless commands.                           |
 | RainbowRole     |  v1.0.0   | Have a role that changes colour every 10 minutes.                |
 | SplitOrSteal    |  v1.0.0   | A fun split or steal game.                                       |
 
