@@ -45,7 +45,7 @@ class NoobUtils(commands.Cog):
         Calculate with buttons.
         """
         view = Calculator(bot=self.bot, author=context.author)
-        view.message = await context.send(box("0", "py"))
+        view.message = await context.send(box("0", "py"), view=view)
     
     @commands.hybrid_command(name="membercount", aliases=["mcount"])
     @commands.guild_only()
