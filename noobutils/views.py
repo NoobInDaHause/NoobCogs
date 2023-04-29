@@ -220,13 +220,13 @@ class Calculator(discord.ui.View):
         bot: Red,
         author: discord.Member
     ):
-        super().__init__(timeout=120.0)
+        super().__init__(timeout=180.0)
         self.bot = bot
         self.author = author
         self.message: discord.Message = None
         self.value_list = []
         
-    @discord.ui.button(label="1", style=discord.ButtonStyle.grey, row=1)
+    @discord.ui.button(label="1", style=discord.ButtonStyle.grey)
     async def one(self, interaction: discord.Interaction, button: discord.ui.Button):
         """1"""
         await interaction.response.defer()
@@ -234,7 +234,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="2", style=discord.ButtonStyle.grey, row=1)
+    @discord.ui.button(label="2", style=discord.ButtonStyle.grey)
     async def two(self, interaction: discord.Interaction, button: discord.ui.Button):
         """2"""
         await interaction.response.defer()
@@ -242,7 +242,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="3", style=discord.ButtonStyle.grey, row=1)
+    @discord.ui.button(label="3", style=discord.ButtonStyle.grey)
     async def three(self, interaction: discord.Interaction, button: discord.ui.Button):
         """3"""
         await interaction.response.defer()
@@ -250,7 +250,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="+", style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label="+", style=discord.ButtonStyle.blurple)
     async def plus(self, interaction: discord.Interaction, button: discord.ui.Button):
         """+"""
         await interaction.response.defer()
@@ -258,7 +258,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
     
-    @discord.ui.button(label="Exit", style=discord.ButtonStyle.danger, row=1)
+    @discord.ui.button(label="Exit", style=discord.ButtonStyle.danger)
     async def exit(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Exit"""
         for x in self.children:
@@ -266,7 +266,7 @@ class Calculator(discord.ui.View):
         self.stop()
         await interaction.response.edit_message(view=self)
         
-    @discord.ui.button(label="4", style=discord.ButtonStyle.grey, row=2)
+    @discord.ui.button(label="4", style=discord.ButtonStyle.grey)
     async def four(self, interaction: discord.Interaction, button: discord.ui.Button):
         """4"""
         await interaction.response.defer()
@@ -274,7 +274,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="5", style=discord.ButtonStyle.grey, row=2)
+    @discord.ui.button(label="5", style=discord.ButtonStyle.grey)
     async def five(self, interaction: discord.Interaction, button: discord.ui.Button):
         """5"""
         await interaction.response.defer()
@@ -282,7 +282,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="6", style=discord.ButtonStyle.grey, row=2)
+    @discord.ui.button(label="6", style=discord.ButtonStyle.grey)
     async def six(self, interaction: discord.Interaction, button: discord.ui.Button):
         """6"""
         await interaction.response.defer()
@@ -290,7 +290,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="-", style=discord.ButtonStyle.blurple, row=2)
+    @discord.ui.button(label="-", style=discord.ButtonStyle.blurple)
     async def minus(self, interaction: discord.Interaction, button: discord.ui.Button):
         """-"""
         await interaction.response.defer()
@@ -298,7 +298,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
     
-    @discord.ui.button(label="\u232B", style=discord.ButtonStyle.danger, row=2)
+    @discord.ui.button(label="\u232B", style=discord.ButtonStyle.danger)
     async def erase(self, interaction: discord.Interaction, button: discord.ui.Button):
         """\u232B"""
         await interaction.response.defer()
@@ -306,7 +306,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="7", style=discord.ButtonStyle.grey, row=3)
+    @discord.ui.button(label="7", style=discord.ButtonStyle.grey)
     async def seven(self, interaction: discord.Interaction, button: discord.ui.Button):
         """7"""
         await interaction.response.defer()
@@ -314,7 +314,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="8", style=discord.ButtonStyle.grey, row=3)
+    @discord.ui.button(label="8", style=discord.ButtonStyle.grey)
     async def eight(self, interaction: discord.Interaction, button: discord.ui.Button):
         """8"""
         await interaction.response.defer()
@@ -322,7 +322,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="9", style=discord.ButtonStyle.grey, row=3)
+    @discord.ui.button(label="9", style=discord.ButtonStyle.grey)
     async def nine(self, interaction: discord.Interaction, button: discord.ui.Button):
         """9"""
         await interaction.response.defer()
@@ -330,7 +330,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="*", style=discord.ButtonStyle.blurple, row=3)
+    @discord.ui.button(label="*", style=discord.ButtonStyle.blurple)
     async def times(self, interaction: discord.Interaction, button: discord.ui.Button):
         """*"""
         await interaction.response.defer()
@@ -338,14 +338,14 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="Clear", style=discord.ButtonStyle.danger, row=3)
+    @discord.ui.button(label="Clear", style=discord.ButtonStyle.danger)
     async def clear(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Clear"""
         await interaction.response.defer()
         self.value_list.clear()
         await interaction.response.edit_message(content=box("0", "py"))
         
-    @discord.ui.button(label="00", style=discord.ButtonStyle.grey, row=4)
+    @discord.ui.button(label="00", style=discord.ButtonStyle.grey)
     async def double_zero(self, interaction: discord.Interaction, button: discord.ui.Button):
         """00"""
         await interaction.response.defer()
@@ -353,7 +353,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="0", style=discord.ButtonStyle.grey, row=4)
+    @discord.ui.button(label="0", style=discord.ButtonStyle.grey)
     async def zero(self, interaction: discord.Interaction, button: discord.ui.Button):
         """0"""
         await interaction.response.defer()
@@ -361,7 +361,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label=".", style=discord.ButtonStyle.grey, row=4)
+    @discord.ui.button(label=".", style=discord.ButtonStyle.grey)
     async def dot(self, interaction: discord.Interaction, button: discord.ui.Button):
         """."""
         await interaction.response.defer()
@@ -369,7 +369,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="/", style=discord.ButtonStyle.blurple, row=4)
+    @discord.ui.button(label="/", style=discord.ButtonStyle.blurple)
     async def divide(self, interaction: discord.Interaction, button: discord.ui.Button):
         """/"""
         await interaction.response.defer()
@@ -377,7 +377,7 @@ class Calculator(discord.ui.View):
         merged = "".join(self.value_list)
         await interaction.response.edit_message(content=box(merged, "py"))
         
-    @discord.ui.button(label="=", style=discord.ButtonStyle.success, row=4)
+    @discord.ui.button(label="=", style=discord.ButtonStyle.success)
     async def equals(self, interaction: discord.Interaction, button: discord.ui.Button):
         """="""
         await interaction.response.defer()
