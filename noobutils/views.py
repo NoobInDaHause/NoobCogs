@@ -429,6 +429,7 @@ class CookieClicker(discord.ui.View):
         """Quit cookie clicker."""
         for x in self.children:
             x.disabled = True
+        self.stop()
         await interaction.response.edit_message(view=self)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
