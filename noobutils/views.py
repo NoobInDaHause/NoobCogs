@@ -410,7 +410,7 @@ class Calculator(discord.ui.View):
 
 class CookieClicker(discord.ui.View):
     def __init__(self, bot: Red, author: discord.Member):
-        super().__init__(timeout=30.0)
+        super().__init__(timeout=60.0)
         self.bot = bot
         self.author = author
         self.message: discord.message = None
@@ -422,7 +422,7 @@ class CookieClicker(discord.ui.View):
         await interaction.response.defer()
         self.clicked.append(len(self.clicked) + 1)
         button.label = len(self.clicked)
-        await interaction.edit_original_response(content=len(self.clicked), view=self)
+        await interaction.edit_original_response(view=self)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
