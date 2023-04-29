@@ -71,8 +71,9 @@ class NoobUtils(commands.Cog):
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
-            .add_field(name="Input:", value=box(expression, "py"), inline=False)
-            .add_field(name="Output:", value=box(humanize_number(x), "py"), inline=False)
+            .add_field(name="Raw input:", value=box(expression, "py"), inline=False)
+            .add_field(name="Raw output:", value=x, inline=False)
+            .add_field(name="Raw humanized output:", value=box(humanize_number(x), "py"), inline=False)
         )
         await context.send(embed=embed)
     
@@ -103,31 +104,22 @@ class NoobUtils(commands.Cog):
         )
         await context.send(embed=embed)
         
-    @commands.hybrid_command(name="plzerror", aliases=["plserror"])
+    @commands.command(name="plzerror", aliases=["plserror"])
     @commands.is_owner()
     async def plzerror(self, context: commands.Context):
         """
         Useless command to show/test error. (Bot owner only)
         
         This raises a harmless `NotImplementedError` error.
-        This command can not be used in slash command.
         """
-        if context.prefix == "/":
-            return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
-        
         await context.tick()
         raise NotImplementedError("The error works!")
     
-    @commands.hybrid_command(name="testaccessdenied", aliases=["taccd"])
+    @app_commands.command(name="testaccessdenied", aliases=["taccd"])
     async def testaccessdenied(self, context: commands.Context):
         """
         Useless command just to test Noobindahause's Access Denied.
-        
-        This command only works in slash commands.
         """
-        if context.prefix != "/":
-            return await context.send(content="This command can only be used as a slash command.")
-        
         await context.reply(content=self.access_denied(), ephemeral=True)
     
     @commands.hybrid_command(name="testlog")
