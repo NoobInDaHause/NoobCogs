@@ -104,22 +104,31 @@ class NoobUtils(commands.Cog):
         )
         await context.send(embed=embed)
         
-    @commands.command(name="plzerror", aliases=["plserror"])
+    @commands.hybrid_command(name="plzerror", aliases=["plserror"])
     @commands.is_owner()
     async def plzerror(self, context: commands.Context):
         """
         Useless command to show/test error. (Bot owner only)
         
+        This command can not be used in slash command.
         This raises a harmless `NotImplementedError` error.
         """
+        if context.prefix == "/":
+            return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
+        
         await context.tick()
         raise NotImplementedError("The error works!")
     
-    @app_commands.command(name="testaccessdenied", aliases=["taccd"])
+    @commands.hybrid_command(name="testaccessdenied", aliases=["taccd"])
     async def testaccessdenied(self, context: commands.Context):
         """
         Useless command just to test Noobindahause's Access Denied.
+
+        This command only works in slash commands.
         """
+        if context.prefix != "/":
+            return await context.send(content="This command can only be used as a slash command.")
+        
         await context.reply(content=self.access_denied(), ephemeral=True)
     
     @commands.hybrid_command(name="testlog")
