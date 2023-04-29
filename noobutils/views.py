@@ -384,7 +384,10 @@ class Calculator(discord.ui.View):
         """="""
         await interaction.response.defer()
         merged = "".join(self.value_list)
-        final = str(eval(merged))
+        try:
+            final = str(eval(merged))
+        except Exception as e:
+            return await interaction.followup.send(content=e, ephemeral=True)
         self.value_list.clear()
         self.value_list.append(final)
         await interaction.edit_original_response(content=box(final, "py"))
