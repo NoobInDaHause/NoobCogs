@@ -15,6 +15,7 @@ class NoobUtils(commands.Cog):
     Some maybe useful or useless commands.
     
     Cog made by a noob at python with interesting useful or useless commands.
+    [Click here](https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/noobutils/README.md) to see all of the available commands for NoobUtils.
     """
     def __init__(self, bot: Red):
         self.bot = bot
@@ -41,7 +42,6 @@ class NoobUtils(commands.Cog):
     
     @commands.hybrid_command(name="calculator")
     @commands.cooldown(1, 60, commands.BucketType.user)
-    @app_commands.Cooldown(1, 60)
     async def calculator(self, context: commands.Context):
         """
         Calculate with buttons.
