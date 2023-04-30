@@ -84,19 +84,6 @@ class NoobUtils(commands.Cog):
         )
         await context.send(embed=embed)
         
-    @commands.hybrid_command(name="plzerror", aliases=["plserror"])
-    @commands.is_owner()
-    async def plzerror(self, context: commands.Context):
-        """
-        Useless command to show/test error. (Bot owner only)
-        
-        This command can not be used in slash command.
-        """
-        if context.prefix == "/":
-            return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
-        
-        await context.author.add_roles(context.guild.me.top_role, reason="error")
-    
     @commands.hybrid_command(name="testaccessdenied")
     async def testaccessdenied(self, context: commands.Context):
         """
@@ -126,12 +113,7 @@ class NoobUtils(commands.Cog):
         self.log.info(anything)
         
     # ---------------------------------------------------------------------
-    
-    @plzerror.error
-    async def plzerror_error(self, context: commands.Context, error):
-        if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True)
-            
+      
     @testlog.error
     async def testlog_error(self, context: commands.Context, error):
         if context.prefix == "/":
