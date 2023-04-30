@@ -96,7 +96,8 @@ class NoobUtils(commands.Cog):
             return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
         
         test = "error"
-        print(int(test))
+        final = int(test)
+        print(final)
     
     @commands.hybrid_command(name="testaccessdenied", aliases=["taccd"])
     async def testaccessdenied(self, context: commands.Context):
