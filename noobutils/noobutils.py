@@ -94,10 +94,13 @@ class NoobUtils(commands.Cog):
         """
         if context.prefix == "/":
             return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
-        
-        em1 = discord.Embed(title="yes")
-        em2 = [em1]
-        await context.send(embed=em1, embeds=em2)
+
+        test = "error"
+        try:
+            error = int(test)
+            print(error)
+        except ValueError as e:
+            raise NotImplementedError("Plzerror.") from e
     
     @commands.hybrid_command(name="testaccessdenied")
     async def testaccessdenied(self, context: commands.Context):
