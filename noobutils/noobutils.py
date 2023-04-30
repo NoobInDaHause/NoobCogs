@@ -95,8 +95,8 @@ class NoobUtils(commands.Cog):
         if context.prefix == "/":
             return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
         
-        if context.author.id == context.author.id:
-            raise NotImplementedError("Plzerror")
+        test = "error"
+        print(int(test))
     
     @commands.hybrid_command(name="testaccessdenied", aliases=["taccd"])
     async def testaccessdenied(self, context: commands.Context):
