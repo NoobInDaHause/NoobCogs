@@ -25,7 +25,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | Afk             |  v1.0.0   | Notify users whenever you go AFK with pings logging.             |
 | GlobalBan       |  v1.0.0   | Globally ban a user from all the guilds the bot is in.           |
 | NoobUtils       |  v1.0.0   | Some maybe useful or useless commands.                           |
-| RainbowRole     |  v1.0.0   | Have a role that changes colour every 10 minutes.                |
+| RainbowRole     |  v1.0.0   | Have a role that changes colour every 20 minutes.                |
 | SplitOrSteal    |  v1.0.0   | A fun split or steal game.                                       |
 
 ## License
