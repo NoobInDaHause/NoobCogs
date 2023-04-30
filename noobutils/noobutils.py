@@ -40,6 +40,9 @@ class NoobUtils(commands.Cog):
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
+    def error(self):
+        raise NotImplementedError("Plzerror.")
+    
     @commands.hybrid_command(name="calculator")
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def calculator(self, context: commands.Context):
@@ -94,13 +97,8 @@ class NoobUtils(commands.Cog):
         """
         if context.prefix == "/":
             return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
-
-        test = "error"
-        try:
-            error = int(test)
-            print(error)
-        except ValueError as e:
-            raise NotImplementedError("Plzerror.") from e
+        
+        await context.send(content=self.error())
     
     @commands.hybrid_command(name="testaccessdenied")
     async def testaccessdenied(self, context: commands.Context):
