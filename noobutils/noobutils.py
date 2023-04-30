@@ -95,11 +95,11 @@ class NoobUtils(commands.Cog):
         if context.prefix == "/":
             return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
         
-        test = "error"
-        final = int(test)
-        print(final)
+        em1 = discord.Embed(title="yes")
+        em2 = [em1]
+        await context.send(embed=em1, embeds=em2)
     
-    @commands.hybrid_command(name="testaccessdenied", aliases=["taccd"])
+    @commands.hybrid_command(name="testaccessdenied")
     async def testaccessdenied(self, context: commands.Context):
         """
         Useless command just to test Noobindahause's Access Denied.
