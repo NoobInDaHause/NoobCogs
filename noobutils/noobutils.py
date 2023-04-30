@@ -40,9 +40,6 @@ class NoobUtils(commands.Cog):
     def access_denied(self):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
-    def error(self):
-        raise NotImplementedError("Plzerror.")
-    
     @commands.hybrid_command(name="calculator")
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def calculator(self, context: commands.Context):
