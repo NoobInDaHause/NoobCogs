@@ -31,7 +31,6 @@ class RainbowRole(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.RainbowRole")
-        self.change_rainbowrole_color.start()
         
     __version__ = "1.0.0"
     __author__ = ["Noobindahause#2808"]
@@ -53,10 +52,11 @@ class RainbowRole(commands.Cog):
         return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
     def cog_load(self):
-        self.log.info("Cog loaded: Rainbowrole task started!")
+        self.log.info("Rainbowrole task started.")
+        self.change_rainbowrole_color.start()
     
     def cog_unload(self):
-        self.log.info("Cog unloaded: Rainbowrole task cancelled.")
+        self.log.info("Rainbowrole task cancelled.")
         self.bot.loop.create_task(self.change_rainbowrole_color.cancel())
     
     @tasks.loop(minutes=10)
@@ -132,6 +132,9 @@ class RainbowRole(commands.Cog):
         """
         Set the guilds rainbow role.
         """
+        if role >= context.guild.me.top_role:
+            return await context.reply(content="It appears that role is higher than my top role please lower it below my top role.", ephemeral=True, mention_author=False)
+        
         await self.config.guild(context.guild).role.set(role.id)
         await context.send(f"**{role.name}** has been set as the guilds rainbowrole. Start the cog with `{context.prefix}rrset status` if you haven't already.")
         
@@ -160,16 +163,24 @@ class RainbowRole(commands.Cog):
         See the current guild settings for the RainbowRole cog.
         """
         settings = await self.config.guild(context.guild).all()
+        role = context.guild.get_role(settings['role'])
         embed = discord.Embed(
             title=f"Current RainbowRole guild settings for {context.guild}",
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
-        embed.add_field(name="Role:", value=f"<@&{settings['role']}>" if settings['role'] else "None", inline=False)
+        embed.add_field(name="Role:", value=role.mention if role else "None", inline=False)
         embed.add_field(name="Status:", value=settings['status'], inline=False)
+        
+        warns = ""
         if not context.guild.me.guild_permissions.manage_roles:
+            warns += "I do not have `manage_roles` permission! RainbowRole will not work.\n"
+        if role >= context.guild.me.top_role:
+            warns += "The set role is higher than my top role! please lower it down below my top role."
+        
+        if warns:
             embed.add_field(
-                name="⚠️ Warning", value="I do not have `manage_roles` permission! RainbowRole will not work.", inline=False
+                name="⚠️ Warning", value=warns, inline=False
             )
         await context.send(embed=embed)
         
