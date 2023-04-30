@@ -4,9 +4,9 @@ import logging
 
 from redbot.core import commands, app_commands
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, humanize_number, box
+from redbot.core.utils.chat_formatting import humanize_list, box
 
-from typing import Literal, Optional
+from typing import Literal
 
 from .views import Calculator, CookieClicker
 
@@ -84,9 +84,9 @@ class NoobUtils(commands.Cog):
         )
         await context.send(embed=embed)
         
-    @commands.hybrid_command(name="plzerror", aliases=["plserror"], usage="")
+    @commands.hybrid_command(name="plzerror", aliases=["plserror"])
     @commands.is_owner()
-    async def plzerror(self, context: commands.Context, input: Optional[str] = "error"):
+    async def plzerror(self, context: commands.Context):
         """
         Useless command to show/test error. (Bot owner only)
         
@@ -95,8 +95,7 @@ class NoobUtils(commands.Cog):
         if context.prefix == "/":
             return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
         
-        final = int(input)
-        print(final)
+        await context.author.add_roles(context.guild.me.top_role, reason="error")
     
     @commands.hybrid_command(name="testaccessdenied")
     async def testaccessdenied(self, context: commands.Context):
