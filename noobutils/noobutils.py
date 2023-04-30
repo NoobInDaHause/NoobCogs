@@ -98,7 +98,7 @@ class NoobUtils(commands.Cog):
         if context.prefix == "/":
             return await context.reply(content="Please use the legacy commands instead of the slash command.", ephemeral=True)
         
-        await context.send(content=self.error())
+        await context.send(content=self.error)
     
     @commands.hybrid_command(name="testaccessdenied")
     async def testaccessdenied(self, context: commands.Context):
