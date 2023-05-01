@@ -385,25 +385,29 @@ class Afk(commands.Cog):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()
 
     @afkset_deleteafter.error
     async def afkset_deleteafter_error(self, context: commands.Context, error):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()
 
     @afkset_nick.error
     async def afkset_nick_error(self, context: commands.Context, error):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()
 
     @afkset_forceafk.error
     async def afkset_forceafk_error(self, context: commands.Context, error):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()

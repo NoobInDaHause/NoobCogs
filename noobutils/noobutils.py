@@ -119,4 +119,5 @@ class NoobUtils(commands.Cog):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True)
 
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()

@@ -191,25 +191,30 @@ class RainbowRole(commands.Cog):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()
 
     @rainbowroleset_resetcog.error
     async def rainbowroleset_resetcog_error(self, context: commands.Context, error):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
             
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()
 
     @rainbowroleset_role.error
     async def rainbowroleset_role_error(self, context: commands.Context, error):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
             
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()
 
     @rainbowroleset_status.error
     async def rainbowroleset_status_error(self, context: commands.Context, error):
         if context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         
-        await context.send_help()
+        if "required argument that is missing." in error:
+            return await context.send_help()
+            
