@@ -383,19 +383,27 @@ class Afk(commands.Cog):
     @afkset_resetcog.error
     async def afkset_resetcog_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+
+        await context.send_help()
 
     @afkset_deleteafter.error
     async def afkset_deleteafter_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+
+        await context.send_help()
 
     @afkset_nick.error
     async def afkset_nick_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+
+        await context.send_help()
 
     @afkset_forceafk.error
     async def afkset_forceafk_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+
+        await context.send_help()

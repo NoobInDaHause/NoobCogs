@@ -117,4 +117,6 @@ class NoobUtils(commands.Cog):
     @testlog.error
     async def testlog_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True)
+            return await context.reply(content=self.access_denied(), ephemeral=True)
+
+        await context.send_help()
