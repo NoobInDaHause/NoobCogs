@@ -83,18 +83,17 @@ class NoobUtils(commands.Cog):
             .set_author(name=f"Current member count for [{context.guild.name}]", icon_url=context.guild.icon.url)
         )
         await context.send(embed=embed)
-        
-    @commands.hybrid_command(name="testaccessdenied")
-    async def testaccessdenied(self, context: commands.Context):
-        """
-        Useless command just to test Noobindahause's Access Denied.
 
-        This command only works in slash commands.
+    @commands.hybrid_command(name="plzerror")
+    @commands.is_owner()
+    async def plzerror(self, context: commands.Context):
         """
-        if context.prefix != "/":
-            return await context.send(content="This command can only be used as a slash command.")
+        Useless command to show/test an error.
+        """
+        if context.prefix == "/":
+            return await context.reply(content="This command is not available on slash commands please use legacy commands.", ephemeral=True)
         
-        await context.reply(content=self.access_denied(), ephemeral=True)
+        raise NotImplementedError("Plz error.")
     
     @commands.hybrid_command(name="testlog")
     @commands.is_owner()
