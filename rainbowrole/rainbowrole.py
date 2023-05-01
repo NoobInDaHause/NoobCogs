@@ -78,9 +78,10 @@ class RainbowRole(commands.Cog):
     async def change_rainbowrole_color_before_loop(self):
         await self.bot.wait_until_red_ready()
     
-    @commands.group(name="rainbowroleset", invoke_without_command=True, aliases=["rrset"])
+    @commands.hybrid_group(name="rainbowroleset", invoke_without_command=True, aliases=["rrset"])
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
+    @app_commands.guild_only()
     async def rainbowroleset(self, context: commands.Context):
         """
         Settings for the RainbowRole cog.
@@ -90,6 +91,7 @@ class RainbowRole(commands.Cog):
     @rainbowroleset.command(name="reset")
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
+    @app_commands.guild_only()
     async def rainbowroleset_reset(self, context: commands.Context):
         """
         Reset the RainbowRoles guild settings.
@@ -122,10 +124,16 @@ class RainbowRole(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
+    @app_commands.guild_only()
+    @app_commands.describe(
+        role="Set the rainbowrole."
+    )
     async def rainbowroleset_role(self, context: commands.Context, role: discord.Role):
         """
         Set the guilds rainbow role.
         """
+        if role is None:
+            return await ctx.send_help()
         if role >= context.guild.me.top_role:
             return await context.reply(content="It appears that role is higher than my top role please lower it below my top role.", ephemeral=True, mention_author=False)
         
@@ -136,10 +144,16 @@ class RainbowRole(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
+    @app_commands.guild_only()
+    @app_commands.describe(
+        state="True or False."
+    )
     async def rainbowroleset_status(self, context: commands.Context, state: bool):
         """
         Toggle whether to enable or disable the RainbowRole cog.
         """
+        if state is None:
+            return await ctx.send_help()
         await self.config.guild(context.guild).status.set(state)
         status = "enabled" if state else "disabled"
         await context.send(f"The rainbowrole cog has been {status}.")
