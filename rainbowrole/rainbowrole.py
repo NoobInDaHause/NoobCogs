@@ -8,6 +8,7 @@ from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 
 from discord.ext import tasks
+from discord.ext.commands import BadArgument
 from typing import Literal
 
 from .views import Confirmation
@@ -190,25 +191,29 @@ class RainbowRole(commands.Cog):
         if context.prefix == "/":
             await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         
-        await context.author.send(error)
+        if isinstance(error, BadArgument):
+            return await context.send_help()
 
     @rainbowroleset_resetcog.error
     async def rainbowroleset_resetcog_error(self, context: commands.Context, error):
         if context.prefix == "/":
             await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
             
-        await context.author.send(error)
+        if isinstance(error, BadArgument):
+            return await context.send_help()
 
     @rainbowroleset_role.error
     async def rainbowroleset_role_error(self, context: commands.Context, error):
         if context.prefix == "/":
             await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
             
-        await context.author.send(error)
+        if isinstance(error, BadArgument):
+            return await context.send_help()
 
     @rainbowroleset_status.error
     async def rainbowroleset_status_error(self, context: commands.Context, error):
         if context.prefix == "/":
             await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         
-        await context.author.send(error)
+        if isinstance(error, BadArgument):
+            return await context.send_help()
