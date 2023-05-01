@@ -188,7 +188,7 @@ class RainbowRole(commands.Cog):
     
     @rainbowroleset_reset.error
     async def rainbowroleset_reset_error(self, context: commands.Context, error):
-        if context.prefix == "/":
+        if isinstance(error, commands.MissingPermissions) and context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         
         if isinstance(error, commands.MissingRequiredArgument):
@@ -196,7 +196,7 @@ class RainbowRole(commands.Cog):
 
     @rainbowroleset_resetcog.error
     async def rainbowroleset_resetcog_error(self, context: commands.Context, error):
-        if context.prefix == "/":
+        if isinstance(error, commands.MissingPermissions) and context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
             
         if isinstance(error, commands.MissingRequiredArgument):
@@ -204,7 +204,7 @@ class RainbowRole(commands.Cog):
 
     @rainbowroleset_role.error
     async def rainbowroleset_role_error(self, context: commands.Context, error):
-        if context.prefix == "/":
+        if isinstance(error, commands.MissingPermissions) and context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
             
         if isinstance(error, commands.MissingRequiredArgument):
@@ -212,7 +212,7 @@ class RainbowRole(commands.Cog):
 
     @rainbowroleset_status.error
     async def rainbowroleset_status_error(self, context: commands.Context, error):
-        if context.prefix == "/":
+        if isinstance(error, commands.MissingPermissions) and context.prefix == "/":
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         
         if isinstance(error, commands.MissingRequiredArgument):
