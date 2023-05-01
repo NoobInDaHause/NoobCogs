@@ -382,7 +382,7 @@ class Afk(commands.Cog):
 
     @afkset_resetcog.error
     async def afkset_resetcog_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.MissingPermissions) and context.prefix == "/":
+        if isinstance(error, commands.MissingPermissions):
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
         if isinstance(error, commands.MissingRequiredArgument):
@@ -390,7 +390,7 @@ class Afk(commands.Cog):
 
     @afkset_deleteafter.error
     async def afkset_deleteafter_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.MissingPermissions) and context.prefix == "/":
+        if isinstance(error, commands.MissingPermissions):
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
         if isinstance(error, commands.MissingRequiredArgument):
@@ -398,7 +398,7 @@ class Afk(commands.Cog):
 
     @afkset_nick.error
     async def afkset_nick_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.MissingPermissions) and context.prefix == "/":
+        if isinstance(error, commands.MissingPermissions):
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
         if isinstance(error, commands.MissingRequiredArgument):
@@ -406,7 +406,7 @@ class Afk(commands.Cog):
 
     @afkset_forceafk.error
     async def afkset_forceafk_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.MissingPermissions) and context.prefix == "/":
+        if isinstance(error, commands.MissingPermissions):
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
         if isinstance(error, commands.MissingRequiredArgument):
