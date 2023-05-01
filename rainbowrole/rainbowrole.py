@@ -3,7 +3,7 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, Config
+from redbot.core import app_commands, commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 
@@ -81,6 +81,7 @@ class RainbowRole(commands.Cog):
     @commands.hybrid_group(name="rainbowroleset", aliases=["rrset"])
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
+    @app_commands.guild_only()
     async def rainbowroleset(self, context: commands.Context):
         """
         Settings for the RainbowRole cog.
@@ -89,6 +90,7 @@ class RainbowRole(commands.Cog):
     @rainbowroleset.command(name="reset")
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
+    @app_commands.guild_only()
     async def rainbowroleset_reset(self, context: commands.Context):
         """
         Reset the RainbowRoles guild settings.
@@ -121,6 +123,10 @@ class RainbowRole(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
+    @app_commands.guild_only()
+    @app_commands.describe(
+        role="Set the rainbowrole."
+    )
     async def rainbowroleset_role(self, context: commands.Context, role: discord.Role):
         """
         Set the guilds rainbow role.
@@ -135,6 +141,10 @@ class RainbowRole(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
+    @app_commands.guild_only()
+    @app_commands.describe(
+        state="True or False."
+    )
     async def rainbowroleset_status(self, context: commands.Context, state: bool):
         """
         Toggle whether to enable or disable the RainbowRole cog.
@@ -146,6 +156,7 @@ class RainbowRole(commands.Cog):
     @rainbowroleset.command(name="showsettings", aliases=["ss"])
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
+    @app_commands.guild_only()
     async def rainbowroleset_showsettings(self, context: commands.Context):
         """
         See the current guild settings for the RainbowRole cog.
@@ -171,3 +182,33 @@ class RainbowRole(commands.Cog):
                 name="⚠️ Warning", value=warns, inline=False
             )
         await context.send(embed=embed)
+        
+    # ---------------------------------------------------------------
+    
+    @rainbowroleset_reset.error
+    async def rainbowroleset_reset_error(self, context: commands.Context, error):
+        if context.prefix == "/":
+            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+        
+        await context.author.send(error)
+
+    @rainbowroleset_resetcog.error
+    async def rainbowroleset_resetcog_error(self, context: commands.Context, error):
+        if context.prefix == "/":
+            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            
+        await context.author.send(error)
+
+    @rainbowroleset_role.error
+    async def rainbowroleset_role_error(self, context: commands.Context, error):
+        if context.prefix == "/":
+            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            
+        await context.author.send(error)
+
+    @rainbowroleset_status.error
+    async def rainbowroleset_status_error(self, context: commands.Context, error):
+        if context.prefix == "/":
+            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+        
+        await context.author.send(error)
