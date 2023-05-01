@@ -45,7 +45,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]rainbowroleset status <state>
  - `Aliases:` None
  - `User permission(s):` Administrator
- - `Bot permission(s):` None
+ - `Bot permission(s):` manage_roles
  - `Checks:` guild_only
  - `Description:` Toggle whether to enable or disable the RainbowRole cog.
 

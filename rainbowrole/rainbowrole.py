@@ -80,7 +80,6 @@ class RainbowRole(commands.Cog):
     
     @commands.hybrid_group(name="rainbowroleset", invoke_without_command=True, aliases=["rrset"])
     @commands.has_permissions(administrator=True)
-    @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
     @app_commands.guild_only()
     async def rainbowroleset(self, context: commands.Context):
@@ -123,6 +122,7 @@ class RainbowRole(commands.Cog):
     
     @rainbowroleset.command(name="role")
     @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(manage_roles=True)
     @commands.guild_only()
     @app_commands.guild_only()
     @app_commands.describe(
