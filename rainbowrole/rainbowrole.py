@@ -175,7 +175,7 @@ class RainbowRole(commands.Cog):
         warns = ""
         if not context.guild.me.guild_permissions.manage_roles:
             warns += "I do not have `manage_roles` permission! RainbowRole will not work.\n"
-        if role >= context.guild.me.top_role:
+        if role and role >= context.guild.me.top_role:
             warns += "The set role is higher than my top role! please lower it down below my top role."
         
         if warns:
