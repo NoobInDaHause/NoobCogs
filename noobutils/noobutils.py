@@ -116,7 +116,7 @@ class NoobUtils(commands.Cog):
       
     @testlog.error
     async def testlog_error(self, context: commands.Context, error):
-        if isinstance(error, commands.MissingPermissions):
+        if isinstance(error, app_commands.CheckFailure):
             return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
 
         if isinstance(error, commands.MissingRequiredArgument):
