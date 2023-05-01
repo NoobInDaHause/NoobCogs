@@ -377,37 +377,3 @@ class Afk(commands.Cog):
         await self.config.member(context.author).toggle_logs.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} log all the pings you recieved.")
-
-    # ------------------------------------------
-
-    @afkset_resetcog.error
-    async def afkset_resetcog_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.CheckFailure):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-
-        if isinstance(error, commands.MissingRequiredArgument):
-            return await context.send_help()
-
-    @afkset_deleteafter.error
-    async def afkset_deleteafter_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.CheckFailure):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-
-        if isinstance(error, commands.MissingRequiredArgument):
-            return await context.send_help()
-
-    @afkset_nick.error
-    async def afkset_nick_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.CheckFailure):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-
-        if isinstance(error, commands.MissingRequiredArgument):
-            return await context.send_help()
-
-    @afkset_forceafk.error
-    async def afkset_forceafk_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.CheckFailure):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-
-        if isinstance(error, commands.MissingRequiredArgument):
-            return await context.send_help()

@@ -183,37 +183,3 @@ class RainbowRole(commands.Cog):
                 name="⚠️ Warning", value=warns, inline=False
             )
         await context.send(embed=embed)
-        
-    # ---------------------------------------------------------------
-    
-    @rainbowroleset_reset.error
-    async def rainbowroleset_reset_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.CheckFailure):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-        
-        if isinstance(error, commands.MissingRequiredArgument):
-            return await context.send_help()
-
-    @rainbowroleset_resetcog.error
-    async def rainbowroleset_resetcog_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.CheckFailure):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-            
-        if isinstance(error, commands.MissingRequiredArgument):
-            return await context.send_help()
-
-    @rainbowroleset_role.error
-    async def rainbowroleset_role_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.CheckFailure):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-            
-        if isinstance(error, commands.MissingRequiredArgument):
-            return await context.send_help()
-
-    @rainbowroleset_status.error
-    async def rainbowroleset_status_error(self, context: commands.Context, error):
-        if isinstance(error, app_commands.CheckFailure):
-            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
-        
-        if isinstance(error, commands.MissingRequiredArgument):
-            return await context.send_help()
