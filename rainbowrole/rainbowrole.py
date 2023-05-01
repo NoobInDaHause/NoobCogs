@@ -189,31 +189,27 @@ class RainbowRole(commands.Cog):
     @rainbowroleset_reset.error
     async def rainbowroleset_reset_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         
-        if isinstance(error, BadArgument):
-            return await context.send_help()
+        await context.send_help()
 
     @rainbowroleset_resetcog.error
     async def rainbowroleset_resetcog_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
             
-        if isinstance(error, BadArgument):
-            return await context.send_help()
+        await context.send_help()
 
     @rainbowroleset_role.error
     async def rainbowroleset_role_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
             
-        if isinstance(error, BadArgument):
-            return await context.send_help()
+        await context.send_help()
 
     @rainbowroleset_status.error
     async def rainbowroleset_status_error(self, context: commands.Context, error):
         if context.prefix == "/":
-            await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
+            return await context.reply(content=self.access_denied(), ephemeral=True, mention_author=False)
         
-        if isinstance(error, BadArgument):
-            return await context.send_help()
+        await context.send_help()
