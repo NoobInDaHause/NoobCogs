@@ -41,8 +41,7 @@ class Confirmation(discord.ui.View):
         await interaction.response.edit_message(content="Alright not doing that then.", view=self)
         
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        owner = await self.bot.fetch_user(interaction.user.id)
-        if await self.bot.is_owner(owner):
+        if await self.bot.is_owner(interaction.user):
             return True
         elif interaction.user.id != self.author.id:
             await interaction.response.send_message(content="You are not the author of this interaction.", ephemeral=True)
