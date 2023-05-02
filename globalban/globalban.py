@@ -7,10 +7,11 @@ import logging
 from redbot.core import modlog, commands, app_commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
+from redbot.core.utils.menus import menu
 
 from typing import Literal, Optional
 
-from .views import Confirmation, Paginator, GbanViewReset
+from .views import Confirmation, GbanViewReset
 
 class GlobalBan(commands.Cog):
     """
@@ -131,8 +132,7 @@ class GlobalBan(commands.Cog):
                 embed.set_footer(text=f"Page ({ind}/{len(pages)})")
                 final_page[ind - 1] = embed
         
-            pages = Paginator(bot=self.bot, author=context.author, pages=list(final_page.values()), timeout=60)
-            return await pages.start(context)
+            return await menu(context, list(final_page.values()), timeout=60)
     
     async def _globalunban_user(self, context: commands.Context, member: discord.Member, reason: str):
         """
@@ -191,8 +191,7 @@ class GlobalBan(commands.Cog):
                 embed.set_footer(text=f"Page ({ind}/{len(pages)})")
                 final_page[ind - 1] = embed
         
-            pages = Paginator(bot=self.bot, author=context.author, pages=list(final_page.values()), timeout=60)
-            return await pages.start(context)
+            return await menu(context, list(final_page.values()), timeout=60)
     
     @commands.hybrid_group(name="globalban", invoke_without_command=True, aliases=["gban"])
     @commands.is_owner()
@@ -240,14 +239,16 @@ class GlobalBan(commands.Cog):
         if user_id == context.bot.user.id:
             return await context.reply(content="You can not globally ban me... Dumbass. >:V", ephemeral=True, mention_author=False)
         
+        confirmation_msg = f"Are you sure you want to globally ban **{member}**?"
         confirm_action = "Alright this might take a while."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send(f"Are you sure you want to globally ban **{member}**?", view=view)
+        view = Confirmation(timeout=30)
+        await view.start(context=context, confirm_action=confirm_action, confirmation_msg=confirmation_msg)
         
         await view.wait()
         
         if view.value == "yes":
-            await self._globalban_user(context=context, member=member, reason=reason)
+            async with context.typing():
+                await self._globalban_user(context=context, member=member, reason=reason)
             
     @globalban.command(name="createmodlog", aliases=["cml"])
     @app_commands.describe(
@@ -301,8 +302,7 @@ class GlobalBan(commands.Cog):
             embed.set_footer(text=f"Page ({ind}/{len(pages)})")
             final_page[ind - 1] = embed
         
-        pages = Paginator(bot=self.bot, author=context.author, pages=list(final_page.values()), timeout=60)
-        await pages.start(context)
+        return await menu(context, list(final_page.values()), timeout=60)
     
     @globalban.command(name="logs")
     async def globalban_logs(self, context: commands.Context):
@@ -331,8 +331,7 @@ class GlobalBan(commands.Cog):
             embed.set_footer(text=f"Page ({ind}/{len(pages)})")
             final_page[ind - 1] = embed
         
-        pages = Paginator(bot=self.bot, author=context.author, pages=list(final_page.values()), timeout=60)
-        await pages.start(context)
+        return await menu(context, list(final_page.values()), timeout=60)
     
     @globalban.command(name="reset")
     async def globalban_reset(self, context: commands.Context):
@@ -342,10 +341,18 @@ class GlobalBan(commands.Cog):
         if not await context.bot.is_owner(context.author):
             return await context.reply(content=self.access_denied(), ephemeral=True)
         
-        view = GbanViewReset(bot=self.bot, author=context.author, config=self.config, timeout=30)
-        view.message = await context.send(content="Choose what config to reset.", view=view)
+        msg = "Choose what config to reset."
+        view = GbanViewReset(timeout=30)
+        await view.start(context=context, msg=msg)
         
         await view.wait()
+        
+        if view.select_value == "banlist":
+            await self.config.banlist.clear()
+        elif view.select_value == "banlogs":
+            await self.config.banlogs.clear()
+        elif view.select_value == "cog":
+            await self.config.clear_all()
     
     @globalban.command(name="unban")
     @app_commands.describe(
@@ -378,11 +385,13 @@ class GlobalBan(commands.Cog):
         if user_id not in await self.config.banlist():
             return await context.reply(content=f"It appears **{member}** is not globally banned.", ephemeral=True, mention_author=False)
             
+        confirm_msg = f"Are you sure you want to globally unban **{member}**?"
         confirm_action = "Alright this might take a while."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send(f"Are you sure you want to globally unban **{member}**?", view=view)
+        await view.start(context=context, confirm_action=confirm_action, confirmation_msg=confirm_msg)
         
         await view.wait()
         
         if view.value == "yes":
-            await self._globalunban_user(context=context, member=member, reason=reason)
+            async with context.typing():
+                await self._globalunban_user(context=context, member=member, reason=reason)

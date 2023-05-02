@@ -216,7 +216,7 @@ class Afk(commands.Cog):
         """
         Change the delete after on every AFK notify.
         
-        Put `0` to disable.
+        Leave `seconds` blank to disable.
         Default is 10 seconds.
         """
         if not seconds:
@@ -328,19 +328,25 @@ class Afk(commands.Cog):
     @app_commands.guild_only()
     async def afkset_showsettings(self, context: commands.Context):
         """
-        See your AFK settings and Guild settings (if manage_guild+).
+        See your AFK settings.
+        
+        Guild settings show up when you have manage_guild permission.
         """
         member_settings = await self.config.member(context.author).all()
         guild_settings = await self.config.guild(context.guild).all()
         da = f"{guild_settings['delete_after']} seconds." if guild_settings['delete_after'] != 0 else "Disabled."
-        gset = f"\n> Guild settings\n**Nick change:** {guild_settings['nick']}\n**Delete after:** {da}" if await context.bot.is_owner(context.author) or context.author.guild_permissions.manage_guild else ""
+        gset = f"**Nick change:** {guild_settings['nick']}\n**Delete after:** {da}"
         
         embed = discord.Embed(
             title=f"{context.author.name}'s AFK settings.",
-            description=f"**Is afk:** {member_settings['afk']}\n**Is sticky:** {member_settings['sticky']}\n**Ping logging:** {member_settings['toggle_logs']}\n{gset}",
+            description=f"**Is afk:** {member_settings['afk']}\n**Is sticky:** {member_settings['sticky']}\n**Ping logging:** {member_settings['toggle_logs']}",
             colour=context.author.colour,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
+        
+        if await context.bot.is_owner(context.author) or context.author.guild_permissions.manage_guild:
+            embed.add_field(name="Guild settings:", value=gset, inline=False)
+        
         await context.send(embed=embed)
     
     @afkset.command(name="sticky")
@@ -355,6 +361,8 @@ class Afk(commands.Cog):
     ):
         """
         Toggle whether to sticky your afk or not.
+        
+        This defaults to `False`.
         """
         await self.config.member(context.author).sticky.set(state)
         status = "will now" if state else "will not"
