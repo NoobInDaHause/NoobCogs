@@ -85,8 +85,8 @@ class GbanViewReset(discord.ui.View):
     
     async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         select.disabled = True
+        await interaction.response.defer(thinking=True)
         await interaction.response.edit_message(content="Menu no longer available.", view=self)
-        await interaction.response.defer()
         
         if select.values[0] == "List":
             confirm_msg = "Are you sure you want to reset the globalban banlist?"
