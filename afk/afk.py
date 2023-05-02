@@ -5,10 +5,11 @@ import logging
 from redbot.core import app_commands, commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
+from redbot.core.utils.menus import menu
 
 from typing import Literal, Optional
 
-from .views import Paginator, Confirmation
+from .views import Confirmation
 
 class Afk(commands.Cog):
     """
@@ -60,9 +61,6 @@ class Afk(commands.Cog):
         for guild in self.bot.guilds:
             await self.config.member_from_ids(guild_id=guild.id, member_id=user_id).clear()
     
-    def access_denied(self):
-        return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
-    
     async def start_afk(self, payload: discord.Message, user: discord.Member, reason: str):
         """
         Start AFK status.
@@ -92,9 +90,9 @@ class Afk(commands.Cog):
                 await user.edit(nick=f"{user.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
             except discord.errors.Forbidden:
                 if user.id == payload.guild.owner.id:
-                    await payload.channel.send(content="Could not change your nick cause you are the guild owner.", delete_after=10, ephemeral=True)
+                    await payload.channel.send(content="Could not change your nick cause you are the guild owner.", delete_after=10)
                 else:
-                    await payload.channel.send(content="Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10, ephemeral=True)
+                    await payload.channel.send(content="Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
 
         if not await self.config.member(user).toggle_logs():
             return await self.config.member(user).pinglogs.clear()
@@ -113,9 +111,8 @@ class Afk(commands.Cog):
             embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=user.avatar.url)
             final_page[ind - 1] = embed
 
-        pages = Paginator(bot=self.bot, author=user, pages=list(final_page.values()), timeout=60)
         context = await self.bot.get_context(payload)
-        await pages.start(context)
+        await menu(context, list(final_page.values()), timeout=60)
         await self.config.member(user).pinglogs.clear()
     
     async def log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
@@ -300,9 +297,10 @@ class Afk(commands.Cog):
         """
         Reset your AFK settings to default.
         """
+        confirmation_msg = "Are you sure you want to reset your AFK settings?"
         confirm_action = "Successfully resetted your AFK settings."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send("Are you sure you want to reset your AFK settings?", view=view)
+        view = Confirmation(timeout=30)
+        await view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
         
         await view.wait()
         
@@ -315,9 +313,10 @@ class Afk(commands.Cog):
         """
         Reset the AFK cogs configuration. (Bot owners only.)
         """
+        confirmation_msg = "Are you sure you want to reset the AFK cogs whole configuration?"
         confirm_action = "Successfully resetted the AFK cogs configuration."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send("Are you sure you want to reset the AFK cogs whole configuration?", view=view)
+        view = Confirmation(timeout=30)
+        await view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
         
         await view.wait()
         
