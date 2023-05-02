@@ -335,11 +335,11 @@ class Afk(commands.Cog):
         member_settings = await self.config.member(context.author).all()
         guild_settings = await self.config.guild(context.guild).all()
         da = f"{guild_settings['delete_after']} seconds." if guild_settings['delete_after'] != 0 else "Disabled."
-        gset = f"**Nick change:** {guild_settings['nick']}\n**Delete after:** {da}"
+        gset = f"`Nick change:` {guild_settings['nick']}\n`Delete after:` {da}"
         
         embed = discord.Embed(
             title=f"{context.author.name}'s AFK settings.",
-            description=f"**Is afk:** {member_settings['afk']}\n**Is sticky:** {member_settings['sticky']}\n**Ping logging:** {member_settings['toggle_logs']}",
+            description=f"`Is afk:` {member_settings['afk']}\n`Is sticky:` {member_settings['sticky']}\n`Ping logging:` {member_settings['toggle_logs']}",
             colour=context.author.colour,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
