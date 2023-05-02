@@ -5,7 +5,7 @@ import logging
 from redbot.core import app_commands, commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core.utils.menus import menu
 
 from typing import Literal, Optional
 
