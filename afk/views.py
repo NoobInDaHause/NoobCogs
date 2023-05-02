@@ -12,7 +12,7 @@ class Confirmation(discord.ui.View):
     ):
         super().__init__(timeout=timeout)
         self.bot: Red = None
-        self.author: discord.member = None
+        self.author: discord.Member = None
         self.confirm_action: str = None
         self.message: discord.Message = None
         self.value = None
