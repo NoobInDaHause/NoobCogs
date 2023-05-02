@@ -84,7 +84,8 @@ class GbanViewReset(discord.ui.View):
     )
     
     async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        select.disabled = True
+        for x in self.children:
+            x.disabled = True
         await interaction.response.defer()
         await self.message.edit(content="Menu no longer available.", view=self)
         
