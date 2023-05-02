@@ -300,7 +300,7 @@ class Afk(commands.Cog):
         confirmation_msg = "Are you sure you want to reset your AFK settings?"
         confirm_action = "Successfully resetted your AFK settings."
         view = Confirmation(timeout=30)
-        view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
+        await view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
         
         await view.wait()
         
@@ -316,7 +316,7 @@ class Afk(commands.Cog):
         confirmation_msg = "Are you sure you want to reset the AFK cogs whole configuration?"
         confirm_action = "Successfully resetted the AFK cogs configuration."
         view = Confirmation(timeout=30)
-        view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
+        await view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
         
         await view.wait()
         
