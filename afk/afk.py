@@ -90,9 +90,9 @@ class Afk(commands.Cog):
                 await user.edit(nick=f"{user.display_name}".replace("[AFK]", ""), reason="User is no longer AFK.")
             except discord.errors.Forbidden:
                 if user.id == payload.guild.owner.id:
-                    await payload.channel.send(content="Could not change your nick cause you are the guild owner.", delete_after=10, ephemeral=True)
+                    await payload.channel.send(content="Could not change your nick cause you are the guild owner.", delete_after=10)
                 else:
-                    await payload.channel.send(content="Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10, ephemeral=True)
+                    await payload.channel.send(content="Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
 
         if not await self.config.member(user).toggle_logs():
             return await self.config.member(user).pinglogs.clear()
