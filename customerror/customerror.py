@@ -59,7 +59,7 @@ class CustomError(commands.Cog):
             
             ce = ctx.bot.get_cog("CustomError")
             cmd = ctx.bot.get_command("eval")
-            error_msg = ce.config.error_msg()
+            error_msg = await ce.config.error_msg()
             return await ctx.invoke(cmd, body=error_msg)
         
         await self.old_error(ctx, error, unhandled_by_cog)
