@@ -21,7 +21,7 @@ class CustomError(commands.Cog):
         self.bot = bot
         
         self.config = Config.get_conf(self, identifier=9874825374237, force_registration=True)
-        default_msg = """await ctx.send("`Error in command '{ctx.command.qualified_name}'. Check your console or logs for details.`")"""
+        default_msg = """await ctx.send(f"`Error in command '{ctx.command.qualified_name}'. Check your console or logs for details.`")"""
         default_global = {
             "error_msg": default_msg
         }
