@@ -31,7 +31,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
         
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -109,7 +109,6 @@ class CustomError(commands.Cog):
         if not cmd:
             return await context.reply(content="The dev cog isn't loaded, load it when you start the bot with the `--dev` flag.")
         
-        await context.tick()
         raise NotImplementedError("plzerror")
     
     @customerror.command(name="showsettings", aliases=["ss"])
