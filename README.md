@@ -4,6 +4,12 @@ Some random cogs for red discord bot made by a noob at python.
 
 Some of the cogs are badly coded and buggy so handle these cogs with care.
 
+## Out of action
+
+I no longer maintain this branch please use the 3.5 branch.
+
+Feel free to make a PR if you think something needs fixed or changed.
+
 ## Installation
 
 ```
