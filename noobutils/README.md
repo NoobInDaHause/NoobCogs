@@ -33,14 +33,6 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Checks:` guild_only
  - `Description:` See the current member count on this guild.
 
-# [p]plzerror
- - `Usage:` [p]plzerror
- - `Aliases:` None
- - `User permission(s):` Bot Owner
- - `Bot permission(s):` None
- - `Checks:` Any
- - `Description:` Useless command to show/test an error.
-
 # [p]testlog
  - `Usage:` [p]testlog <anything>
  - `Aliases:` None

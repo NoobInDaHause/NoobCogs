@@ -21,7 +21,7 @@ class NoobUtils(commands.Cog):
         self.bot = bot
         self.log = logging.getLogger("red.WintersCogs.NoobUtils")
         
-    __version__ = "1.0.0"
+    __version__ = "1.1.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -83,19 +83,6 @@ class NoobUtils(commands.Cog):
             .set_author(name=f"Current member count for [{context.guild.name}]", icon_url=context.guild.icon.url)
         )
         await context.send(embed=embed)
-
-    @commands.hybrid_command(name="plzerror")
-    @commands.is_owner()
-    async def plzerror(self, context: commands.Context):
-        """
-        Useless command to show/test an error.
-
-        In case you are wondering what error this is, it's just a harmless `NotImplementedError`.
-        """
-        if context.prefix == "/":
-            return await context.reply(content="This command is not available on slash commands please use legacy commands.", ephemeral=True)
-        
-        raise NotImplementedError("Plz error.")
     
     @commands.hybrid_command(name="testlog")
     @commands.is_owner()
