@@ -31,7 +31,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
         
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -59,7 +59,12 @@ class CustomError(commands.Cog):
             
             ce = ctx.bot.get_cog("CustomError")
             cmd = ctx.bot.get_command("eval")
-            error_msg = await ce.config.error_msg()
+            msg = await ce.config.error_msg()
+            error_msg = msg.replace("{error}", f"{error}")
+            try:
+                await ctx.invoke(cmd, body=error_msg)
+            except SyntaxError:
+                await ctx.send(f"Failed to eval code most likely that the set code has syntax error: `{ctx.command.qualified_name}` errored.")
             return await ctx.invoke(cmd, body=error_msg)
         
         await self.old_error(ctx, error, unhandled_by_cog)
@@ -87,6 +92,7 @@ class CustomError(commands.Cog):
         And the dev cog loaded.
 
         See `[p]help eval` to check all the available variables.
+        Add `{error}` to show what was the error.
         """
         cmd = self.bot.get_command('eval')
         if not cmd:
