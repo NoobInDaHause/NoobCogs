@@ -31,7 +31,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
         
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -85,6 +85,8 @@ class CustomError(commands.Cog):
         
         Requires knowledge of python and discord.py.
         And the dev cog loaded.
+
+        See `[p]help eval` to check all the available variables.
         """
         cmd = self.bot.get_command('eval')
         if not cmd:
