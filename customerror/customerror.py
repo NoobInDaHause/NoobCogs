@@ -31,7 +31,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
         
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -63,9 +63,9 @@ class CustomError(commands.Cog):
             error_msg = msg.replace("{error}", f"{error}")
             try:
                 await ctx.invoke(cmd, body=error_msg)
-            except SyntaxError:
+            except Exception:
                 await ctx.send(f"Failed to eval code most likely that the set code has syntax error: `{ctx.command.qualified_name}` errored.")
-            return await ctx.invoke(cmd, body=error_msg)
+            return
         
         await self.old_error(ctx, error, unhandled_by_cog)
     
