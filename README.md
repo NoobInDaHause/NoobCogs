@@ -27,7 +27,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | GlobalBan       |  v1.0.3   | Globally ban a user from all the guilds the bot is in.           |
 | NoobUtils       |  v1.1.2   | Some maybe useful or useless commands.                           |
 | RainbowRole     |  v1.0.3   | Have a role that changes colour every 20 minutes.                |
-| ServerDonations |  v1.0.2   | Donate bot currencies or other things to servers.                |
+| ServerDonations |  v1.1.0   | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v1.0.2   | A fun split or steal game.                                       |
 
 ## License

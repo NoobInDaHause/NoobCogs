@@ -33,7 +33,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
         
-    __version__ = "1.0.2"
+    __version__ = "1.1.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -74,9 +74,20 @@ class ServerDonations(commands.Cog):
             .add_field(name="Prize:", value=g_values[4], inline=True)
             .add_field(name="Message:", value=g_values[5], inline=False)
         )
+        
+        g_role = await self.config.guild(context.guild).gman_id()
         channel = context.guild.get_channel(chan_id)
+        
+        if not g_role:
+            try:
+                await channel.send(embed=embed, view=view)
+            except (discord.errors.Forbidden, discord.errors.HTTPException):
+                return await context.send("It appears that I do not see the set giveaway donation channel request, most likely deleted or I do not have permission to view it.")
+        
+        grole = context.guild.get_role(g_role)
+        am = discord.AllowedMentions(roles=True, users=True, everyone=False)
         try:
-            await channel.send(embed=embed, view=view)
+            await channel.send(content=grole.mention, embed=embed, view=view, allowed_mentions=am)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
             return await context.send("It appears that I do not see the set giveaway donation channel request, most likely deleted or I do not have permission to view it.")
     
@@ -104,10 +115,19 @@ class ServerDonations(commands.Cog):
             .add_field(name="Prize:", value=e_values[3], inline=True)
             .add_field(name="Message:", value=e_values[4], inline=True)
         )
-        
+        e_role = await self.config.guild(context.guild).eman_id()
         channel = context.guild.get_channel(chan_id)
+        
+        if not e_role:
+            try:
+                await channel.send(embed=embed, view=view)
+            except (discord.errors.Forbidden, discord.errors.HTTPException):
+                return await context.send("It appears that I do not see the set event donation channel request, most likely deleted or I do not have permission to view it.")
+        
+        erole = context.guild.get_role(e_role)
+        am = discord.AllowedMentions(roles=True, users=True, everyone=False)
         try:
-            await channel.send(embed=embed, view=view)
+            await channel.send(content=erole.mention, embed=embed, view=view, allowed_mentions=am)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
             return await context.send("It appears that I do not see the set event donation channel request, most likely deleted or I do not have permission to view it.")
         
@@ -134,10 +154,19 @@ class ServerDonations(commands.Cog):
             .add_field(name="Requirements:", value=h_values[2], inline=False)
             .add_field(name="Message:", value=h_values[3], inline=False)
         )
-        
+        h_role = await self.config.guild(context.guild).hman_id()
         channel = context.guild.get_channel(chan_id)
+        
+        if not h_role:
+            try:
+                await channel.send(embed=embed, view=view)
+            except (discord.errors.Forbidden, discord.errors.HTTPException):
+                return await context.send("It appears that I do not see the set heist donation channel request, most likely deleted or I do not have permission to view it.")
+        
+        hrole = context.guild.get_role(h_role)
+        am = discord.AllowedMentions(roles=True, users=True, everyone=False)
         try:
-            await channel.send(embed=embed, view=view)
+            await channel.send(content=hrole.mention, embed=embed, view=view, allowed_mentions=am)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
             return await context.send("It appears that I do not see the set heist donation channel request, most likely deleted or I do not have permission to view it.")
         
@@ -199,16 +228,16 @@ class ServerDonations(commands.Cog):
         if view.value == "yes":
             await self.config.guild(context.guild).clear()
     
-    @serverdonationsset.group(name="pingrole")
-    async def serverdonationsset_pingrole(self, context):
+    @serverdonationsset.group(name="manager")
+    async def serverdonationsset_manager(self, context):
         """
-        Commands to set or remove roles that gets pinged for donation requests.
+        Commands to set or remove manager roles that gets pinged for donation requests.
         
         See sub commands for more info.
         """
         
-    @serverdonationsset_pingrole.command(name="giveawaymanager", aliases=["gman"])
-    async def serverdonationsset_pingrole_gman(
+    @serverdonationsset_manager.command(name="giveaway", aliases=["gaw"])
+    async def serverdonationsset_manager_giveaway(
         self,
         context: commands.Context,
         role: Optional[discord.Role]
@@ -233,8 +262,8 @@ class ServerDonations(commands.Cog):
         await self.config.guild(context.guild).gman_id.set(role.id)
         await context.send(f"Successfully set `@{role.name}` as the giveaway manager ping role.")
             
-    @serverdonationsset_pingrole.command(name="eventmanager", aliases=["eman"])
-    async def serverdonationsset_pingrole_eman(
+    @serverdonationsset_manager.command(name="event")
+    async def serverdonationsset_manager_event(
         self,
         context: commands.Context,
         role: Optional[discord.Role]
@@ -259,8 +288,8 @@ class ServerDonations(commands.Cog):
         await self.config.guild(context.guild).eman_id.set(role.id)
         await context.send(f"Successfully set `@{role.name}` as the event manager role.")
             
-    @serverdonationsset_pingrole.command(name="heistmanager", aliases=["hman"])
-    async def serverdonationsset_pingrole_hman(
+    @serverdonationsset_manager.command(name="heist")
+    async def serverdonationsset_manager_heist(
         self,
         context: commands.Context,
         role: Optional[discord.Role]
@@ -293,8 +322,8 @@ class ServerDonations(commands.Cog):
         See sub commands for more info.
         """
         
-    @serverdonationsset_channel.command(name="gchannel", aliases=["gchan"])
-    async def serverdonationsset_channel_gchannel(
+    @serverdonationsset_channel.command(name="giveaway", aliases=["gaw"])
+    async def serverdonationsset_channel_giveaway(
         self,
         context: commands.Context,
         channel: Optional[discord.TextChannel]
@@ -319,8 +348,8 @@ class ServerDonations(commands.Cog):
         await self.config.guild(context.guild).gchannel_id.set(channel.id)
         await context.send(f"Successfully set {channel.mention} as the giveaway donation request channel.")
         
-    @serverdonationsset_channel.command(name="echannel", aliases=["echan"])
-    async def serverdonationsset_channel_echannel(
+    @serverdonationsset_channel.command(name="event")
+    async def serverdonationsset_channel_event(
         self,
         context: commands.Context,
         channel: Optional[discord.TextChannel]
@@ -345,8 +374,8 @@ class ServerDonations(commands.Cog):
         await self.config.guild(context.guild).echannel_id.set(channel.id)
         await context.send(f"Successfully set {channel.mention} as the event donation request channel.")
             
-    @serverdonationsset_channel.command(name="hchannel", aliases=["hchan"])
-    async def serverdonationsset_channel_hchannel(
+    @serverdonationsset_channel.command(name="heist")
+    async def serverdonationsset_channel_heist(
         self,
         context: commands.Context,
         channel: Optional[discord.TextChannel]
