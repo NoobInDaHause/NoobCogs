@@ -27,9 +27,8 @@ class SdonateDesc:
             You must split arguments with `|`.
             Arguments surrounded by [] are optional put `None` if you do not want to put anything.
         
-        Examples:
-            `[p]giveawaydonate "Dank Memer" "1 day and 12 hours" 1w none "69 coins" hallo guys welcome to my minecraft channel.`
-            `[p]gdonate dank 1d12h 1w none 420coins free 420 coins!!`
+        Example:
+            `[p]giveawaydonate Dank Memer | 1 day and 12 hours | 1 winner | none | 69 coins | hallo guys welcome to my minecraft channel.`
         """
         
     ecmd = "Syntax: [p]eventdonate <type> | <event> | [requirements] | <prize> | [message]\nAlias: [p]]edonate, [p]edono"
@@ -53,9 +52,8 @@ class SdonateDesc:
             You must split arguments with `|`.
             Arguments surrounded by [] are optional put `None` if you do not want to put anything.
         
-        Examples:
-            `[p]eventdonate "Owo bot" "Split Or Steal" none "1m owo coins" can i have chezburger plz`
-            `[p]edonate owobot splitorsteal none 1mowocoins mmmmmm chezburger`
+        Example:
+            `[p]eventdonate Owo bot | Split Or Steal | none | 1m owo coins | can i have chezburger plz`
         """
         
     hcmd = "Syntax: [p]heistdonate <type> | [requirements] | <amount> | [message]\nAlias: [p]hdonate, [p]hdono"
@@ -78,6 +76,5 @@ class SdonateDesc:
             Arguments surrounded by [] are optional put `None` if you do not want to put anything.
         
         Examples:
-            `[p]heistdonate "Bro Bot" none "69420 coins" heist this shit up`
-            `[p]hdonate brobot none 69420coins bored so heres a heist for yall`
+            `[p]heistdonate Bro Bot | none | 69420 coins | heist this baby up`
         """
