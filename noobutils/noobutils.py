@@ -19,9 +19,9 @@ class NoobUtils(commands.Cog):
     """
     def __init__(self, bot: Red):
         self.bot = bot
-        self.log = logging.getLogger("red.WintersCogs.NoobUtils")
+        self.log = logging.getLogger("red.NoobCogs.NoobUtils")
         
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:

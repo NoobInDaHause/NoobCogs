@@ -29,9 +29,9 @@ class GlobalBan(commands.Cog):
             "create_modlog": False
         }
         self.config.register_global(**default_global)
-        self.log = logging.getLogger("red.WintersCogs.GlobalBan")
+        self.log = logging.getLogger("red.NoobCogs.GlobalBan")
         
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:

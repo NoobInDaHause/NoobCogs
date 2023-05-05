@@ -30,9 +30,9 @@ class SplitOrSteal(commands.Cog):
             "activechan": []
         }
         self.config.register_guild(**default_guild_settings)
-        self.log = logging.getLogger("red.WintersCogs.SplitOrSteal")
+        self.log = logging.getLogger("red.NoobCogs.SplitOrSteal")
         
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
