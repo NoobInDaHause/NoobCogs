@@ -22,12 +22,12 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| Afk             |  v1.0.0   | Notify users whenever you go AFK with pings logging.             |
-| CustomError     |  v1.0.4   | Customize your bots error message.                               |
-| GlobalBan       |  v1.0.0   | Globally ban a user from all the guilds the bot is in.           |
-| NoobUtils       |  v1.1.0   | Some maybe useful or useless commands.                           |
-| RainbowRole     |  v1.0.0   | Have a role that changes colour every 20 minutes.                |
-| SplitOrSteal    |  v1.0.0   | A fun split or steal game.                                       |
+| Afk             |  v1.0.1   | Notify users whenever you go AFK with pings logging.             |
+| CustomError     |  v1.0.5   | Customize your bots error message.                               |
+| GlobalBan       |  v1.0.1   | Globally ban a user from all the guilds the bot is in.           |
+| NoobUtils       |  v1.1.1   | Some maybe useful or useless commands.                           |
+| RainbowRole     |  v1.0.1   | Have a role that changes colour every 20 minutes.                |
+| SplitOrSteal    |  v1.0.1   | A fun split or steal game.                                       |
 
 ## License
 

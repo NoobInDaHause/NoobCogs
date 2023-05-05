@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.WintersCogs.Afk")
         
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -193,7 +193,7 @@ class Afk(commands.Cog):
         await context.send("You are now AFK. Any member that pings you will now get notified.")
         await self.start_afk(payload=context.message, user=context.author, reason=reason)
     
-    @commands.hybrid_group(name="afkset", invoke_without_command=True, aliases=["awayset"])
+    @commands.group(name="afkset", invoke_without_command=True, aliases=["awayset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def afkset(self, context: commands.Context):
@@ -204,10 +204,6 @@ class Afk(commands.Cog):
     
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.has_permissions(manage_guild=True)
-    @app_commands.guild_only()
-    @app_commands.describe(
-        seconds="The amount of seconds before the notify embed gets deleted."
-    )
     async def afkset_deleteafter(
         self,
         context: commands.Context,
@@ -231,11 +227,6 @@ class Afk(commands.Cog):
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.has_permissions(manage_guild=True)
-    @app_commands.guild_only()
-    @app_commands.describe(
-        member="The member that you want to forcefully set or remove an AFK status to.",
-        reason="The optional reason for the AFK."
-    )
     async def afkset_forceafk(
         self,
         context: commands.Context,
@@ -273,10 +264,6 @@ class Afk(commands.Cog):
     @afkset.command(name="nick")
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_nicknames=True)
-    @app_commands.guild_only()
-    @app_commands.describe(
-        state="True or False."
-    )
     async def afkset_nick(
         self,
         context: commands.Context,
@@ -292,7 +279,6 @@ class Afk(commands.Cog):
         await context.send(f"I {status} edit the users nick whenever they go AFK.")
     
     @afkset.command(name="reset")
-    @app_commands.guild_only()
     async def afkset_reset(self, context: commands.Context):
         """
         Reset your AFK settings to default.
@@ -325,7 +311,6 @@ class Afk(commands.Cog):
             await self.config.clear_all_members()
     
     @afkset.command(name="showsettings", aliases=["ss"])
-    @app_commands.guild_only()
     async def afkset_showsettings(self, context: commands.Context):
         """
         See your AFK settings.
@@ -350,10 +335,6 @@ class Afk(commands.Cog):
         await context.send(embed=embed)
     
     @afkset.command(name="sticky")
-    @app_commands.guild_only()
-    @app_commands.describe(
-        state="True or False."
-    )
     async def afkset_sticky(
         self,
         context: commands.Context,
@@ -369,10 +350,6 @@ class Afk(commands.Cog):
         await context.send(f"I {status} sticky your AFK.")
         
     @afkset.command(name="togglelogs", aliases=["tl"])
-    @app_commands.guild_only()
-    @app_commands.describe(
-        state="True or False."
-    )
     async def afkset_togglelogs(
         self,
         context: commands.Context,

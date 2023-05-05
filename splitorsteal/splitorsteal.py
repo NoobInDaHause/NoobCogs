@@ -32,7 +32,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.WintersCogs.SplitOrSteal")
         
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -302,10 +302,10 @@ class SplitOrSteal(commands.Cog):
         pages = Paginator(bot=self.bot, author=context.author, pages=pag, timeout=60)
         await pages.start(context)
     
-    @commands.hybrid_group(name="splitorstealset", invoke_without_command=True, aliases=["sosset"])
+    @commands.group(name="splitorstealset", invoke_without_command=True, aliases=["sosset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
-    @commands.admin_or_permissions(administrator=True, manage_guild=True)
+    @commands.has_permissions(manage_guild=True)
     async def splitorstealset(self, context: commands.Context):
         """
         Settings for split or steal cog.
@@ -313,10 +313,6 @@ class SplitOrSteal(commands.Cog):
         await context.send_help()
         
     @splitorstealset.command(name="clearactive", aliases=["ca"])
-    @app_commands.guild_only()
-    @app_commands.describe(
-        channel="The channel that you want to reset."
-    )
     async def splitorstealset_clearactive(self, context: commands.Context, channel: Optional[discord.TextChannel]):
         """
         Clear an active game on a channel if bot thinks there is one in that.
@@ -341,7 +337,6 @@ class SplitOrSteal(commands.Cog):
         await context.send(f"Successfully removed the active game in {channel.mention}.")
     
     @splitorstealset.command(name="manager")
-    @app_commands.guild_only()
     async def splitorstealset_manager(self, context: commands.Context):
         """
         Add or remove a manager role.
@@ -359,10 +354,6 @@ class SplitOrSteal(commands.Cog):
         await view.wait()
     
     @splitorstealset.command(name="manageronly", aliases=["mo"])
-    @app_commands.guild_only()
-    @app_commands.describe(
-        state="True or False"
-    )
     async def splitorstealset_manageronly(self, context: commands.Context, state: bool):
         """
         Toggle whether to restrict the `[p]splitorsteal` command to the set manager roles.
@@ -375,7 +366,6 @@ class SplitOrSteal(commands.Cog):
         await context.send(f"Manager only setting for splitorsteal has been {status}.")
         
     @splitorstealset.command(name="reset")
-    @app_commands.guild_only()
     async def splitorstealset_reset(self, context: commands.Context):
         """
         Reset the guild settings to default.
@@ -411,7 +401,6 @@ class SplitOrSteal(commands.Cog):
             await self.config.clear_all()
     
     @splitorstealset.command(name="showsettings", aliases=["ss"])
-    @app_commands.guild_only()
     async def splitorstealset_showsetting(self, context: commands.Context):
         """
         See the settings of SplitOrSteal.

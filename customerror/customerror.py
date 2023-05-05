@@ -3,7 +3,7 @@ import discord
 import logging
 import traceback
 
-from redbot.core import commands, app_commands, Config
+from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, box
 
@@ -31,7 +31,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
         
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -72,7 +72,7 @@ class CustomError(commands.Cog):
     async def cog_unload(self):
         self.bot.on_command_error = self.old_error
     
-    @commands.hybrid_group(name="customerror")
+    @commands.group(name="customerror")
     @commands.is_owner()
     async def customerror(self, context: commands.Context):
         """
@@ -80,10 +80,6 @@ class CustomError(commands.Cog):
         """
         
     @customerror.command(name="message")
-    @commands.is_owner()
-    @app_commands.describe(
-        message="The custom error message."
-    )
     async def customerror_message(self, context: commands.Context, *, message: Optional[str]):
         """
         Customize [botname]'s error message. (Bot owners only)

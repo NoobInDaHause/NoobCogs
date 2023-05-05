@@ -21,7 +21,7 @@ class NoobUtils(commands.Cog):
         self.bot = bot
         self.log = logging.getLogger("red.WintersCogs.NoobUtils")
         
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -84,18 +84,12 @@ class NoobUtils(commands.Cog):
         )
         await context.send(embed=embed)
     
-    @commands.hybrid_command(name="testlog")
+    @commands.command(name="testlog")
     @commands.is_owner()
-    @app_commands.describe(
-        anything="Just write anything :p."
-    )
     async def testlog(self, context: commands.Context, *, anything: str):
         """
         Test out the logging module. (Bot owner only)
         
         Say anything in the `anything` parameter to log it in the console.
         """
-        if context.prefix != "/":
-            await context.tick()
-        
         self.log.info(anything)

@@ -4,7 +4,7 @@ import datetime
 import discord
 import logging
 
-from redbot.core import modlog, commands, app_commands, Config
+from redbot.core import modlog, commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 from redbot.core.utils.menus import menu
@@ -31,7 +31,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.WintersCogs.GlobalBan")
         
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -46,9 +46,6 @@ class GlobalBan(commands.Cog):
     ) -> None:
         # This cog does not store any end user data whatsoever. But it stores user ID's for the ban list! Also thanks sravan!
         return
-    
-    def access_denied(self):
-        return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
     
     async def cog_load(self):
         await self.register_casetypes()
@@ -193,20 +190,15 @@ class GlobalBan(commands.Cog):
         
             return await menu(context, list(final_page.values()), timeout=60)
     
-    @commands.hybrid_group(name="globalban", invoke_without_command=True, aliases=["gban"])
+    @commands.group(name="globalban", aliases=["gban"])
     @commands.is_owner()
     @commands.bot_has_permissions(embed_links=True)
     async def globalban(self, context: commands.Context):
         """
         Base commands for the GlobalBan Cog. (Bot owners only)
         """
-        await context.send_help()
     
     @globalban.command(name="ban")
-    @app_commands.describe(
-        user_id="The ID of the User that you want to globally ban.",
-        reason="The Optional reason for this global ban."
-    )
     async def globalban_ban(
         self,
         context: commands.Context,
@@ -217,9 +209,6 @@ class GlobalBan(commands.Cog):
         """
         Globally ban a user. (Bot owners only)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content=self.access_denied(), ephemeral=True)
-        
         try:
             user_id = int(user_id)
         except ValueError:
@@ -247,20 +236,14 @@ class GlobalBan(commands.Cog):
         await view.wait()
         
         if view.value == "yes":
-            async with context.typing():
-                await self._globalban_user(context=context, member=member, reason=reason)
+            await context.typing():
+            await self._globalban_user(context=context, member=member, reason=reason)
             
     @globalban.command(name="createmodlog", aliases=["cml"])
-    @app_commands.describe(
-        state="True or False."
-    )
     async def globalban_createmodlog(self, context: commands.Context, state: bool):
         """
         Toggle whether to make a modlog case when you globally ban or unban a user. (Bot owners only)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content=self.access_denied(), ephemeral=True)
-        
         await self.config.create_modlog.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} make a modlog case whenever you globally ban or unban a user.")
@@ -270,9 +253,6 @@ class GlobalBan(commands.Cog):
         """
         Show the globalban ban list. (Bot owners only)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content=self.access_denied(), ephemeral=True)
-        
         bans = await self.config.banlist()
         
         if not bans:
@@ -309,9 +289,6 @@ class GlobalBan(commands.Cog):
         """
         Show the globalban logs. (Bot owners only)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content=self.access_denied(), ephemeral=True)
-        
         logs = await self.config.banlogs()
         
         if not logs:
@@ -338,9 +315,6 @@ class GlobalBan(commands.Cog):
         """
         Reset any of the globalban config. (Bot owners only)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content=self.access_denied(), ephemeral=True)
-        
         msg = "Choose what config to reset."
         view = GbanViewReset(timeout=30)
         await view.start(context=context, msg=msg)
@@ -355,10 +329,6 @@ class GlobalBan(commands.Cog):
             await self.config.clear_all()
     
     @globalban.command(name="unban")
-    @app_commands.describe(
-        user_id="The ID of the User that you want to globally unban.",
-        reason="The Optional reason for this global unban."
-    )
     async def globalban_unban(
         self,
         context: commands.Context,
@@ -369,9 +339,6 @@ class GlobalBan(commands.Cog):
         """
         Globally unban a user. (Bot owners only)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content=self.access_denied(), ephemeral=True)
-        
         try:
             user_id = int(user_id)
         except ValueError:
@@ -393,5 +360,5 @@ class GlobalBan(commands.Cog):
         await view.wait()
         
         if view.value == "yes":
-            async with context.typing():
-                await self._globalunban_user(context=context, member=member, reason=reason)
+            await context.typing():
+            await self._globalunban_user(context=context, member=member, reason=reason)
