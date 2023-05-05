@@ -33,7 +33,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
         
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -229,6 +229,7 @@ class ServerDonations(commands.Cog):
             await self.config.guild(context.guild).clear()
     
     @serverdonationsset.group(name="manager")
+    @commands.bot_has_permissions(mention_everyone=True)
     async def serverdonationsset_manager(self, context):
         """
         Commands to set or remove manager roles that gets pinged for donation requests.
