@@ -33,7 +33,7 @@ class RainbowRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.WintersCogs.RainbowRole")
         
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -51,11 +51,11 @@ class RainbowRole(commands.Cog):
         
     async def cog_load(self):
         self.log.info("Rainbowrole task started.")
-        await self.change_rainbowrole_color.start()
+        self.change_rainbowrole_color.start()
     
     async def cog_unload(self):
         self.log.info("Rainbowrole task cancelled.")
-        await self.change_rainbowrole_color.cancel()
+        self.bot.loop.create_task(self.change_rainbowrole_color.cancel())
     
     @tasks.loop(minutes=20)
     async def change_rainbowrole_color(self):
