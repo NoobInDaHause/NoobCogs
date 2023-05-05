@@ -31,7 +31,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.WintersCogs.GlobalBan")
         
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -236,7 +236,7 @@ class GlobalBan(commands.Cog):
         await view.wait()
         
         if view.value == "yes":
-            await context.typing():
+            await context.typing()
             await self._globalban_user(context=context, member=member, reason=reason)
             
     @globalban.command(name="createmodlog", aliases=["cml"])
@@ -360,5 +360,5 @@ class GlobalBan(commands.Cog):
         await view.wait()
         
         if view.value == "yes":
-            await context.typing():
+            await context.typing()
             await self._globalunban_user(context=context, member=member, reason=reason)
