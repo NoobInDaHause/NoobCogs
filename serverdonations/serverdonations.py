@@ -33,7 +33,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
         
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -74,7 +74,7 @@ class ServerDonations(commands.Cog):
             .add_field(name="Prize:", value=g_values[4], inline=True)
             .add_field(name="Message:", value=g_values[5], inline=False)
         )
-        channel = await context.guild.get_channel(chan_id)
+        channel = context.guild.get_channel(chan_id)
         try:
             await channel.send(embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
@@ -105,7 +105,7 @@ class ServerDonations(commands.Cog):
             .add_field(name="Message:", value=e_values[4], inline=True)
         )
         
-        channel = await context.guild.get_channel(chan_id)
+        channel = context.guild.get_channel(chan_id)
         try:
             await channel.send(embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
@@ -135,7 +135,7 @@ class ServerDonations(commands.Cog):
             .add_field(name="Message:", value=h_values[3], inline=False)
         )
         
-        channel = await context.guild.get_channel(chan_id)
+        channel = context.guild.get_channel(chan_id)
         try:
             await channel.send(embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
