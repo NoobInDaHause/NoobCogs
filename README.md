@@ -11,7 +11,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 ```
 [p]load downloader
 
-[p]repo add NoobCogs https://github.com/NoobInDaHause/NoobCogs/tree/dpy2
+[p]repo add NoobCogs https://github.com/NoobInDaHause/NoobCogs
 
 [p]cog install NoobCogs <cogs...>
 
