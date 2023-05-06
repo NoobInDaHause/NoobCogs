@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import logging
 
@@ -33,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
         
-    __version__ = "1.1.1"
+    __version__ = "1.2.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -85,11 +86,10 @@ class ServerDonations(commands.Cog):
                 return await context.send("It appears that I do not see the set giveaway donation channel request, most likely deleted or I do not have permission to view it.")
         
         grole = context.guild.get_role(g_role)
-        am = discord.AllowedMentions(roles=True, users=True, everyone=False)
         try:
-            await channel.send(content=grole.mention, embed=embed, view=view, allowed_mentions=am)
+            await self.forcemention(channel=channel, role=grole, embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
-            return await context.send("It appears that I do not see the set giveaway donation channel request, most likely deleted or I do not have permission to view it.")
+            return await context.send("An error occured while sending the donation request embed. Most likely that the channel is deleted or I do not have permission to view or send message in it.")
     
     async def send_to_e_chan(self, context: commands.Context, chan_id: int, e_values: list):
         """
@@ -125,11 +125,10 @@ class ServerDonations(commands.Cog):
                 return await context.send("It appears that I do not see the set event donation channel request, most likely deleted or I do not have permission to view it.")
         
         erole = context.guild.get_role(e_role)
-        am = discord.AllowedMentions(roles=True, users=True, everyone=False)
         try:
-            await channel.send(content=erole.mention, embed=embed, view=view, allowed_mentions=am)
+            await self.forcemention(channel=channel, role=erole, embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
-            return await context.send("It appears that I do not see the set event donation channel request, most likely deleted or I do not have permission to view it.")
+            return await context.send("An error occured while sending the donation request embed. Most likely that the channel is deleted or I do not have permission to view or send message in it.")
         
     async def send_to_h_chan(self, context: commands.Context, chan_id: int, h_values: list):
         """
@@ -164,12 +163,31 @@ class ServerDonations(commands.Cog):
                 return await context.send("It appears that I do not see the set heist donation channel request, most likely deleted or I do not have permission to view it.")
         
         hrole = context.guild.get_role(h_role)
-        am = discord.AllowedMentions(roles=True, users=True, everyone=False)
         try:
-            await channel.send(content=hrole.mention, embed=embed, view=view, allowed_mentions=am)
+            await self.forcemention(channel=channel, role=hrole, embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException):
-            return await context.send("It appears that I do not see the set heist donation channel request, most likely deleted or I do not have permission to view it.")
+            return await context.send("An error occured while sending the donation request embed. Most likely that the channel is deleted or I do not have permission to view or send message in it.")
         
+    # https://github.com/phenom4n4n/phen-cogs/blob/d60b66c0738937e71ee4865d62235e1b2c3cd819/forcemention/forcemention.py#L64
+    # modified a lil bit to work with my code
+    async def forcemention(
+        self, channel: discord.TextChannel, role: discord.Role, embed: discord.Embed, view: discord.ui.View, **kwargs
+    ):
+        mentionPerms = discord.AllowedMentions(roles=True)
+        me = channel.guild.me
+        if (
+            not role.mentionable
+            and not channel.permissions_for(me).mention_everyone
+            and channel.permissions_for(me).manage_roles
+            and me.top_role > role
+        ):
+            await role.edit(mentionable=True)
+            await channel.send(content=role.mention, embed=embed, view=view, allowed_mentions=mentionPerms, **kwargs)
+            await asyncio.sleep(1.5)
+            await role.edit(mentionable=False)
+        else:
+            await channel.send(content=role.mention, embed=embed, view=view, allowed_mentions=mentionPerms, **kwargs)
+    
     @commands.command(name="sdonatehelp")
     @commands.bot_has_permissions(embed_links=True)
     async def sdonatehelp(self, context: commands.Context):
@@ -229,7 +247,7 @@ class ServerDonations(commands.Cog):
             await self.config.guild(context.guild).clear()
     
     @serverdonationsset.group(name="manager")
-    @commands.bot_has_permissions(mention_everyone=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def serverdonationsset_manager(self, context):
         """
         Commands to set or remove manager roles that gets pinged for donation requests.
@@ -488,7 +506,7 @@ class ServerDonations(commands.Cog):
             return await context.send("No giveaway donation request channel set.")
         
         gdonos = gmsg.split("|")
-        
+        await context.tick()
         await self.send_to_g_chan(context=context, chan_id=chan, g_values=gdonos)
         
     @commands.command(
@@ -517,7 +535,7 @@ class ServerDonations(commands.Cog):
             return await context.send("No event donation request channel set.")
             
         edonos = emsg.split("|")
-        
+        await context.tick()
         await self.send_to_e_chan(context=context, chan_id=chan, e_values=edonos)
         
     @commands.command(
@@ -547,5 +565,5 @@ class ServerDonations(commands.Cog):
             return await context.send("No heist donation request channel set.")
             
         hdonos = hmsg.split("|")
-        
+        await context.tick()
         await self.send_to_h_chan(context=context, chan_id=chan, h_values=hdonos)
