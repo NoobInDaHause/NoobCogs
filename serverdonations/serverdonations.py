@@ -34,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
         
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -42,13 +42,17 @@ class ServerDonations(commands.Cog):
         Thanks Sinbad and sravan!
         """
         p = "s" if len(self.__author__) != 1 else ""
-        return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{p}: {humanize_list(self.__author__)}"
+        return f"""{super().format_help_for_context(context)}
+        
+        Cog Version: {self.__version__}
+        Cog Author{p}: {humanize_list(self.__author__)}
+        """
     
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ) -> None:
-        # This cog does not store any end user data whatsoever. Also thanks sravan!
-        super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        # This cog does not store any end user data whatsoever.
+        return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     async def send_to_g_chan(self, context: commands.Context, chan_id: int, g_values: list):
         """
@@ -275,6 +279,9 @@ class ServerDonations(commands.Cog):
             await self.config.guild(context.guild).gman_id.clear()
             return await context.send("The giveaway manager ping role has been removed.")
 
+        if role >= context.guild.me.top_role:
+            return await context.send("It appears that role is highre than me in hierarchy, please move it down below my top role.")
+        
         if role.id == g_role:
             return await context.send("It appears that role is already the set giveaway manager role.")
 
@@ -301,6 +308,9 @@ class ServerDonations(commands.Cog):
             await self.config.guild(context.guild).eman_id.clear()
             return await context.send("The event manager ping role has been removed.")
 
+        if role >= context.guild.me.top_role:
+            return await context.send("It appears that role is highre than me in hierarchy, please move it down below my top role.")
+        
         if role.id == e_role:
             return await context.send("It appears that role is already the set event manager ping role.")
 
@@ -327,6 +337,9 @@ class ServerDonations(commands.Cog):
             await self.config.guild(context.guild).hman_id.clear()
             return await context.send("The heist manager ping role has been removed.")
 
+        if role >= context.guild.me.top_role:
+            return await context.send("It appears that role is highre than me in hierarchy, please move it down below my top role.")
+        
         if role.id == h_role:
             return await context.send("It appears that role is already the set heist manager role.")
 
@@ -364,6 +377,11 @@ class ServerDonations(commands.Cog):
         if channel.id == g_chan:
             return await context.send("It appears that channel is already the set giveaway donation request channel.")
 
+        try:
+            await channel.send("If you are seeing this message then that means you have set up the channel correctly.")
+        except (discord.errors.Forbidden, discord.errors.HTTPException):
+            return await context.send("I do not have permission to view or send messages in that channel.")
+        
         await self.config.guild(context.guild).gchannel_id.set(channel.id)
         await context.send(f"Successfully set {channel.mention} as the giveaway donation request channel.")
         
@@ -390,6 +408,11 @@ class ServerDonations(commands.Cog):
         if channel.id == e_chan:
             return await context.send("It appears that channel is already the set event donation request channel.")
 
+        try:
+            await channel.send("If you are seeing this message then that means you have set up the channel correctly.")
+        except (discord.errors.Forbidden, discord.errors.HTTPException):
+            return await context.send("I do not have permission to view or send messages in that channel.")
+        
         await self.config.guild(context.guild).echannel_id.set(channel.id)
         await context.send(f"Successfully set {channel.mention} as the event donation request channel.")
             
@@ -416,6 +439,11 @@ class ServerDonations(commands.Cog):
         if channel.id == h_chan:
             return await context.send("It appears that channel is already the set heist donation request channel.")
 
+        try:
+            await channel.send("If you are seeing this message then that means you have set up the channel correctly.")
+        except (discord.errors.Forbidden, discord.errors.HTTPException):
+            return await context.send("I do not have permission to view or send messages in that channel.")
+        
         await self.config.guild(context.guild).hchannel_id.set(channel.id)
         await context.send(f"Successfully set {channel.mention} as the heist donation request channel.")
             
@@ -443,40 +471,42 @@ class ServerDonations(commands.Cog):
         See the guild settings set for ServerDonations.
         """
         settings = await self.config.guild(context.guild).all()
-        embed = discord.Embed(
-            colour=await context.embed_colour(),
-            timestamp=context.message.created_at
-        )
-        embed.set_author(name=f"ServerDonations settings for [{context.guild}]", icon_url=context.guild.icon.url)
-        embed.add_field(
-            name="Giveaway manager role:",
-            value=f"<@&{settings['gman_id']}>" if settings['gman_id'] else "No role set.", 
-            inline=True
-        )
-        embed.add_field(
-            name="Event manager role:",
-            value=f"<@&{settings['eman_id']}>" if settings['eman_id'] else "No role set.",
-            inline=True
-        )
-        embed.add_field(
-            name="Heist manager role:",
-            value=f"<@&{settings['hman_id']}>" if settings['hman_id'] else "No role set.",
-            inline=True
-        )
-        embed.add_field(
-            name="Giveaway donate channel:",
-            value=f"<#{settings['gchannel_id']}>" if settings['gchannel_id'] else "No channel set.",
-            inline=True
-        )
-        embed.add_field(
-            name="Event donate channel:",
-            value=f"<#{settings['echannel_id']}>" if settings['echannel_id'] else " No channel set.",
-            inline=True
-        )
-        embed.add_field(
-            name="Heist donate channel:",
-            value=f"<#{settings['hchannel_id']}>" if settings['hchannel_id'] else "No channel set.",
-            inline=True
+        embed = (
+            discord.Embed(
+                colour=await context.embed_colour(),
+                timestamp=context.message.created_at
+            )
+            .set_author(name=f"ServerDonations settings for [{context.guild}]", icon_url=context.guild.icon.url)
+            .add_field(
+                name="Giveaway manager role:",
+                value=f"<@&{settings['gman_id']}>" if settings['gman_id'] else "No role set.", 
+                inline=True
+            )
+            .add_field(
+                name="Event manager role:",
+                value=f"<@&{settings['eman_id']}>" if settings['eman_id'] else "No role set.",
+                inline=True
+            )
+            .add_field(
+                name="Heist manager role:",
+                value=f"<@&{settings['hman_id']}>" if settings['hman_id'] else "No role set.",
+                inline=True
+            )
+            .add_field(
+                name="Giveaway donate channel:",
+                value=f"<#{settings['gchannel_id']}>" if settings['gchannel_id'] else "No channel set.",
+                inline=True
+            )
+            .add_field(
+                name="Event donate channel:",
+                value=f"<#{settings['echannel_id']}>" if settings['echannel_id'] else " No channel set.",
+                inline=True
+            )
+            .add_field(
+                name="Heist donate channel:",
+                value=f"<#{settings['hchannel_id']}>" if settings['hchannel_id'] else "No channel set.",
+                inline=True
+            )
         )
         await context.send(embed=embed)
         

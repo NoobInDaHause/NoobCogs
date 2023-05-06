@@ -31,20 +31,25 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
         
-    __version__ = "1.0.5"
+    __version__ = "1.0.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
-        return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{plural}: {humanize_list(self.__author__)}"
+        p = "s" if len(self.__author__) != 1 else ""
+        return f"""{super().format_help_for_context(context)}
+        
+        Cog Version: {self.__version__}
+        Cog Author{p}: {humanize_list(self.__author__)}
+        """
     
     async def red_delete_data_for_user(self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int):
         """
         This cog does not store any end user data whatsoever.
         """
+        # This cog does not store any end user data whatsoever.
         return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
     # https://github.com/Sitryk/sitcogsv3/blob/e1d8d0f3524dfec17872379c12c0edcb9360948d/errorhandler/cog.py#L30
@@ -107,11 +112,10 @@ class CustomError(commands.Cog):
         """
         Test the bots error message. (Bot owners only)
         """
-        cmd = self.bot.get_command('eval')
-        if not cmd:
+        if cmd := self.bot.get_command('eval'):
+            raise NotImplementedError("plzerror")
+        else:
             return await context.reply(content="The dev cog isn't loaded, load it when you start the bot with the `--dev` flag.")
-        
-        raise NotImplementedError("plzerror")
     
     @customerror.command(name="showsettings", aliases=["ss"])
     @commands.is_owner()

@@ -33,21 +33,25 @@ class RainbowRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RainbowRole")
         
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
-        return f"{super().format_help_for_context(context)}\n\nCog Version: {self.__version__}\nCog Author{plural}: {humanize_list(self.__author__)}"
+        p = "s" if len(self.__author__) != 1 else ""
+        return f"""{super().format_help_for_context(context)}
+        
+        Cog Version: {self.__version__}
+        Cog Author{p}: {humanize_list(self.__author__)}
+        """
     
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ) -> None:
         # This cog does not store any end user data whatsoever.
-        return
+        return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
         
     async def cog_load(self):
         self.log.info("Rainbowrole task started.")
