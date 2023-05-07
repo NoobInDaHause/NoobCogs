@@ -181,7 +181,7 @@ class Confirmation(discord.ui.View):
         
     async def start(self, context: commands.Context, confirm_action: str):
         msg = await context.send(content=confirm_action, view=self)
-        self.context.defer()
+        await context.defer()
         self.message = msg
         self.author = context.author
         self.bot = context.bot
@@ -231,7 +231,7 @@ class Calculator(discord.ui.View):
         
     async def start(self, context: commands.Context):
         msg = await context.send(content=box("0", "py"), view=self)
-        self.context.defer()
+        await context.defer()
         self.message = msg
         self.bot = context.bot
         self.context = context
@@ -433,7 +433,7 @@ class CookieClicker(discord.ui.View):
 
     async def start(self, context: commands.Context):
         msg = await context.send(view=self)
-        self.context.defer()
+        await context.defer()
         self.message = msg
         self.bot = context.bot
         self.author = context.author
@@ -481,7 +481,7 @@ class PressF(discord.ui.View):
         
     async def start(self, context: commands.Context, member: discord.Member):
         msg = await context.send(content=f"Everyone, let's pay our respects to **{member.name}**!", view=self)
-        self.context.defer()
+        await context.defer()
         self.message = msg
         self.context = context
         self.member = member
