@@ -229,10 +229,12 @@ class CookieClicker(discord.ui.View):
 class PressFButton(discord.ui.Button):
     def __init__(self, style: discord.ButtonStyle, label: str, emoji):
         super().__init__(style=style, label=label, emoji=emoji)
+        self.users = []
     
     async def callback(self, interaction: discord.Interaction):
         self.view.paid_users.append(interaction.user.id)
-        self.label = f"{self.view.len}"
+        self.users.append(interaction.user.id)
+        self.label = len(self.users)
         await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
 
 class PressFView(discord.ui.View):
@@ -245,7 +247,6 @@ class PressFView(discord.ui.View):
         self.message: discord.Message = None
         self.member: discord.Member = None
         self.paid_users = []
-        self.len = len(self.paid_users)
         
     async def start(self, context: commands.Context, member: discord.Member):
         msg = await context.send(content=f"Everyone, let's pay our respects to **{member.name}**!", view=self)
@@ -266,8 +267,8 @@ class PressFView(discord.ui.View):
         for x in self.children:
             x.disabled = True
         self.stop()
-        if self.len == 0:
+        if len(self.paid_users) == 0:
             return await self.context.channel.send(content=f"No one has paid respects to **{self.member.name}**.")
         await self.message.edit(view=self)
-        plural = "s" if self.len != 1 else ""
+        plural = "s" if len(self.paid_users) != 1 else ""
         await self.context.channel.send(content=f"**{len(self.paid_users)}** user{plural} has paid their respects to **{self.member.name}**.")
