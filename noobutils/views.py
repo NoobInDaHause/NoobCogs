@@ -169,8 +169,7 @@ class Calculator(discord.ui.View):
         await interaction.response.edit_message(content=box(final, "py"))
         
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        owner = await self.context.bot.fetch_user(interaction.user.id)
-        if await self.context.bot.is_owner(owner):
+        if await self.context.bot.fetch_user(interaction.user.id):
             return True
         elif interaction.user.id != self.context.author.id:
             await interaction.response.send_message(content="You are not the author of this interaction.", ephemeral=True)
@@ -194,7 +193,6 @@ class CookieClicker(discord.ui.View):
         self.clicked = []
 
     async def start(self, context: commands.Context):
-        await context.defer()
         msg = await context.send(view=self)
         self.message = msg
         self.context = context
@@ -215,10 +213,9 @@ class CookieClicker(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        owner = await self.context.bot.fetch_user(interaction.user.id)
-        if await self.context.bot.is_owner(owner):
+        if await self.context.bot.fetch_user(interaction.user.id):
             return True
-        elif interaction.user.id != self.author.id:
+        elif interaction.user.id != self.context.author.id:
             await interaction.response.send_message(content="You are not the author of this interaction.", ephemeral=True)
             return False
         return True
@@ -230,13 +227,16 @@ class CookieClicker(discord.ui.View):
         await self.message.edit(view=self)
         
 class PressF(discord.ui.View):
-    def __init__(self, *, timeout: Optional[float] = 60):
+    def __init__(
+        self,
+        timeout: Optional[float] = 60
+    ):
         super().__init__(timeout=timeout)
         self.context: commands.Context = None
         self.message: discord.Message = None
         self.member: discord.Member = None
         self.paid_users = []
-        self.value = False
+        self.value = None
         
     async def start(self, context: commands.Context, member: discord.Member):
         msg = await context.send(content=f"Everyone, let's pay our respects to **{member.name}**!", view=self)
@@ -256,10 +256,10 @@ class PressF(discord.ui.View):
     async def on_timeout(self):
         for x in self.children:
             x.disabled = True
-        self.value = True
+        self.value = "done"
         self.stop()
         await self.message.edit(view=self)
         if len(self.paid_users) == 0:
-            return await self.context.channel.send(Content=f"No one has paid respects to **{self.member.name}**.")
+            return await self.context.channel.send(content=f"No one has paid respects to **{self.member.name}**.")
         plural = "s" if len(self.paid_users) != 1 else ""
         await self.context.channel.send(content=f"**{len(self.paid_users)}** user{plural} has paid their respects to **{self.member.name}**.")

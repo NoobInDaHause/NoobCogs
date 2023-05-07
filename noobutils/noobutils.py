@@ -22,7 +22,7 @@ class NoobUtils(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
         self.ongoing_pressf_chans = []
         
-    __version__ = "1.2.4"
+    __version__ = "1.2.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -104,7 +104,7 @@ class NoobUtils(commands.Cog):
         
         await view.wait()
         
-        if view.value is True:
+        if view.value == "done":
             index = self.ongoing_pressf_chans.index(context.channel.id)
             self.ongoing_pressf_chans.pop(index)
     
