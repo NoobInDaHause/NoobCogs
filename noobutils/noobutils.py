@@ -22,7 +22,7 @@ class NoobUtils(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
         self.ongoing_pressf_chans = []
         
-    __version__ = "1.2.2"
+    __version__ = "1.2.3"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
