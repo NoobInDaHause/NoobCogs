@@ -28,7 +28,7 @@ class NoobUtils(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
         
-    __version__ = "1.3.11"
+    __version__ = "1.3.12"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -50,6 +50,7 @@ class NoobUtils(commands.Cog):
     
     @commands.hybrid_command(name="calculator")
     @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.bot_has_permissions(embed_links=True)
     async def calculator(self, context: commands.Context):
         """
         Calculate with buttons.
@@ -59,6 +60,7 @@ class NoobUtils(commands.Cog):
     
     @commands.hybrid_command(name="cookieclicker")
     @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.bot_has_permissions(embed_links=True)
     async def cookieclicker(self, context: commands.Context):
         """
         Cookie clicker.
@@ -68,6 +70,7 @@ class NoobUtils(commands.Cog):
     
     @commands.hybrid_command(name="membercount", aliases=["mcount"])
     @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.bot_has_permissions(embed_links=True)
     @commands.guild_only()
     @app_commands.guild_only()
     async def membercount(self, context: commands.Context):
@@ -117,6 +120,7 @@ class NoobUtils(commands.Cog):
     @commands.hybrid_command(name="pressf")
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.guild_only()
+    @commands.bot_has_permissions(embed_links=True)
     @app_commands.guild_only()
     @app_commands.describe(
         thing="A thing that you want to pay respects to."

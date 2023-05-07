@@ -13,7 +13,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]calculator
  - `Aliases:` None
  - `User permission(s):` None
- - `Bot permission(s):` None
+ - `Bot permission(s):` embed_links
  - `Checks:` Any
  - `Description:` Calculate with buttons.
 
@@ -21,7 +21,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]cookieclicker
  - `Aliases:` None
  - `User permission(s):` None
- - `Bot permission(s):` None
+ - `Bot permission(s):` embed_links
  - `Checks:` Any
  - `Description:` Cookie clicker.
 
@@ -29,7 +29,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]membercount
  - `Aliases:` [p]mcount
  - `User permission(s):` None
- - `Bot permission(s):` None
+ - `Bot permission(s):` embed_links
  - `Checks:` guild_only
  - `Description:` See the current member count on this guild.
 
