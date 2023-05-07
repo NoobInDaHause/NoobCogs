@@ -6,7 +6,7 @@ from redbot.core import commands, app_commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 
-from typing import Literal
+from typing import Literal, Optional
 
 from .views import Calculator, CookieClicker, PressFView, PressFButton
 from .utils import EmojiConverter
@@ -28,7 +28,7 @@ class NoobUtils(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
         
-    __version__ = "1.3.10"
+    __version__ = "1.3.11"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -101,10 +101,16 @@ class NoobUtils(commands.Cog):
         """
     
     @noobset.command(name="pressfemoji")
-    async def pressfemoji(self, context: commands.Context, emoji: EmojiConverter):
+    async def pressfemoji(self, context: commands.Context, emoji: Optional[EmojiConverter]):
         """
         Change the emoji of the press f command.
+        
+        Pass without emoji to reset it.
         """
+        if not emoji:
+            await self.config.guild(context.guild).pressf_emoji.clear()
+            return await context.send("Resetted the emoji to default.")
+        
         await self.config.guild(context.guild).pressf_emoji.set(str(emoji))
         await context.send(f"{emoji} is the new Press F emoji.")
     
@@ -113,11 +119,11 @@ class NoobUtils(commands.Cog):
     @commands.guild_only()
     @app_commands.guild_only()
     @app_commands.describe(
-        member="The member that you want to pay respects to."
+        thing="A thing that you want to pay respects to."
     )
-    async def pressf(self, context: commands.Context, *, member: discord.Member):
+    async def pressf(self, context: commands.Context, *, thing: str):
         """
-        Press F to pay respect on someone.
+        Press F to pay respect on something.
         
         Press F with buttons.
         """
@@ -125,7 +131,7 @@ class NoobUtils(commands.Cog):
         button = PressFButton(style=discord.ButtonStyle.success, label="0", emoji=emoji)
         view = PressFView()
         view.add_item(button)
-        await view.start(context=context, member=member)
+        await view.start(context=context, thing=thing)
     
     @commands.command(name="testlog")
     @commands.is_owner()

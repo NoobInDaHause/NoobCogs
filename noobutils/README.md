@@ -41,6 +41,13 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Checks:` guild_only
  - `Description:` Press F to pay respect on someone.
 
+## [Legacy Commands]
+Below are Legacy Commands and can be run with legacy prefix commands only.
+
+`[p]` is your bots prefix.
+
+Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
+
 # [p]testlog
  - `Usage:` [p]testlog <anything>
  - `Aliases:` None
@@ -48,3 +55,26 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Bot permission(s):` None
  - `Checks:` Any
  - `Description:` Test out the logging module. (Bot owner only)
+
+## [Legacy Group]
+Below are Legacy Group Commands and can be run with legacy prefix commands only.
+
+`[p]` is your bots prefix.
+
+Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
+
+# [p]noobset
+ - `Usage:` [p]noobset <subcommand>
+ - `Aliases:` None
+ - `User permission(s):` administrator
+ - `Bot permission(s):` None
+ - `Checks:` guild_only
+ - `Description:` Change some settings for the NoobUtils cog commands.
+
+# [p]noobset pressfemoji
+ - `Usage:` [p]noobset pressfemoji <emoji>
+ - `Aliases:` None
+ - `User permission(s):` administrator
+ - `Bot permission(s):` None
+ - `Checks:` guild_only
+ - `Description:` Change the emoji of the press f command.

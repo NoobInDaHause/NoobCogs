@@ -244,21 +244,22 @@ class PressFView(discord.ui.View):
         super().__init__(timeout=timeout)
         self.context: commands.Context = None
         self.message: discord.Message = None
-        self.member: discord.Member = None
+        self.thing: str = None
         self.paid_users = []
         
-    async def start(self, context: commands.Context, member: discord.Member):
-        msg = await context.send(content=f"Everyone, let's pay our respects to **{member.name}**!", view=self)
+    async def start(self, context: commands.Context, thing: str):
+        embed = discord.Embed(
+            description=f"Everyone, let's pay our respects to **{thing}**!",
+            colour=await context.embed_colour()
+        )
+        msg = await context.send(embed=embed, view=self)
         self.message = msg
         self.context = context
-        self.member = member
+        self.thing = thing
     
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id in self.paid_users:
             await interaction.response.send_message(content="You already paid your respects!", ephemeral=True)
-            return False
-        if interaction.user.id == self.member.id:
-            await interaction.response.send_message(content="You can not pay your respects to yourself!", ephemeral=True)
             return False
         return True
     
@@ -266,8 +267,8 @@ class PressFView(discord.ui.View):
         for x in self.children:
             x.disabled = True
         self.stop()
-        if len(self.paid_users) == 0:
-            return await self.context.channel.send(content=f"No one has paid respects to **{self.member.name}**.")
         await self.message.edit(view=self)
+        if len(self.paid_users) == 0:
+            return await self.context.channel.send(content=f"No one has paid respects to **{self.thing}**.", allowed_mentions=discord.AllowedMentions.none())
         plural = "s" if len(self.paid_users) != 1 else ""
-        await self.context.channel.send(content=f"**{len(self.paid_users)}** user{plural} has paid their respects to **{self.member.name}**.")
+        await self.context.channel.send(content=f"**{len(self.paid_users)}** user{plural} has paid their respects to **{self.thing}**.", allowed_mentions=discord.AllowedMentions.none())
