@@ -2,13 +2,14 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, app_commands
+from redbot.core import commands, app_commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 
 from typing import Literal
 
-from .views import Calculator, CookieClicker, PressF
+from .views import Calculator, CookieClicker, PressFView, PressFButton
+from .utils import EmojiConverter
 
 class NoobUtils(commands.Cog):
     """
@@ -19,10 +20,15 @@ class NoobUtils(commands.Cog):
     """
     def __init__(self, bot: Red):
         self.bot = bot
-        self.log = logging.getLogger("red.NoobCogs.NoobUtils")
-        self.ongoing_pressf_chans = []
         
-    __version__ = "1.2.11"
+        self.config = Config.get_conf(self, identifier=85623587, force_registration=True)
+        default_guild = {
+            "pressf_emoji": "🇫"
+        }
+        self.config.register_guild(**default_guild)
+        self.log = logging.getLogger("red.NoobCogs.NoobUtils")
+        
+    __version__ = "1.3.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -52,6 +58,7 @@ class NoobUtils(commands.Cog):
         await view.start(context=context)
     
     @commands.hybrid_command(name="cookieclicker")
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def cookieclicker(self, context: commands.Context):
         """
         Cookie clicker.
@@ -60,6 +67,7 @@ class NoobUtils(commands.Cog):
         await view.start(context=context)
     
     @commands.hybrid_command(name="membercount", aliases=["mcount"])
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
     @app_commands.guild_only()
     async def membercount(self, context: commands.Context):
@@ -84,7 +92,24 @@ class NoobUtils(commands.Cog):
         )
         await context.send(embed=embed)
     
+    @commands.group(name="noobset")
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_guild=True)
+    async def noobset(self, context: commands.Context):
+        """
+        Change some settings for the NoobUtils cog commands.
+        """
+    
+    @noobset.comamnd(name="pressfemoji")
+    async def pressfemoji(self, context: commands.Context, emoji: EmojiConverter):
+        """
+        Change the emoji of the press f command.
+        """
+        await self.config.guild(context.guild).pressf_emoji.set(str(emoji))
+        await context.send(f"{emoji} is the new Press F emoji.")
+    
     @commands.hybrid_command(name="pressf")
+    @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.guild_only()
     @app_commands.guild_only()
     @app_commands.describe(
@@ -96,18 +121,11 @@ class NoobUtils(commands.Cog):
         
         Press F with buttons.
         """
-        if context.channel.id in self.ongoing_pressf_chans:
-            return await context.reply(content="We are already paying respects to someone in this channel.")
-        
-        self.ongoing_pressf_chans.append(context.channel.id)
-        view = PressF()
+        emoji = await self.config.guild(context.guild).pressf_emoji()
+        button = PressFButton(style=discord.ButtonStyle.success, label="0", emoji=emoji)
+        view = PressFView()
+        view.add_item(button)
         await view.start(context=context, member=member)
-        
-        await view.wait()
-        
-        if view.value == "done":
-            index = self.ongoing_pressf_chans.index(context.channel.id)
-            self.ongoing_pressf_chans.pop(index)
     
     @commands.command(name="testlog")
     @commands.is_owner()

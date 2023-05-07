@@ -226,40 +226,47 @@ class CookieClicker(discord.ui.View):
         self.stop()
         await self.message.edit(view=self)
         
-class PressF(discord.ui.View):
+class PressFButton(discord.ui.Button):
+    def __init__(self, style: discord.ButtonStyle, label: str, emoji):
+        super().__init__(style=style, label=label, emoji=emoji)
+    
+    async def callback(self, interaction: discord.Interaction):
+        self.view.paid_users.append(interaction.user.id)
+        self.label = len(self.view.paid_users)
+        await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
+
+class PressFView(discord.ui.View):
     def __init__(
         self,
-        timeout: Optional[float] = 60
+        timeout: Optional[float] = 180.0
     ):
         super().__init__(timeout=timeout)
         self.context: commands.Context = None
         self.message: discord.Message = None
         self.member: discord.Member = None
         self.paid_users = []
-        self.value = None
         
     async def start(self, context: commands.Context, member: discord.Member):
         msg = await context.send(content=f"Everyone, let's pay our respects to **{member.name}**!", view=self)
         self.message = msg
         self.context = context
         self.member = member
-        
-    @discord.ui.button(emoji="🇫", style=discord.ButtonStyle.success, label="0")
-    async def press_F_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id in self.paid_users:
-            return await interaction.response.send_message(content="You already paid your respects!", ephemeral=True)
-        self.paid_users.append(interaction.user.id)
-        button.label = len(self.paid_users)
-        await self.message.edit(view=self)
-        await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
-        
+            await interaction.response.send_message(content="You already paid your respects!", ephemeral=True)
+            return False
+        if interaction.user.id == self.member.id:
+            await interaction.response.send_message(content="You can not pay your respects to yourself!", ephemeral=True)
+            return False
+        return True
+    
     async def on_timeout(self):
         for x in self.children:
             x.disabled = True
-        self.value = "done"
         self.stop()
-        await self.message.edit(view=self)
         if len(self.paid_users) == 0:
             return await self.context.channel.send(content=f"No one has paid respects to **{self.member.name}**.")
+        await self.message.edit(view=self)
         plural = "s" if len(self.paid_users) != 1 else ""
         await self.context.channel.send(content=f"**{len(self.paid_users)}** user{plural} has paid their respects to **{self.member.name}**.")
