@@ -163,7 +163,7 @@ class Calculator(discord.ui.View):
         try:
             final = str(eval(merged))
         except Exception as e:
-            return await interaction.followup.send(content=f"Error: {e}", ephemeral=True)
+            return await interaction.response.send_message(content=f"Error: {e}", ephemeral=True)
         self.value_list.clear()
         self.value_list.append(final)
         await interaction.response.edit_message(content=box(final, "py"))
