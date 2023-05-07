@@ -227,7 +227,7 @@ class CookieClicker(discord.ui.View):
         await self.message.edit(view=self)
         
 class PressFButton(discord.ui.Button):
-    def __init__(self, message: discord.Message, style: discord.ButtonStyle, label: str, emoji):
+    def __init__(self, style: discord.ButtonStyle, label: str, emoji):
         super().__init__(style=style, label=label, emoji=emoji)
     
     async def callback(self, interaction: discord.Interaction):
