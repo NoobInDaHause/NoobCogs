@@ -28,7 +28,7 @@ class NoobUtils(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
         
-    __version__ = "1.3.4"
+    __version__ = "1.3.5"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
