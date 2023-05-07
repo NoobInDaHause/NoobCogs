@@ -171,18 +171,20 @@ class Paginator(discord.ui.View):
 class Confirmation(discord.ui.View):
     def __init__(
         self,
-        bot: Red,
-        author: discord.Member,
-        timeout: float,
-        confirm_action
+        timeout: Optional[float] = 60,
     ):
         super().__init__(timeout=timeout)
-        self.bot = bot
-        self.author = author
-        self.confirm_action = confirm_action
+        self.bot: Red = None
+        self.author: discord.Member = None
         self.message: discord.Message = None
         self.value = None
         
+    async def start(self, context: commands.Context, confirm_action: str):
+        msg = await context.send(content=confirm_action, view=self)
+        self.message = msg
+        self.author = context.author
+        self.bot = context.bot
+    
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
     async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
         for x in self.children:
@@ -217,22 +219,29 @@ class Confirmation(discord.ui.View):
 class Calculator(discord.ui.View):
     def __init__(
         self,
-        bot: Red,
-        author: discord.Member
+        timeout: Optional[float] = 60
     ):
-        super().__init__(timeout=180.0)
-        self.bot = bot
-        self.author = author
+        super().__init__(timeout=timeout)
+        self.bot: Red = None
+        self.author: discord.Member = None
         self.message: discord.Message = None
+        self.context: commands.Context = None
         self.value_list = []
         
+    async def start(self, context: commands.Context):
+        msg = await context.send(content=box("0", "py"), view=self)
+        self.message = msg
+        self.bot = context.bot
+        self.context = context
+        self.author = context.author
+    
     @discord.ui.button(label="1", style=discord.ButtonStyle.grey)
     async def one(self, interaction: discord.Interaction, button: discord.ui.Button):
         """1"""
         await interaction.response.defer()
         self.value_list.append("1")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="2", style=discord.ButtonStyle.grey)
     async def two(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -240,7 +249,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("2")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="3", style=discord.ButtonStyle.grey)
     async def three(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -248,7 +257,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("3")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="+", style=discord.ButtonStyle.blurple)
     async def plus(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -256,7 +265,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("+")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
     
     @discord.ui.button(label="Exit", style=discord.ButtonStyle.danger)
     async def exit(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -272,7 +281,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("4")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="5", style=discord.ButtonStyle.grey)
     async def five(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -280,7 +289,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("5")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="6", style=discord.ButtonStyle.grey)
     async def six(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -288,7 +297,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("6")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="-", style=discord.ButtonStyle.blurple)
     async def minus(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -296,7 +305,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("-")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
     
     @discord.ui.button(label="\u232B", style=discord.ButtonStyle.danger)
     async def erase(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -306,7 +315,7 @@ class Calculator(discord.ui.View):
             return await interaction.followup.send(content="You can not erase a number anymore, please add more.", ephemeral=True)
         self.value_list.pop()
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py")if merged else box("0", "py"))
+        await interaction.response.edit_message(content=box(merged, "py")if merged else box("0", "py"))
         
     @discord.ui.button(label="7", style=discord.ButtonStyle.grey)
     async def seven(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -314,7 +323,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("7")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="8", style=discord.ButtonStyle.grey)
     async def eight(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -322,7 +331,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("8")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="9", style=discord.ButtonStyle.grey)
     async def nine(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -330,7 +339,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("9")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="*", style=discord.ButtonStyle.blurple)
     async def times(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -338,14 +347,14 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("*")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="Clear", style=discord.ButtonStyle.danger)
     async def clear(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Clear"""
         await interaction.response.defer()
         self.value_list.clear()
-        await interaction.edit_original_response(content=box("0", "py"))
+        await interaction.response.edit_message(content=box("0", "py"))
         
     @discord.ui.button(label="00", style=discord.ButtonStyle.grey)
     async def double_zero(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -354,7 +363,7 @@ class Calculator(discord.ui.View):
         self.value_list.append("0")
         self.value_list.append("0")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="0", style=discord.ButtonStyle.grey)
     async def zero(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -362,7 +371,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("0")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label=".", style=discord.ButtonStyle.grey)
     async def dot(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -370,7 +379,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append(".")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="/", style=discord.ButtonStyle.blurple)
     async def divide(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -378,7 +387,7 @@ class Calculator(discord.ui.View):
         await interaction.response.defer()
         self.value_list.append("/")
         merged = "".join(self.value_list)
-        await interaction.edit_original_response(content=box(merged, "py"))
+        await interaction.response.edit_message(content=box(merged, "py"))
         
     @discord.ui.button(label="=", style=discord.ButtonStyle.success)
     async def equals(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -391,7 +400,7 @@ class Calculator(discord.ui.View):
             return await interaction.followup.send(content=f"Error: {e}", ephemeral=True)
         self.value_list.clear()
         self.value_list.append(final)
-        await interaction.edit_original_response(content=box(final, "py"))
+        await interaction.response.edit_message(content=box(final, "py"))
         
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         owner = await self.bot.fetch_user(interaction.user.id)
@@ -411,22 +420,29 @@ class Calculator(discord.ui.View):
 class CookieClicker(discord.ui.View):
     def __init__(
         self,
-        bot: Red,
-        author: discord.Member
+        timeout: Optional[float] = 60
     ):
-        super().__init__(timeout=60.0)
-        self.bot = bot
-        self.author = author
-        self.message: discord.message = None
+        super().__init__(timeout=timeout)
+        self.bot: Red = None
+        self.author: discord.Member = None
+        self.message: discord.Message = None
+        self.context: commands.Context = None
         self.clicked = []
 
+    async def start(self, context: commands.Context):
+        msg = await context.send(view=self)
+        self.message = msg
+        self.bot = context.bot
+        self.author = context.author
+        self.context = context
+    
     @discord.ui.button(emoji="🍪", label="0", style=discord.ButtonStyle.success)
     async def cookieclicker(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Cookie clicker."""
         await interaction.response.defer()
         self.clicked.append(len(self.clicked) + 1)
         button.label = len(self.clicked)
-        await interaction.edit_original_response(view=self)
+        await interaction.response.edit_message(view=self)
 
     @discord.ui.button(emoji="❎", label="Quit", style=discord.ButtonStyle.danger)
     async def quit(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -450,3 +466,38 @@ class CookieClicker(discord.ui.View):
             x.disabled = True
         self.stop()
         await self.message.edit(view=self)
+        
+class PressF(discord.ui.View):
+    def __init__(self, *, timeout: Optional[float] = 60):
+        super().__init__(timeout=timeout)
+        self.context: commands.Context = None
+        self.message: discord.Message = None
+        self.member: discord.Member = None
+        self.paid_users = []
+        self.value = False
+        
+    async def start(self, context: commands.Context, member: discord.Member):
+        msg = await context.send(content=f"Everyone, let's pay our respects to **{member.name}**!", view=self)
+        self.message = msg
+        self.context = context
+        self.member = member
+        
+    @discord.ui.button(emoji="🇫")
+    async def F(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.paid_users.append(interaction.user.id)
+        await self.context.channel.send(content=f"**{interaction.user.name}** has paid their respects.")
+        
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id in self.paid_users:
+            return await interaction.response.send_message(content="You already paid your respects!", ephemeral=True)
+        
+    async def on_timeout(self):
+        for x in self.children:
+            x.disabled = True
+        self.value = True
+        self.stop()
+        await self.message.edit(view=self)
+        if len(self.paid_users) == 0:
+            return await self.context.channel.send(Content=f"No one has paid respects to **{self.member.name}**.")
+        plural = "s" if len(self.paid_users) != 1 else ""
+        await self.context.channel.send(content=f"**{len(self.paid_users)}** user{plural} has paid their respects to **{self.member.name}**.")

@@ -4,11 +4,11 @@ import logging
 
 from redbot.core import commands, app_commands
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, box
+from redbot.core.utils.chat_formatting import humanize_list
 
 from typing import Literal
 
-from .views import Calculator, CookieClicker
+from .views import Calculator, CookieClicker, PressF
 
 class NoobUtils(commands.Cog):
     """
@@ -20,8 +20,9 @@ class NoobUtils(commands.Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
+        self.ongoing_pressf_chans = []
         
-    __version__ = "1.1.3"
+    __version__ = "1.2.0"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -41,25 +42,22 @@ class NoobUtils(commands.Cog):
         # This cog does not store any end user data whatsoever.
         return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
     
-    def access_denied(self):
-        return "https://cdn.discordapp.com/attachments/1080904820958974033/1101002761597898863/1.mp4"
-    
     @commands.hybrid_command(name="calculator")
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def calculator(self, context: commands.Context):
         """
         Calculate with buttons.
         """
-        view = Calculator(bot=self.bot, author=context.author)
-        view.message = await context.send(content=box("0", "py"), view=view)
+        view = Calculator()
+        await view.start(context=context)
     
     @commands.hybrid_command(name="cookieclicker")
     async def cookieclicker(self, context: commands.Context):
         """
         Cookie clicker.
         """
-        view = CookieClicker(bot=self.bot, author=context.author)
-        view.message = await context.send(view=view)
+        view = CookieClicker()
+        await view.start(context=context)
     
     @commands.hybrid_command(name="membercount", aliases=["mcount"])
     @commands.guild_only()
@@ -70,9 +68,7 @@ class NoobUtils(commands.Cog):
         
         Contains separate member count of users and bots.
         """
-        if context.prefix != "/":
-            await context.tick()
-        
+        await context.typing()
         members = len([mem for mem in context.guild.members if not mem.bot])
         bots = len([mem for mem in context.guild.members if mem.bot])
         all_members = len(context.guild.members)
@@ -88,6 +84,30 @@ class NoobUtils(commands.Cog):
         )
         await context.send(embed=embed)
     
+    @commands.hybrid_command(name="pressf")
+    @commands.guild_only()
+    @app_commands.guild_only()
+    @app_commands.describe(
+        member="The member that you want to pay respects to."
+    )
+    async def pressf(self, context: commands.Context, *, member: discord.Member):
+        """
+        Press F to pay respect on someone.
+        
+        Press F with buttons.
+        """
+        if context.channel.id in self.ongoing_pressf_chans:
+            return await context.send(context="We are still paying respects to someone here.")
+        
+        view = PressF()
+        await view.start(context=context, member=member)
+        
+        await view.wait()
+        
+        if view.value is True:
+            index = self.ongoing_pressf_chans.index(context.channel.id)
+            self.ongoing_pressf_chans.pop(index)
+    
     @commands.command(name="testlog")
     @commands.is_owner()
     async def testlog(self, context: commands.Context, *, anything: str):
@@ -97,3 +117,4 @@ class NoobUtils(commands.Cog):
         Say anything in the `anything` parameter to log it in the console.
         """
         self.log.info(anything)
+        await context.tick()

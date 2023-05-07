@@ -33,6 +33,14 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Checks:` guild_only
  - `Description:` See the current member count on this guild.
 
+# [p]pressf
+ - `Usage:` [p]pressf <member>
+ - `Aliases:` None
+ - `User permission(s):` None
+ - `Bot permission(s):` embed_links
+ - `Checks:` guild_only
+ - `Description:` Press F to pay respect on someone.
+
 # [p]testlog
  - `Usage:` [p]testlog <anything>
  - `Aliases:` None
