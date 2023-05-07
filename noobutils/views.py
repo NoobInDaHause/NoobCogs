@@ -227,14 +227,14 @@ class CookieClicker(discord.ui.View):
         await self.message.edit(view=self)
         
 class PressFButton(discord.ui.Button):
-    def __init__(self, style: discord.ButtonStyle, label: str, emoji):
+    def __init__(self, message: discord.Message, style: discord.ButtonStyle, label: str, emoji):
         super().__init__(style=style, label=label, emoji=emoji)
     
     async def callback(self, interaction: discord.Interaction):
         self.view.paid_users.append(interaction.user.id)
         self.label = len(self.view.paid_users)
-        await self.view.message.edit(view=self)
-        await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
+        await self.view.context.channel.send(content=f"**{interaction.user.name}** has paid their respects.")
+        await interaction.response.edit_message(view=self)
 
 class PressFView(discord.ui.View):
     def __init__(
