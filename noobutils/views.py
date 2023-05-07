@@ -232,7 +232,7 @@ class PressFButton(discord.ui.Button):
     
     async def callback(self, interaction: discord.Interaction):
         self.view.paid_users.append(interaction.user.id)
-        self.label = len(self.view.paid_users + 1)
+        self.label = len(self.view.paid_users) + 1
         await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
 
 class PressFView(discord.ui.View):
