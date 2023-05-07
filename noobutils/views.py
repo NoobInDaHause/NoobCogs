@@ -247,7 +247,7 @@ class PressF(discord.ui.View):
     @discord.ui.button(emoji="🇫")
     async def F(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.paid_users.append(interaction.user.id)
-        await self.context.channel.send(content=f"**{interaction.user.name}** has paid their respects.")
+        await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
         
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id in self.paid_users:

@@ -22,7 +22,7 @@ class NoobUtils(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
         self.ongoing_pressf_chans = []
         
-    __version__ = "1.2.5"
+    __version__ = "1.2.6"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -100,6 +100,7 @@ class NoobUtils(commands.Cog):
             return await context.send(context="We are still paying respects to someone here.")
         
         view = PressF()
+        self.ongoing_pressf_chans.append(context.channel.id)
         await view.start(context=context, member=member)
         
         await view.wait()
