@@ -244,7 +244,7 @@ class PressF(discord.ui.View):
         self.context = context
         self.member = member
         
-    @discord.ui.button(emoji="🇫", styel=discord.ButtonStyle.success)
+    @discord.ui.button(emoji="🇫", style=discord.ButtonStyle.success)
     async def F(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.paid_users.append(interaction.user.id)
         await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
