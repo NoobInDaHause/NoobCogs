@@ -20,8 +20,9 @@ class NoobUtils(commands.Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
+        self.ongoing_pressf_chans = []
         
-    __version__ = "1.2.10"
+    __version__ = "1.2.11"
     __author__ = ["Noobindahause#2808"]
     
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -95,8 +96,18 @@ class NoobUtils(commands.Cog):
         
         Press F with buttons.
         """
+        if context.channel.id in self.ongoing_pressf_chans:
+            return await context.reply(content="We are already paying respects to someone in this channel.")
+        
+        self.ongoing_pressf_chans.append(context.channel.id)
         view = PressF()
         await view.start(context=context, member=member)
+        
+        await view.wait()
+        
+        if view.value == "done":
+            index = self.ongoing_pressf_chans.index(context.channel.id)
+            self.ongoing_pressf_chans.pop(index)
     
     @commands.command(name="testlog")
     @commands.is_owner()
