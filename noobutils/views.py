@@ -245,13 +245,11 @@ class PressF(discord.ui.View):
         self.member = member
         
     @discord.ui.button(emoji="🇫", style=discord.ButtonStyle.success)
-    async def F(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.paid_users.append(interaction.user.id)
-        await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
-        
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+    async def press_F_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id in self.paid_users:
             return await interaction.response.send_message(content="You already paid your respects!", ephemeral=True)
+        self.paid_users.append(interaction.user.id)
+        await interaction.response.send_message(content=f"**{interaction.user.name}** has paid their respects.")
         
     async def on_timeout(self):
         for x in self.children:
