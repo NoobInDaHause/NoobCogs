@@ -22,10 +22,10 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| Afk             |  v1.0.3   | Notify users whenever you go AFK with pings logging.             |
+| Afk             |  v1.0.4   | Notify users whenever you go AFK with pings logging.             |
 | CustomError     |  v1.0.6   | Customize your bots error message.                               |
 | GlobalBan       |  v1.0.4   | Globally ban a user from all the guilds the bot is in.           |
-| NoobUtils       |  v1.2.3   | Some maybe useful or useless commands.                           |
+| NoobUtils       |  v1.2.4   | Some maybe useful or useless commands.                           |
 | RainbowRole     |  v1.0.4   | Have a role that changes colour every 20 minutes.                |
 | ServerDonations |  v1.2.1   | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v1.0.3   | A fun split or steal game.                                       |

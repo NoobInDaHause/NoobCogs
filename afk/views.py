@@ -1,7 +1,6 @@
 import discord
 
 from redbot.core import commands
-from redbot.core.bot import Red
 
 from typing import Optional
 
@@ -11,17 +10,15 @@ class Confirmation(discord.ui.View):
         timeout: Optional[float] = 60
     ):
         super().__init__(timeout=timeout)
-        self.bot: Red = None
-        self.author: discord.Member = None
         self.confirm_action: str = None
+        self.context: commands.Context = None
         self.message: discord.Message = None
         self.value = None
         
     async def start(self, context: commands.Context, confirmation_msg: str, confirm_action: str):
         msg = await context.send(content=confirmation_msg, view=self)
         self.confirm_action = confirm_action
-        self.bot = context.bot
-        self.author = context.author
+        self.context = context
         self.message = msg
     
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
@@ -41,9 +38,9 @@ class Confirmation(discord.ui.View):
         await interaction.response.edit_message(content="Alright not doing that then.", view=self)
         
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if await self.bot.is_owner(interaction.user):
+        if await self.context.bot.is_owner(interaction.user):
             return True
-        elif interaction.user.id != self.author.id:
+        elif interaction.user.id != self.context.author.id:
             await interaction.response.send_message(content="You are not the author of this interaction.", ephemeral=True)
             return False
         return True
