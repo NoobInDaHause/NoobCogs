@@ -10,6 +10,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 from typing import Literal, Optional
 
 from .constants import SdonateDesc
+from .utils import is_have_avatar
 from .views import Confirmation
 
 class ServerDonations(commands.Cog):
@@ -69,8 +70,8 @@ class ServerDonations(commands.Cog):
                 title="Someone would like to donate for a giveaway!",
                 timestamp=context.message.created_at
             )
-            .set_thumbnail(url=context.author.avatar.url)
-            .set_footer(text=context.guild, icon_url=context.guild.icon.url)
+            .set_thumbnail(url=is_have_avatar(context.author))
+            .set_footer(text=context.guild, icon_url=is_have_avatar(context.guild))
             .add_field(name="Donor:", value=context.author.mention, inline=False)
             .add_field(name="Type:", value=g_values[0], inline=True)
             .add_field(name="Duration:", value=g_values[1], inline=True)
@@ -110,8 +111,8 @@ class ServerDonations(commands.Cog):
                 title="Someone would like to donate for an event!",
                 timestamp=context.message.created_at
             )
-            .set_thumbnail(url=context.author.avatar.url)
-            .set_footer(text=context.guild, icon_url=context.guild.icon.url)
+            .set_thumbnail(url=is_have_avatar(context.author))
+            .set_footer(text=context.guild, icon_url=is_have_avatar(context.guild))
             .add_field(name="Donor:", value=context.author.mention, inline=False)
             .add_field(name="Type:", value=e_values[0], inline=True)
             .add_field(name="Event:", value=e_values[1], inline=True)
@@ -149,8 +150,8 @@ class ServerDonations(commands.Cog):
                 title="Someone would like to donate for a heist!",
                 timestamp=context.message.created_at
             )
-            .set_thumbnail(url=context.author.avatar.url)
-            .set_footer(text=context.guild, icon_url=context.guild.icon.url)
+            .set_thumbnail(url=is_have_avatar(context.author))
+            .set_footer(text=context.guild, icon_url=is_have_avatar(context.guild))
             .add_field(name="Donor:", value=context.author.mention, inline=False)
             .add_field(name="Type:", value=h_values[0], inline=True)
             .add_field(name="Amount:", value=h_values[1], inline=True)
@@ -207,19 +208,19 @@ class ServerDonations(commands.Cog):
             title=f"How to use `{context.prefix}giveawaydonate` command",
             description=SdonateDesc.gdonodesc.replace("[p]", f"{context.prefix}"),
             colour=await context.embed_colour()
-        ).set_footer(text=f"Command executed by: {context.author} | Page 1/3", icon_url=context.author.avatar.url)
+        ).set_footer(text=f"Command executed by: {context.author} | Page 1/3", icon_url=is_have_avatar(context.author))
         
         em2 = discord.Embed(
             title=f"How to use `{context.prefix}eventdonate` command",
             description=SdonateDesc.edonodesc.replace("[p]", f"{context.prefix}"),
             colour=await context.embed_colour()
-        ).set_footer(text=f"Command executed by: {context.author} | Page 2/3", icon_url=context.author.avatar.url)
+        ).set_footer(text=f"Command executed by: {context.author} | Page 2/3", icon_url=is_have_avatar(context.author))
         
         em3 = discord.Embed(
             title=f"How to use `{context.prefix}heistdonate` command",
             description=SdonateDesc.hdonodesc.replace("[p]", f"{context.prefix}"),
             colour=await context.embed_colour()
-        ).set_footer(text=f"Command executed by: {context.author} | Page 3/3", icon_url=context.author.avatar.url)
+        ).set_footer(text=f"Command executed by: {context.author} | Page 3/3", icon_url=is_have_avatar(context.author))
         
         bemeds = [em1, em2, em3]
         await menu(context, bemeds, timeout=60)
@@ -476,7 +477,7 @@ class ServerDonations(commands.Cog):
                 colour=await context.embed_colour(),
                 timestamp=context.message.created_at
             )
-            .set_author(name=f"ServerDonations settings for [{context.guild}]", icon_url=context.guild.icon.url)
+            .set_author(name=f"ServerDonations settings for [{context.guild}]", icon_url=is_have_avatar(context.guild))
             .add_field(
                 name="Giveaway manager role:",
                 value=f"<@&{settings['gman_id']}>" if settings['gman_id'] else "No role set.", 

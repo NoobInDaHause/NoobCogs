@@ -9,6 +9,7 @@ from redbot.core.utils.menus import menu
 
 from typing import Literal, Optional
 
+from .utils import is_have_avatar
 from .views import Confirmation
 
 class Afk(commands.Cog):
@@ -102,22 +103,23 @@ class Afk(commands.Cog):
             return await self.config.member(user).pinglogs.clear()
 
         pings = await self.config.member(user).pinglogs()
-        pinglist = """\n""".join(pings)
-        pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
-        final_page = {}
+        if pings:
+            pinglist = """\n""".join(pings)
+            pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
+            final_page = {}
 
-        for ind, page in enumerate(pages, 1):
-            embed = discord.Embed(
-                title=f"You have recieved some pings while you were AFK, {user.name}.",
-                description=page,
-                color=user.colour
-            )
-            embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=user.avatar.url)
-            final_page[ind - 1] = embed
+            for ind, page in enumerate(pages, 1):
+                embed = discord.Embed(
+                    title=f"You have recieved some pings while you were AFK, {user.name}.",
+                    description=page,
+                    color=user.colour
+                )
+                embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(user))
+                final_page[ind - 1] = embed
 
-        context = await self.bot.get_context(payload)
-        await menu(context, list(final_page.values()), timeout=60)
-        await self.config.member(user).pinglogs.clear()
+            context = await self.bot.get_context(payload)
+            await menu(context, list(final_page.values()), timeout=60)
+            await self.config.member(user).pinglogs.clear()
     
     async def log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
         """
@@ -130,7 +132,7 @@ class Afk(commands.Cog):
         embed = discord.Embed(
             description=f"{afk_user.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{await self.config.member(afk_user).reason()}",
             colour=afk_user.colour
-        ).set_thumbnail(url=afk_user.avatar.url)
+        ).set_thumbnail(url=is_have_avatar(afk_user))
 
         da = await self.config.guild(payload.guild).delete_after()
 

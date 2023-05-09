@@ -9,7 +9,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 from typing import Literal, Optional
 
 from .views import Calculator, CookieClicker, PressFView, PressFButton
-from .utils import EmojiConverter
+from .utils import EmojiConverter, is_have_avatar
 
 class NoobUtils(commands.Cog):
     """
@@ -91,7 +91,7 @@ class NoobUtils(commands.Cog):
             .add_field(name="Members:", value=members, inline=True)
             .add_field(name="Bots:", value=bots, inline=True)
             .add_field(name="All Members:", value=all_members, inline=True)
-            .set_author(name=f"Current member count for [{context.guild.name}]", icon_url=context.guild.icon.url)
+            .set_author(name=f"Current member count for [{context.guild.name}]", icon_url=is_have_avatar(context.guild))
         )
         await context.send(embed=embed)
     

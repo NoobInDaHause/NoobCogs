@@ -7,18 +7,19 @@ from redbot.core import commands, app_commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils import mod
 from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core.utils.menus import menu
 
 from typing import Literal, Optional
 
 from .constants import SosGifs, SosHelp
-from .views import Confirmation, Paginator, SosManager, SosButton
+from .utils import is_have_avatar
+from .views import Confirmation, SosManager, SosButton
 
 class SplitOrSteal(commands.Cog):
     """
     A fun split or steal game.
 
     A very fun game to play on an event. This game can shatter friendships!
-    [Click here](https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/splitorsteal/README.md) to see all the available commands for SplitOrSteal.
     """
     def __init__(self, bot: Red) -> None:
         self.bot = bot
@@ -34,6 +35,7 @@ class SplitOrSteal(commands.Cog):
         
     __version__ = "1.0.3"
     __author__ = ["Noobindahause#2808"]
+    __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/splitorsteal/README.md"
     
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -44,6 +46,7 @@ class SplitOrSteal(commands.Cog):
         
         Cog Version: {self.__version__}
         Cog Author{p}: {humanize_list(self.__author__)}
+        Cog Documentation: {self.__documentation__}
         """
     
     async def red_delete_data_for_user(
@@ -84,7 +87,7 @@ class SplitOrSteal(commands.Cog):
         )
         sotembed.add_field(name="Prize:", value=prize, inline=False)
         sotembed.set_footer(text="Remember trust no one in this game. ;)", icon_url="https://cdn.vectorstock.com/i/preview-1x/13/61/mafia-character-abstract-silhouette-vector-45291361.jpg")
-        sotembed.set_author(name=f"Hosted by: {host}", icon_url=host.avatar.url)
+        sotembed.set_author(name=f"Hosted by: {host}", icon_url=is_have_avatar(host))
         sotam = discord.AllowedMentions(roles=False, users=True, everyone=False)
         await context.channel.send(content=f"{player_1.mention} and {player_2.mention}", embed=sotembed, allowed_mentions=sotam)
         await asyncio.sleep(60)
@@ -121,7 +124,7 @@ class SplitOrSteal(commands.Cog):
         """
         Get the player answer.
         """
-        view = SosButton(author=player)
+        view = SosButton(timeout=30.0)
         embed = discord.Embed(
             title="Split or Steal Game.",
             description="You may now choose. Do you want to `split` 🤝 or `steal` ⚔️ or `forfeit` ❌?",
@@ -129,7 +132,7 @@ class SplitOrSteal(commands.Cog):
         )
         embed.add_field(name="Prize:", value=prize, inline=False)
         embed.set_footer(text="You have 30 seconds to answer or you will automatically forfeit the game.")
-        view.message = await player.send(embed=embed, view=view)
+        view.start(embed=embed, player=player)
         
         await view.wait()
         
@@ -156,7 +159,7 @@ class SplitOrSteal(commands.Cog):
             field_value = f"Both players forfeited! What a shame nobody wins the **{prize}** prize ❌!"
             desc = f"Split or Steal game has ended.\n[Player 1] {player_1.mention} has forfeited!\n[Player 2] {player_2.mention} has forfeited!"
             colour = 0x2F3136
-            image = SosGifs.losergif
+            image = SosGifs.losergif()
         
         elif answer1 == "forfeit":
             field_value = f"{player_2.mention} has won the **{prize}** prize since {player_1.mention} has forfeited."
@@ -168,8 +171,8 @@ class SplitOrSteal(commands.Cog):
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
             embed.add_field(name="Result:", value=field_value, inline=False)
-            embed.set_footer(text=f"Hosted by: {host}", icon_url=host.avatar.url)
-            embed.set_image(url=SosGifs.forfeitgif)
+            embed.set_footer(text=f"Hosted by: {host}", icon_url=is_have_avatar(host))
+            embed.set_image(url=SosGifs.forfeitgif())
             
             return await context.channel.send(content=host.mention, embed=embed)
         
@@ -183,8 +186,8 @@ class SplitOrSteal(commands.Cog):
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
             embed.add_field(name="Result:", value=field_value, inline=False)
-            embed.set_footer(text=f"Hosted by: {host}", icon_url=host.avatar.url)
-            embed.set_image(url=SosGifs.forfeitgif)
+            embed.set_footer(text=f"Hosted by: {host}", icon_url=is_have_avatar(host))
+            embed.set_image(url=SosGifs.forfeitgif())
             
             return await context.channel.send(content=host.mention, embed=embed)
             
@@ -192,25 +195,25 @@ class SplitOrSteal(commands.Cog):
             field_value = f"Both players chose Split! They can now split the **{prize}** prize 🤝!"
             colour = 0x00FF00
             desc = f"Split or Steal game has ended.\n[Player 1] {player_1.mention} chose {answer1.title()}!\n[Player 2] {player_2.mention} chose {answer2.title()}!"
-            image = SosGifs.wingif
+            image = SosGifs.wingif()
             
         elif answer1 == "steal" and answer2 == "split":
             field_value = f"Player {player_1.mention} steals the **{prize}** prize for themselves ⚔️!"
             colour = 0xFF0000
             desc = f"Split or Steal game has ended.\n[Player 1] {player_1.mention} chose {answer1.title()}!\n[Player 2] {player_2.mention} chose {answer2.title()}!"
-            image = SosGifs.betraygif
+            image = SosGifs.betraygif()
             
         elif answer1 == "split" and answer2 == "steal":
             field_value = f"Player {player_2.mention} steals the **{prize}** prize for themselves ⚔️!"
             colour = 0xFF0000
             desc = f"Split or Steal game has ended.\n[Player 1] {player_1.mention} chose {answer1.title()}!\n[Player 2] {player_2.mention} chose {answer2.title()}!"
-            image = SosGifs.betraygif
+            image = SosGifs.betraygif()
         
         elif answer1 and answer2 == "steal":
             field_value = f"Both players chose Steal! Nobody has won the **{prize}** prize ❌!"
             colour = 0x2F3136
             desc = f"Split or Steal game has ended thanks for playing!\n[Player 1] {player_1.mention} chose {answer1.title()}!\n[Player 2] {player_2.mention} chose {answer2.title()}!"
-            image = SosGifs.losergif
+            image = SosGifs.losergif()
             
         embed = discord.Embed(
             title="Game over",
@@ -219,7 +222,7 @@ class SplitOrSteal(commands.Cog):
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
         embed.add_field(name="Result:", value=field_value, inline=False)
-        embed.set_footer(text=f"Hosted by: {host}", icon_url=host.avatar.url)
+        embed.set_footer(text=f"Hosted by: {host}", icon_url=is_have_avatar(host))
         embed.set_image(url=image)
         
         return await context.channel.send(content=host.mention, embed=embed)
@@ -287,26 +290,25 @@ class SplitOrSteal(commands.Cog):
             description=SosHelp.em1desc,
             colour=await context.embed_colour()
         )
-        em1.set_footer(text=f"Command executed by: {context.author} | Page 1/3", icon_url=context.author.avatar.url)
+        em1.set_footer(text=f"Command executed by: {context.author} | Page 1/3", icon_url=is_have_avatar(context.author))
 
         em2 = discord.Embed(
             title="***__Rules of Split or Seal__***",
             description=SosHelp.em2desc,
             colour=await context.embed_colour()
         )
-        em2.set_footer(text=f"Command executed by: {context.author} | Page 2/3", icon_url=context.author.avatar.url)
+        em2.set_footer(text=f"Command executed by: {context.author} | Page 2/3", icon_url=is_have_avatar(context.author))
 
         em3 = discord.Embed(
             title="***__How Split or Steal works__***",
             description=SosHelp.em3desc.replace("[p]", f"{context.prefix}"),
             colour=await context.embed_colour()
         )
-        em3.set_footer(text=f"Command executed by: {context.author} | Page 3/3", icon_url=context.author.avatar.url)
+        em3.set_footer(text=f"Command executed by: {context.author} | Page 3/3", icon_url=is_have_avatar(context.author))
         pag = [em1, em2, em3]
-        pages = Paginator(bot=self.bot, author=context.author, pages=pag, timeout=60)
-        await pages.start(context)
+        await menu(context, pag, timeout=60)
     
-    @commands.group(name="splitorstealset", invoke_without_command=True, aliases=["sosset"])
+    @commands.group(name="splitorstealset", aliases=["sosset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     @commands.has_permissions(manage_guild=True)
@@ -314,7 +316,6 @@ class SplitOrSteal(commands.Cog):
         """
         Settings for split or steal cog.
         """
-        await context.send_help()
         
     @splitorstealset.command(name="clearactive", aliases=["ca"])
     async def splitorstealset_clearactive(self, context: commands.Context, channel: Optional[discord.TextChannel]):
@@ -323,9 +324,6 @@ class SplitOrSteal(commands.Cog):
         
         If you can not start a game on a channel even if there is no game running use this command.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
         active = await self.config.guild(context.guild).activechan()
         
         if not channel:
@@ -345,15 +343,12 @@ class SplitOrSteal(commands.Cog):
         """
         Add or remove a manager role.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
         embed = discord.Embed(
             description="Choose whether to add or remove splitorsteal manager roles.",
             colour=await context.embed_colour()
         )
-        view = SosManager(bot=self.bot, context=context, author=context.author, config=self.config, timeout=30)
-        view.message = await context.send(embed=embed, view=view)
+        view = SosManager()
+        view.start(context=context, embed=embed)
         
         await view.wait()
     
@@ -362,9 +357,6 @@ class SplitOrSteal(commands.Cog):
         """
         Toggle whether to restrict the `[p]splitorsteal` command to the set manager roles.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
         await self.config.guild(context.guild).manager_only.set(state)
         status = "enabled" if state else "disabled"
         await context.send(f"Manager only setting for splitorsteal has been {status}.")
@@ -374,12 +366,10 @@ class SplitOrSteal(commands.Cog):
         """
         Reset the guild settings to default.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
         confirm_action = "Successfully resetted the SplitOrSteal guild settings."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send("Are you sure you want to reset the splitorsteal guild settings?", view=view)
+        conf_msg = "Are you sure you want to reset the splitorsteal guild settings?"
+        view = Confirmation()
+        view.start(context=context, confirm_action=confirm_action, confirmation_msg=conf_msg)
         
         await view.wait()
         
@@ -392,12 +382,10 @@ class SplitOrSteal(commands.Cog):
         """
         Reset the splitorsteal cogs configuration. (Bot owners only)
         """
-        if not await context.bot.is_owner(context.author):
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
         confirm_action = "Successfully cleared the splitorsteal cogs configuration."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
-        view.message = await context.send("This will reset the splitorsteal cogs whole configuration, do you want to continue?", view=view)
+        conf_msg = "Are you sure you want to reset the SplitOrSteal cogs configuration?"
+        view = Confirmation()
+        view.start(context=context, confirm_action=confirm_action, confirmation_msg=conf_msg)
         
         await view.wait()
         
@@ -409,9 +397,6 @@ class SplitOrSteal(commands.Cog):
         """
         See the settings of SplitOrSteal.
         """
-        if not context.author.guild_permissions.manage_guild:
-            return await context.reply(content="You do not have permission to use this command.", ephemeral=True)
-        
         settings = await self.config.guild(context.guild).all()
         
         embed = discord.Embed(
