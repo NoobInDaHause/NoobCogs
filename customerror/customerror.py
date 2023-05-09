@@ -31,8 +31,9 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
         
-    __version__ = "1.0.6"
+    __version__ = "1.0.7"
     __author__ = ["Noobindahause#2808"]
+    __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/customerror/README.md"
     
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -43,6 +44,7 @@ class CustomError(commands.Cog):
         
         Cog Version: {self.__version__}
         Cog Author{p}: {humanize_list(self.__author__)}
+        Cog Documentation: [[Click here]]({self.__documentation__})
         """
     
     async def red_delete_data_for_user(self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int):
@@ -112,7 +114,7 @@ class CustomError(commands.Cog):
         """
         Test the bots error message. (Bot owners only)
         """
-        if cmd := self.bot.get_command('eval'):
+        if self.bot.get_command('eval'):
             raise NotImplementedError("plzerror")
         else:
             return await context.reply(content="The dev cog isn't loaded, load it when you start the bot with the `--dev` flag.")

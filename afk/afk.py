@@ -17,7 +17,6 @@ class Afk(commands.Cog):
     Notify users whenever you go AFK with pings logging.
     
     Be afk and notify users who ping you with a reason of your choice. This cog is inspired by sravan and Andy's afk cog.
-    [Click here](https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md) to see all the commands available for Afk.
     """
     def __init__(self, bot: Red) -> None:
         self.bot = bot
@@ -38,8 +37,9 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["Noobindahause#2808"]
+    __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
     
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -50,6 +50,7 @@ class Afk(commands.Cog):
         
         Cog Version: {self.__version__}
         Cog Author{p}: {humanize_list(self.__author__)}
+        Cog Documentation: [[Click here]]({self.__documentation__})
         """
     
     async def red_delete_data_for_user(
@@ -102,8 +103,7 @@ class Afk(commands.Cog):
         if not await self.config.member(user).toggle_logs():
             return await self.config.member(user).pinglogs.clear()
 
-        pings = await self.config.member(user).pinglogs()
-        if pings:
+        if pings := await self.config.member(user).pinglogs():
             pinglist = """\n""".join(pings)
             pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
             final_page = {}
@@ -149,8 +149,8 @@ class Afk(commands.Cog):
             )
         )
     
-    @commands.Cog.listener("on_message_without_command")
-    async def on_message_without_command(self, payload: discord.Message):
+    @commands.Cog.listener("on_message")
+    async def on_message(self, payload: discord.Message):
         if not payload.guild:
             return
         

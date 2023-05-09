@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.SplitOrSteal")
         
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/splitorsteal/README.md"
     

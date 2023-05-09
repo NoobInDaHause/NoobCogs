@@ -16,8 +16,6 @@ from .views import Confirmation, GbanViewReset
 class GlobalBan(commands.Cog):
     """
     Globally ban a user from all the guilds the bot is in.
-
-    [Click here](https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md) to see all the available commands for GlobalBan.
     """
     def __init__(self, bot: Red) -> None:
         self.bot = bot
@@ -31,8 +29,9 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
         
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["Noobindahause#2808"]
+    __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
     
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -43,6 +42,7 @@ class GlobalBan(commands.Cog):
         
         Cog Version: {self.__version__}
         Cog Author{p}: {humanize_list(self.__author__)}
+        Cog Documentation: [[Click here]]({self.__documentation__})
         """
     
     async def red_delete_data_for_user(

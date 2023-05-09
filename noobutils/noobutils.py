@@ -16,7 +16,6 @@ class NoobUtils(commands.Cog):
     Some maybe useful or useless commands.
     
     Cog made by a noob at python with interesting useful or useless commands.
-    [Click here](https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/noobutils/README.md) to see all of the available commands for NoobUtils.
     """
     def __init__(self, bot: Red):
         self.bot = bot
@@ -28,9 +27,10 @@ class NoobUtils(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
         
-    __version__ = "1.3.12"
+    __version__ = "1.3.13"
     __author__ = ["Noobindahause#2808"]
-    
+    __documentation__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/noobutils/README.md"
+
     def format_help_for_context(self, context: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
@@ -40,6 +40,7 @@ class NoobUtils(commands.Cog):
         
         Cog Version: {self.__version__}
         Cog Author{p}: {humanize_list(self.__author__)}
+        Cog Documentation: [[Click here]]({self.__documentation__})
         """
     
     async def red_delete_data_for_user(
