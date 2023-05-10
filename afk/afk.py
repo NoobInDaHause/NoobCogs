@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.9"
+    __version__ = "1.0.10"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
     
@@ -83,7 +83,7 @@ class Afk(commands.Cog):
                 else:
                     await payload.channel.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
     
-    async def end_afk(self, payload: discord.Message, context: commands.Context, user: discord.Member):
+    async def end_afk(self, payload: discord.Message, user: discord.Member):
         """
         End AFK status.
         """
@@ -117,6 +117,7 @@ class Afk(commands.Cog):
                 embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(user))
                 final_page[ind - 1] = embed
 
+            context = await self.bot.get_context(payload)
             await menu(context, list(final_page.values()), timeout=60)
             await self.config.member(user).pinglogs.clear()
     
@@ -148,9 +149,8 @@ class Afk(commands.Cog):
             )
         )
     
-    @commands.Cog.listener("on_message")
-    async def on_message(self, payload: discord.Message):
-        context = await self.bot.get_context(payload)
+    @commands.Cog.listener("on_message_without_command")
+    async def on_message_without_command(self, payload: discord.Message):
         if not payload.guild:
             return
         
@@ -160,14 +160,12 @@ class Afk(commands.Cog):
         if await self.config.member(payload.author).sticky():
             pass
         elif await self.config.member(payload.author).afk():
-            await self.end_afk(payload=payload, context=context, user=payload.author)
+            await self.end_afk(payload=payload, user=payload.author)
         
         if not payload.mentions:
             return
 
         for afk_user in payload.mentions:
-            if f"{context.prefix}afkset" or f"{context.prefix}awayset" in payload.message.context:
-                continue
             if afk_user.id == payload.author.id:
                 continue
 
@@ -196,19 +194,18 @@ class Afk(commands.Cog):
         The reason is optional.
         """
         if await self.config.member(context.author).afk():
-            return await context.reply(content="It appears you are already AFK.", ephemeral=True, mention_author=False)
+            return await context.send(content="It appears you are already AFK.")
 
         await context.send("You are now AFK. Any member that pings you will now get notified.")
         await self.start_afk(payload=context.message, user=context.author, reason=reason)
     
-    @commands.group(name="afkset", invoke_without_command=True, aliases=["awayset"])
+    @commands.group(name="afkset", aliases=["awayset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def afkset(self, context: commands.Context):
         """
         Settings for the AFK cog.
         """
-        await context.send_help()
     
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.has_permissions(manage_guild=True)
@@ -245,29 +242,21 @@ class Afk(commands.Cog):
         """
         Forcefully add or remove an AFK status on a user.
         """
-        if await context.bot.is_owner(context.author):
-            if await self.config.member(member).afk():
-                await context.reply(content=f"Forcefully removed **{member}**'s AFK status.", ephemeral=True, mention_author=False)
-                return await self.end_afk(payload=context.message, user=member)
-
-            await self.start_afk(payload=context.message, user=member, reason=reason)
-            return await context.reply(content=f"Forcefully added **{member}**'s AFK status.", ephemeral=True, mention_author=False)
-        
         if member.bot:
-            return await context.reply(content="I'm afraid you can not do that to bots.", ephemeral=True, mention_author=False)
+            return await context.send(content="I'm afraid you can not do that to bots.")
         if member.id == context.guild.owner.id:
-            return await context.reply(content="I'm afraid you can not do that to the guild owner.", ephemeral=True, mention_author=False)
+            return await context.send(content="I'm afraid you can not do that to the guild owner.")
         if member.id == context.author.id:
-            return await context.reply(content=f"Why would you force AFK yourself? Please use `{context.prefix}afk`.", ephemeral=True, mention_author=False)
+            return await context.send(content=f"Why would you force AFK yourself? Please use `{context.prefix}afk`.")
         if member.top_role >= context.author.top_role:
-            return await context.reply(content="I'm afraid you can not do that due to role hierarchy.", ephemeral=True, mention_author=False)
+            return await context.send(content="I'm afraid you can not do that due to role hierarchy.")
 
         if await self.config.member(member).afk():
-            await self.end_afk(payload=context.message, user=member)
-            return await context.send(f"Forcefully removed **{member}**'s AFK status.")
+            await context.send(f"Forcefully removed **{member}**'s AFK status.")
+            return await self.end_afk(payload=context.message, user=member)
 
-        await self.start_afk(payload=context.message, user=context.author, reason=reason)
         await context.send(f"Forcefully added **{member}**'s AFK status.")
+        await self.start_afk(payload=context.message, user=context.author, reason=reason)
     
     @afkset.command(name="nick")
     @commands.has_permissions(manage_guild=True)
