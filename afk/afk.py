@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.5"
+    __version__ = "1.0.6"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
     
@@ -83,7 +83,7 @@ class Afk(commands.Cog):
                 else:
                     await payload.channel.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
     
-    async def end_afk(self, payload: discord.Message, user: discord.Member):
+    async def end_afk(self, payload: discord.Message, context: commands.Context, user: discord.Member):
         """
         End AFK status.
         """
@@ -117,7 +117,6 @@ class Afk(commands.Cog):
                 embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(user))
                 final_page[ind - 1] = embed
 
-            context = await self.bot.get_context(payload)
             await menu(context, list(final_page.values()), timeout=60)
             await self.config.member(user).pinglogs.clear()
     
@@ -166,13 +165,16 @@ class Afk(commands.Cog):
             return
 
         for afk_user in payload.mentions:
+            context = await self.bot.get_context(payload)
+            if f"{context.prefix}afkset" or f"{context.prefix}awayset" in payload.message.context:
+                continue
             if afk_user.id == payload.author.id:
                 continue
 
             if not await self.config.member(afk_user).afk():
                 continue
             
-            await self.log_and_notify(payload=payload, afk_user=afk_user)
+            await self.log_and_notify(payload=payload, context=context, afk_user=afk_user)
     
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
