@@ -22,7 +22,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| Afk             |  v1.0.6   | Notify users whenever you go AFK with pings logging.             |
+| Afk             |  v1.0.7   | Notify users whenever you go AFK with pings logging.             |
 | CustomError     |  v1.0.7   | Customize your bots error message.                               |
 | GlobalBan       |  v1.0.5   | Globally ban a user from all the guilds the bot is in.           |
 | NoobUtils       |  v1.3.13  | Some maybe useful or useless commands.                           |

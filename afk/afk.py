@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.6"
+    __version__ = "1.0.7"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
     
@@ -150,6 +150,7 @@ class Afk(commands.Cog):
     
     @commands.Cog.listener("on_message")
     async def on_message(self, payload: discord.Message):
+        context = await self.bot.get_context(payload)
         if not payload.guild:
             return
         
@@ -165,7 +166,6 @@ class Afk(commands.Cog):
             return
 
         for afk_user in payload.mentions:
-            context = await self.bot.get_context(payload)
             if f"{context.prefix}afkset" or f"{context.prefix}awayset" in payload.message.context:
                 continue
             if afk_user.id == payload.author.id:
