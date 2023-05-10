@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.12"
+    __version__ = "1.0.13"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
     
@@ -153,18 +153,19 @@ class Afk(commands.Cog):
     async def on_message_without_command(self, payload: discord.Message):
         if not payload.guild:
             return
-        
+        if not payload.channel.permissions_for(payload.guild.me).send_messages:
+            return
         if payload.author.bot:
             return
-
+        
         if await self.config.member(payload.author).sticky():
             pass
         elif await self.config.member(payload.author).afk():
             await self.end_afk(payload=payload, user=payload.author)
-        
+
         if not payload.mentions:
             return
-
+        
         for afk_user in payload.mentions:
             if afk_user.id == payload.author.id:
                 continue
@@ -252,8 +253,13 @@ class Afk(commands.Cog):
             return await context.send(content="I'm afraid you can not do that due to role hierarchy.")
 
         if await self.config.member(member).afk():
+<<<<<<< HEAD
+            await self.end_afk(payload=context.message, context=context, user=member)
+            return await context.send(f"Forcefully removed **{member}**'s AFK status.")
+=======
             await context.send(f"Forcefully removed **{member}**'s AFK status.")
             return await self.end_afk(payload=context.message, user=member)
+>>>>>>> 97cfe9d769986a3ed625ccdc47a366e08b065514
 
         await context.send(f"Forcefully added **{member}**'s AFK status.")
         await self.start_afk(payload=context.message, user=member, reason=reason)
