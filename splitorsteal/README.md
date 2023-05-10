@@ -25,8 +25,8 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Checks:` Any
  - `Description:` Some useful information about split or steal.
 
-## [Hybrid Group]
-Below are Hybrid Group Commands can be run with legacy prefix commands or slash commands.
+## [Legacy Group]
+Below are Legacy Group Commands can be run with legacy prefix commands only.
 
 `[p]` is your bots prefix.
 
