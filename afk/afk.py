@@ -37,10 +37,10 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.13"
+    __version__ = "1.0.14"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
-    
+
     def format_help_for_context(self, context: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
@@ -52,7 +52,7 @@ class Afk(commands.Cog):
         Cog Author{p}: {humanize_list(self.__author__)}
         Cog Documentation: [[Click here]]({self.__documentation__})
         """
-    
+
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ):
@@ -66,7 +66,7 @@ class Afk(commands.Cog):
         """
         for guild in self.bot.guilds:
             await self.config.member_from_ids(guild_id=guild.id, member_id=user_id).clear()
-    
+
     async def start_afk(self, payload: discord.Message, user: discord.Member, reason: str):
         """
         Start AFK status.
@@ -82,7 +82,7 @@ class Afk(commands.Cog):
                     await payload.channel.send("Could not change your nick cause you are the guild owner.", delete_after=10)
                 else:
                     await payload.channel.send("Could not change your nick due to role hierarchy or I'm missing the manage nicknames permission.", delete_after=10)
-    
+
     async def end_afk(self, payload: discord.Message, user: discord.Member):
         """
         End AFK status.
@@ -120,7 +120,7 @@ class Afk(commands.Cog):
             context = await self.bot.get_context(payload)
             await menu(context, list(final_page.values()), timeout=60)
             await self.config.member(user).pinglogs.clear()
-    
+
     async def log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
         """
         Log pings and at the same time notify members when they mentioned an AFK memebr.
@@ -157,7 +157,7 @@ class Afk(commands.Cog):
             return
         if payload.author.bot:
             return
-        
+
         if await self.config.member(payload.author).sticky():
             pass
         elif await self.config.member(payload.author).afk():
@@ -165,16 +165,16 @@ class Afk(commands.Cog):
 
         if not payload.mentions:
             return
-        
+
         for afk_user in payload.mentions:
             if afk_user.id == payload.author.id:
                 continue
 
             if not await self.config.member(afk_user).afk():
                 continue
-            
+
             await self.log_and_notify(payload=payload, afk_user=afk_user)
-    
+
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -199,7 +199,7 @@ class Afk(commands.Cog):
 
         await context.send("You are now AFK. Any member that pings you will now get notified.")
         await self.start_afk(payload=context.message, user=context.author, reason=reason)
-    
+
     @commands.group(name="afkset", aliases=["awayset"])
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
@@ -207,7 +207,7 @@ class Afk(commands.Cog):
         """
         Settings for the AFK cog.
         """
-    
+
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.admin_or_permissions(manage_guild=True)
     async def afkset_deleteafter(
@@ -224,13 +224,13 @@ class Afk(commands.Cog):
         if not seconds:
             await self.config.guild(context.guild).delete_after.set(0)
             return await context.send("The delete after has been disabled.")
-        
+
         if seconds >= 121:
             return await context.send("The maximum seconds of delete after is 120 seconds.")
-        
+
         await self.config.guild(context.guild).delete_after.set(seconds)
         await context.send(f"Successfully set the delete after to {seconds} seconds.")
-    
+
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.admin_or_permissions(manage_guild=True)
     async def afkset_forceafk(
@@ -253,17 +253,12 @@ class Afk(commands.Cog):
             return await context.send(content="I'm afraid you can not do that due to role hierarchy.")
 
         if await self.config.member(member).afk():
-<<<<<<< HEAD
-            await self.end_afk(payload=context.message, context=context, user=member)
-            return await context.send(f"Forcefully removed **{member}**'s AFK status.")
-=======
             await context.send(f"Forcefully removed **{member}**'s AFK status.")
             return await self.end_afk(payload=context.message, user=member)
->>>>>>> 97cfe9d769986a3ed625ccdc47a366e08b065514
 
         await context.send(f"Forcefully added **{member}**'s AFK status.")
         await self.start_afk(payload=context.message, user=member, reason=reason)
-    
+
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_nicknames=True)
@@ -280,7 +275,7 @@ class Afk(commands.Cog):
         await self.config.guild(context.guild).nick.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} edit the users nick whenever they go AFK.")
-    
+
     @afkset.command(name="reset")
     async def afkset_reset(self, context: commands.Context):
         """
@@ -290,12 +285,12 @@ class Afk(commands.Cog):
         confirm_action = "Successfully resetted your AFK settings."
         view = Confirmation(timeout=30)
         await view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
-        
+
         await view.wait()
-        
+
         if view.value == "yes":
             await self.config.member(context.author).clear()
-    
+
     @afkset.command(name="resetcog")
     @commands.is_owner()
     async def afkset_resetcog(self, context: commands.Context):
@@ -306,13 +301,13 @@ class Afk(commands.Cog):
         confirm_action = "Successfully resetted the AFK cogs configuration."
         view = Confirmation(timeout=30)
         await view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
-        
+
         await view.wait()
-        
+
         if view.value == "yes":
             await self.config.clear_all()
             await self.config.clear_all_members()
-    
+
     @afkset.command(name="showsettings", aliases=["ss"])
     async def afkset_showsettings(self, context: commands.Context):
         """
@@ -324,19 +319,18 @@ class Afk(commands.Cog):
         guild_settings = await self.config.guild(context.guild).all()
         da = f"{guild_settings['delete_after']} seconds." if guild_settings['delete_after'] != 0 else "Disabled."
         gset = f"`Nick change:` {guild_settings['nick']}\n`Delete after:` {da}"
-        
+
         embed = discord.Embed(
             title=f"{context.author.name}'s AFK settings.",
             description=f"`Is afk:` {member_settings['afk']}\n`Is sticky:` {member_settings['sticky']}\n`Ping logging:` {member_settings['toggle_logs']}",
             colour=context.author.colour,
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
-        
+
         if await context.bot.is_owner(context.author) or context.author.guild_permissions.manage_guild:
             embed.add_field(name="Guild settings:", value=gset, inline=False)
-        
         await context.send(embed=embed)
-    
+
     @afkset.command(name="sticky")
     async def afkset_sticky(
         self,
@@ -351,7 +345,7 @@ class Afk(commands.Cog):
         await self.config.member(context.author).sticky.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} sticky your AFK.")
-        
+
     @afkset.command(name="togglelogs", aliases=["tl"])
     async def afkset_togglelogs(
         self,
