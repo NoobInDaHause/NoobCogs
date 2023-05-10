@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.11"
+    __version__ = "1.0.12"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
     
@@ -208,7 +208,7 @@ class Afk(commands.Cog):
         """
     
     @afkset.command(name="deleteafter", aliases=["da"])
-    @commands.has_permissions(manage_guild=True)
+    @commands.admin_or_permissions(manage_guild=True)
     async def afkset_deleteafter(
         self,
         context: commands.Context,
@@ -231,7 +231,7 @@ class Afk(commands.Cog):
         await context.send(f"Successfully set the delete after to {seconds} seconds.")
     
     @afkset.command(name="forceafk", aliases=["forceaway"])
-    @commands.has_permissions(manage_guild=True)
+    @commands.admin_or_permissions(manage_guild=True)
     async def afkset_forceafk(
         self,
         context: commands.Context,
@@ -252,14 +252,14 @@ class Afk(commands.Cog):
             return await context.send(content="I'm afraid you can not do that due to role hierarchy.")
 
         if await self.config.member(member).afk():
-            await self.end_afk(payload=context.message, user=member)
-            return await context.send(f"Forcefully removed **{member}**'s AFK status.")
+            await context.send(f"Forcefully removed **{member}**'s AFK status.")
+            return await self.end_afk(payload=context.message, user=member)
 
-        await self.start_afk(payload=context.message, user=member, reason=reason)
         await context.send(f"Forcefully added **{member}**'s AFK status.")
+        await self.start_afk(payload=context.message, user=member, reason=reason)
     
     @afkset.command(name="nick")
-    @commands.has_permissions(manage_guild=True)
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_nicknames=True)
     async def afkset_nick(
         self,
