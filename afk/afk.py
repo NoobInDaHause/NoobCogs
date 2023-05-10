@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.8"
+    __version__ = "1.0.9"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
     
@@ -160,7 +160,7 @@ class Afk(commands.Cog):
         if await self.config.member(payload.author).sticky():
             pass
         elif await self.config.member(payload.author).afk():
-            await self.end_afk(payload=payload, user=payload.author)
+            await self.end_afk(payload=payload, context=context, user=payload.author)
         
         if not payload.mentions:
             return
