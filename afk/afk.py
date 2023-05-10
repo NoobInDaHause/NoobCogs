@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.7"
+    __version__ = "1.0.8"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
     
@@ -174,7 +174,7 @@ class Afk(commands.Cog):
             if not await self.config.member(afk_user).afk():
                 continue
             
-            await self.log_and_notify(payload=payload, context=context, afk_user=afk_user)
+            await self.log_and_notify(payload=payload, afk_user=afk_user)
     
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
