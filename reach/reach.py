@@ -60,6 +60,7 @@ class Reach(commands.Cog):
     
     async def new_here_reach(self, context: commands.Context, channel: discord.TextChannel):
         reached = 0
+        here_members = 0
         for member in context.guild.members:
             if member.bot:
                 continue
@@ -69,7 +70,6 @@ class Reach(commands.Cog):
                 continue
             reached += 1
         
-        here_members = 0
         for m in context.guild.members:
             if m.bot:
                 continue
@@ -93,7 +93,7 @@ class Reach(commands.Cog):
         context: commands.Context,
         channel: Optional[discord.TextChannel],
         *,
-        roles
+        roles: str
     ):  # sourcery skip: low-code-quality
         """
         Reach channel and see how many members who can view the channel.
