@@ -122,7 +122,7 @@ class Reach(commands.Cog):
         for z in reols:
             if z == "@everyone":
                 z.replace("@", "")
-            if z == "@here"
+            if z == "@here":
                 z.replace("@", "")
             if z in input_roles:
                 continue
