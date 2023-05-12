@@ -84,6 +84,6 @@ class Reach(commands.Cog):
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
-        embed.set_footer(name=context.guild.name, icon_url=is_have_avatar(context.guild))
+        embed.set_footer(text=context.guild.name, icon_url=is_have_avatar(context.guild))
         await context.send(embed=embed)
         
