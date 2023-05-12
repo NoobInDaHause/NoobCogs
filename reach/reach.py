@@ -109,25 +109,21 @@ class Reach(commands.Cog):
         
         input_roles = roles.split(" ")
         
-        ev_or_here = []
         conf_roles = []
+        final = []
         for i in input_roles:
             try:
-                j = await context.guild.get_role(int(i))
+                j = context.guild.get_role(int(i))
                 conf_roles.append(j)
             except Exception:
-                ev_or_here.append(str(i))
-        final = []
-        for r in ev_or_here:
-            if r.lower() == "everyone":
-                k = await self.new_everyone_reach(context=context, channel=channel)
-                final.append(k)
-            elif r.lower() == "here":
-                k = await self.new_here_reach(context=context, channel=channel)
-                final.append(k)
-            else:
-                continue
-        
+                if i.lower() == "everyone":
+                    k = await self.new_everyone_reach(context=context, channel=channel)
+                    final.append(k)
+                elif i.lower() == "here":
+                    k = await self.new_here_reach(context=context, channel=channel)
+                    final.append(k)
+                else:
+                    continue
         for role in conf_roles:
             reached = 0
             for member in role.members:
