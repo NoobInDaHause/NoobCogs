@@ -91,9 +91,9 @@ class Reach(commands.Cog):
     async def reach(
         self,
         context: commands.Context,
-        channel: Optional[discord.TextChannel],
+        channel: Optional[discord.TextChannel] = None,
         *,
-        roles: str
+        roles: Optional[str] = None
     ):  # sourcery skip: low-code-quality
         """
         Reach channel and see how many members who can view the channel.
@@ -103,6 +103,9 @@ class Reach(commands.Cog):
         """
         if not channel:
             channel = context.channel
+        
+        if not roles:
+            return await context.send_help()
         
         input_roles = roles.split(" ")
         
