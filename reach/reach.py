@@ -113,7 +113,7 @@ class Reach(commands.Cog):
                 j = await context.guild.get_role(int(i))
                 conf_roles.append(j)
             except Exception:
-                ev_or_here.append(str(j))
+                ev_or_here.append(str(i))
         final = []
         for r in ev_or_here:
             if r.lower() == "everyone":
