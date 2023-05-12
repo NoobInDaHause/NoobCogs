@@ -55,7 +55,7 @@ class Reach(commands.Cog):
         div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
         return (
             f"` - ` @everyone: {reached} out of {len([mem for mem in context.guild.members if not mem.bot])}"
-            f" - **{round(div, 2)}%**"
+            f" - **{round(div, 2)}%**\n"
         )
     
     async def new_here_reach(self, context: commands.Context, channel: discord.TextChannel):
@@ -78,7 +78,7 @@ class Reach(commands.Cog):
             here_members += 1
         
         div = reached / here_members * 100
-        return f"` - ` @here: {reached} out of {here_members} - **{round(div, 2)}%**"
+        return f"` - ` @here: {reached} out of {here_members} - **{round(div, 2)}%**\n"
     
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
@@ -136,11 +136,11 @@ class Reach(commands.Cog):
             f = (
                 f"` - ` {role.mention}: {reached} out of "
                 f"{len([m for m in role.members if not m.bot])} members "
-                f"- **{round(div, 2)}%**"
+                f"- **{round(div, 2)}%**\n"
             )
             final.append(f)
 
-        final_roles = "\n".join(final)
+        final_roles = "".join(final)
         embed = discord.Embed(
             title="Role Reach",
             description=f"Channel: {channel.mention}\n\n{final_roles}",
@@ -148,5 +148,9 @@ class Reach(commands.Cog):
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
         embed.set_footer(text=context.guild.name, icon_url=is_have_avatar(context.guild))
+        
+        if not final_roles:
+            return await context.send("No roles were reached.")
+        
         await context.send(embed=embed)
         
