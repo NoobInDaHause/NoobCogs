@@ -117,7 +117,12 @@ class Reach(commands.Cog):
         if not roles:
             return await context.send_help()
         
-        input_roles = roles.split(" ")
+        reols = roles.split(" ")
+        input_roles = []
+        for z in reols:
+            if z in input_roles:
+                continue
+            input_roles.append(z)
         
         conf_roles = []
         final = []
