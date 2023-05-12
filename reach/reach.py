@@ -113,8 +113,8 @@ class Reach(commands.Cog):
         final = []
         for i in input_roles:
             try:
-                i.replace("<", "").replace("@", "").replace("&", "").replace(">", "")
-                j = context.guild.get_role(int(i))
+                f = i.replace("<", "").replace("@", "").replace("&", "").replace(">", "")
+                j = context.guild.get_role(int(f))
                 conf_roles.append(j)
             except Exception:
                 if i.lower() == "everyone":
