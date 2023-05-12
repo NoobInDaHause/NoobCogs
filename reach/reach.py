@@ -143,6 +143,14 @@ class Reach(commands.Cog):
                 if not channel.permissions_for(member).view_channel:
                     continue
                 reached += 1
+            if not reached:
+                b = (
+                    f"` - ` {role.mention}: {reached} out of "
+                    f"{len([m for m in role.members if not m.bot])} members - **0%**\n"
+                )
+                final.append(b)
+                continue
+            
             div = reached / len([m for m in role.members if not m.bot]) * 100
             f = (
                 f"` - ` {role.mention}: {reached} out of "
