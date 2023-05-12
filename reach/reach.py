@@ -139,7 +139,7 @@ class Reach(commands.Cog):
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
                     final.append(k)
-                elif i.lower() == "here" or "@here":
+                elif i.lower() == "here":
                     k = await self.new_here_reach(context=context, channel=channel)
                     final.append(k)
                 else:
