@@ -52,6 +52,13 @@ class Reach(commands.Cog):
             if not channel.permissions_for(member).view_channel:
                 continue
             reached += 1
+        
+        if not reached:
+            return (
+                f"` - ` @everyone: {reached} out of "
+                f"{len([mem for mem in context.guild.members if not mem.bot])} members - **0%**\n"
+            )
+        
         div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
         return (
             f"` - ` @everyone: {reached} out of {len([mem for mem in context.guild.members if not mem.bot])}"
@@ -76,6 +83,9 @@ class Reach(commands.Cog):
             if m.status == discord.Status.offline:
                 continue
             here_members += 1
+        
+        if not reached:
+            return f"` - ` @here: {reached} out of {here_members} members - **0%**\n"
         
         div = reached / here_members * 100
         return f"` - ` @here: {reached} out of {here_members} members - **{round(div, 2)}%**\n"
