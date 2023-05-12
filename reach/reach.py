@@ -134,7 +134,7 @@ class Reach(commands.Cog):
                 reached += 1
             div = reached / len([m for m in role.members if not m.bot]) * 100
             f = (
-                f"` - ` {role.mention} ({role.id}): {reached} out of "
+                f"` - ` {role.mention}: {reached} out of "
                 f"{len([m for m in role.members if not m.bot])} members "
                 f"- **{round(div, 2)}%**"
             )
@@ -143,7 +143,7 @@ class Reach(commands.Cog):
         final_roles = "\n".join(final)
         embed = discord.Embed(
             title="Role Reach",
-            description=f"Channel: {channel.mention} `{channel.id}`\n\n{final_roles}",
+            description=f"Channel: {channel.mention}\n\n{final_roles}",
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
