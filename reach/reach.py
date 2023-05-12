@@ -122,23 +122,15 @@ class Reach(commands.Cog):
         conf_roles = []
         final = []
         for i in input_roles:
-            if i == "@everyone":
-                u = await self.new_everyone_reach(context=context, channel=channel)
-                final.append(u)
-                continue
-            if i == "@here":
-                u = await self.new_here_reach(context=context, channel=channel)
-                final.append(u)
-                continue
             try:
                 f = i.replace("<", "").replace("@", "").replace("&", "").replace(">", "")
                 j = context.guild.get_role(int(f))
                 conf_roles.append(j)
             except Exception:
-                if i.lower() == "everyone":
+                if i.lower() == "everyone" or "@everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
                     final.append(k)
-                elif i.lower() == "here":
+                elif i.lower() == "here" or "@here":
                     k = await self.new_here_reach(context=context, channel=channel)
                     final.append(k)
                 else:
