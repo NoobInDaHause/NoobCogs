@@ -55,7 +55,7 @@ class Reach(commands.Cog):
         div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
         return (
             f"` - ` @everyone: {reached} out of {len([mem for mem in context.guild.members if not mem.bot])}"
-            f" - **{round(div, 2)}%**\n"
+            f" members - **{round(div, 2)}%**\n"
         )
     
     async def new_here_reach(self, context: commands.Context, channel: discord.TextChannel):
@@ -78,7 +78,7 @@ class Reach(commands.Cog):
             here_members += 1
         
         div = reached / here_members * 100
-        return f"` - ` @here: {reached} out of {here_members} - **{round(div, 2)}%**\n"
+        return f"` - ` @here: {reached} out of {here_members} members - **{round(div, 2)}%**\n"
     
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
