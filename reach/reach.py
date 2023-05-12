@@ -113,7 +113,7 @@ class Reach(commands.Cog):
         final = []
         for i in input_roles:
             try:
-                i.replace("<", "").replace("@", "")replace("&", "")replace(">", "")
+                i.replace("<", "").replace("@", "").replace("&", "").replace(">", "")
                 j = context.guild.get_role(int(i))
                 conf_roles.append(j)
             except Exception:
