@@ -197,7 +197,7 @@ class Reach(commands.Cog):
         for ind, page in enumerate(pages, 1):
             embed = discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n{page}\n\n{ov}",
+                description=f"Channel: {channel.mention}\n\n{page.replace('@everyone', '@everyone').replace('@here', '@here')}\n{ov}",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
