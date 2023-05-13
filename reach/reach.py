@@ -178,7 +178,7 @@ class Reach(commands.Cog):
             total_members += len([m for m in role.members if not m.bot])
             final.append(f)
         
-        if not final:
+        if not final and not oy or yo:
             return await context.send("No roles were reached.")
         
         final_roles = """\n""".join(final)
