@@ -184,10 +184,12 @@ class Reach(commands.Cog):
             return await context.send("No roles were reached.")
 
         breh = final[0]
-        final.pop(f"{breh}")
+        index = final.index(breh)
+        final.pop(index)
         if final[1]:
             bruh = final[1]
-            final.pop(f"{bruh}")
+            index = final.index(bruh)
+            final.pop(index)
         final_roles = "\n".join(final)
         pages = list(pagify(final_roles, delims=["` - `"], page_length=1000))
         real_final = {}
