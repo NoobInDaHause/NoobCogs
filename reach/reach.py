@@ -139,13 +139,13 @@ class Reach(commands.Cog):
             except Exception:
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
-                    oy = f"` - ` @everyone : {k[1]} out of {k[2]} members - {k[0]}\n"
+                    oy = f"` - ` @everyone: {k[1]} out of {k[2]} members - {k[0]}\n"
                     total_reach += k[1]
                     total_members += k[2]
                     final.append(oy)
                 elif i.lower() == "here":
                     k = await self.new_here_reach(context=context, channel=channel)
-                    yo = f"` - ` @here : {k[1]} out of {k[2]} members - {k[0]}\n"
+                    yo = f"` - ` @here: {k[1]} out of {k[2]} members - {k[0]}\n"
                     total_reach += k[1]
                     total_members += k[2]
                     final.append(yo)
