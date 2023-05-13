@@ -101,7 +101,7 @@ class Reach(commands.Cog):
         channel: Optional[discord.TextChannel] = None,
         *,
         roles: Optional[str] = None
-    ):  # sourcery skip: low-code-quality
+    ):    # sourcery skip: low-code-quality
         """
         Reach channel and see how many members who can view the channel.
         
@@ -110,10 +110,10 @@ class Reach(commands.Cog):
         """
         if not channel:
             channel = context.channel
-        
+
         if not roles:
             return await context.send_help()
-        
+
         await context.typing()
         reols = roles.split(" ")
         input_roles = []
@@ -125,10 +125,10 @@ class Reach(commands.Cog):
             if z in input_roles:
                 continue
             input_roles.append(z)
-        
+
         total_reach = 0
         total_members = 0
-        
+
         conf_roles = []
         final = []
         for i in input_roles:
@@ -151,7 +151,7 @@ class Reach(commands.Cog):
                     final.append(yo)
                 else:
                     continue
-        
+
         for role in conf_roles:
             reached = 0
             for member in role.members:
@@ -169,7 +169,7 @@ class Reach(commands.Cog):
                 total_members += len([m for m in role.members if not m.bot])
                 final.append(b)
                 continue
-            
+
             div = reached / len([m for m in role.members if not m.bot]) * 100
             f = (
                 f"` - ` {role.mention}: {reached} out of "
@@ -182,16 +182,16 @@ class Reach(commands.Cog):
 
         if not final:
             return await context.send("No roles were reached.")
-        
+
         breh = final[0]
-        final.pop(f"{final[0]}")
+        final.pop(f"{breh}")
         if final[1]:
             bruh = final[1]
-            final.pop(f"{final[1]}")
+            final.pop(f"{bruh}")
         final_roles = "\n".join(final)
         pages = list(pagify(final_roles, delims=["` - `"], page_length=1000))
         real_final = {}
-        
+
         divov = total_reach / total_members * 100
         ov = (
             f"**Overall Results:**\n"
@@ -212,5 +212,5 @@ class Reach(commands.Cog):
                 icon_url=is_have_avatar(context.guild)
             )
             real_final[ind - 1] = embed
-        
+
         await menu(context, list(real_final.values()), timeout=60)
