@@ -195,7 +195,7 @@ class Reach(commands.Cog):
         
         divov = total_reach / total_members * 100
         ov = (
-            f"Overall Results:\n"
+            f"**Overall Results:**\n"
             f"`Overall Reach:` **{total_reach}**\n"
             f"`Overall Members:` **{total_members}**\n"
             f"`Overall Percentage:` **{round(divov, 2)}%**"
@@ -203,7 +203,7 @@ class Reach(commands.Cog):
         for ind, page in enumerate(pages, 1):
             embed = discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n{page}\n{ov}",
+                description=f"Channel: {channel.mention}\n\n{page}\n\n{ov}",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
