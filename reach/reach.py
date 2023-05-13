@@ -186,7 +186,7 @@ class Reach(commands.Cog):
         breh = final[0]
         index = final.index(breh)
         final.pop(index)
-        if final[1]:
+        if len(final) == 2:
             bruh = final[1]
             index = final.index(bruh)
             final.pop(index)
