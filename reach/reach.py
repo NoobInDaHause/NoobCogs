@@ -4,8 +4,7 @@ import logging
 
 from redbot.core import commands, app_commands
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, pagify
-from redbot.core.utils.menus import menu
+from redbot.core.utils.chat_formatting import humanize_list
 
 from typing import Literal, Optional
 
@@ -89,6 +88,7 @@ class Reach(commands.Cog):
     
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
+    @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
     @app_commands.guild_only()
     @app_commands.describe(
@@ -182,9 +182,10 @@ class Reach(commands.Cog):
 
         if not final:
             return await context.send("No roles were reached.")
+        if len(final) >= 16:
+            return await context.send("Easy there you can only reach 15 roles at a time.")
         
         final_roles = "".join(final)
-        real_final = []
         
         divov = total_reach / total_members * 100
         ov = (
@@ -193,17 +194,13 @@ class Reach(commands.Cog):
             f"`Overall Members:` **{total_members}**\n"
             f"`Overall Percentage:` **{round(divov, 2)}%**"
         )
-        for page in pagify(final_roles, delims=["` - `"], page_length=1000):
-            embed = discord.Embed(
-                title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n"
-                f"{page}\n{ov}".replace("@everyone", "@everyone").replace("@here", "@here"),
-                colour=await context.embed_colour(),
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
-            ).set_footer(
-                text=context.guild.name,
-                icon_url=is_have_avatar(context.guild)
-            )
-            real_final.append(embed)
-
-        await menu(context, real_final, timeout=60)
+        embed = discord.Embed(
+            title="Role Reach",
+            description=f"Channel: {channel.mention}\n\n{final_roles}\n{ov}",
+            colour=await context.embed_colour(),
+            timestamp=datetime.datetime.now(datetime.timezone.utc)
+        ).set_footer(
+            text=context.guild.name,
+            icon_url=is_have_avatar(context.guild)
+        )
+        await context.send(embed=embed)
