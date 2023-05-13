@@ -88,7 +88,7 @@ class Reach(commands.Cog):
     
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
-    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
     @app_commands.guild_only()
     @app_commands.describe(
