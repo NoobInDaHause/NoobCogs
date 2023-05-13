@@ -183,6 +183,11 @@ class Reach(commands.Cog):
         if not final:
             return await context.send("No roles were reached.")
         
+        breh = final[0]
+        final.pop(final[0])
+        if final[1]:
+            bruh = final[1]
+            final.pop(final[1])
         final_roles = "\n".join(final)
         pages = list(pagify(final_roles, delims=["` - `"], page_length=1000))
         real_final = {}
@@ -197,7 +202,8 @@ class Reach(commands.Cog):
         for ind, page in enumerate(pages, 1):
             embed = discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n{page}\n\n{ov}",
+                description=f"Channel: {channel.mention}\n\n"
+                f"{breh}\n{bruh}\n{page}\n\n{ov}",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
