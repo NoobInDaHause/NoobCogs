@@ -139,13 +139,13 @@ class Reach(commands.Cog):
             except Exception:
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
-                    oy = f"` - ` @everyone : {k[1]} out of {k[2]} members - {k[0]}"
+                    oy = f"` - ` @everyone : {k[1]} out of {k[2]} members - {k[0]}\n"
                     total_reach += k[1]
                     total_members += k[2]
                     final.append(oy)
                 elif i.lower() == "here":
                     k = await self.new_here_reach(context=context, channel=channel)
-                    yo = f"` - ` @here : {k[1]} out of {k[2]} members - {k[0]}"
+                    yo = f"` - ` @here : {k[1]} out of {k[2]} members - {k[0]}\n"
                     total_reach += k[1]
                     total_members += k[2]
                     final.append(yo)
@@ -163,7 +163,7 @@ class Reach(commands.Cog):
             if not reached:
                 b = (
                     f"` - ` {role.mention}: {reached} out of "
-                    f"{len([m for m in role.members if not m.bot])} members - **0%**"
+                    f"{len([m for m in role.members if not m.bot])} members - **0%**\n"
                 )
                 total_reach += reached
                 total_members += len([m for m in role.members if not m.bot])
@@ -174,7 +174,7 @@ class Reach(commands.Cog):
             f = (
                 f"` - ` {role.mention}: {reached} out of "
                 f"{len([m for m in role.members if not m.bot])} members "
-                f"- **{round(div, 2)}%**"
+                f"- **{round(div, 2)}%**\n"
             )
             total_reach += reached
             total_members += len([m for m in role.members if not m.bot])
@@ -182,15 +182,8 @@ class Reach(commands.Cog):
 
         if not final:
             return await context.send("No roles were reached.")
-
-        breh = final[0]
-        index = final.index(breh)
-        final.pop(index)
-        if len(final) == 2:
-            bruh = final[1]
-            index = final.index(bruh)
-            final.pop(index)
-        final_roles = "\n".join(final)
+        
+        final_roles = "".join(final)
         pages = list(pagify(final_roles, delims=["` - `"], page_length=1000))
         real_final = {}
 
@@ -204,8 +197,7 @@ class Reach(commands.Cog):
         for ind, page in enumerate(pages, 1):
             embed = discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n"
-                f"{breh}\n{bruh}\n{page}\n\n{ov}",
+                description=f"Channel: {channel.mention}\n\n{page}\n\n{ov}",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
