@@ -139,16 +139,14 @@ class Reach(commands.Cog):
             except Exception:
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
-                    oy = f"` - ` @everyone : {k[1]} out of {k[2]} members - {k[0]}"
                     total_reach += k[1]
                     total_members += k[2]
-                    final.append(oy)
+                    oy = f"` - ` @everyone : {k[1]} out of {k[2]} members - {k[0]}"
                 elif i.lower() == "here":
                     k = await self.new_here_reach(context=context, channel=channel)
-                    yo = f"` - ` @here : {k[1]} out of {k[2]} members - {k[0]}"
                     total_reach += k[1]
                     total_members += k[2]
-                    final.append(yo)
+                    yo = f"` - ` @here : {k[1]} out of {k[2]} members - {k[0]}"
                 else:
                     continue
         
@@ -179,7 +177,7 @@ class Reach(commands.Cog):
             total_reach += reached
             total_members += len([m for m in role.members if not m.bot])
             final.append(f)
-
+        
         if not final:
             return await context.send("No roles were reached.")
         
@@ -197,7 +195,8 @@ class Reach(commands.Cog):
         for ind, page in enumerate(pages, 1):
             embed = discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n{page}\n\n{ov}",
+                description=f"Channel: {channel.mention}\n\n"
+                f"{oy or ''}\n{yo or ''}\n{page}\n\n{ov}",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
