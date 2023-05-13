@@ -4,7 +4,8 @@ import logging
 
 from redbot.core import commands, app_commands
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core.utils.chat_formatting import humanize_list, pagify
+from redbot.core.utils.menus import menu
 
 from typing import Literal, Optional
 
@@ -56,14 +57,14 @@ class Reach(commands.Cog):
         if not reached:
             return (
                 f"` - ` @everyone: {reached} out of "
-                f"{len([mem for mem in context.guild.members if not mem.bot])} members - **0%**\n"
-            )
+                f"{len([mem for mem in context.guild.members if not mem.bot])} members - **0%**"
+            ), reached, len([mem for mem in context.guild.members if not mem.bot])
         
         div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
         return (
             f"` - ` @everyone: {reached} out of {len([mem for mem in context.guild.members if not mem.bot])}"
-            f" members - **{round(div, 2)}%**\n"
-        )
+            f" members - **{round(div, 2)}%**"
+        ), reached, len([mem for mem in context.guild.members if not mem.bot])
     
     async def new_here_reach(self, context: commands.Context, channel: discord.TextChannel):
         reached = 0
@@ -85,10 +86,14 @@ class Reach(commands.Cog):
             here_members += 1
         
         if not reached:
-            return f"` - ` @here: {reached} out of {here_members} members - **0%**\n"
+            return f"` - ` @here: {reached} out of {here_members} members - **0%**", reached, here_members
         
         div = reached / here_members * 100
-        return f"` - ` @here: {reached} out of {here_members} members - **{round(div, 2)}%**\n"
+        return (
+            f"` - ` @here: {reached} out of {here_members} members - **{round(div, 2)}%**",
+            reached,
+            here_members
+        )
     
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
@@ -129,6 +134,9 @@ class Reach(commands.Cog):
                 continue
             input_roles.append(z)
         
+        total_reach = 0
+        total_members = 0
+        
         conf_roles = []
         final = []
         for i in input_roles:
@@ -139,12 +147,17 @@ class Reach(commands.Cog):
             except Exception:
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
-                    final.append(k)
+                    total_reach += k[1]
+                    total_members += k[2]
+                    final.append(k[0])
                 elif i.lower() == "here":
                     k = await self.new_here_reach(context=context, channel=channel)
-                    final.append(k)
+                    total_reach += k[1]
+                    total_members += k[2]
+                    final.append(k[0])
                 else:
                     continue
+        
         for role in conf_roles:
             reached = 0
             for member in role.members:
@@ -156,8 +169,10 @@ class Reach(commands.Cog):
             if not reached:
                 b = (
                     f"` - ` {role.mention}: {reached} out of "
-                    f"{len([m for m in role.members if not m.bot])} members - **0%**\n"
+                    f"{len([m for m in role.members if not m.bot])} members - **0%**"
                 )
+                total_reach += reached
+                total_members += len([m for m in role.members if not m.bot])
                 final.append(b)
                 continue
             
@@ -165,21 +180,37 @@ class Reach(commands.Cog):
             f = (
                 f"` - ` {role.mention}: {reached} out of "
                 f"{len([m for m in role.members if not m.bot])} members "
-                f"- **{round(div, 2)}%**\n"
+                f"- **{round(div, 2)}%**"
             )
+            total_reach += reached
+            total_members += len([m for m in role.members if not m.bot])
             final.append(f)
 
-        final_roles = "".join(final)
-        embed = discord.Embed(
-            title="Role Reach",
-            description=f"Channel: {channel.mention}\n\n{final_roles}",
-            colour=await context.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
-        )
-        embed.set_footer(text=context.guild.name, icon_url=is_have_avatar(context.guild))
-        
-        if not final_roles:
+        if not final:
             return await context.send("No roles were reached.")
         
-        await context.send(embed=embed)
+        final_roles = """\n""".join(final)
+        pages = list(pagify(final_roles, delims=["` - `"], page_length=1000))
+        real_final = {}
         
+        divov = total_reach / total_members * 100
+        ov = (
+            f"Overall Results:\n"
+            f"`Overall Reach:` **{total_reach}**\n"
+            f"`Overall Members:` **{total_members}**\n"
+            f"`Overall Percentage:` **{round(divov, 2)}%**"
+        )
+        for ind, page in enumerate(pages, 1):
+            embed = discord.Embed(
+                title="Role Reach",
+                description=f"Channel: {channel.mention}\n\n{page}\n{ov}",
+                colour=await context.embed_colour(),
+                timestamp=datetime.datetime.now(datetime.timezone.utc)
+            )
+            embed.set_footer(
+                text=f"{context.guild.name} | Page ({ind}/{len(pages)})",
+                icon_url=is_have_avatar(context.guild)
+            )
+            real_final[ind - 1] = embed
+        
+        await menu(context, list(real_final.values()), timeout=60)
