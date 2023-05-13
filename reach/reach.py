@@ -184,27 +184,17 @@ class Reach(commands.Cog):
             return await context.send("No roles were reached.")
         
         final_roles = "".join(final)
-        pages = list(pagify(final_roles, delims=["` - `"], page_length=1000))
-        real_final = {}
-
-        divov = total_reach / total_members * 100
-        ov = (
-            f"**Overall Results:**\n"
-            f"`Overall Reach:` **{total_reach}**\n"
-            f"`Overall Members:` **{total_members}**\n"
-            f"`Overall Percentage:` **{round(divov, 2)}%**"
-        )
-        for ind, page in enumerate(pages, 1):
+        real_final = []
+        for page in pagify(final_roles, delims=["` - `"], page_length=1000):
             embed = discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n{page.replace('@everyone', '@everyone').replace('@here', '@here')}\n{ov}",
+                description=f"Channel: {channel.mention}\n\n{page}\n{ov}",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
-            )
-            embed.set_footer(
+            ).set_footer(
                 text=f"{context.guild.name} | Page ({ind}/{len(pages)})",
                 icon_url=is_have_avatar(context.guild)
             )
-            real_final[ind - 1] = embed
+            real_final.append(embed)
 
-        await menu(context, list(real_final.values()), timeout=60)
+        await menu(context, real_final, timeout=60)
