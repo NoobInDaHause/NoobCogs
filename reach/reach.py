@@ -205,4 +205,4 @@ class Reach(commands.Cog):
             )
             real_final.append(embed)
 
-        await menu(context, list(real_final.values()), timeout=60)
+        await menu(context, real_final, timeout=60)
