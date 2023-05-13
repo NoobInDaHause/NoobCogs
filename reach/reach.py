@@ -55,17 +55,10 @@ class Reach(commands.Cog):
             reached += 1
         
         if not reached:
-            oy = (
-                f"` - ` @everyone: {reached} out of "
-                f"{len([mem for mem in context.guild.members if not mem.bot])} members - **0%**"
-            )
-            return oy, reached, len([mem for mem in context.guild.members if not mem.bot])
+            return "**0%**", reached, len([mem for mem in context.guild.members if not mem.bot])
         
         div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
-        yo = (
-            f"` - ` @everyone: {reached} out of {len([mem for mem in context.guild.members if not mem.bot])}"
-            f" members - **{round(div, 2)}%**"
-        )
+        yo = f"**{round(div, 2)}%**"
         return yo, reached, len([mem for mem in context.guild.members if not mem.bot])
     
     async def new_here_reach(self, context: commands.Context, channel: discord.TextChannel):
@@ -88,17 +81,11 @@ class Reach(commands.Cog):
             here_members += 1
 
         if not reached:
-            return [
-                f"` - ` @here: {reached} out of {here_members} members - **0%**",
-                reached,
-                here_members,
-            ]
+            return "**0%**", reached, here_members
+        
         div = reached / here_members * 100
-        return [
-            f"` - ` @here: {reached} out of {here_members} members - **{round(div, 2)}%**",
-            reached,
-            here_members
-        ]
+        wh = f"**{round(div, 2)}%**"
+        return wh, reached, here_members
     
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
@@ -152,14 +139,16 @@ class Reach(commands.Cog):
             except Exception:
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
+                    oy = f"` - ` @everyone: {k[1]} out of {k[2]} members - {k[0]}"
                     total_reach += k[1]
                     total_members += k[2]
-                    final.append(k[0])
+                    final.append(oy)
                 elif i.lower() == "here":
                     k = await self.new_here_reach(context=context, channel=channel)
+                    yo = f"` - ` @here: {k[1]} out of {k[2]} members - {k[0]}"
                     total_reach += k[1]
                     total_members += k[2]
-                    final.append(k[0])
+                    final.append(yo)
                 else:
                     continue
         
