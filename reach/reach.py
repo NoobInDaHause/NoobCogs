@@ -55,16 +55,18 @@ class Reach(commands.Cog):
             reached += 1
         
         if not reached:
-            return (
+            oy = (
                 f"` - ` @everyone: {reached} out of "
                 f"{len([mem for mem in context.guild.members if not mem.bot])} members - **0%**"
-            ), reached, len([mem for mem in context.guild.members if not mem.bot])
+            )
+            return oy, reached, len([mem for mem in context.guild.members if not mem.bot])
         
         div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
-        return (
+        yo = (
             f"` - ` @everyone: {reached} out of {len([mem for mem in context.guild.members if not mem.bot])}"
             f" members - **{round(div, 2)}%**"
-        ), reached, len([mem for mem in context.guild.members if not mem.bot])
+        )
+        return yo, reached, len([mem for mem in context.guild.members if not mem.bot])
     
     async def new_here_reach(self, context: commands.Context, channel: discord.TextChannel):
         reached = 0
@@ -77,23 +79,26 @@ class Reach(commands.Cog):
             if not channel.permissions_for(member).view_channel:
                 continue
             reached += 1
-        
+
         for m in context.guild.members:
             if m.bot:
                 continue
             if m.status == discord.Status.offline:
                 continue
             here_members += 1
-        
+
         if not reached:
-            return f"` - ` @here: {reached} out of {here_members} members - **0%**", reached, here_members
-        
+            return [
+                f"` - ` @here: {reached} out of {here_members} members - **0%**",
+                reached,
+                here_members,
+            ]
         div = reached / here_members * 100
-        return (
+        return [
             f"` - ` @here: {reached} out of {here_members} members - **{round(div, 2)}%**",
             reached,
             here_members
-        )
+        ]
     
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
