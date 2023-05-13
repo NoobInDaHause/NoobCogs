@@ -185,6 +185,14 @@ class Reach(commands.Cog):
         
         final_roles = "".join(final)
         real_final = []
+        
+        divov = total_reach / total_members * 100
+        ov = (
+            f"**Overall Results:**\n"
+            f"`Overall Reach:` **{total_reach}**\n"
+            f"`Overall Members:` **{total_members}**\n"
+            f"`Overall Percentage:` **{round(divov, 2)}%**"
+        )
         for page in pagify(final_roles, delims=["` - `"], page_length=1000):
             embed = discord.Embed(
                 title="Role Reach",
@@ -192,9 +200,9 @@ class Reach(commands.Cog):
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             ).set_footer(
-                text=f"{context.guild.name} | Page ({ind}/{len(pages)})",
+                text=context.guild.name,
                 icon_url=is_have_avatar(context.guild)
             )
             real_final.append(embed)
 
-        await menu(context, real_final, timeout=60)
+        await menu(context, list(real_final.values()), timeout=60)
