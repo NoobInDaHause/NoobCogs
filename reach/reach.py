@@ -196,7 +196,8 @@ class Reach(commands.Cog):
         for page in pagify(final_roles, delims=["` - `"], page_length=1000):
             embed = discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n{page}\n{ov}",
+                description=f"Channel: {channel.mention}\n\n"
+                f"{page}\n{ov}".replace("@everyone", "@everyone").replace("@here", "@here"),
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             ).set_footer(
