@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -303,7 +303,7 @@ class Afk(commands.Cog):
         state: bool
     ):
         """
-        Toggle whether to change the users nick with `[AFK] {user_display_name}` or not.
+        Toggle whether to change the users nick with ***[AFK] {user_display_name}*** or not.
         
         This defaults to `True`.
         """
