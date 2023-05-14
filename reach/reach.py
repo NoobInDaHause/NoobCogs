@@ -111,7 +111,7 @@ class Reach(commands.Cog):
         
         await context.typing()
         if len(reols) >= 16:
-            return await context.send("Easy there you can only reach 15 roles at a time.")
+            return await context.send("Easy there you can only reach up to 15 roles at a time.")
         total_reach = 0
         total_members = 0
 
@@ -168,19 +168,19 @@ class Reach(commands.Cog):
 
         divov = total_reach / total_members * 100
         ov = (
-            f"`Overall Reach:` **{total_reach}**\n"
-            f"`Overall Members:` **{total_members}**\n"
-            f"`Overall Percentage:` **{round(divov, 2)}%**"
+            f"> ` - ` Overall Reach: **{total_reach}**\n"
+            f"> ` - ` Overall Members: **{total_members}**\n"
+            f"> ` - ` Overall Percentage: **{round(divov, 2)}%**"
         )
         embed = (
             discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention}\n\n{final_roles}\n",
+                description=f"Channel: {channel.mention} ({channel.id})\n\n{final_roles}\n",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
             .set_footer(text=context.guild.name, icon_url=is_have_avatar(context.guild))
-            .add_field(name="Overall Results:",value=ov,inline=False)
+            .add_field(name="__**Overall Results:**__",value=ov,inline=False)
         )
 
         await context.send(embed=embed)
