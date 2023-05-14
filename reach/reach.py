@@ -86,7 +86,7 @@ class Reach(commands.Cog):
         wh = f"**{round(div, 2)}%**"
         return wh, reached, here_members
     
-    @commands.command(name="reach")
+    @commands.command(name="reach", usage="[channel] <roles...>")
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
@@ -94,7 +94,7 @@ class Reach(commands.Cog):
         self,
         context: commands.Context,
         channel: Optional[discord.TextChannel],
-        *roles: FuzzyRole
+        *roles: Optional[FuzzyRole]
     ):    # sourcery skip: low-code-quality
         """
         Reach channel and see how many members who can view the channel.
@@ -105,6 +105,9 @@ class Reach(commands.Cog):
         if not channel:
             channel = context.channel
 
+        if not roles:
+            return await context.send_help()
+        
         reols = []
         for x in roles:
             if x in reols:
