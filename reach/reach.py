@@ -2,7 +2,7 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, app_commands
+from redbot.core import commands
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 
@@ -86,15 +86,10 @@ class Reach(commands.Cog):
         wh = f"**{round(div, 2)}%**"
         return wh, reached, here_members
     
-    @commands.hybrid_command(name="reach")
+    @commands.command(name="reach")
     @commands.guild_only()
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
-    @app_commands.guild_only()
-    @app_commands.describe(
-        channel="The channel that you want to reach.",
-        roles="The roles that you want to channel reach. (sparate with spaces if multiple)"
-    )
     async def reach(
         self,
         context: commands.Context,
