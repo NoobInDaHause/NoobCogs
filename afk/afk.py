@@ -31,13 +31,14 @@ class Afk(commands.Cog):
             "sticky": False,
             "toggle_logs": True,
             "reason": None,
+            "timestamp": None,
             "pinglogs": []
         }
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.14"
+    __version__ = "1.0.15"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -72,6 +73,7 @@ class Afk(commands.Cog):
         Start AFK status.
         """
         await self.config.member(user).afk.set(True)
+        await self.config.member(user).timestamp.set(round(datetime.datetime.now(datetime.timezone.utc).timestamp()))
         await self.config.member(user).reason.set(reason)
 
         if await self.config.guild(payload.guild).nick():
@@ -89,6 +91,7 @@ class Afk(commands.Cog):
         """
         await payload.channel.send(f"Welcome back {user.name}! I have removed your AFK status.")
         await self.config.member(user).afk.set(False)
+        await self.config.member(user).timestamp.clear()
         await self.config.member(user).reason.clear()
 
         if await self.config.guild(payload.guild).nick():
@@ -130,7 +133,7 @@ class Afk(commands.Cog):
             pl.append(ping_log)
 
         embed = discord.Embed(
-            description=f"{afk_user.mention} is currently AFK since <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n\n**Reason:**\n{await self.config.member(afk_user).reason()}",
+            description=f"{afk_user.mention} is currently AFK since <t:{await self.config.member(afk_user).timestamp()}:R>.\n\n**Reason:**\n{await self.config.member(afk_user).reason()}",
             colour=afk_user.colour
         ).set_thumbnail(url=is_have_avatar(afk_user))
 
