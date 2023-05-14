@@ -105,12 +105,18 @@ class Reach(commands.Cog):
         if not channel:
             channel = context.channel
 
+        reols = []
+        for x in roles:
+            if x in reols:
+                continue
+            reols.append(x)
+        
         await context.typing()
         total_reach = 0
         total_members = 0
 
         final = []
-        for i in roles:
+        for i in reols:
             try:
                 reached = 0
                 for mem in i.members:
