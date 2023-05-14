@@ -86,10 +86,6 @@ class Reach(commands.Cog):
         wh = f"**{round(div, 2)}%**"
         return wh, reached, here_members
     
-    @commands.command(name="testreach")
-    async def test(self, context: commands.Context, *roles: FuzzyRole):
-        await context.send(roles)
-    
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -102,9 +98,8 @@ class Reach(commands.Cog):
     async def reach(
         self,
         context: commands.Context,
-        channel: Optional[discord.TextChannel] = None,
-        *,
-        roles: Optional[str] = None
+        channel: Optional[discord.TextChannel],
+        *roles: FuzzyRole
     ):    # sourcery skip: low-code-quality
         """
         Reach channel and see how many members who can view the channel.
@@ -115,31 +110,40 @@ class Reach(commands.Cog):
         if not channel:
             channel = context.channel
 
-        if not roles:
-            return await context.send_help()
-
         await context.typing()
-        reols = roles.split(" ")
-        input_roles = []
-        for z in reols:
-            if z == "@everyone":
-                z.replace("@", "")
-            if z == "@here":
-                z.replace("@", "")
-            if z in input_roles:
-                continue
-            input_roles.append(z)
-
         total_reach = 0
         total_members = 0
 
-        conf_roles = []
         final = []
-        for i in input_roles:
+        for i in roles:
             try:
-                f = i.replace("<", "").replace("@", "").replace("&", "").replace(">", "")
-                j = context.guild.get_role(int(f))
-                conf_roles.append(j)
+                reached = 0
+                for mem in i.members:
+                    if mem.bot:
+                        continue
+                    if not channel.permissions_for(mem).view_channel:
+                        continue
+                    reached += 1
+                
+                if not reached:
+                    b = (
+                        f"` - ` {i.mention}: {reached} out of "
+                        f"{len([m for m in i.members if not m.bot])} members - **0%**\n"
+                    )
+                    total_reach += reached
+                    total_members += len([m for m in i.members if not m.bot])
+                    final.append(b)
+                    continue
+                
+                div = reached / len([m for m in i.members if not m.bot]) * 100
+                f = (
+                    f"` - ` {i.mention}: {reached} out of "
+                    f"{len([m for m in i.members if not m.bot])} members "
+                    f"- **{round(div, 2)}%**\n"
+                )
+                total_reach += reached
+                total_members += len([m for m in i.members if not m.bot])
+                final.append(f)
             except Exception:
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
@@ -155,34 +159,6 @@ class Reach(commands.Cog):
                     final.append(yo)
                 else:
                     continue
-
-        for role in conf_roles:
-            reached = 0
-            for member in role.members:
-                if member.bot:
-                    continue
-                if not channel.permissions_for(member).view_channel:
-                    continue
-                reached += 1
-            if not reached:
-                b = (
-                    f"` - ` {role.mention}: {reached} out of "
-                    f"{len([m for m in role.members if not m.bot])} members - **0%**\n"
-                )
-                total_reach += reached
-                total_members += len([m for m in role.members if not m.bot])
-                final.append(b)
-                continue
-
-            div = reached / len([m for m in role.members if not m.bot]) * 100
-            f = (
-                f"` - ` {role.mention}: {reached} out of "
-                f"{len([m for m in role.members if not m.bot])} members "
-                f"- **{round(div, 2)}%**\n"
-            )
-            total_reach += reached
-            total_members += len([m for m in role.members if not m.bot])
-            final.append(f)
 
         if not final:
             return await context.send("No roles were reached.")

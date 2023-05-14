@@ -11,7 +11,7 @@
     "hidden": false,
     "disabled": false,
     "required_cogs": {},
-    "requirements": [],
+    "requirements": ["rapidfuzz", "unidecode"],
     "tags": [
         "reach"
     ],

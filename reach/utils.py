@@ -2,10 +2,12 @@ import discord
 
 from redbot.core import commands
 
-from typing import Union
 from rapidfuzz import process
+from typing import Union
 from unidecode import unidecode
 
+# https://github.com/phenom4n4n/phen-cogs/blob/327fc78c66814ac01f644c6b775dc4d6db6e1e5f/roleutils/converters.py#L36
+# original converter from https://github.com/TrustyJAID/Trusty-cogs/blob/master/serverstats/converters.py#L19
 class FuzzyRole(commands.RoleConverter):
     """
     This will accept role ID's, mentions, and perform a fuzzy search for
