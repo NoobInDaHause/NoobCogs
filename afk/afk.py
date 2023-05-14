@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.15"
+    __version__ = "1.0.16"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -252,7 +252,7 @@ class Afk(commands.Cog):
             return await context.send(content="I'm afraid you can not do that to the guild owner.")
         if member.id == context.author.id:
             return await context.send(content=f"Why would you force AFK yourself? Please use `{context.prefix}afk`.")
-        if member.top_role >= context.author.top_role:
+        if member.top_role >= context.author.top_role and context.author.id != context.guild.owner.id:
             return await context.send(content="I'm afraid you can not do that due to role hierarchy.")
 
         if await self.config.member(member).afk():
@@ -308,7 +308,7 @@ class Afk(commands.Cog):
         await view.wait()
 
         if view.value == "yes":
-            await self.config.clear_all()
+            await self.config.clear_all_guilds()
             await self.config.clear_all_members()
 
     @afkset.command(name="showsettings", aliases=["ss"])
