@@ -21,7 +21,7 @@ class FuzzyRole(commands.RoleConverter):
         self.response = response
         super().__init__()
 
-    async def convert(self, ctx: commands.Context, argument: str):
+    async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
         if argument.lower() in {"here", "@here"}:
             return "here"
         if argument.lower() in {"everyone", "@everyone"}:
@@ -47,6 +47,22 @@ class FuzzyRole(commands.RoleConverter):
 
         sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
         return sorted_result[0][0]
+
+class StrictRole(FuzzyRole):
+    def __init__(self, response: bool = True, *, check_integrated: bool = True):
+        self.response = response
+        self.check_integrated = check_integrated
+        super().__init__(response)
+
+    async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
+        role = await super().convert(ctx, argument)
+        if self.check_integrated and role.managed:
+            raise commands.BadArgument(
+                f"`{role}` is an integrated role and cannot be assigned."
+                if self.response
+                else None
+            )
+        return role
 
 def is_have_avatar(thing: Union[discord.Member, discord.Guild] = None):
     if not thing:

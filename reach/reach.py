@@ -8,7 +8,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 
 from typing import Literal, Optional
 
-from .utils import is_have_avatar, FuzzyRole
+from .utils import is_have_avatar, StrictRole
 
 class Reach(commands.Cog):
     """
@@ -87,7 +87,7 @@ class Reach(commands.Cog):
         return wh, reached, here_members
     
     @commands.command(name="testreach")
-    async def test(self, context: commands.Context, *roles: FuzzyRole):
+    async def test(self, context: commands.Context, *roles: StrictRole):
         await context.send(humanize_list(roles))
     
     @commands.hybrid_command(name="reach")
