@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -152,8 +152,8 @@ class Afk(commands.Cog):
             )
         )
     
-    @commands.Cog.listener("on_message_without_command")
-    async def on_message_without_command(self, payload: discord.Message):
+    @commands.Cog.listener("on_message")
+    async def on_message(self, payload: discord.Message):
         if not payload.guild:
             return
         if not payload.channel.permissions_for(payload.guild.me).send_messages:
@@ -266,7 +266,7 @@ class Afk(commands.Cog):
     @commands.admin_or_permissions(manage_guild=True)
     async def afkset_afkmembers(self, context: commands.Context):
         """
-        Check who all the afk members in your guild.
+        Check who are all the afk members in your guild.
         """
         afk_users = []
         for member in context.guild.members:

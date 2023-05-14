@@ -48,6 +48,14 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Checks:` guild_only
  - `Description:` Forcefully add or remove an AFK status on a user.
 
+# [p]afkset members
+ - `Usage:` [p]afkset members
+ - `Aliases:` None
+ - `User permission(s):` manage_guild
+ - `Bot permission(s):` embed_links
+ - `Checks:` guild_only
+ - `Description:` Check who are all the afk members in your guild.
+
 # [p]afkset nick
  - `Usage:` [p]afkset nick <state>
  - `Aliases:` None
@@ -60,7 +68,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]afkset reset
  - `Aliases:` None
  - `User permission(s):` None
- - `Bot permission(s):` None
+ - `Bot permission(s):` embed_links
  - `Checks:` guild_only
  - `Description:` Reset your AFK settings to default.
 
@@ -68,7 +76,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]afkset resetcog
  - `Aliases:` None
  - `User permission(s):` Bot Owner
- - `Bot permission(s):` None
+ - `Bot permission(s):` embed_links
  - `Checks:` Any
  - `Description:` Reset the AFK cogs configuration.
 
@@ -76,7 +84,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]afkset showsettings
  - `Aliases:` [p]afkset ss
  - `User permission(s):` None
- - `Bot permission(s):` None
+ - `Bot permission(s):` embed_links
  - `Checks:` guild_only
  - `Description:` See your AFK settings and Guild settings (if manage_guild+).
 
@@ -84,7 +92,7 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]afkset sticky <state>
  - `Aliases:` None
  - `User permission(s):` None
- - `Bot permission(s):` None
+ - `Bot permission(s):` embed_links
  - `Checks:` guild_only
  - `Description:` Toggle whether to sticky your afk or not.
 
@@ -92,6 +100,6 @@ Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
  - `Usage:` [p]afkset togglelogs <state>
  - `Aliases:` [p]afkset tl
  - `User permission(s):` None
- - `Bot permission(s):` None
+ - `Bot permission(s):` embed_links
  - `Checks:` guild_only
  - `Description:` Toggle whether to log all pings you recieved or not.
