@@ -2,8 +2,8 @@ import discord
 
 from redbot.core import commands
 
-from rapidfuzz import process
 from typing import Union
+from rapidfuzz import process
 from unidecode import unidecode
 
 # https://github.com/phenom4n4n/phen-cogs/blob/327fc78c66814ac01f644c6b775dc4d6db6e1e5f/roleutils/converters.py#L36

@@ -55,11 +55,11 @@ class Reach(commands.Cog):
         
         if not reached:
             return "**0%**", reached, len([mem for mem in context.guild.members if not mem.bot])
-        
+
         div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
         yo = f"**{round(div, 2)}%**"
         return yo, reached, len([mem for mem in context.guild.members if not mem.bot])
-    
+
     async def new_here_reach(self, context: commands.Context, channel: discord.TextChannel):
         reached = 0
         here_members = 0
@@ -75,11 +75,11 @@ class Reach(commands.Cog):
 
         if not reached:
             return "**0%**", reached, here_members
-        
+
         div = reached / here_members * 100
         wh = f"**{round(div, 2)}%**"
         return wh, reached, here_members
-    
+
     @commands.command(name="reach", usage="[channel] <roles...>")
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -102,7 +102,7 @@ class Reach(commands.Cog):
 
         if not roles:
             return await context.send_help()
-        
+
         reols = []
         for x in roles:
             if x in reols:
@@ -163,23 +163,24 @@ class Reach(commands.Cog):
 
         if not final:
             return await context.send("No roles were reached.")
-        
+
         final_roles = "".join(final)
-        
+
         divov = total_reach / total_members * 100
         ov = (
-            f"**Overall Results:**\n"
             f"`Overall Reach:` **{total_reach}**\n"
             f"`Overall Members:` **{total_members}**\n"
             f"`Overall Percentage:` **{round(divov, 2)}%**"
         )
-        embed = discord.Embed(
-            title="Role Reach",
-            description=f"Channel: {channel.mention}\n\n{final_roles}\n{ov}",
-            colour=await context.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
-        ).set_footer(
-            text=context.guild.name,
-            icon_url=is_have_avatar(context.guild)
+        embed = (
+            discord.Embed(
+                title="Role Reach",
+                description=f"Channel: {channel.mention}\n\n{final_roles}\n",
+                colour=await context.embed_colour(),
+                timestamp=datetime.datetime.now(datetime.timezone.utc)
+            )
+            .set_footer(text=context.guild.name, icon_url=is_have_avatar(context.guild))
+            .add_field(name="Overall Results:",value=ov,inline=False)
         )
+
         await context.send(embed=embed)
