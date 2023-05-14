@@ -4,7 +4,7 @@ import logging
 
 from redbot.core import commands
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core.utils.chat_formatting import humanize_list, humanize_number
 
 from typing import Literal, Optional
 
@@ -128,8 +128,8 @@ class Reach(commands.Cog):
                 
                 if not reached:
                     b = (
-                        f"` #{len(final) + 1} ` {i.mention}: {reached} out of "
-                        f"{len([m for m in i.members if not m.bot])} members - **0%**\n"
+                        f"` #{len(final) + 1} ` {i.mention}: {humanize_number(reached)} out of "
+                        f"{humanize_number(len([m for m in i.members if not m.bot]))} members - **0%**\n"
                     )
                     total_reach += reached
                     total_members += len([m for m in i.members if not m.bot])
@@ -138,8 +138,8 @@ class Reach(commands.Cog):
                 
                 div = reached / len([m for m in i.members if not m.bot]) * 100
                 f = (
-                    f"` #{len(final) + 1} ` {i.mention}: {reached} out of "
-                    f"{len([m for m in i.members if not m.bot])} members "
+                    f"` #{len(final) + 1} ` {i.mention}: {humanize_number(reached)} out of "
+                    f"{humanize_number(len([m for m in i.members if not m.bot]))} members "
                     f"- **{round(div, 2)}%**\n"
                 )
                 total_reach += reached
@@ -148,13 +148,13 @@ class Reach(commands.Cog):
             except Exception:
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
-                    oy = f"` #{len(final) + 1} ` @everyone: {k[1]} out of {k[2]} members - {k[0]}\n"
+                    oy = f"` #{len(final) + 1} ` @everyone: {humanize_number(k[1])} out of {humanize_number(k[2])} members - {k[0]}\n"
                     total_reach += k[1]
                     total_members += k[2]
                     final.append(oy)
                 elif i.lower() == "here":
                     k = await self.new_here_reach(context=context, channel=channel)
-                    yo = f"` #{len(final) + 1} ` @here: {k[1]} out of {k[2]} members - {k[0]}\n"
+                    yo = f"` #{len(final) + 1} ` @here: {humanize_number(k[1])} out of {humanize_number(k[2])} members - {k[0]}\n"
                     total_reach += k[1]
                     total_members += k[2]
                     final.append(yo)
@@ -168,14 +168,14 @@ class Reach(commands.Cog):
 
         divov = total_reach / total_members * 100
         ov = (
-            f"> ` - ` Overall Reach: **{total_reach}**\n"
-            f"> ` - ` Overall Members: **{total_members}**\n"
+            f"> ` - ` Overall Reach: **{humanize_number(total_reach)}**\n"
+            f"> ` - ` Overall Members: **{humanize_number(total_members)}**\n"
             f"> ` - ` Overall Percentage: **{round(divov, 2)}%**"
         )
         embed = (
             discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention} ({channel.id})\n\n{final_roles}\n".replace("@everyone", "@everyone"),
+                description=f"Channel: {channel.mention} ({channel.id})\n\n{final_roles}\n",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
