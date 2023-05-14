@@ -112,6 +112,8 @@ class Reach(commands.Cog):
             reols.append(x)
         
         await context.typing()
+        if len(reols) >= 16:
+            return await context.send("Easy there you can only reach 15 roles at a time.")
         total_reach = 0
         total_members = 0
 
@@ -163,8 +165,6 @@ class Reach(commands.Cog):
 
         if not final:
             return await context.send("No roles were reached.")
-        if len(final) >= 16:
-            return await context.send("Easy there you can only reach 15 roles at a time.")
         
         final_roles = "".join(final)
         
