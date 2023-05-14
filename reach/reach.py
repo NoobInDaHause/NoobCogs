@@ -68,16 +68,10 @@ class Reach(commands.Cog):
                 continue
             if member.status == discord.Status.offline:
                 continue
+            here_members += 1
             if not channel.permissions_for(member).view_channel:
                 continue
             reached += 1
-
-        for m in context.guild.members:
-            if m.bot:
-                continue
-            if m.status == discord.Status.offline:
-                continue
-            here_members += 1
 
         if not reached:
             return "**0%**", reached, here_members
@@ -89,13 +83,13 @@ class Reach(commands.Cog):
     @commands.command(name="reach", usage="[channel] <roles...>")
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.bot_has_permissions(embed_links=True)
+    @commands.bot_has_permissions(embed_links=True, manage_roles=True)
     async def reach(
         self,
         context: commands.Context,
         channel: Optional[discord.TextChannel],
         *roles: Optional[FuzzyRole]
-    ):    # sourcery skip: low-code-quality
+    ):  # sourcery skip: low-code-quality
         """
         Reach channel and see how many members who can view the channel.
         
