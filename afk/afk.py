@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.0.16"
+    __version__ = "1.1.0"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -49,8 +49,8 @@ class Afk(commands.Cog):
         p = "s" if len(self.__author__) != 1 else ""
         return f"""{super().format_help_for_context(context)}
         
-        Cog Version: {self.__version__}
-        Cog Author{p}: {humanize_list(self.__author__)}
+        Cog Version: **{self.__version__}**
+        Cog Author{p}: {humanize_list(f'**{auth}**' for auth in self.__author__)}
         Cog Documentation: [[Click here]]({self.__documentation__})
         """
 
@@ -262,6 +262,38 @@ class Afk(commands.Cog):
         await context.send(f"Forcefully added **{member}**'s AFK status.")
         await self.start_afk(payload=context.message, user=member, reason=reason)
 
+    @afkset.command(name="members")
+    @commands.admin_or_permissions(manage_guild=True)
+    async def afkset_afkmembers(self, context: commands.Context):
+        """
+        Check who all the afk members in your guild.
+        """
+        afk_users = []
+        for member in context.guild.members:
+            if member.bot:
+                continue
+            if not await self.config.member(member).afk():
+                continue
+            afk_users.append(member)
+        
+        if not afk_users:
+            return await context.send("No members are AFK in this guild.")
+        
+        afk_list = "\n".join([m.mention for m in afk_users])
+        pages = list(pagify(afk_list, delims=["\n"], page_length=2000))
+        final_page = {}
+
+        for ind, page in enumerate(pages, 1):
+            embed = discord.Embed(
+                title=f"Here are the members who are afk in this guild.",
+                description=page,
+                color=await context.embed_colour()
+            )
+            embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(context.guild))
+            final_page[ind - 1] = embed
+
+        await menu(context, list(final_page.values()), timeout=60)
+    
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_nicknames=True)
