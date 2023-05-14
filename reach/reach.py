@@ -175,7 +175,7 @@ class Reach(commands.Cog):
         embed = (
             discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention} ({channel.id})\n\n{final_roles}\n".replace("@@everyone", "@everyone"),
+                description=f"Channel: {channel.mention} ({channel.id})\n\n{final_roles}\n".replace("@everyone", "@everyone"),
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
