@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.1.2"
+    __version__ = "1.1.3"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -50,7 +50,7 @@ class Afk(commands.Cog):
         return f"""{super().format_help_for_context(context)}
         
         Cog Version: **{self.__version__}**
-        Cog Author{p}: {humanize_list(f'**{auth}**' for auth in self.__author__)}
+        Cog Author{p}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__documentation__})
         """
 
