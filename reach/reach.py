@@ -88,7 +88,7 @@ class Reach(commands.Cog):
     
     @commands.command(name="reach")
     @commands.guild_only()
-    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
     async def reach(
         self,
