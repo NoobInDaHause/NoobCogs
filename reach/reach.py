@@ -100,14 +100,14 @@ class Reach(commands.Cog):
         if not channel:
             channel = context.channel
 
-        if not roles:
-            return await context.send_help()
-
         reols = []
         for x in roles:
             if x in reols:
                 continue
             reols.append(x)
+        
+        if not reols:
+            return await context.send_help()
         
         await context.typing()
         if len(reols) >= 16:
