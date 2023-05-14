@@ -22,6 +22,10 @@ class FuzzyRole(commands.RoleConverter):
         super().__init__()
 
     async def convert(self, ctx: commands.Context, argument: str) -> Union[discord.Role, str]:
+        if argument.lower() in {"here", "@here"}:
+            return "here"
+        if argument.lower() in {"everyone", "@everyone"}:
+            return "everyone"
         try:
             basic_role = await super().convert(ctx, argument)
         except commands.BadArgument:

@@ -88,7 +88,7 @@ class Reach(commands.Cog):
     
     @commands.command(name="testreach")
     async def test(self, context: commands.Context, *roles: FuzzyRole):
-        await context.send(humanize_list(roles))
+        await context.send(roles)
     
     @commands.hybrid_command(name="reach")
     @commands.guild_only()
