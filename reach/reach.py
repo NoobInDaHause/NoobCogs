@@ -94,7 +94,7 @@ class Reach(commands.Cog):
         Reach channel and see how many members who can view the channel.
         
         Separate roles with a space if multiple. (ID's accepted)
-        Role names can also be accepted but bear in mind that it won't be 100% accurate.
+        Role searching may or may not be 100% accurate.
         You can pass `everyone` or `here` to check `@everyone` or `@here` reach.
         """
         if not channel:
