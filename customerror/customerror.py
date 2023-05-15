@@ -31,7 +31,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
         
-    __version__ = "1.0.7"
+    __version__ = "1.0.8"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/customerror/README.md"
     
@@ -42,8 +42,8 @@ class CustomError(commands.Cog):
         p = "s" if len(self.__author__) != 1 else ""
         return f"""{super().format_help_for_context(context)}
         
-        Cog Version: {self.__version__}
-        Cog Author{p}: {humanize_list(self.__author__)}
+        Cog Version: **{self.__version__}**
+        Cog Author{p}: {humanize_list([f"**{auth}**" for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__documentation__})
         """
     
@@ -57,7 +57,7 @@ class CustomError(commands.Cog):
     # https://github.com/Sitryk/sitcogsv3/blob/e1d8d0f3524dfec17872379c12c0edcb9360948d/errorhandler/cog.py#L30
     async def on_command_error(self, ctx: commands.Context, error, unhandled_by_cog = False):
         if isinstance(error, commands.CommandInvokeError):
-            self.log.exception("Exception in command '{ctx.command.qualified_name}'", exc_info=error.original)
+            self.log.exception(f"Exception in command '{ctx.command.qualified_name}'", exc_info=error.original)
             exception_log = f"Exception in command '{ctx.command.qualified_name}'\n"
             exception_log += "".join(
                 traceback.format_exception(type(error), error, error.__traceback__)
