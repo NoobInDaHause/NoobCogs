@@ -31,7 +31,7 @@ class FuzzyRole(commands.RoleConverter):
         try:
             basic_role = await super().convert(ctx, argument)
         except commands.BadArgument:
-            return await ctx.send(f'Role "{argument}" not found.')
+            pass
         else:
             return basic_role
         guild = ctx.guild
