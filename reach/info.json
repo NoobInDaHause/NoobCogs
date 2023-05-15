@@ -1,0 +1,19 @@
+{
+    "name": "Reach",
+    "short": "Reach roles on a channel.",
+    "description": "See how many members in a role who can view a channel.",
+    "end_user_data_statement": "This cog does not store any end user data whatsoever.",
+    "install_msg": "Thank you for installing Reach. Load the cog with `[p]load reach`.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": ["rapidfuzz", "unidecode"],
+    "tags": [
+        "reach"
+    ],
+    "type": "COG"
+}
