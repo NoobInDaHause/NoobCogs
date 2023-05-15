@@ -31,7 +31,7 @@ class FuzzyRole(commands.RoleConverter):
         try:
             basic_role = await super().convert(ctx, argument)
         except commands.BadArgument:
-            pass
+            return await ctx.send(f'Role "{argument}" not found.')
         else:
             return basic_role
         guild = ctx.guild
@@ -45,7 +45,7 @@ class FuzzyRole(commands.RoleConverter):
             )
         ]
         if not result:
-            raise commands.BadArgument(f'Role "{argument}" not found.')
+            raise commands.BadArgument(f'Role "{argument}" not found.' if self.response else None)
 
         sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
         return sorted_result[0][0]
