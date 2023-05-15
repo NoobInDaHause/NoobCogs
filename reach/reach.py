@@ -110,7 +110,7 @@ class Reach(commands.Cog):
         if len(reols) >= 16:
             return await context.send("Easy there you can only reach up to 15 roles at a time.")
         total_reach = 0
-        total_members = 0
+        total_members = []
 
         final = []
         for i in reols:
@@ -130,7 +130,7 @@ class Reach(commands.Cog):
                         f"{humanize_number(len([m for m in i.members if not m.bot]))} members - **0%**\n"
                     )
                     total_reach += reached
-                    total_members += len([m for m in i.members if not m.bot])
+                    total_members.append(len([m for m in i.members if not m.bot]))
                     final.append(b)
                     continue
 
@@ -141,33 +141,30 @@ class Reach(commands.Cog):
                     f"- **{round(div, 2)}%**\n"
                 )
                 total_reach += reached
-                total_members += len([m for m in i.members if not m.bot])
+                total_members.append(len([m for m in i.members if not m.bot]))
                 final.append(f)
             except Exception:
                 if i.lower() == "everyone":
                     k = await self.new_everyone_reach(context=context, channel=channel)
                     oy = f"` #{len(final) + 1} ` @everyone: {humanize_number(k[1])} out of {humanize_number(k[2])} members - {k[0]}\n"
                     total_reach += k[1]
-                    total_members += k[2]
+                    total_members.append(k[2])
                     final.append(oy)
                 elif i.lower() == "here":
                     k = await self.new_here_reach(context=context, channel=channel)
                     yo = f"` #{len(final) + 1} ` @here: {humanize_number(k[1])} out of {humanize_number(k[2])} members - {k[0]}\n"
                     total_reach += k[1]
-                    total_members += k[2]
+                    total_members.append(k[2])
                     final.append(yo)
                 else:
                     continue
 
-        if not final:
-            return await context.send("No roles were reached.")
-
         final_roles = "".join(final)
 
-        divov = total_reach / total_members * 100
+        divov = total_reach / max(total_members) * 100
         ov = (
             f"> ` - ` Overall Reach: **{humanize_number(total_reach)}**\n"
-            f"> ` - ` Overall Members: **{humanize_number(total_members)}**\n"
+            f"> ` - ` Overall Members: **{humanize_number(max(total_members))}**\n"
             f"> ` - ` Overall Percentage: **{round(divov, 2)}%**"
         )
         embed = (
