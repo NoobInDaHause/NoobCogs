@@ -44,26 +44,6 @@ class Reach(commands.Cog):
         # This cog does not store any end user data whatsoever.
         return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
 
-    async def new_here_reach(self, context: commands.Context, channel: discord.TextChannel):
-        reached = 0
-        here_members = 0
-        for member in context.guild.members:
-            if member.bot:
-                continue
-            if member.status == discord.Status.offline:
-                continue
-            here_members += 1
-            if not channel.permissions_for(member).view_channel:
-                continue
-            reached += 1
-
-        if not reached:
-            return "**0%**", reached, here_members
-
-        div = reached / here_members * 100
-        wh = f"**{round(div, 2)}%**"
-        return wh, reached, here_members
-
     @commands.command(name="reach", usage="[channel] <roles...>")
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -112,7 +92,7 @@ class Reach(commands.Cog):
                         continue
                     total_reach.append(mem)
 
-                iid = f" (`{i.id}`)" if i.id != context.guild.default_role.id else ""
+                iid = f"(`{i.id}`)" if i.id != context.guild.default_role.id else ""
                 if not reached:
                     b = (
                         f"` #{len(final) + 1} ` {i.mention}{iid}: 0 out of "
@@ -128,7 +108,7 @@ class Reach(commands.Cog):
                     f"- **{round(div, 2)}%**\n"
                 )
                 final.append(f)
-            
+
             except Exception:
                 if i.lower() == "everyone":
                     reached = 0
@@ -143,7 +123,7 @@ class Reach(commands.Cog):
                         if member in total_reach:
                             continue
                         total_reach.append(member)
-        
+
                     if not reached:
                         oy = f"` #{len(final) + 1} ` @everyone: 0 out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **0%**\n"
                         final.append(oy)
@@ -152,7 +132,7 @@ class Reach(commands.Cog):
                     div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
                     oy = f"` #{len(final) + 1} ` @everyone: {humanize_number(reached)} out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **{round(div, 2)}%**\n"
                     final.append(oy)
-                
+
                 elif i.lower() == "here":
                     reached = 0
                     here_members = 0
@@ -179,7 +159,7 @@ class Reach(commands.Cog):
                     div = reached / here_members * 100
                     yo = f"` #{len(final) + 1} ` @here: {humanize_number(reached)} out of {humanize_number(here_members)} members - **{round(div, 2)}%**\n"
                     final.append(yo)
-                
+
                 else:
                     continue
 
