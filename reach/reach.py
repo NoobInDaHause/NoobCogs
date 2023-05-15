@@ -112,7 +112,7 @@ class Reach(commands.Cog):
         await context.typing()
         if len(reols) >= 16:
             return await context.send("Easy there you can only reach up to 15 roles at a time.")
-        total_reach = []
+        total_reach = 0
         total_members = 0
 
         final = []
