@@ -104,7 +104,7 @@ class Reach(commands.Cog):
                     if mem.bot:
                         continue
                     if mem not in total_members:
-                        total_members.append(member)
+                        total_members.append(mem)
                     if not channel.permissions_for(mem).view_channel:
                         continue
                     reached += 1
