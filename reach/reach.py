@@ -100,13 +100,13 @@ class Reach(commands.Cog):
         if not channel:
             channel = context.channel
 
+        await context.typing()
         reols = []
         for x in roles:
             if x in reols:
                 continue
             reols.append(x)
-        
-        await context.typing()
+
         if len(reols) >= 16:
             return await context.send("Easy there you can only reach up to 15 roles at a time.")
         total_reach = 0
@@ -122,7 +122,7 @@ class Reach(commands.Cog):
                     if not channel.permissions_for(mem).view_channel:
                         continue
                     reached += 1
-                
+
                 iid = f"(`{i.id}`)" if i.id != context.guild.default_role.id else ""
                 if not reached:
                     b = (
@@ -133,7 +133,7 @@ class Reach(commands.Cog):
                     total_members += len([m for m in i.members if not m.bot])
                     final.append(b)
                     continue
-                
+
                 div = reached / len([m for m in i.members if not m.bot]) * 100
                 f = (
                     f"` #{len(final) + 1} ` {i.mention}{iid}: {humanize_number(reached)} out of "
