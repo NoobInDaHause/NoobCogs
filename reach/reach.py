@@ -99,6 +99,7 @@ class Reach(commands.Cog):
         final = []
         for i in reols:
             try:
+                role_check = context.guild.get_role(int(i))
                 reached = 0
                 for mem in i.members:
                     if mem.bot:
