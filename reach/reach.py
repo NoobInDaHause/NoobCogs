@@ -94,7 +94,7 @@ class Reach(commands.Cog):
         if len(reols) >= 16:
             return await context.send("Easy there you can only reach up to 15 roles at a time.")
         total_reach = []
-        total_members = []
+        total_members = 0
 
         final = []
         for i in reols:
@@ -116,7 +116,7 @@ class Reach(commands.Cog):
                         f"` #{len(final) + 1} ` {i.mention}{iid}: 0 out of "
                         f"{humanize_number(len([m for m in i.members if not m.bot]))} members - **0%**\n"
                     )
-                    total_members.append(len([m for m in i.members if not m.bot]))
+                    total_members += len([m for m in i.members if not m.bot])
                     final.append(b)
                     continue
 
@@ -126,7 +126,7 @@ class Reach(commands.Cog):
                     f"{humanize_number(len([m for m in i.members if not m.bot]))} members "
                     f"- **{round(div, 2)}%**\n"
                 )
-                total_members.append(len([m for m in i.members if not m.bot]))
+                total_members += len([m for m in i.members if not m.bot])
                 final.append(f)
             
             except Exception:
@@ -144,13 +144,13 @@ class Reach(commands.Cog):
         
                     if not reached:
                         oy = f"` #{len(final) + 1} ` @everyone: 0 out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **0%**\n"
-                        total_members.append(len([mem for mem in context.guild.members if not mem.bot]))
+                        total_members += len([mem for mem in context.guild.members if not mem.bot])
                         final.append(oy)
                         continue
 
                     div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
                     oy = f"` #{len(final) + 1} ` @everyone: {humanize_number(reached)} out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **{round(div, 2)}%**\n"
-                    total_members.append(len([mem for mem in context.guild.members if not mem.bot]))
+                    total_members += len([mem for mem in context.guild.members if not mem.bot])
                     final.append(oy)
                 
                 elif i.lower() == "here":
@@ -171,13 +171,13 @@ class Reach(commands.Cog):
 
                     if not reached:
                         yo = f"` #{len(final) + 1} ` @here: 0 out of {humanize_number(here_members)} members - **0%**\n"
-                        total_members.append(here_members)
+                        total_members += here_members
                         final.append(yo)
                         continue
 
                     div = reached / here_members * 100
                     yo = f"` #{len(final) + 1} ` @here: {humanize_number(reached)} out of {humanize_number(here_members)} members - **{round(div, 2)}%**\n"
-                    total_members.append(here_members)
+                    total_members += here_members
                     final.append(yo)
                 
                 else:
@@ -185,10 +185,10 @@ class Reach(commands.Cog):
 
         final_roles = "".join(final)
 
-        divov = len(total_reach) / max(total_members) * 100
+        divov = len(total_reach) / total_members * 100
         ov = (
             f"> ` - ` Overall Reach: **{humanize_number(len(total_reach))}**\n"
-            f"> ` - ` Overall Members: **{humanize_number(max(total_members))}**\n"
+            f"> ` - ` Overall Members: **{humanize_number(total_members)}**\n"
             f"> ` - ` Overall Percentage: **{round(divov, 2)}%**"
         )
         embed = (
