@@ -88,9 +88,8 @@ class Reach(commands.Cog):
                     if not channel.permissions_for(mem).view_channel:
                         continue
                     reached += 1
-                    if mem in total_reach:
-                        continue
-                    total_reach.append(mem)
+                    if mem not in total_reach:
+                        total_reach.append(mem)
 
                 iid = f"(`{i.id}`)" if i.id != context.guild.default_role.id else ""
                 if not reached:
@@ -120,9 +119,8 @@ class Reach(commands.Cog):
                         if not channel.permissions_for(member).view_channel:
                             continue
                         reached += 1
-                        if member in total_reach:
-                            continue
-                        total_reach.append(member)
+                        if member not in total_reach:
+                            total_reach.append(member)
 
                     if not reached:
                         oy = f"` #{len(final) + 1} ` @everyone: 0 out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **0%**\n"
@@ -147,9 +145,8 @@ class Reach(commands.Cog):
                         if not channel.permissions_for(member).view_channel:
                             continue
                         reached += 1
-                        if member in total_reach:
-                            continue
-                        total_reach.append(member)
+                        if member not in total_reach:
+                            total_reach.append(member)
 
                     if not reached:
                         yo = f"` #{len(final) + 1} ` @here: 0 out of {humanize_number(here_members)} members - **0%**\n"
