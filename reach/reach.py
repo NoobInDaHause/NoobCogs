@@ -112,11 +112,12 @@ class Reach(commands.Cog):
         await context.typing()
         if len(reols) >= 16:
             return await context.send("Easy there you can only reach up to 15 roles at a time.")
-        total_reach = 0
+        total_reach = []
         total_members = 0
 
         final = []
         for i in reols:
+            iid = f"(`{i.id}`)" if i.id != context.guild.default_role.id else ""
             try:
                 reached = 0
                 for mem in i.members:
@@ -128,7 +129,7 @@ class Reach(commands.Cog):
                 
                 if not reached:
                     b = (
-                        f"` #{len(final) + 1} ` {i.mention}: {humanize_number(reached)} out of "
+                        f"` #{len(final) + 1} ` {i.mention}{iid}: {humanize_number(reached)} out of "
                         f"{humanize_number(len([m for m in i.members if not m.bot]))} members - **0%**\n"
                     )
                     total_reach += reached
@@ -138,7 +139,7 @@ class Reach(commands.Cog):
                 
                 div = reached / len([m for m in i.members if not m.bot]) * 100
                 f = (
-                    f"` #{len(final) + 1} ` {i.mention}: {humanize_number(reached)} out of "
+                    f"` #{len(final) + 1} ` {i.mention}{iid}: {humanize_number(reached)} out of "
                     f"{humanize_number(len([m for m in i.members if not m.bot]))} members "
                     f"- **{round(div, 2)}%**\n"
                 )
@@ -175,7 +176,7 @@ class Reach(commands.Cog):
         embed = (
             discord.Embed(
                 title="Role Reach",
-                description=f"Channel: {channel.mention} ({channel.id})\n\n{final_roles}\n",
+                description=f"Channel: {channel.mention} (`{channel.id}`)\n\n{final_roles}\n",
                 colour=await context.embed_colour(),
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
