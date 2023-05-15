@@ -106,9 +106,6 @@ class Reach(commands.Cog):
                 continue
             reols.append(x)
         
-        if not reols:
-            return await context.send_help()
-        
         await context.typing()
         if len(reols) >= 16:
             return await context.send("Easy there you can only reach up to 15 roles at a time.")
