@@ -103,7 +103,7 @@ class Reach(commands.Cog):
                 for mem in i.members:
                     if mem.bot:
                         continue
-                    if member not in total_members:
+                    if mem not in total_members:
                         total_members.append(member)
                     if not channel.permissions_for(mem).view_channel:
                         continue
