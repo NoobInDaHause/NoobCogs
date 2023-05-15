@@ -164,7 +164,7 @@ class Reach(commands.Cog):
                         here_members += 1
                         if not channel.permissions_for(member).view_channel:
                             continue
-                        if member in total_members:
+                        if member in total_reach:
                             continue
                         reached += 1
                         total_reach.append(member)
