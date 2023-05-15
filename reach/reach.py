@@ -117,7 +117,6 @@ class Reach(commands.Cog):
 
         final = []
         for i in reols:
-            iid = f"(`{i.id}`)" if i.id != context.guild.default_role.id else ""
             try:
                 reached = 0
                 for mem in i.members:
@@ -127,6 +126,7 @@ class Reach(commands.Cog):
                         continue
                     reached += 1
                 
+                iid = f"(`{i.id}`)" if i.id != context.guild.default_role.id else ""
                 if not reached:
                     b = (
                         f"` #{len(final) + 1} ` {i.mention}{iid}: {humanize_number(reached)} out of "
