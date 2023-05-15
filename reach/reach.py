@@ -99,7 +99,6 @@ class Reach(commands.Cog):
         final = []
         for i in reols:
             try:
-                role_check = context.guild.get_role(int(i))
                 reached = 0
                 for mem in i.members:
                     if mem.bot:
@@ -107,6 +106,9 @@ class Reach(commands.Cog):
                     if not channel.permissions_for(mem).view_channel:
                         continue
                     reached += 1
+                    if mem in total_members:
+                        continue
+                    total_members.append(mem)
                     if mem in total_reach:
                         continue
                     total_reach.append(mem)
@@ -117,12 +119,6 @@ class Reach(commands.Cog):
                         f"` #{len(final) + 1} ` {i.mention}{iid}: 0 out of "
                         f"{humanize_number(len([m for m in i.members if not m.bot]))} members - **0%**\n"
                     )
-                    for m in i.members:
-                        if m.bot:
-                            continue
-                        if m in total_members:
-                            continue
-                        total_members.append(m)
                     final.append(b)
                     continue
 
@@ -132,12 +128,6 @@ class Reach(commands.Cog):
                     f"{humanize_number(len([m for m in i.members if not m.bot]))} members "
                     f"- **{round(div, 2)}%**\n"
                 )
-                for m in i.member:
-                    if m.bot:
-                        continue
-                    if m in total_members:
-                        continue
-                    total_members.append(m)
                 final.append(f)
             
             except Exception:
@@ -149,29 +139,20 @@ class Reach(commands.Cog):
                         if not channel.permissions_for(member).view_channel:
                             continue
                         reached += 1
+                        if member in total_members:
+                            continue
+                        total_members.append(member)
                         if member in total_reach:
                             continue
                         total_reach.append(member)
         
                     if not reached:
                         oy = f"` #{len(final) + 1} ` @everyone: 0 out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **0%**\n"
-                        for mem in context.guild.members:
-                            if mem.bot:
-                                continue
-                            if mem in total_members:
-                                continue
-                            total_members.append(mem)
                         final.append(oy)
                         continue
 
                     div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
                     oy = f"` #{len(final) + 1} ` @everyone: {humanize_number(reached)} out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **{round(div, 2)}%**\n"
-                    for mem in context.guild.members:
-                        if mem.bot:
-                            continue
-                        if mem in total_members:
-                            continue
-                        total_members.append(mem)
                     final.append(oy)
                 
                 elif i.lower() == "here":
@@ -183,6 +164,9 @@ class Reach(commands.Cog):
                         if member.status == discord.Status.offline:
                             continue
                         here_members += 1
+                        if member in total_members:
+                            continue
+                        total_members.append(member)
                         if not channel.permissions_for(member).view_channel:
                             continue
                         reached += 1
@@ -192,27 +176,11 @@ class Reach(commands.Cog):
 
                     if not reached:
                         yo = f"` #{len(final) + 1} ` @here: 0 out of {humanize_number(here_members)} members - **0%**\n"
-                        for mem in context.guild.members:
-                            if mem.bot:
-                                continue
-                            if mem.status == discord.Status.offline:
-                                continue
-                            if mem in total_members:
-                                continue
-                            total_members.append(mem)
                         final.append(yo)
                         continue
 
                     div = reached / here_members * 100
                     yo = f"` #{len(final) + 1} ` @here: {humanize_number(reached)} out of {humanize_number(here_members)} members - **{round(div, 2)}%**\n"
-                    for mem in context.guild.members:
-                        if mem.bot:
-                            continue
-                        if mem.status == discord.Status.offline:
-                            continue
-                        if mem in total_members:
-                            continue
-                        total_members.append(mem)
                     final.append(yo)
                 
                 else:
