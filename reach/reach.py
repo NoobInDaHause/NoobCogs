@@ -105,10 +105,9 @@ class Reach(commands.Cog):
                         continue
                     if not channel.permissions_for(mem).view_channel:
                         continue
+                    if member not in total_members:
+                        total_members.append(member)
                     reached += 1
-                    if mem in total_members:
-                        continue
-                    total_members.append(mem)
                     if mem in total_reach:
                         continue
                     total_reach.append(mem)
@@ -138,10 +137,9 @@ class Reach(commands.Cog):
                             continue
                         if not channel.permissions_for(member).view_channel:
                             continue
+                        if member not in total_members:
+                            total_members.append(member)
                         reached += 1
-                        if member in total_members:
-                            continue
-                        total_members.append(member)
                         if member in total_reach:
                             continue
                         total_reach.append(member)
@@ -164,12 +162,11 @@ class Reach(commands.Cog):
                         if member.status == discord.Status.offline:
                             continue
                         here_members += 1
-                        if member in total_members:
-                            continue
-                        total_members.append(member)
                         if not channel.permissions_for(member).view_channel:
                             continue
                         reached += 1
+                        if member not in total_members:
+                            total_members.append(member)
                         if member in total_reach:
                             continue
                         total_reach.append(member)
