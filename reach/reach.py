@@ -105,9 +105,9 @@ class Reach(commands.Cog):
                         continue
                     if not channel.permissions_for(mem).view_channel:
                         continue
+                    reached += 1
                     if mem in total_reach:
                         continue
-                    reached += 1
                     total_reach.append(mem)
 
                 iid = f"(`{i.id}`)" if i.id != context.guild.default_role.id else ""
@@ -137,9 +137,9 @@ class Reach(commands.Cog):
                             continue
                         if not channel.permissions_for(member).view_channel:
                             continue
+                        reached += 1
                         if member in total_reach:
                             continue
-                        reached += 1
                         total_reach.append(member)
         
                     if not reached:
