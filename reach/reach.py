@@ -112,7 +112,7 @@ class Reach(commands.Cog):
                         continue
                     total_reach.append(mem)
 
-                iid = f"(`{i.id}`)" if i.id != context.guild.default_role.id else ""
+                iid = f" (`{i.id}`)" if i.id != context.guild.default_role.id else ""
                 if not reached:
                     b = (
                         f"` #{len(final) + 1} ` {i.mention}{iid}: 0 out of "
