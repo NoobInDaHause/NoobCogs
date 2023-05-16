@@ -20,7 +20,7 @@ class Reach(commands.Cog):
         self.bot = bot
         self.log = logging.getLogger("red.NoobCogs.Reach")
 
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/reach/README.md"
 
@@ -63,6 +63,9 @@ class Reach(commands.Cog):
         """
         if not channel:
             channel = context.channel
+
+        if not roles:
+            return await context.send_help()
 
         await context.typing()
         reols = []
