@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.1.3"
+    __version__ = "1.1.4"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -46,11 +46,11 @@ class Afk(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        p = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) != 1 else ""
         return f"""{super().format_help_for_context(context)}
         
         Cog Version: **{self.__version__}**
-        Cog Author{p}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__documentation__})
         """
 
@@ -153,7 +153,7 @@ class Afk(commands.Cog):
         )
     
     @commands.Cog.listener("on_message")
-    async def on_message(self, payload: discord.Message):
+    async def _afk_listener(self, payload: discord.Message):
         if not payload.guild:
             return
         if not payload.channel.permissions_for(payload.guild.me).send_messages:
@@ -162,17 +162,22 @@ class Afk(commands.Cog):
             return
 
         if await self.config.member(payload.author).sticky():
-            pass
-        elif await self.config.member(payload.author).afk():
+            return
+        if await self.config.member(payload.author).afk():
             await self.end_afk(payload=payload, user=payload.author)
 
+    @commands.Cog.listener("on_message")
+    async def _afk_logger(self, payload: discord.Message):
+        if not payload.guild:
+            return
+        if payload.author.bot:
+            return
         if not payload.mentions:
             return
 
         for afk_user in payload.mentions:
-            if afk_user.id == payload.author.id:
+            if afk_user == payload.author:
                 continue
-
             if not await self.config.member(afk_user).afk():
                 continue
 

@@ -7,7 +7,7 @@ def is_have_avatar(thing: Union[discord.Member, discord.Guild] = None):
         return ""
     if isinstance(thing, discord.Member):
         try:
-            return thing.avatar.url
+            return thing.display_avatar.url
         except AttributeError:
             return ""
     if isinstance(thing, discord.Guild):
