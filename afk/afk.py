@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
         
-    __version__ = "1.1.4"
+    __version__ = "1.1.5"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -121,8 +121,8 @@ class Afk(commands.Cog):
                 final_page[ind - 1] = embed
 
             context = await self.bot.get_context(payload)
-            await menu(context, list(final_page.values()), timeout=60)
             await self.config.member(user).pinglogs.clear()
+            await menu(context, list(final_page.values()), timeout=60)
 
     async def log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
         """
