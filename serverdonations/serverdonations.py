@@ -225,7 +225,7 @@ class ServerDonations(commands.Cog):
         bemeds = [em1, em2, em3]
         await menu(context, bemeds, timeout=60)
     
-    @commands.group(name="serverdonationsset", aliases=["sdonateset"])
+    @commands.group(name="serverdonationsset", aliases=["sdonateset", "sdonoset"])
     @commands.guild_only()
     @commands.admin_or_permissions(administrator=True, manage_guild=True)
     @commands.bot_has_permissions(embed_links=True)
@@ -452,7 +452,7 @@ class ServerDonations(commands.Cog):
     @commands.is_owner()
     async def serverdonationsset_resetcog(self, context):
         """
-        Reset the AFK cogs configuration.
+        Reset the ServerDonations cogs configuration.
 
         Bot owners only.
         """
