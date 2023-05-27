@@ -28,7 +28,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | NoobUtils       |  v1.3.13  | Some maybe useful or useless commands.                           |
 | RainbowRole     |  v1.0.5   | Have a role that changes colour every 20 minutes.                |
 | Reach           |  v1.0.1   | Reach roles on a channel.                                        |
-| ServerDonations |  v1.2.2   | Donate bot currencies or other things to servers.                |
+| ServerDonations |  v2.0.0   | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v1.0.5   | A fun split or steal game.                                       |
 
 ## License
