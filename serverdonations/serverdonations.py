@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.4"
+    __version__ = "2.0.5"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
 
@@ -808,7 +808,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(context.guild).embeds.giveaway.g_image.clear()
                 return await context.send(content=f"The {types} embed image has been reset.")
             if not url.endswith(acc):
-                return await context.send(content="Invalid url must be png, jpg, jpeg or gif.")
+                return await context.send(content="Invalid url.")
             await self.config.guild(context.guild).embeds.giveaway.g_image.set(url)
             await context.send(content=f"The {types} embed image has been set to: {box(url, 'py')}")
         elif types == "event":
@@ -819,7 +819,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(context.guild).embeds.event.e_image.clear()
                 return await context.send(content=f"The {types} embed image has been reset.")
             if not url.endswith(acc):
-                return await context.send(content="Invalid url must be png, jpg, jpeg or gif.")
+                return await context.send(content="Invalid url.")
             await self.config.guild(context.guild).embeds.event.e_image.set(url)
             await context.send(content=f"The {types} embed image has been set to: {box(url, 'py')}")
         elif types == "heist":
@@ -830,7 +830,7 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(context.guild).embeds.heist.h_image.clear()
                 return await context.send(content=f"The {types} embed image has been reset.")
             if not url.endswith(acc):
-                return await context.send(content="Invalid url must be png, jpg, jpeg or gif.")
+                return await context.send(content="Invalid url.")
             await self.config.guild(context.guild).embeds.heist.h_image.set(url)
             await context.send(content=f"The {types} embed image has been set to: {box(url, 'py')}")
 
