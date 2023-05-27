@@ -456,7 +456,7 @@ class GiveawayFields(discord.ui.View):
         for x in self.children:
             x.disabled = True
         self.stop()
-        await self.message.edit(content="You took too long to respond.", view=self)
+        await self.message.edit(view=self)
 
 class EventFields(discord.ui.View):
     def __init__(self, timeout: Optional[float] = 60):
@@ -781,7 +781,7 @@ class EventFields(discord.ui.View):
         for x in self.children:
             x.disabled = True
         self.stop()
-        await self.message.edit(content="You took too long to respond.", view=self)
+        await self.message.edit(view=self)
 
 class HeistFields(discord.ui.View):
     def __init__(self, timeout: Optional[float] = 60):
@@ -1059,4 +1059,4 @@ class HeistFields(discord.ui.View):
         for x in self.children:
             x.disabled = True
         self.stop()
-        await self.message.edit(content="You took too long to respond.", view=self)
+        await self.message.edit(view=self)
