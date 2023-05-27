@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.6"
+    __version__ = "2.0.7"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -1148,8 +1148,8 @@ class ServerDonations(commands.Cog):
 
         if len(gdonos) < 6:
             return await context.send(
-                "All arguments are required but if you dont want anything on one of the arguments "
-                "just put `none` all lowercase."
+                "All arguments are required but if you dont want anything on one "
+                "of the arguments just put `none`."
             )
 
         if len(gdonos) > 6:
@@ -1282,8 +1282,8 @@ class ServerDonations(commands.Cog):
 
         if len(edonos) < 5:
             return await context.send(
-                "All arguments are required but if you dont want anything on one of the arguments "
-                "just put `none` all lowercase."
+                "All arguments are required but if you dont want anything on one "
+                "of the arguments just put `none`."
             )
 
         if len(edonos) > 5:
@@ -1410,8 +1410,8 @@ class ServerDonations(commands.Cog):
 
         if len(hdonos) < 4:
             return await context.send(
-                "All arguments are required but if you dont want anything on one of the arguments "
-                "just put `none` all lowercase."
+                "All arguments are required but if you dont want anything on one "
+                "of the arguments just put `none`."
             )
 
         if len(hdonos) > 4:
@@ -1480,7 +1480,7 @@ class ServerDonations(commands.Cog):
             .add_field(
                 name=hfields["h_amou"]["h_aname"],
                 value=f'{hfields["h_amou"]["h_avalue"]}'.format_map(
-                    Coordinate(duration=hdonos[1].strip())
+                    Coordinate(amount=hdonos[1].strip())
                 ),
                 inline=hfields["h_amou"]["h_ainline"]
             )
