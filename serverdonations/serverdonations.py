@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.7"
+    __version__ = "2.0.8"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -234,10 +234,11 @@ class ServerDonations(commands.Cog):
                     view=view
                 )
                 return await context.tick()
-            except (discord.errors.Forbidden, discord.errors.HTTPException):
+            except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
                     content="It appears that I do not see the set giveaway donation channel request, "
-                    "most likely deleted or I do not have permission to view it."
+                    "most likely deleted or I do not have permission to view it.\n"
+                    f"Here is the traceback: {box(e, 'py')}"
                 )
         
         role = context.guild.get_role(settings["roles"]["gman"])
@@ -256,10 +257,11 @@ class ServerDonations(commands.Cog):
                 view=view
             )
             await context.tick()
-        except (discord.errors.Forbidden, discord.errors.HTTPException):
+        except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
                 content="An error occured while sending the donation request embed. Most likely that "
-                "the channel is deleted or I do not have permission to view or send message in it."
+                "the channel is deleted or I do not have permission to view or send message in it.\n"
+                f"Here is the traceback: {box(e, 'py')}"
             )
 
     async def send_to_e_chan(self, context: commands.Context, embed: discord.Embed):
@@ -290,10 +292,11 @@ class ServerDonations(commands.Cog):
                     view=view
                 )
                 return await context.tick()
-            except (discord.errors.Forbidden, discord.errors.HTTPException):
+            except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
                     content="It appears that I do not see the set event donation channel request, "
-                    "most likely deleted or I do not have permission to view it."
+                    "most likely deleted or I do not have permission to view it.\n"
+                    f"Here is the traceback: {box(e, 'py')}"
                 )
         
         role = context.guild.get_role(settings["roles"]["eman"])
@@ -312,10 +315,11 @@ class ServerDonations(commands.Cog):
                 view=view
             )
             await context.tick()
-        except (discord.errors.Forbidden, discord.errors.HTTPException):
+        except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
                 content="An error occured while sending the donation request embed. Most likely that "
-                "the channel is deleted or I do not have permission to view or send message in it."
+                "the channel is deleted or I do not have permission to view or send message in it.\n"
+                f"Here is the traceback: {box(e, 'py')}"
             )
 
     async def send_to_h_chan(self, context: commands.Context, embed: discord.Embed):
@@ -346,10 +350,11 @@ class ServerDonations(commands.Cog):
                     view=view
                 )
                 return await context.tick()
-            except (discord.errors.Forbidden, discord.errors.HTTPException):
+            except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
                     content="It appears that I do not see the set heist donation channel request, "
-                    "most likely deleted or I do not have permission to view it."
+                    "most likely deleted or I do not have permission to view it.\n"
+                    f"Here is the traceback: {box(e, 'py')}"
                 )
         
         role = context.guild.get_role(settings["roles"]["hman"])
@@ -368,10 +373,11 @@ class ServerDonations(commands.Cog):
                 view=view
             )
             await context.tick()
-        except (discord.errors.Forbidden, discord.errors.HTTPException):
+        except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
                 content="An error occured while sending the donation request embed. Most likely that "
-                "the channel is deleted or I do not have permission to view or send message in it."
+                "the channel is deleted or I do not have permission to view or send message in it.\n"
+                f"Here is the traceback: {box(e, 'py')}"
             )
 
     async def set_g_thumb(self, context: commands.Context, types: str, url_or_avatar: str = None):
