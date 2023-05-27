@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.2"
+    __version__ = "2.0.3"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
 
@@ -883,6 +883,11 @@ class ServerDonations(commands.Cog):
             The `<name>` inside the variable should be the same name as what setting you are customizing.
             Example you picked `requirements` you should put the variable as {requirements}.
             This variable is required to show what the donor is actually inputting on that specific field.
+
+            Sponsor variable has some unique extensions:
+            {sponsor} - The sponsors username.
+            {sponsor.id} - The sponsors ID.
+            {sponsor.mention} - Mentions the sponsor.
             """
             embed = discord.Embed(
                 title="ServerDonations Event Field Menu",
@@ -899,6 +904,11 @@ class ServerDonations(commands.Cog):
             The `<name>` inside the variable should be the same name as what setting you are customizing.
             Example you picked `requirements` you should put the variable as {requirements}.
             This variable is required to show what the donor is actually inputting on that specific field.
+
+            Sponsor variable has some unique extensions:
+            {sponsor} - The sponsors username.
+            {sponsor.id} - The sponsors ID.
+            {sponsor.mention} - Mentions the sponsor.
             """
             embed = discord.Embed(
                 title="ServerDonations Giveaway Field Menu",
@@ -915,6 +925,11 @@ class ServerDonations(commands.Cog):
             The `<name>` inside the variable should be the same name as what setting you are customizing.
             Example you picked `requirements` you should put the variable as {requirements}.
             This variable is required to show what the donor is actually inputting on that specific field.
+
+            Sponsor variable has some unique extensions:
+            {sponsor} - The sponsors username.
+            {sponsor.id} - The sponsors ID.
+            {sponsor.mention} - Mentions the sponsor.
             """
             embed = discord.Embed(
                 title="ServerDonations Heist Field Menu",
