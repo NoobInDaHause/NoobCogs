@@ -39,9 +39,9 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.5"
+    __version__ = "2.0.6"
     __author__ = ["Noobindahause#2808"]
-    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
+    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
