@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.0"
+    __version__ = "2.0.1"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
 
@@ -240,15 +240,15 @@ class ServerDonations(commands.Cog):
                     "most likely deleted or I do not have permission to view it."
                 )
         
-        grole = context.guild.get_role(settings["roles"]["gman"])
+        role = context.guild.get_role(settings["roles"]["gman"])
         try:
             await self.forcemention(
                 channel=channel,
-                role=grole,
+                role=role,
                 embed=embed,
                 content=f'{settings["embeds"]["giveaway"]["g_content"]}'.format_map(
                         Coordinate(
-                            role=grole.mention,
+                            role=role.mention,
                             donor=context.author,
                             guild=context.guild
                         )
@@ -296,15 +296,15 @@ class ServerDonations(commands.Cog):
                     "most likely deleted or I do not have permission to view it."
                 )
         
-        grole = context.guild.get_role(settings["roles"]["eman"])
+        role = context.guild.get_role(settings["roles"]["eman"])
         try:
             await self.forcemention(
                 channel=channel,
-                role=grole,
+                role=role,
                 embed=embed,
                 content=f'{settings["embeds"]["event"]["e_content"]}'.format_map(
                         Coordinate(
-                            role=grole.mention,
+                            role=role.mention,
                             donor=context.author,
                             guild=context.guild
                         )
@@ -352,15 +352,15 @@ class ServerDonations(commands.Cog):
                     "most likely deleted or I do not have permission to view it."
                 )
         
-        grole = context.guild.get_role(settings["roles"]["hman"])
+        role = context.guild.get_role(settings["roles"]["hman"])
         try:
             await self.forcemention(
                 channel=channel,
-                role=grole,
+                role=role,
                 embed=embed,
                 content=f'{settings["embeds"]["heist"]["h_content"]}'.format_map(
                         Coordinate(
-                            role=grole.mention,
+                            role=role.mention,
                             donor=context.author,
                             guild=context.guild
                         )
@@ -464,6 +464,7 @@ class ServerDonations(commands.Cog):
         await menu(context, bemeds, timeout=60)
 
     @commands.group(name="serverdonationsset", aliases=["sdonateset", "sdonoset"])
+    @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
     @commands.bot_has_permissions(embed_links=True)
     async def serverdonationsset(self, context: commands.Context):
