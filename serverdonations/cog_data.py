@@ -40,7 +40,7 @@ class SdonateDefaults:
                     },
                     "g_dura": {
                         "g_dname": "**Duration:**",
-                        "g_dvalue": "{diration}",
+                        "g_dvalue": "{duration}",
                         "g_dinline": True
                     },
                     "g_winn": {

@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.1"
+    __version__ = "2.0.2"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
 
@@ -1162,6 +1162,11 @@ class ServerDonations(commands.Cog):
                 else "",
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
+            .set_image(
+                url=f'{gawset["g_image"]}'
+                if gawset["g_image"]
+                else ""
+            )
             .set_thumbnail(
                 url=f'{gawset["g_thumb"]}'.format_map(
                     Coordinate(
@@ -1291,6 +1296,11 @@ class ServerDonations(commands.Cog):
                 else "",
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
+            .set_image(
+                url=f'{eventset["e_image"]}'
+                if eventset["e_image"]
+                else ""
+            )
             .set_thumbnail(
                 url=f'{eventset["e_thumb"]}'.format_map(
                     Coordinate(
@@ -1413,6 +1423,11 @@ class ServerDonations(commands.Cog):
                 if heistset["h_desc"]
                 else "",
                 timestamp=datetime.datetime.now(datetime.timezone.utc)
+            )
+            .set_image(
+                url=f'{heistset["h_image"]}'
+                if heistset["h_image"]
+                else ""
             )
             .set_thumbnail(
                 url=f'{heistset["h_thumb"]}'.format_map(
