@@ -24,7 +24,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | --------------- | --------- | ---------------------------------------------------------------- |
 | Afk             |  v1.1.5   | Notify users whenever you go AFK with pings logging.             |
 | CustomError     |  v1.0.8   | Customize your bots error message.                               |
-| GlobalBan       |  v1.0.5   | Globally ban a user from all the guilds the bot is in.           |
+| GlobalBan       |  v1.0.6   | Globally ban a user from all the guilds the bot is in.           |
 | NoobUtils       |  v1.3.13  | Some maybe useful or useless commands.                           |
 | RainbowRole     |  v1.0.5   | Have a role that changes colour every 20 minutes.                |
 | Reach           |  v1.0.1   | Reach roles on a channel.                                        |

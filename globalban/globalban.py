@@ -28,29 +28,31 @@ class GlobalBan(commands.Cog):
         }
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
-        
-    __version__ = "1.0.5"
+
+    __version__ = "1.0.6"
     __author__ = ["Noobindahause#2808"]
-    __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
-    
+    __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
+
     def format_help_for_context(self, context: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
         """
-        p = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) != 1 else ""
         return f"""{super().format_help_for_context(context)}
-        
-        Cog Version: {self.__version__}
-        Cog Author{p}: {humanize_list(self.__author__)}
-        Cog Documentation: [[Click here]]({self.__documentation__})
+
+        Cog Version: **{self.__version__}**
+        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Documentation: [[Click here]]({self.__docs__})
         """
-    
+
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ) -> None:
-        # This cog does not store any end user data whatsoever. But it stores user ID's for the ban list! Also thanks sravan!
+        # This cog does not store any end user data whatsoever.
+        # But it stores user ID's for the ban list!
+        # Also thanks sravan!
         return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
-    
+
     async def cog_load(self):
         await self.register_casetypes()
 
@@ -80,50 +82,64 @@ class GlobalBan(commands.Cog):
         logs = await self.config.banlogs()
 
         async with self.config.banlogs() as gblog:
-            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n`Offender:` {member} (ID: {member.id})\n`Authorized by:` {context.author} (ID: {context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            log = (
+                f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalBan\n"
+                f"`Offender:` {member} (ID: {member.id})\n`Authorized by:` "
+                f"{context.author} (ID: {context.author.id})\n`Reason:` {reason}\n"
+                f"`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            )
             gblog.append(log)
-        
+
         async with self.config.banlist() as gblist:
             gblist.append(member.id)
 
         errors = []
         guilds = []
-        for guild in context.bot.guilds:
+        for guild in self.bot.guilds:
             await asyncio.sleep(10)
             try:
                 await guild.fetch_ban(member)
                 errors.append(f"**{guild} (ID: {guild.id})**")
             except discord.errors.NotFound:
                 try:
-                    await guild.ban(member, reason=f"{context.bot.user.name} Global Ban | Authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
+                    await guild.ban(
+                        member,
+                        reason=f"Global Ban | Authorized by {context.author} (ID: {context.author.id}). |"
+                        f" Reason: {reason}"
+                    )
                     guilds.append(guild)
                     if await self.config.create_modlog():
                         await modlog.create_case(
-                        bot=context.bot,
-                        guild=guild,
-                        created_at=datetime.datetime.now(datetime.timezone.utc),
-                        action_type="globalban",
-                        user=member,
-                        moderator=context.bot.user,
-                        reason=f"Authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}",
-                        until=None,
-                        channel=None,
+                            bot=context.bot,
+                            guild=guild,
+                            created_at=datetime.datetime.now(datetime.timezone.utc),
+                            action_type="globalban",
+                            user=member,
+                            moderator=context.bot.user,
+                            reason=f"Authorized by {context.author} (ID: {context.author.id}). | "
+                            f"Reason: {reason}",
+                            until=None,
+                            channel=None,
                         )
                 except discord.errors.HTTPException:
                     errors.append(f"**{guild} (ID: {guild.id})**")
 
         await context.send(f"Globally banned **{member}** in **{len(guilds)}** guilds.")
         self.log.info(
-            f"{context.author} (ID: {context.author.id}) Globally Banned {member} (ID: {member.id}) in {len(guilds)} guilds."
+            f"{context.author} (ID: {context.author.id}) Globally Banned "
+            f"{member} (ID: {member.id}) in {len(guilds)} guilds."
         )
 
         if errors:
             em = ", ".join(errors)
             pages = list(pagify(em, delims=[", "], page_length=2000))
             final_page = {}
-            
+
             for ind, page in enumerate(pages, 1):
-                desc = f"Most likely that I don't have ban permission or the user is already banned.\nErrored guild(s):\n{page}"
+                desc = (
+                    "Most likely that I don't have ban permission or the user "
+                    f"is already banned.\nErrored guild(s):\n{page}"
+                )
                 embed = discord.Embed(
                     title=f"An error occured when banning {member}.",
                     description=desc,
@@ -132,57 +148,70 @@ class GlobalBan(commands.Cog):
                 )
                 embed.set_footer(text=f"Page ({ind}/{len(pages)})")
                 final_page[ind - 1] = embed
-        
+
             return await menu(context, list(final_page.values()), timeout=60)
-    
+
     async def _globalunban_user(self, context: commands.Context, member: discord.Member, reason: str):
         """
         Global Unban a user.
         """
         logs = await self.config.banlogs()
-        
+
         async with self.config.banlogs() as gblogs:
-            log = f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalUnBan\n`Offender:` {member} (ID: {member.id})\n`Authorized by:` {context.author} (ID: {context.author.id})\n`Reason:` {reason}\n`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            log = (
+                f"> **GlobalBan Logs Case `#{len(logs) + 1}`**\n`Type:` GlobalUnBan\n"
+                f"`Offender:` {member} (ID: {member.id})\n`Authorized by:` "
+                f"{context.author} (ID: {context.author.id})\n`Reason:` {reason}\n"
+                f"`Timestamp:` <t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:F>"
+            )
             gblogs.append(log)
-        
+
         async with self.config.banlist() as gblist:
             index = gblist.index(member.id)
             gblist.pop(index)
-        
+
         errors = []
         guilds = []
-        for guild in context.bot.guilds:
+        for guild in self.bot.guilds:
             await asyncio.sleep(10)
             try:
-                await guild.unban(member, reason=f"{context.bot.user.name} Global UnBan | Authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}")
+                await guild.unban(
+                    member,
+                    reason=f"Global UnBan | Authorized by {context.author} (ID: {context.author.id}). "
+                    f"| Reason: {reason}"
+                )
                 guilds.append(guild)
                 if await self.config.create_modlog():
                     await modlog.create_case(
-                    bot=context.bot,
-                    guild=guild,
-                    created_at=datetime.datetime.now(datetime.timezone.utc),
-                    action_type="globalunban",
-                    user=member,
-                    moderator=context.bot.user,
-                    reason=f"Authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}",
-                    until=None,
-                    channel=None,
+                        bot=context.bot,
+                        guild=guild,
+                        created_at=datetime.datetime.now(datetime.timezone.utc),
+                        action_type="globalunban",
+                        user=member,
+                        moderator=context.bot.user,
+                        reason=f"Authorized by {context.author} (ID: {context.author.id}). | Reason: {reason}",
+                        until=None,
+                        channel=None,
                     )
             except discord.errors.HTTPException:
                 errors.append(f"**{guild} (ID: {guild.id})**")
-                
+
         await context.send(f"Globally unbanned **{member}** in **{len(guilds)}** guilds.")
         self.log.info(
-            f"{context.author} (ID: {context.author.id}) Globally UnBanned {member} (ID: {member.id}) in {len(guilds)} guilds."
+            f"{context.author} (ID: {context.author.id}) Globally UnBanned"
+            f" {member} (ID: {member.id}) in {len(guilds)} guilds."
         )
-        
+
         if errors:
             em = ", ".join(errors)
             pages = list(pagify(em, delims=[", "], page_length=2000))
             final_page = {}
-            
+
             for ind, page in enumerate(pages, 1):
-                desc = f"Most likely that I don't have ban permission or the user is not banned.\nErrored guild(s):\n{page}"
+                desc = (
+                    "Most likely that I don't have ban permission or the user is not banned.\n"
+                    f"Errored guild(s):\n{page}"
+                )
                 embed = discord.Embed(
                     title=f"An error occured when unbanning {member}.",
                     description=desc,
@@ -191,77 +220,80 @@ class GlobalBan(commands.Cog):
                 )
                 embed.set_footer(text=f"Page ({ind}/{len(pages)})")
                 final_page[ind - 1] = embed
-        
+
             return await menu(context, list(final_page.values()), timeout=60)
-    
+
     @commands.group(name="globalban", aliases=["gban"])
     @commands.is_owner()
     @commands.bot_has_permissions(embed_links=True)
     async def globalban(self, context: commands.Context):
         """
-        Base commands for the GlobalBan Cog. (Bot owners only)
+        Base commands for the GlobalBan Cog.
+
+        Bot owners only.
         """
-    
+
     @globalban.command(name="ban")
     async def globalban_ban(
         self,
         context: commands.Context,
-        user_id,
+        user_id: int,
         *,
         reason: Optional[str] = "No reason provided."
     ):
         """
-        Globally ban a user. (Bot owners only)
+        Globally ban a user.
+
+        Bot owners only.
         """
-        try:
-            user_id = int(user_id)
-        except ValueError:
-            return await context.reply(content="Please input a valid user ID.", ephemeral=True, mention_author=False)
-        
         try:
             member = await context.bot.fetch_user(user_id)
         except discord.errors.NotFound:
-            return await context.reply(content="It appears that ID is not a valid user ID.", ephemeral=True, mention_author=False)
+            return await context.send(content="It appears that ID is not a valid user ID.")
 
         if user_id in await self.config.banlist():
-            return await context.reply(content=f"It appears **{member}** is already globally banned.", ephemeral=True, mention_author=False)
+            return await context.send(content=f"It appears **{member}** is already globally banned.")
         if user_id == context.author.id:
-            return await context.reply(content="I can not let you globally ban yourself.", ephemeral=True, mention_author=False)
+            return await context.send(content="I can not let you globally ban yourself.")
         if await context.bot.is_owner(member):
-            return await context.reply(content="You can not globally ban other bot owners.", ephemeral=True, mention_author=False)
+            return await context.send(content="You can not globally ban other bot owners.")
         if user_id == context.bot.user.id:
-            return await context.reply(content="You can not globally ban me... Dumbass. >:V", ephemeral=True, mention_author=False)
-        
+            return await context.send(content="You can not globally ban me... Dumbass. >:V")
+
         confirmation_msg = f"Are you sure you want to globally ban **{member}**?"
         confirm_action = "Alright this might take a while."
         view = Confirmation(timeout=30)
         await view.start(context=context, confirm_action=confirm_action, confirmation_msg=confirmation_msg)
-        
+
         await view.wait()
-        
+
         if view.value == "yes":
             await context.typing()
             await self._globalban_user(context=context, member=member, reason=reason)
-            
+
     @globalban.command(name="createmodlog", aliases=["cml"])
     async def globalban_createmodlog(self, context: commands.Context, state: bool):
         """
-        Toggle whether to make a modlog case when you globally ban or unban a user. (Bot owners only)
+        Toggle whether to make a modlog case when you globally ban or unban a user.
+
+        Bot owners only.
         """
         await self.config.create_modlog.set(state)
         status = "will now" if state else "will not"
         await context.send(f"I {status} make a modlog case whenever you globally ban or unban a user.")
-    
+
     @globalban.command(name="list")
     async def globalban_list(self, context: commands.Context):
         """
-        Show the globalban ban list. (Bot owners only)
+        Show the globalban ban list.
+
+        Bot owners only.
         """
         bans = await self.config.banlist()
-        
+
         if not bans:
-            return await context.reply(content="No users were globally banned.", ephemeral=True, mention_author=False)
-        
+            return await context.send(content="No users were globally banned.")
+
         users = []
         for mem in bans:
             try:
@@ -271,11 +303,11 @@ class GlobalBan(commands.Cog):
             except discord.errors.NotFound:
                 l = f"` #{len(users) + 1} ` Unknown User (ID: {mem})"
                 users.append(l)
-        
+
         banlist = "\n".join(users)
         pages = list(pagify(banlist, delims=["` #"], page_length=2000))
         final_page = {}
-        
+
         for ind, page in enumerate(pages, 1):
             embed = discord.Embed(
                 title="Globalban Ban List",
@@ -285,23 +317,25 @@ class GlobalBan(commands.Cog):
             )
             embed.set_footer(text=f"Page ({ind}/{len(pages)})")
             final_page[ind - 1] = embed
-        
+
         return await menu(context, list(final_page.values()), timeout=60)
-    
+
     @globalban.command(name="logs")
     async def globalban_logs(self, context: commands.Context):
         """
-        Show the globalban logs. (Bot owners only)
+        Show the globalban logs.
+
+        Bot owners only.
         """
         logs = await self.config.banlogs()
-        
+
         if not logs:
             return await context.send("It appears there are no cases logged.")
-        
+
         banlogs = """\n\n""".join(logs)
         pages = list(pagify(banlogs, delims=["> "], page_length=2000))
         final_page = {}
-        
+
         for ind, page in enumerate(pages, 1):
             embed = discord.Embed(
                 title="Globalban Case Logs",
@@ -311,58 +345,57 @@ class GlobalBan(commands.Cog):
             )
             embed.set_footer(text=f"Page ({ind}/{len(pages)})")
             final_page[ind - 1] = embed
-        
+
         return await menu(context, list(final_page.values()), timeout=60)
-    
+
     @globalban.command(name="reset")
     async def globalban_reset(self, context: commands.Context):
         """
-        Reset any of the globalban config. (Bot owners only)
+        Reset any of the globalban config.
+
+        Bot owners only.
         """
         msg = "Choose what config to reset."
         view = GbanViewReset(timeout=30)
         await view.start(context=context, msg=msg)
-        
+
         await view.wait()
-        
+
         if view.select_value == "banlist":
             await self.config.banlist.clear()
         elif view.select_value == "banlogs":
             await self.config.banlogs.clear()
         elif view.select_value == "cog":
             await self.config.clear_all()
-    
+
     @globalban.command(name="unban")
     async def globalban_unban(
         self,
         context: commands.Context,
-        user_id,
+        user_id: int,
         *,
         reason: Optional[str] = "No reason provided."
     ):
         """
-        Globally unban a user. (Bot owners only)
+        Globally unban a user.
+
+        Bot owners only.
         """
-        try:
-            user_id = int(user_id)
-        except ValueError:
-            return await context.reply(content="Please input a valid user ID.", ephemeral=True, mention_author=False)
-        
         try:
             member = await context.bot.fetch_user(user_id)
         except discord.errors.NotFound:
-            return await context.reply(content="It appears that is not a valid user ID.", ephemeral=True, mention_author=False)
+            return await context.send(content="It appears that is not a valid user ID.")
 
         if user_id not in await self.config.banlist():
-            return await context.reply(content=f"It appears **{member}** is not globally banned.", ephemeral=True, mention_author=False)
-            
+            return await context.send(content=f"It appears **{member}** is not globally banned.")
+
         confirm_msg = f"Are you sure you want to globally unban **{member}**?"
         confirm_action = "Alright this might take a while."
         view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
         await view.start(context=context, confirm_action=confirm_action, confirmation_msg=confirm_msg)
-        
+
         await view.wait()
-        
+
         if view.value == "yes":
             await context.typing()
             await self._globalunban_user(context=context, member=member, reason=reason)
