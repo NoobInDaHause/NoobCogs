@@ -39,7 +39,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.8"
+    __version__ = "2.0.9"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -236,8 +236,7 @@ class ServerDonations(commands.Cog):
                 return await context.tick()
             except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
-                    content="It appears that I do not see the set giveaway donation channel request, "
-                    "most likely deleted or I do not have permission to view it.\n"
+                    content="An error has occurred while sending the giveaway donation request.\n"
                     f"Here is the traceback: {box(e, 'py')}"
                 )
         
@@ -259,9 +258,8 @@ class ServerDonations(commands.Cog):
             await context.tick()
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
-                content="An error occured while sending the donation request embed. Most likely that "
-                "the channel is deleted or I do not have permission to view or send message in it.\n"
-                f"Here is the traceback: {box(e, 'py')}"
+                content="An error has occurred while sending the giveaway donation request.\n"
+                    f"Here is the traceback: {box(e, 'py')}"
             )
 
     async def send_to_e_chan(self, context: commands.Context, embed: discord.Embed):
@@ -294,8 +292,7 @@ class ServerDonations(commands.Cog):
                 return await context.tick()
             except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
-                    content="It appears that I do not see the set event donation channel request, "
-                    "most likely deleted or I do not have permission to view it.\n"
+                    content="An error has occurred while sending the event donation request.\n"
                     f"Here is the traceback: {box(e, 'py')}"
                 )
         
@@ -317,9 +314,8 @@ class ServerDonations(commands.Cog):
             await context.tick()
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
-                content="An error occured while sending the donation request embed. Most likely that "
-                "the channel is deleted or I do not have permission to view or send message in it.\n"
-                f"Here is the traceback: {box(e, 'py')}"
+                content="An error has occurred while sending the event donation request.\n"
+                    f"Here is the traceback: {box(e, 'py')}"
             )
 
     async def send_to_h_chan(self, context: commands.Context, embed: discord.Embed):
@@ -352,8 +348,7 @@ class ServerDonations(commands.Cog):
                 return await context.tick()
             except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
-                    content="It appears that I do not see the set heist donation channel request, "
-                    "most likely deleted or I do not have permission to view it.\n"
+                    content="An error has occurred while sending the heist donation request.\n"
                     f"Here is the traceback: {box(e, 'py')}"
                 )
         
@@ -375,9 +370,8 @@ class ServerDonations(commands.Cog):
             await context.tick()
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
-                content="An error occured while sending the donation request embed. Most likely that "
-                "the channel is deleted or I do not have permission to view or send message in it.\n"
-                f"Here is the traceback: {box(e, 'py')}"
+                content="An error has occurred while sending the heist donation request.\n"
+                    f"Here is the traceback: {box(e, 'py')}"
             )
 
     async def set_g_thumb(self, context: commands.Context, types: str, url_or_avatar: str = None):
