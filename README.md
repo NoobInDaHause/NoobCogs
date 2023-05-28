@@ -26,7 +26,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | CustomError     |  v1.0.8   | Customize your bots error message.                               |
 | GlobalBan       |  v1.0.5   | Globally ban a user from all the guilds the bot is in.           |
 | NoobUtils       |  v1.3.13  | Some maybe useful or useless commands.                           |
-| RainbowRole     |  v1.0.7   | Have a role that changes colour every 20 minutes.                |
+| RainbowRole     |  v1.0.8   | Have a role that changes colour every 20 minutes.                |
 | Reach           |  v1.0.1   | Reach roles on a channel.                                        |
 | ServerDonations |  v2.0.9   | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v1.0.5   | A fun split or steal game.                                       |

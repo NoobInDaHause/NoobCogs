@@ -1,58 +1,37 @@
-# Welcome to the RainbowRole Cogs help README.
+# RainbowRole Help
 
-Have a role that changes colour every 10 minutes.
+Have a role that changes colour every 10 minutes.<br/><br/>May or may not be API intense but the cog is cool.<br/>Due to API rate limits you can only have 1 rainbowrole pre guild.<br/>The role colour changes every 20 minutes or so depending on how many guilds the bot is in.
 
-## [Hybrid Group]
-Below are Hybrid Group Commands can be run with legacy prefix commands or slash commands.
+# rainbowroleset
+ - Usage: `[p]rainbowroleset `
+ - Aliases: `rrset`
+ - Checks: `guild_only`
 
-`[p]` is your bots prefix.
+Settings for the RainbowRole cog.
 
-Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
+## rainbowroleset status
+ - Usage: `[p]rainbowroleset status <state> `
 
-# [p]rainbowroleset
- - `Usage:` [p]rainbowroleset <sub_command>
- - `Aliases:` [p]rrset
- - `User permission(s):` Administrator
- - `Bot permission(s):` None
- - `Checks:` guild_only
- - `Description:` Settings for the RainbowRole cog.
+Toggle whether to enable or disable the RainbowRole cog.
 
-# [p]rainbowroleset reset
- - `Usage:` [p]rainbowroleset reset
- - `Aliases:` None
- - `User permission(s):` Administrator
- - `Bot permission(s):` None
- - `Checks:` guild_only
- - `Description:` Reset the RainbowRoles guild settings.
+## rainbowroleset resetcog
+ - Usage: `[p]rainbowroleset resetcog `
+ - Restricted to: `BOT_OWNER`
 
-# [p]rainbowroleset resetcog
- - `Usage:` [p]rainbowroleset resetcog
- - `Aliases:` None
- - `User permission(s):` Bot Owner
- - `Bot permission(s):` None
- - `Checks:` Any
- - `Description:` Reset the RainbowRole cogs whole config. (Bot owners only)
+Reset the RainbowRole cogs whole config. (Bot owners only)
 
-# [p]rainbowroleset role
- - `Usage:` [p]rainbowroleset role <role>
- - `Aliases:` None
- - `User permission(s):` Administrator
- - `Bot permission(s):` manage_roles
- - `Checks:` guild_only
- - `Description:` Set the guilds rainbow role.
+## rainbowroleset showsettings
+ - Usage: `[p]rainbowroleset showsettings `
+ - Aliases: `ss`
 
-# [p]rainbowroleset status
- - `Usage:` [p]rainbowroleset status <state>
- - `Aliases:` None
- - `User permission(s):` Administrator
- - `Bot permission(s):` manage_roles
- - `Checks:` guild_only
- - `Description:` Toggle whether to enable or disable the RainbowRole cog.
+See the current guild settings for the RainbowRole cog.
 
-# [p]rainbowroleset showsettings
- - `Usage:` [p]rainbowroleset showsettings
- - `Aliases:` [p]rainbowroleset ss
- - `User permission(s):` Administrator
- - `Bot permission(s):` None
- - `Checks:` guild_only
- - `Description:` See the current guild settings for the RainbowRole cog.
+## rainbowroleset role
+ - Usage: `[p]rainbowroleset role <role> `
+
+Set the guilds rainbow role.
+
+## rainbowroleset reset
+ - Usage: `[p]rainbowroleset reset `
+
+Reset the RainbowRoles guild settings.

@@ -32,7 +32,7 @@ class RainbowRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RainbowRole")
 
-    __version__ = "1.0.7"
+    __version__ = "1.0.8"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/rainbowrole/README.md"
 
