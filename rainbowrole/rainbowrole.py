@@ -32,7 +32,7 @@ class RainbowRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RainbowRole")
 
-    __version__ = "1.0.6"
+    __version__ = "1.0.7"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/rainbowrole/README.md"
 
@@ -56,11 +56,11 @@ class RainbowRole(commands.Cog):
 
     async def cog_load(self):
         self.log.info("Rainbowrole task started.")
-        await self.change_rainbowrole_color.start()
+        self.change_rainbowrole_color.start()
 
     async def cog_unload(self):
         self.log.info("Rainbowrole task cancelled.")
-        await self.change_rainbowrole_color.stop()
+        await self.change_rainbowrole_color.cancel()
 
     @tasks.loop(minutes=20)
     async def change_rainbowrole_color(self):
