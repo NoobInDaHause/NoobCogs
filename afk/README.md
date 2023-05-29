@@ -1,105 +1,73 @@
-# Welcome to the AFK Cogs help README.
+# Afk Help
 
-Be afk and notify users who ping you with a reason of your choice. This cog is inspired by sravan and Andy's afk cog.
+Notify users whenever you go AFK with pings logging.<br/><br/>Be afk and notify users who ping you with a reason of your choice. This cog is inspired by sravan and Andy's afk cog.
 
-## [Hybrid Commands] 
-Below are Hybrid Commands can be run with legacy prefix commands or slash commands.
+# afk (Hybrid Command)
+ - Usage: `[p]afk [reason] `
+ - Slash Usage: `/afk [reason] `
+ - Aliases: `away`
+ - Cooldown: `1 per 10.0 seconds`
+ - Checks: `guild_only`
 
-`[p]` is your bots prefix.
+Be afk and notify users whenever they ping you.<br/><br/>The reason is optional.
 
-Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
+# afkset
+ - Usage: `[p]afkset `
+ - Aliases: `awayset`
+ - Checks: `guild_only`
 
-# [p]afk
- - `Usage:` [p]afk [reason]
- - `Aliases:` [p]away
- - `User permission(s):` None
- - `Bot permission(s):` embed_links, manage_nicknames
- - `Checks:` guild_only
- - `Description:` Be afk and notify users whenever they ping you.
+Settings for the AFK cog.
 
-## [Hybrid Group]
-Below are Hybrid Group Commands can be run with legacy prefix commands or slash commands.
+## afkset showsettings
+ - Usage: `[p]afkset showsettings `
+ - Aliases: `ss`
 
-`[p]` is your bots prefix.
+See your AFK settings.<br/><br/>Guild settings show up when you have manage_guild permission.
 
-Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
+## afkset reset
+ - Usage: `[p]afkset reset `
 
-# [p]afkset
- - `Usage:` [p]afkset <sub_command>
- - `Aliases:` [p]awayset
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` Settings for the AFK cog.
+Reset your AFK settings to default.
 
-# [p]afkset deleteafter
- - `Usage:` [p]afkset deleteafter [seconds]
- - `Aliases:` [p]afkset da
- - `User permission(s):` Bot Owner
- - `Bot permission(s):` None
- - `Checks:` guild_only
- - `Description:` Change the delete after on every AFK notify.
+## afkset members
+ - Usage: `[p]afkset members `
+ - Restricted to: `ADMIN`
 
-# [p]afkset forceafk
- - `Usage:` [p]afkset forceafk <member> [reason]
- - `Aliases:` [p]afkset forceaway
- - `User permission(s):` manage_guild
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` Forcefully add or remove an AFK status on a user.
+Check who are all the afk members in your guild.
 
-# [p]afkset members
- - `Usage:` [p]afkset members
- - `Aliases:` None
- - `User permission(s):` manage_guild
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` Check who are all the afk members in your guild.
+## afkset togglelogs
+ - Usage: `[p]afkset togglelogs <state> `
+ - Aliases: `tl`
 
-# [p]afkset nick
- - `Usage:` [p]afkset nick <state>
- - `Aliases:` None
- - `User permission(s):` manage_guild
- - `Bot permission(s):` manage_nicknames
- - `Checks:` guild_only
- - `Description:` Toggle whether to change the users nick with `[AFK] {user.display_name}` or not.
+Toggle whether to log all pings you recieved or not.
 
-# [p]afkset reset
- - `Usage:` [p]afkset reset
- - `Aliases:` None
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` Reset your AFK settings to default.
+## afkset nick
+ - Usage: `[p]afkset nick <state> `
+ - Restricted to: `ADMIN`
 
-# [p]afkset resetcog
- - `Usage:` [p]afkset resetcog
- - `Aliases:` None
- - `User permission(s):` Bot Owner
- - `Bot permission(s):` embed_links
- - `Checks:` Any
- - `Description:` Reset the AFK cogs configuration.
+Toggle whether to change the users nick with ***[AFK] {user_display_name}*** or not.<br/><br/>This defaults to True.
 
-# [p]afkset showsettings
- - `Usage:` [p]afkset showsettings
- - `Aliases:` [p]afkset ss
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` See your AFK settings and Guild settings (if manage_guild+).
+## afkset resetcog
+ - Usage: `[p]afkset resetcog `
+ - Restricted to: `BOT_OWNER`
 
-# [p]afkset sticky
- - `Usage:` [p]afkset sticky <state>
- - `Aliases:` None
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` Toggle whether to sticky your afk or not.
+Reset the AFK cogs configuration. (Bot owners only.)
 
-# [p]afkset togglelogs
- - `Usage:` [p]afkset togglelogs <state>
- - `Aliases:` [p]afkset tl
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` Toggle whether to log all pings you recieved or not.
+## afkset sticky
+ - Usage: `[p]afkset sticky <state> `
+
+Toggle whether to sticky your afk or not.<br/><br/>This defaults to False.
+
+## afkset forceafk
+ - Usage: `[p]afkset forceafk <member> [reason] `
+ - Restricted to: `ADMIN`
+ - Aliases: `forceaway`
+
+Forcefully add or remove an AFK status on a user.
+
+## afkset deleteafter
+ - Usage: `[p]afkset deleteafter <seconds> `
+ - Restricted to: `ADMIN`
+ - Aliases: `da`
+
+Change the delete after on every AFK notify.<br/><br/>Leave seconds blank to disable.<br/>Default is 10 seconds.

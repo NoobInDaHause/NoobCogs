@@ -4,6 +4,8 @@ from redbot.core import commands
 
 from typing import Optional
 
+from .utils import access_denied
+
 class Confirmation(discord.ui.View):
     def __init__(
         self,
@@ -41,7 +43,7 @@ class Confirmation(discord.ui.View):
         if await self.context.bot.is_owner(interaction.user):
             return True
         elif interaction.user.id != self.context.author.id:
-            await interaction.response.send_message(content="You are not the author of this interaction.", ephemeral=True)
+            await interaction.response.send_message(content=access_denied(), ephemeral=True)
             return False
         return True
 

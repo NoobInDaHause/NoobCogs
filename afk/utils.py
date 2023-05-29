@@ -7,11 +7,14 @@ def is_have_avatar(thing: Union[discord.Member, discord.Guild] = None):
         return ""
     if isinstance(thing, discord.Member):
         try:
-            return thing.display_avatar.url
+            return thing.avatar.url
         except AttributeError:
-            return ""
+            return thing.display_avatar.url
     if isinstance(thing, discord.Guild):
         try:
             return thing.icon.url
         except AttributeError:
             return ""
+
+def access_denied() -> str:
+    return "https://cdn.discordapp.com/attachments/1000751975308197918/1110013262835228814/1.mp4"
