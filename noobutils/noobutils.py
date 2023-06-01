@@ -31,7 +31,7 @@ class NoobUtils(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
 
-    __version__ = "1.4.1"
+    __version__ = "1.4.2"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/noobutils/README.md"
 
