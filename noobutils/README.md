@@ -1,80 +1,59 @@
-# Welcome to the NoobUtils Cogs help README.
+# NoobUtils Help
 
-Some maybe useful or useless commands.
+Some maybe useful or useless commands.<br/><br/>Cog made by a noob at python with interesting useful or useless commands.
 
-## [Hybrid Commands] 
-Below are Hybrid Commands can be run with legacy prefix commands or slash commands.
+# amarilevel (Hybrid Command)
+ - Usage: `[p]amarilevel <member> `
+ - Slash Usage: `/amarilevel <member> `
+ - Aliases: `alvl and alevel`
 
-`[p]` is your bots prefix.
+Check your or someone else's amari level.
 
-Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
+# calculator (Hybrid Command)
+ - Usage: `[p]calculator `
+ - Slash Usage: `/calculator `
+ - Cooldown: `1 per 60.0 seconds`
 
-# [p]calculator
- - `Usage:` [p]calculator
- - `Aliases:` None
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` Any
- - `Description:` Calculate with buttons.
+Calculate with buttons.
 
-# [p]cookieclicker
- - `Usage:` [p]cookieclicker
- - `Aliases:` None
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` Any
- - `Description:` Cookie clicker.
+# cookieclicker (Hybrid Command)
+ - Usage: `[p]cookieclicker `
+ - Slash Usage: `/cookieclicker `
+ - Cooldown: `1 per 30.0 seconds`
 
-# [p]membercount
- - `Usage:` [p]membercount
- - `Aliases:` [p]mcount
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` See the current member count on this guild.
+Cookie clicker.
 
-# [p]pressf
- - `Usage:` [p]pressf <member>
- - `Aliases:` None
- - `User permission(s):` None
- - `Bot permission(s):` embed_links
- - `Checks:` guild_only
- - `Description:` Press F to pay respect on someone.
+# membercount (Hybrid Command)
+ - Usage: `[p]membercount `
+ - Slash Usage: `/membercount `
+ - Aliases: `mcount`
+ - Cooldown: `1 per 10.0 seconds`
+ - Checks: `guild_only`
 
-## [Legacy Commands]
-Below are Legacy Commands and can be run with legacy prefix commands only.
+See the current member count on this guild.<br/><br/>Contains separate member count of users and bots.
 
-`[p]` is your bots prefix.
+# noobset
+ - Usage: `[p]noobset `
+ - Restricted to: `ADMIN`
+ - Checks: `guild_only`
 
-Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
+Change some settings for the NoobUtils cog commands.
 
-# [p]testlog
- - `Usage:` [p]testlog <anything>
- - `Aliases:` None
- - `User permission(s):` Bot Owner
- - `Bot permission(s):` None
- - `Checks:` Any
- - `Description:` Test out the logging module. (Bot owner only)
+## noobset pressfemoji
+ - Usage: `[p]noobset pressfemoji <emoji> `
 
-## [Legacy Group]
-Below are Legacy Group Commands and can be run with legacy prefix commands only.
+Change the emoji of the press f command.<br/><br/>Pass without emoji to reset it.
 
-`[p]` is your bots prefix.
+# pressf (Hybrid Command)
+ - Usage: `[p]pressf <thing> `
+ - Slash Usage: `/pressf <thing> `
+ - Cooldown: `1 per 60.0 seconds`
+ - Checks: `guild_only`
 
-Words that are surrounded by `[]` are optional arguments while `<>` is rquired.
+Press F to pay respect on something.<br/><br/>Press F with buttons.
 
-# [p]noobset
- - `Usage:` [p]noobset <subcommand>
- - `Aliases:` None
- - `User permission(s):` administrator
- - `Bot permission(s):` None
- - `Checks:` guild_only
- - `Description:` Change some settings for the NoobUtils cog commands.
+# testlog
+ - Usage: `[p]testlog <anything> `
+ - Restricted to: `BOT_OWNER`
 
-# [p]noobset pressfemoji
- - `Usage:` [p]noobset pressfemoji <emoji>
- - `Aliases:` None
- - `User permission(s):` administrator
- - `Bot permission(s):` None
- - `Checks:` guild_only
- - `Description:` Change the emoji of the press f command.
+Test out the logging module. (Bot owner only)<br/><br/>Say anything in the anything parameter to log it in the console.

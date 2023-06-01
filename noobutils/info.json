@@ -11,7 +11,7 @@
     "hidden": false,
     "disabled": false,
     "required_cogs": {},
-    "requirements": ["emoji"],
+    "requirements": ["emoji", "expr.py", "amari.py"],
     "tags": [
         "Noob",
         "Utils",
