@@ -31,7 +31,7 @@ class NoobUtils(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.NoobUtils")
 
-    __version__ = "1.4.0"
+    __version__ = "1.4.1"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/noobutils/README.md"
 
@@ -188,7 +188,7 @@ class NoobUtils(commands.Cog):
         
         Pass without emoji to reset it.
         """
-        if type == "pressf"
+        if type == "pressf":
             if not emoji:
                 await self.config.guild(context.guild).emojis.pressf.clear()
                 return await context.send("The Press F emoji has been reset to default.")
