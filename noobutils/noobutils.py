@@ -184,7 +184,7 @@ class NoobUtils(commands.Cog):
         emoji: Optional[EmojiConverter]
     ):
         """
-        Change the emoji of the press f command.
+        Change the emoji of some of the commands.
         
         Pass without emoji to reset it.
         """
