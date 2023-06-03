@@ -1,11 +1,11 @@
-import datetime
+import datetime as dt
 import discord
 import logging
 
 from redbot.core import app_commands, commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
-from redbot.core.utils.menus import menu
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 from typing import Literal, Optional
 
@@ -15,8 +15,8 @@ from .views import Confirmation
 class Afk(commands.Cog):
     """
     Notify users whenever you go AFK with pings logging.
-    
-    Be afk and notify users who ping you with a reason of your choice. This cog is inspired by sravan and Andy's afk cog.
+
+    Be afk and notify users who ping you with a reason of your choice.
     """
     def __init__(self, bot: Red) -> None:
         self.bot = bot
@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.1.6"
+    __version__ = "1.2.0"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
 
@@ -74,9 +74,7 @@ class Afk(commands.Cog):
         Start AFK status.
         """
         await self.config.member(user).afk.set(True)
-        await self.config.member(user).timestamp.set(
-            round(datetime.datetime.now(datetime.timezone.utc).timestamp())
-        )
+        await self.config.member(user).timestamp.set(round(dt.datetime.now(dt.timezone.utc).timestamp()))
         await self.config.member(user).reason.set(reason)
 
         if await self.config.guild(payload.guild).nick():
@@ -131,13 +129,12 @@ class Afk(commands.Cog):
                     title=f"You have recieved some pings while you were AFK, {user.name}.",
                     description=page,
                     color=user.colour
-                )
-                embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(user))
+                ).set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(user))
                 final_page[ind - 1] = embed
 
             context = await self.bot.get_context(payload)
             await self.config.member(user).pinglogs.clear()
-            await menu(context, list(final_page.values()), timeout=60)
+            await menu(context, list(final_page.values()), DEFAULT_CONTROLS, timeout=60)
 
     async def log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
         """
@@ -147,7 +144,7 @@ class Afk(commands.Cog):
             ping_log = (
                 f"` - ` {payload.author.mention} [pinged you in]"
                 f"({payload.jump_url}) {payload.channel.mention} "
-                f"<t:{round(datetime.datetime.now(datetime.timezone.utc).timestamp())}:R>.\n"
+                f"<t:{round(dt.datetime.now(dt.timezone.utc).timestamp())}:R>.\n"
                 f"**Message:** {payload.content}"
             )
             pl.append(ping_log)
@@ -163,16 +160,9 @@ class Afk(commands.Cog):
         da = await self.config.guild(payload.guild).delete_after()
 
         return (
-            await payload.channel.send(
-                embed=embed,
-                reference=payload,
-                mention_author=False,
-                delete_after=da,
-            )
+            await payload.channel.send(embed=embed, reference=payload, mention_author=False, delete_after=da)
             if da != 0
-            else await payload.channel.send(
-                embed=embed, reference=payload, mention_author=False
-            )
+            else await payload.channel.send(embed=embed, reference=payload, mention_author=False)
         )
 
     @commands.Cog.listener("on_message")
@@ -191,23 +181,13 @@ class Afk(commands.Cog):
             return
         if await self.config.member(payload.author).afk():
             await self.end_afk(payload=payload, user=payload.author)
-
-    @commands.Cog.listener("on_message")
-    async def _afk_logger(self, payload: discord.Message):
-        if not payload.guild:
-            return
-        if payload.author.bot:
-            return
         if not payload.mentions:
             return
-
         for afk_user in payload.mentions:
             if afk_user == payload.author:
                 continue
-            if not await self.config.member(afk_user).afk():
-                continue
-
-            await self.log_and_notify(payload=payload, afk_user=afk_user)
+            if await self.config.member(afk_user).afk():
+                await self.log_and_notify(payload=payload, afk_user=afk_user)
 
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
@@ -264,7 +244,7 @@ class Afk(commands.Cog):
             return await context.send(content="The maximum seconds of delete after is 120 seconds.")
 
         await self.config.guild(context.guild).delete_after.set(seconds)
-        await context.send(f"Successfully set the delete after to {seconds} seconds.")
+        await context.send(content=f"Successfully set the delete after to {seconds} seconds.")
 
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.admin_or_permissions(manage_guild=True)
@@ -280,20 +260,20 @@ class Afk(commands.Cog):
         """
         if member.bot:
             return await context.send(content="I'm afraid you can not do that to bots.")
-        if member.id == context.guild.owner.id:
+        if member == context.guild.owner:
             return await context.send(content="I'm afraid you can not do that to the guild owner.")
-        if member.id == context.author.id:
+        if member == context.author:
             return await context.send(
                 content=f"Why would you force AFK yourself? Please use `{context.prefix}afk`."
             )
-        if member.top_role >= context.author.top_role and context.author.id != context.guild.owner.id:
+        if member.top_role >= context.author.top_role and context.author != context.guild.owner:
             return await context.send(content="I'm afraid you can not do that due to role hierarchy.")
 
         if await self.config.member(member).afk():
-            await context.send(f"Forcefully removed **{member}**'s AFK status.")
+            await context.send(content=f"Forcefully removed **{member}**'s AFK status.")
             return await self.end_afk(payload=context.message, user=member)
 
-        await context.send(f"Forcefully added **{member}**'s AFK status.")
+        await context.send(content=f"Forcefully added **{member}**'s AFK status.")
         await self.start_afk(payload=context.message, user=member, reason=reason)
 
     @afkset.command(name="members")
@@ -306,14 +286,13 @@ class Afk(commands.Cog):
         for member in context.guild.members:
             if member.bot:
                 continue
-            if not await self.config.member(member).afk():
-                continue
-            afk_users.append(member)
+            if await self.config.member(member).afk():
+                afk_users.append(member.id)
 
         if not afk_users:
             return await context.send(content="No members are AFK in this guild.")
 
-        afk_list = "\n".join([m.mention for m in afk_users])
+        afk_list = "\n".join([f'<@{memb}> ({memb})' for memb in afk_users])
         pages = list(pagify(afk_list, delims=["\n"], page_length=2000))
         final_page = {}
 
@@ -322,11 +301,10 @@ class Afk(commands.Cog):
                 title="Here are the members who are afk in this guild.",
                 description=page,
                 color=await context.embed_colour()
-            )
-            embed.set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(context.guild))
+            ).set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(context.guild))
             final_page[ind - 1] = embed
 
-        await menu(context, list(final_page.values()), timeout=60)
+        await menu(context, list(final_page.values()), DEFAULT_CONTROLS, timeout=60)
 
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True)
@@ -343,7 +321,7 @@ class Afk(commands.Cog):
         """
         await self.config.guild(context.guild).nick.set(state)
         status = "will now" if state else "will not"
-        await context.send(f"I {status} edit the users nick whenever they go AFK.")
+        await context.send(content=f"I {status} edit the users nick whenever they go AFK.")
 
     @afkset.command(name="reset")
     async def afkset_reset(self, context: commands.Context):
@@ -391,18 +369,18 @@ class Afk(commands.Cog):
             if guild_settings['delete_after'] != 0
             else "Disabled."
         )
-        gset = f"`Nick change:` {guild_settings['nick']}\n`Delete after:` {da}"
+        aset = f"`Nick change:` {guild_settings['nick']}\n`Delete after:` {da}"
 
         embed = discord.Embed(
             title=f"{context.author.name}'s AFK settings.",
             description=f"`Is afk:` {member_settings['afk']}\n`Is sticky:` {member_settings['sticky']}\n"
             f"`Ping logging:` {member_settings['toggle_logs']}",
             colour=context.author.colour,
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
+            timestamp=dt.datetime.now(dt.timezone.utc)
         )
 
         if await context.bot.is_owner(context.author) or context.author.guild_permissions.manage_guild:
-            embed.add_field(name="Guild settings:", value=gset, inline=False)
+            embed.add_field(name="Guild settings:", value=aset, inline=False)
         await context.send(embed=embed)
 
     @afkset.command(name="sticky")
@@ -418,7 +396,7 @@ class Afk(commands.Cog):
         """
         await self.config.member(context.author).sticky.set(state)
         status = "will now" if state else "will not"
-        await context.send(f"I {status} sticky your AFK.")
+        await context.send(content=f"I {status} sticky your AFK.")
 
     @afkset.command(name="togglelogs", aliases=["tl"])
     async def afkset_togglelogs(
@@ -431,4 +409,4 @@ class Afk(commands.Cog):
         """
         await self.config.member(context.author).toggle_logs.set(state)
         status = "will now" if state else "will not"
-        await context.send(f"I {status} log all the pings you recieved.")
+        await context.send(content=f"I {status} log all the pings you recieved.")
