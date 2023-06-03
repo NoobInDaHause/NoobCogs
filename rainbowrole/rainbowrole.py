@@ -8,7 +8,6 @@ from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 
 from discord.ext import tasks
-from discord.ext.commands import BadArgument
 from typing import Literal
 
 from .views import Confirmation
@@ -26,13 +25,13 @@ class RainbowRole(commands.Cog):
 
         self.config = Config.get_conf(self, identifier=128943761874, force_registration=True)
         default_guild = {
-            "role": 0,
+            "role": None,
             "status": False
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RainbowRole")
 
-    __version__ = "1.0.8"
+    __version__ = "1.0.9"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/rainbowrole/README.md"
 
@@ -45,13 +44,14 @@ class RainbowRole(commands.Cog):
 
         Cog Version: **{self.__version__}**
         Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
-        Cog Documentation: [[Click here]]({self.__docs__})
-        """
+        Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
     ) -> None:
-        # This cog does not store any end user data whatsoever.
+        """
+        This cog does not store any end user data whatsoever.
+        """
         return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
 
     async def cog_load(self):
@@ -88,6 +88,7 @@ class RainbowRole(commands.Cog):
         """
         Settings for the RainbowRole cog.
         """
+        pass
 
     @rainbowroleset.command(name="reset")
     async def rainbowroleset_reset(self, context: commands.Context):
@@ -127,10 +128,15 @@ class RainbowRole(commands.Cog):
         Set the guilds rainbow role.
         """
         if role >= context.guild.me.top_role:
-            return await context.reply(content="It appears that role is higher than my top role please lower it below my top role.", ephemeral=True, mention_author=False)
+            return await context.reply(
+                content="It appears that role is higher than my top role please lower it below my top role."
+            )
 
         await self.config.guild(context.guild).role.set(role.id)
-        await context.send(f"**{role.name}** has been set as the guilds rainbowrole. Start the cog with `{context.prefix}rrset status` if you haven't already.")
+        await context.send(
+            content=f"**{role.name}** has been set as the guilds rainbowrole. "
+            f"Start the cog with `{context.prefix}rrset status` if you haven't already."
+        )
 
     @rainbowroleset.command(name="status")
     @commands.bot_has_permissions(manage_roles=True)
@@ -140,7 +146,7 @@ class RainbowRole(commands.Cog):
         """
         await self.config.guild(context.guild).status.set(state)
         status = "enabled" if state else "disabled"
-        await context.send(f"The rainbowrole cog has been {status}.")
+        await context.send(content=f"The rainbowrole cog has been {status}.")
 
     @rainbowroleset.command(name="showsettings", aliases=["ss"])
     async def rainbowroleset_showsettings(self, context: commands.Context):
