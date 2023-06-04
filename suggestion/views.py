@@ -84,8 +84,8 @@ class SuggestView(discord.ui.View):
                     i["upvotes"].append(interaction.user.id)
                     button.label = str(len(i["upvotes"]))
                     self.down_button.label = str(len(i["downvotes"]))
-                    await self.message.edit(view=self)
-                    return await interaction.response.send_message(
+                    await interaction.response.edit_message(view=self)
+                    return await interaction.followup.send(
                         content="You have changed your vote to upvote.", ephemeral=True
                     )
 
@@ -97,8 +97,8 @@ class SuggestView(discord.ui.View):
 
                 i["upvotes"].append(interaction.user.id)
                 button.label = str(len(i["upvotes"]))
-                await self.message.edit(view=self)
-                await interaction.response.send_message(
+                await interaction.response.edit_message(view=self)
+                await interaction.followup.send(
                     content="You have upvoted this suggestion.", ephemeral=True
                 )
 
@@ -114,8 +114,8 @@ class SuggestView(discord.ui.View):
                     i["downvotes"].append(interaction.user.id)
                     button.label = str(len(i["downvotes"]))
                     self.down_button.label = str(len(i["upvotes"]))
-                    await self.message.edit(view=self)
-                    return await interaction.response.send_message(
+                    await interaction.response.edit_message(view=self)
+                    return await interaction.followup.send(
                         content="You have changed your vote to downvote.", ephemeral=True
                     )
 
@@ -127,7 +127,7 @@ class SuggestView(discord.ui.View):
 
                 i["downvotes"].append(interaction.user.id)
                 button.label = str(len(i["downvotes"]))
-                await self.message.edit(view=self)
-                await interaction.response.send_message(
+                await interaction.response.edit_message(view=self)
+                await interaction.followup.send(
                     content="You have downvoted this suggestion.", ephemeral=True
                 )
