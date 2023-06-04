@@ -382,6 +382,14 @@ class Suggestion(commands.Cog):
                     )
                     view = discord.ui.View()
                     u = f"https://discord.com/channels/{context.guild.id}/{channel.id}/{msg.id}"
+                    but1 = discord.ui.Button(label=str(len(i["upvotes"])), style=discord.ButtonStyle.blurple)
+                    but2 = discord.ui.Button(
+                        label=str(len(i["downvotes"])), style=discord.ButtonStyle.blurple
+                    )
+                    but1.disabled = True
+                    but2.disabled = True
+                    view.add_item(but1)
+                    view.add_item(but2)
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
                     await context.send(embed=embed, view=view)
                     break
