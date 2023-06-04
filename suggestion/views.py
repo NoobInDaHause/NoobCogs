@@ -113,7 +113,7 @@ class SuggestView(discord.ui.View):
                     i["upvotes"].pop(index)
                     i["downvotes"].append(interaction.user.id)
                     button.label = str(len(i["downvotes"]))
-                    self.down_button.label = str(len(i["upvotes"]))
+                    self.up_button.label = str(len(i["upvotes"]))
                     await interaction.response.edit_message(view=self)
                     return await interaction.followup.send(
                         content="You have changed your vote to downvote.", ephemeral=True
