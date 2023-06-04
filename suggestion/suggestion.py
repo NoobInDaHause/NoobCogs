@@ -208,7 +208,7 @@ class Suggestion(commands.Cog):
                             await a.send(embed=embed, view=view)
                     if mem:
                         cont = (
-                            f"Your suggestion **#{id}** has been `{status_type}` by {context.author} "
+                            f"Your suggestion **#{id}** was `{status_type}` by {context.author} "
                             f"({context.author.id}).\nReason: {reason}"
                         )
                         with contextlib.suppress(discord.errors.Forbidden):
@@ -268,7 +268,7 @@ class Suggestion(commands.Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def approve(
-        self, context: commands.Context, suggestion_id: int, reason: Optional[str] = "No reason given."
+        self, context: commands.Context, suggestion_id: int, *, reason: Optional[str] = "No reason given."
     ):
         """
         Approve a suggestion.
@@ -277,6 +277,9 @@ class Suggestion(commands.Cog):
 
         if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
             return await context.send(content="It appears the suggestion with that ID does not exist.")
+        if data["autodel"]:
+            with contextlib.suppress(discord.errors.Forbidden):
+                await context.message.delete()
         et = await self.end_suggestion(context, "approved", suggestion_id, reason)
         if not et:
             return
@@ -293,16 +296,12 @@ class Suggestion(commands.Cog):
                 content="Error occurred while editting suggestion, please check my permissions."
             )
 
-        if data["autodel"]:
-            with contextlib.suppress(discord.errors.Forbidden):
-                await context.message.delete()
-
     @commands.command(name="reject")
     @commands.admin_or_permissions(manage_guild=True)
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def reject(
-        self, context: commands.Context, suggestion_id: int, reason: Optional[str] = "No reason given."
+        self, context: commands.Context, suggestion_id: int, *, reason: Optional[str] = "No reason given."
     ):
         """
         Reject a suggestion.
@@ -311,6 +310,9 @@ class Suggestion(commands.Cog):
 
         if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
             return await context.send(content="It appears the suggestion with that ID does not exist.")
+        if data["autodel"]:
+            with contextlib.suppress(discord.errors.Forbidden):
+                await context.message.delete()
         et = await self.end_suggestion(context, "rejected", suggestion_id, reason)
         if not et:
             return
@@ -326,10 +328,6 @@ class Suggestion(commands.Cog):
             return await context.send(
                 content="Error occurred while editting suggestion, please check my permissions."
             )
-
-        if data["autodel"]:
-            with contextlib.suppress(discord.errors.Forbidden):
-                await context.message.delete()
 
     @commands.command(name="viewsuggestion")
     @commands.bot_has_permissions(embed_links=True)
