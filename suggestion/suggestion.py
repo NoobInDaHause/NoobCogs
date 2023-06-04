@@ -413,16 +413,17 @@ class Suggestion(commands.Cog):
         pass
 
     @suggestionset.command(name="editreason")
-    async def suggestionset_editreason(self, context: commands.Context, suggestion_id: int, reason: str):
+    async def suggestionset_editreason(self, context: commands.Context, suggestion_id: int, *, reason: str):
         # sourcery skip: low-code-quality
         """
         Edit a suggestions reason.
         """
-        c = await self.config.guild(context.guild).suggest_channel()
-        a = await self.config.guild(context.guild).autodel()
-        if not c:
+        data = await self.config.guild(context.guild).all()
+        if not data["suggest_channel"]:
             return await context.send(content="No suggestion channel found, ask an admin to set one,")
-        channel = context.guild.get_channel(classmethod)
+        if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
+            return await context.send(content="It appears the suggestion with this ID does not exist.")
+        channel = context.guild.get_channel(data["suggest_channel"])
         async with self.config.guild(context.guild).suggestions() as s:
             for i in s:
                 if i["id"] == suggestion_id:
@@ -464,7 +465,7 @@ class Suggestion(commands.Cog):
                             content="Error has occurred while editting the suggestion message."
                         )
 
-        if a:
+        if data["autodel"]:
             with contextlib.suppress(discord.errors.Forbidden):
                 await context.message.delete()
 
