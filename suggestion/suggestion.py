@@ -183,7 +183,7 @@ class Suggestion(commands.Cog):
                     )
                     r = context.guild.get_channel(data["reject_channel"])
                     a = context.guild.get_channel(data["approve_channel"])
-                    if r and status_type == "reject":
+                    if r and status_type == "rejected":
                         with contextlib.suppress(discord.errors.Forbidden):
                             viewr = discord.ui.View()
                             viewr.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
