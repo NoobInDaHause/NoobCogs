@@ -181,37 +181,17 @@ class Suggestion(commands.Cog):
                         stattype=status_type,
                         reason=reason
                     )
-                    if r := context.guild.get_channel(data["reject_channel"]) and status_type == "reject":
+                    r = context.guild.get_channel(data["reject_channel"])
+                    a = context.guild.get_channel(data["approve_channel"])
+                    if r and status_type == "reject":
                         with contextlib.suppress(discord.errors.Forbidden):
                             view = discord.ui.View()
-                            but1 = discord.ui.Button(
-                                label=str(len(i["upvotes"])), style=discord.ButtonStyle.blurple
-                            )
-                            but2 = discord.ui.Button(
-                                label=str(len(i["downvotes"])), style=discord.ButtonStyle.blurple
-                            )
-                            but1.disabled = True
-                            but2.disabled = True
-                            but1.emoji = data["emojis"]["upvote"]
-                            but2.emoji = data["emojis"]["downvote"]
-                            view.add_item(but1)
-                            view.add_item(but2)
+                            view.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
                             await r.send(embed=embed, view=view)
-                    if a := context.guild.get_channel(data["approve_channel"]) and status_type == "approved":
+                    if a and status_type == "approved":
                         with contextlib.suppress(discord.errors.Forbidden):
                             view = discord.ui.View()
-                            but1 = discord.ui.Button(
-                                label=str(len(i["upvotes"])), style=discord.ButtonStyle.blurple
-                            )
-                            but2 = discord.ui.Button(
-                                label=str(len(i["downvotes"])), style=discord.ButtonStyle.blurple
-                            )
-                            but1.disabled = True
-                            but2.disabled = True
-                            but1.emoji = data["emojis"]["upvote"]
-                            but2.emoji = data["emojis"]["downvote"]
-                            view.add_item(but1)
-                            view.add_item(but2)
+                            view.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
                             await a.send(embed=embed, view=view)
                     if mem:
                         cont = (
