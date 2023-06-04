@@ -82,7 +82,7 @@ class SuggestView(discord.ui.View):
                     index = i["downvotes"].index(interaction.user.id)
                     i["downvotes"].pop(index)
                     i["upvotes"].append(interaction.user.id)
-                    button.label = str(len(i["upvotes"]))
+                    self.up_button.label = str(len(i["upvotes"]))
                     self.down_button.label = str(len(i["downvotes"]))
                     await interaction.response.edit_message(view=self)
                     return await interaction.followup.send(
@@ -96,7 +96,7 @@ class SuggestView(discord.ui.View):
                     )
 
                 i["upvotes"].append(interaction.user.id)
-                button.label = str(len(i["upvotes"]))
+                self.up_button.label = str(len(i["upvotes"]))
                 await interaction.response.edit_message(view=self)
                 await interaction.followup.send(
                     content="You have upvoted this suggestion.", ephemeral=True
@@ -112,7 +112,7 @@ class SuggestView(discord.ui.View):
                     index = i["upvotes"].index(interaction.user.id)
                     i["upvotes"].pop(index)
                     i["downvotes"].append(interaction.user.id)
-                    button.label = str(len(i["downvotes"]))
+                    self.down_button.label = str(len(i["downvotes"]))
                     self.up_button.label = str(len(i["upvotes"]))
                     await interaction.response.edit_message(view=self)
                     return await interaction.followup.send(
@@ -126,7 +126,7 @@ class SuggestView(discord.ui.View):
                     )
 
                 i["downvotes"].append(interaction.user.id)
-                button.label = str(len(i["downvotes"]))
+                self.down_button.label = str(len(i["downvotes"]))
                 await interaction.response.edit_message(view=self)
                 await interaction.followup.send(
                     content="You have downvoted this suggestion.", ephemeral=True
