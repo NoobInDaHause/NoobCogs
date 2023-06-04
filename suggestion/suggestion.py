@@ -181,7 +181,7 @@ class Suggestion(commands.Cog):
                         stattype=status_type,
                         reason=reason
                     )
-                    if r := context.guild.get_channel(data["reject_channel"]):
+                    if r := context.guild.get_channel(data["reject_channel"]) and status_type == "reject":
                         with contextlib.suppress(discord.errors.Forbidden):
                             view = discord.ui.View()
                             but1 = discord.ui.Button(
@@ -197,7 +197,7 @@ class Suggestion(commands.Cog):
                             view.add_item(but1)
                             view.add_item(but2)
                             await r.send(embed=embed, view=view)
-                    if a := context.guild.get_channel(data["approve_channel"]):
+                    if a := context.guild.get_channel(data["approve_channel"]) and status_type == "approved":
                         with contextlib.suppress(discord.errors.Forbidden):
                             view = discord.ui.View()
                             but1 = discord.ui.Button(
