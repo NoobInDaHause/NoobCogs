@@ -185,14 +185,14 @@ class Suggestion(commands.Cog):
                     a = context.guild.get_channel(data["approve_channel"])
                     if r and status_type == "reject":
                         with contextlib.suppress(discord.errors.Forbidden):
-                            view = discord.ui.View()
-                            view.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
-                            await r.send(embed=embed, view=view)
+                            viewr = discord.ui.View()
+                            viewr.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
+                            await r.send(embed=embed, view=viewr)
                     if a and status_type == "approved":
                         with contextlib.suppress(discord.errors.Forbidden):
-                            view = discord.ui.View()
-                            view.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
-                            await a.send(embed=embed, view=view)
+                            views = discord.ui.View()
+                            views.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
+                            await a.send(embed=embed, view=views)
                     if mem:
                         cont = (
                             f"Your suggestion **#{id}** was `{status_type}` by {context.author} "
