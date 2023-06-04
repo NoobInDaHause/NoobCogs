@@ -275,7 +275,7 @@ class Suggestion(commands.Cog):
         """
         data = await self.config.guild(context.guild).all()
 
-        if suggestion_id > len(data["suggestions"]):
+        if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
             return await context.send(content="It appears the suggestion with that ID does not exist.")
         et = await self.end_suggestion(context, "approved", suggestion_id, reason)
         if not et:
@@ -309,7 +309,7 @@ class Suggestion(commands.Cog):
         """
         data = await self.config.guild(context.guild).all()
 
-        if suggestion_id > len(data["suggestions"]):
+        if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
             return await context.send(content="It appears the suggestion with that ID does not exist.")
         et = await self.end_suggestion(context, "rejected", suggestion_id, reason)
         if not et:
