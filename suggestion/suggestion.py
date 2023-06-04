@@ -79,11 +79,14 @@ class Suggestion(commands.Cog):
             await member.send(*args, **kwargs)
 
     async def maybe_edit_msg(self, msg: discord.Message, embed: discord.Embed, label1: str, label2: str):
+        data = await self.config.guild(msg.guild).all()
         view = discord.ui.View()
         but1 = discord.ui.Button(label=label1, style=discord.ButtonStyle.blurple)
         but2 = discord.ui.Button(label=label2, style=discord.ButtonStyle.blurple)
         but1.disabled = True
         but2.disabled = True
+        but1.emoji = data["emojis"]["upvote"]
+        but2.emoji = data["emojis"]["downvote"]
         view.add_item(but1)
         view.add_item(but2)
         await msg.edit(embed=embed, view=view)
@@ -189,6 +192,8 @@ class Suggestion(commands.Cog):
                             )
                             but1.disabled = True
                             but2.disabled = True
+                            but1.emoji = data["emojis"]["upvote"]
+                            but2.emoji = data["emojis"]["downvote"]
                             view.add_item(but1)
                             view.add_item(but2)
                             await r.send(embed=embed, view=view)
@@ -203,6 +208,8 @@ class Suggestion(commands.Cog):
                             )
                             but1.disabled = True
                             but2.disabled = True
+                            but1.emoji = data["emojis"]["upvote"]
+                            but2.emoji = data["emojis"]["downvote"]
                             view.add_item(but1)
                             view.add_item(but2)
                             await a.send(embed=embed, view=view)
@@ -388,6 +395,8 @@ class Suggestion(commands.Cog):
                     )
                     but1.disabled = True
                     but2.disabled = True
+                    but1.emoji = data["emojis"]["upvote"]
+                    but2.emoji = data["emojis"]["downvote"]
                     view.add_item(but1)
                     view.add_item(but2)
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
