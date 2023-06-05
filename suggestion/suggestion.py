@@ -72,8 +72,7 @@ class Suggestion(commands.Cog):
 
     async def cog_load(self):
         await self.restore_buttons()
-        
-    @staticmethod
+
     async def restore_buttons(self):
         for guild in self.bot.guilds:
             data = await self.config.guild(guild).all()
