@@ -35,6 +35,8 @@ class Suggestion(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
+        self.view = SuggestView(self)
+        bot.add_view(self.view)
 
     __version__ = "1.0.0"
     __author__ = ["Noobindahause#2808"]
@@ -69,32 +71,6 @@ class Suggestion(commands.Cog):
                     if user_id in i["downvotes"]:
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
-
-    async def cog_load(self):
-        await self.restore_buttons()
-
-    async def restore_buttons(self):
-        all_guilds = await self.config.all_guilds()
-        for g in all_guilds:
-            guild = self.bot.get_guild(g)
-            data = await self.config.guild(guild).all()
-            if not data["suggestions"]:
-                continue
-            async with self.config.guild(guild).suggestions() as s:
-                for i in s:
-                    if i["status"] == "running":
-                        channel = guild.get_channel(data["suggest_channel"])
-                        msg = await channel.fetch_message(i["msg_id"])
-                        context = await self.bot.get_context(msg)
-                        self.bot.add_view(
-                            SuggestView(
-                                data["emojis"]["downvote"],
-                                data["emojis"]["upvote"],
-                                context,
-                                msg
-                            ),
-                            message_id=i["msg_id"]
-                        )
 
     async def maybe_send_to_author(self, member: discord.Member, url: str = None, *args, **kwargs):
         if url:
@@ -171,14 +147,12 @@ class Suggestion(commands.Cog):
             authname=f"{context.author} ({context.author.id})",
             authic=is_have_avatar(context.author)
         )
-        view = SuggestView(
-            downemoji=data["emojis"]["downvote"],
-            upemoji=data["emojis"]["upvote"],
-            ctx=context
-        )
-        view.message = await channel.send(embed=embed, view=view)
-        await self.add_suggestion(context=context, suggest_msg=view.message, suggestion=suggestion)
-        return [embed, view.message.jump_url]
+        view = SuggestView()
+        view.down_button.emoji = data["emojis"]["downvote"]
+        view.up_button.emoji = data["emojis"]["upvote"]
+        msg = await channel.send(embed=embed, view=view)
+        await self.add_suggestion(context=context, suggest_msg=msg, suggestion=suggestion)
+        return [embed, msg.jump_url]
 
     async def end_suggestion(self, context: commands.Context, status_type: str, id: int, reason: str):
         # sourcery skip: low-code-quality
