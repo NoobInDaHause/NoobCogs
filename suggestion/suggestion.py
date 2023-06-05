@@ -70,13 +70,7 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
-    async def initialize(self):
-        await self.restore_buttons()
-
     async def cog_load(self):
-        await self.restore_buttons()
-
-    async def restore_buttons(self):
         for guild in self.bot.guilds:
             data = await self.config.guild(guild).all()
             if not data["suggestions"]:
@@ -96,7 +90,6 @@ class Suggestion(commands.Cog):
                             ),
                             message_id=i["msg_id"]
                         )
-                    
 
     async def maybe_send_to_author(self, member: discord.Member, url: str = None, *args, **kwargs):
         if url:
