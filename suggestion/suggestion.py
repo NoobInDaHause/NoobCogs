@@ -35,7 +35,6 @@ class Suggestion(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
-        self.bot.loop.create_task(self.restore_buttons())
 
     __version__ = "1.0.0"
     __author__ = ["Noobindahause#2808"]
@@ -71,8 +70,13 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
+    async def cog_load(self):
+        await self.restore_buttons()
+
     async def restore_buttons(self):
-        for guild in self.bot.guilds:
+        all_guilds = await self.config.all_guilds()
+        for g in all_guilds:
+            guild = bot.get_guild(g)
             data = await self.config.guild(guild).all()
             if not data["suggestions"]:
                 continue
@@ -84,10 +88,11 @@ class Suggestion(commands.Cog):
                         context = await self.bot.get_context(msg)
                         self.bot.add_view(
                             SuggestView(
-                                downemoji=data["emojis"]["downvote"],
-                                upemoji=data["emojis"]["upvote"],
-                                ctx=context,
-                                msg=msg
+                                self,
+                                data["emojis"]["downvote"],
+                                data["emojis"]["upvote"],
+                                context,
+                                msg
                             ),
                             message_id=i["msg_id"]
                         )
