@@ -115,23 +115,26 @@ class Suggestion(commands.Cog):
         )
         e.set_author(name=authname, icon_url=authic)
         if reviewer:
-            e.add_field(
-                name="Reviewer:",
-                value=reviewer,
-                inline=True
-            )
+            e.add_field(name="Reviewer:", value=reviewer, inline=True)
         if stattype:
             e.add_field(name="Status:", value=stattype.title(), inline=True)
         if reason:
             e.add_field(name="Reason:", value=reason, inline=False)
         return e
 
-    async def add_suggestion(self, context: commands.Context, suggest_msg: discord.Message, suggestion: str):
+    async def add_suggestion(
+        self,
+        context: commands.Context,
+        chan: discord.TextChannel,
+        suggest_msg: discord.Message,
+        suggestion: str
+    ):
         async with self.config.guild(context.guild).suggestions() as s:
             sug = {
                 "id": len(s) + 1,
                 "suggester_id": context.author.id,
                 "msg_id": suggest_msg.id,
+                "channel_id": chan.id,
                 "suggestion": suggestion,
                 "status": "running",
                 "upvotes": [],
@@ -173,13 +176,12 @@ class Suggestion(commands.Cog):
             else discord.ButtonStyle.grey
         )
         msg = await channel.send(embed=embed, view=view)
-        await self.add_suggestion(context=context, suggest_msg=msg, suggestion=suggestion)
+        await self.add_suggestion(context=context, chan=channel, suggest_msg=msg, suggestion=suggestion)
         return [embed, msg.jump_url]
 
     async def end_suggestion(self, context: commands.Context, status_type: str, id: int, reason: str):
         # sourcery skip: low-code-quality
         data = await self.config.guild(context.guild).all()
-        channel = context.guild.get_channel(data["suggest_channel"])
         async with self.config.guild(context.guild).suggestions() as s:
             for i in s:
                 if i["id"] == id:
@@ -188,9 +190,14 @@ class Suggestion(commands.Cog):
                     i["reviewer_id"] = context.author.id
                     i["reason"] = reason
                     i["status"] = status_type
+                    channel = context.guild.get_channel(i["channel_id"])
+                    if not channel:
+                        return await context.send(
+                            content="The suggestion channel for this ID could not be found."
+                        )
                     try:
                         msg = await channel.fetch_message(i["msg_id"])
-                    except discord.errors.NotFound:
+                    except (discord.errors.NotFound, discord.errors.Forbidden):
                         return "notfound"
                     mem = context.guild.get_member(i["suggester_id"])
                     embed = await self.maybe_make_embed(
@@ -303,7 +310,8 @@ class Suggestion(commands.Cog):
         elif et == "notfound":
             await context.send(
                 content="The suggestion message for this ID could not be found. "
-                "Perhaps it was deleted or the suggestion channel was changed."
+                "Perhaps it was deleted or I do not have permission to view, edit or send in the "
+                "suggestion channel."
             )
         elif et == "error":
             await context.send(
@@ -364,8 +372,12 @@ class Suggestion(commands.Cog):
         Change the upvote or downvotes button colour.
 
         Leave `colour` blank to reset the colour of the type you put.
-        
+
         Available colours:
+        - red
+        - green
+        - blurple
+        - grey
         """
         if types == "upvote":
             if not colour:
@@ -391,7 +403,6 @@ class Suggestion(commands.Cog):
         data = await self.config.guild(context.guild).all()
         if not data["suggest_channel"]:
             return await context.send(content="No suggestion channel found, ask an admin to set one,")
-        channel = context.guild.get_channel(data["suggest_channel"])
         async with self.config.guild(context.guild).suggestions() as s:
             if not s:
                 return await context.send(content="No suggestions have been submitted yet.")
@@ -399,12 +410,18 @@ class Suggestion(commands.Cog):
                 return await context.send(content="It appears this suggestion does not exist.")
             for i in s:
                 if i["id"] == suggestion_id:
+                    channel = context.guild.get_channel(i["channel_id"])
+                    if not channel:
+                        return await context.send(
+                            content="The suggestion channel for this ID could not be found."
+                        )
                     try:
                         msg = await channel.fetch_message(i["msg_id"])
-                    except discord.errors.NotFound:
+                    except (discord.errors.NotFound, discord.errors.Forbidden):
                         return await context.send(
                             content="The suggestion message for this ID could not be found. "
-                            "Perhaps it was deleted or the suggestion channel was changed."
+                            "Perhaps it was deleted or I do not have permission to view, edit or send in the "
+                            "suggestion channel."
                         )
                     mem = context.guild.get_member(i["suggester_id"])
                     rev = context.guild.get_member(i["reviewer_id"])
@@ -416,7 +433,7 @@ class Suggestion(commands.Cog):
                         else discord.Colour.green()
                         if i["status"] == "approved"
                         else discord.Colour.red(),
-                        authname=f"{mem}, ({mem.id})"
+                        authname=f"{mem} ({mem.id})"
                         if mem
                         else "[Unknown or Deleted User]",
                         authic=is_have_avatar(mem or context.guild),
@@ -457,7 +474,6 @@ class Suggestion(commands.Cog):
             return await context.send(content="No suggestion channel found, ask an admin to set one,")
         if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
             return await context.send(content="It appears the suggestion with this ID does not exist.")
-        channel = context.guild.get_channel(data["suggest_channel"])
         async with self.config.guild(context.guild).suggestions() as s:
             for i in s:
                 if i["id"] == suggestion_id:
@@ -466,12 +482,18 @@ class Suggestion(commands.Cog):
                             content="It appears that suggestion has not been rejected or approved yet."
                         )
                     i["reason"] = reason
+                    channel = context.guild.get_channel(i["channel_id"])
+                    if not channel:
+                        return await context.send(
+                            content="The suggestion channel for this ID could not be found."
+                        )
                     try:
                         msg = await channel.fetch_message(i["msg_id"])
-                    except discord.errors.NotFound:
+                    except (discord.errors.NotFound, discord.errors.Forbidden):
                         return await context.send(
                             content="The suggestion message for this ID could not be found. "
-                            "Perhaps it was deleted or the suggestion channel was changed."
+                            "Perhaps it was deleted or I do not have permission to view, edit or send in the "
+                            "suggestion channel."
                         )
                     rev = context.guild.get_member(i["reviewer_id"])
                     mem = context.guild.get_member(i["suggester_id"])
@@ -593,6 +615,16 @@ class Suggestion(commands.Cog):
 
         if view.value == "yes":
             await self.config.clear_all()
+
+    @suggestionset.command(name="autodelete", aliases=["autodel"])
+    async def suggestionset_autodelete(self, context: commands.Context):
+        """
+        Toggle whether to automatically delete suggestion commands or not.
+        """
+        current = await self.config.guild(context.guild).autodel()
+        await self.config.guild(context.guild).autodel.set(not current)
+        status = "Will not" if current else "Will now"
+        await context.send(content=f"I {status} automatically delete the suggestion commands.")
 
     @suggestionset.command(name="showsettings", aliases=["ss"])
     async def suggestionset_showsettings(self, context: commands.Context):
