@@ -7,4 +7,5 @@ from .suggestion import Suggestion
 
 async def setup(bot: Red):
     cog = Suggestion(bot)
+    await cog.initialize()
     await bot.add_cog(cog)
