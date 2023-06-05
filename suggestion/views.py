@@ -63,7 +63,8 @@ class SuggestView(discord.ui.View):
 
     @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="up_suggest_button")
     async def up_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        async with self.context.cog.config.guild(interaction.guild).suggestions() as s:
+        cog = self.context.bot.get_cog("Suggestion")
+        async with cog.config.guild(interaction.guild).suggestions() as s:
             for i in s:
                 if interaction.message.id != i["msg_id"]:
                     continue
@@ -93,7 +94,8 @@ class SuggestView(discord.ui.View):
 
     @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="down_sugegst_button")
     async def down_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        async with self.context.cog.config.guild(interaction.guild).suggestions() as s:
+        cog = self.context.bot.get_cog("Suggestion")
+        async with cog.config.guild(interaction.guild).suggestions() as s:
             for i in s:
                 if interaction.message.id != i["msg_id"]:
                     continue

@@ -588,3 +588,4 @@ class Suggestion(commands.Cog):
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
         await context.send(embed=embed)
+a
