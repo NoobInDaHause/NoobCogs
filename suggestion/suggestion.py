@@ -28,21 +28,20 @@ class Suggestion(commands.Cog):
                 "upvote": "⬆️",
                 "downvote": "⬇️"
             },
-            "suggest_channel": None,
-            "reject_channel": None,
-            "approve_channel": None,
             "button_colour": {
                 "upbutton": "blurple",
                 "downbutton": "blurple"
             },
+            "suggest_channel": None,
+            "reject_channel": None,
+            "approve_channel": None,
             "suggestions": []
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
-        self.view = SuggestView(self)
-        bot.add_view(self.view)
+        bot.add_view(SuggestView(self))
 
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -93,6 +92,24 @@ class Suggestion(commands.Cog):
         but2.disabled = True
         but1.emoji = data["emojis"]["upvote"]
         but2.emoji = data["emojis"]["downvote"]
+        but1.style = (
+            discord.ButtonStyle.blurple
+            if data["button_colour"]["upbutton"] == "blurple"
+            else discord.ButtonStyle.red
+            if data["button_colour"]["upbutton"] == "red"
+            else discord.ButtonStyle.green
+            if data["button_colour"]["upbutton"] == "green"
+            else discord.ButtonStyle.grey
+        )
+        but2.style = (
+            discord.ButtonStyle.blurple
+            if data["button_colour"]["downbutton"] == "blurple"
+            else discord.ButtonStyle.red
+            if data["button_colour"]["downbutton"] == "red"
+            else discord.ButtonStyle.green
+            if data["button_colour"]["downbutton"] == "green"
+            else discord.ButtonStyle.grey
+        )
         view.add_item(but1)
         view.add_item(but2)
         await msg.edit(embed=embed, view=view)
@@ -184,7 +201,7 @@ class Suggestion(commands.Cog):
         data = await self.config.guild(context.guild).all()
         async with self.config.guild(context.guild).suggestions() as s:
             for i in s:
-                if i["id"] == id:
+                if id == i["id"]:
                     if i["status"] != "running":
                         return "done"
                     i["reviewer_id"] = context.author.id
@@ -192,9 +209,7 @@ class Suggestion(commands.Cog):
                     i["status"] = status_type
                     channel = context.guild.get_channel(i["channel_id"])
                     if not channel:
-                        return await context.send(
-                            content="The suggestion channel for this ID could not be found."
-                        )
+                        return "nochan"
                     try:
                         msg = await channel.fetch_message(i["msg_id"])
                     except (discord.errors.NotFound, discord.errors.Forbidden):
@@ -313,6 +328,10 @@ class Suggestion(commands.Cog):
                 "Perhaps it was deleted or I do not have permission to view, edit or send in the "
                 "suggestion channel."
             )
+        elif et == "nochan":
+            await context.send(
+                content="The suggestion channel for this ID could not be found."
+            )
         elif et == "error":
             await context.send(
                 content="Error occurred while editting suggestion, please check my permissions."
@@ -345,6 +364,10 @@ class Suggestion(commands.Cog):
         elif et == "notfound":
             return await context.send(
                 content="The suggestion message for this ID could not be found. Perhaps it was deleted."
+            )
+        elif et == "nochan":
+            await context.send(
+                content="The suggestion channel for this ID could not be found."
             )
         elif et == "error":
             return await context.send(
@@ -457,6 +480,24 @@ class Suggestion(commands.Cog):
                     but2.disabled = True
                     but1.emoji = data["emojis"]["upvote"]
                     but2.emoji = data["emojis"]["downvote"]
+                    but1.style = (
+                        discord.ButtonStyle.blurple
+                        if data["button_colour"]["upbutton"] == "blurple"
+                        else discord.ButtonStyle.red
+                        if data["button_colour"]["upbutton"] == "red"
+                        else discord.ButtonStyle.green
+                        if data["button_colour"]["upbutton"] == "green"
+                        else discord.ButtonStyle.grey
+                    )
+                    but2.style = (
+                        discord.ButtonStyle.blurple
+                        if data["button_colour"]["downbutton"] == "blurple"
+                        else discord.ButtonStyle.red
+                        if data["button_colour"]["downbutton"] == "red"
+                        else discord.ButtonStyle.green
+                        if data["button_colour"]["downbutton"] == "green"
+                        else discord.ButtonStyle.grey
+                    )
                     view.add_item(but1)
                     view.add_item(but2)
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
@@ -537,6 +578,7 @@ class Suggestion(commands.Cog):
         Set the suggestion channel.
 
         Leave channel blank to remove the current set channel on what type you used.
+        Rejection channel and Approved channel are optional.
         """
         if channel and not channel.permissions_for(context.guild.me).send_messages:
             return await context.send("I do not have permission to send messages in that channel.")
