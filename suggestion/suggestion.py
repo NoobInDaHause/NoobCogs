@@ -280,7 +280,7 @@ class Suggestion(commands.Cog):
             )
         elif et == "notfound":
             await context.send(
-                content="The suggestion message for this ID could not be found."
+                content="The suggestion message for this ID could not be found. Perhaps it was deleted."
             )
         elif et == "error":
             await context.send(
@@ -313,7 +313,7 @@ class Suggestion(commands.Cog):
             )
         elif et == "notfound":
             return await context.send(
-                content="The suggestion message for this ID could not be found."
+                content="The suggestion message for this ID could not be found. Perhaps it was deleted."
             )
         elif et == "error":
             return await context.send(
@@ -345,7 +345,8 @@ class Suggestion(commands.Cog):
                         msg = await channel.fetch_message(i["msg_id"])
                     except discord.errors.NotFound:
                         return await context.send(
-                            content="The suggestion message for this ID could not be found."
+                            content="The suggestion message for this ID could not be found. "
+                            "Perhaps it was deleted or the suggestion channel was changed."
                         )
                     mem = context.guild.get_member(i["suggester_id"])
                     rev = context.guild.get_member(i["reviewer_id"])
@@ -420,7 +421,8 @@ class Suggestion(commands.Cog):
                         msg = await channel.fetch_message(i["msg_id"])
                     except discord.errors.NotFound:
                         return await context.send(
-                            content="The suggestion message for this ID could not be found."
+                            content="The suggestion message for this ID could not be found. "
+                            "Perhaps it was deleted or the suggestion channel was changed."
                         )
                     rev = context.guild.get_member(i["reviewer_id"])
                     mem = context.guild.get_member(i["suggester_id"])
@@ -552,12 +554,12 @@ class Suggestion(commands.Cog):
         embed = discord.Embed(
             title=f"{context.guild}'s current suggestion settings",
             description=f"""
-            Auto delete commands: {data["autodel"]}
-            Upvote emoji: {data['emojis']['upvote']}
-            Downvote emoji: {data['emojis']['downvote']}
-            Suggestion channel: {f'<#{data["suggest_channel"]}>' if data["suggest_channel"] else 'None'}
-            Rejection channel: {f'<#{data["reject_channel"]}>' if data["reject_channel"] else 'None'}
-            Approved channel: {f'<#{data["approve_channel"]}>' if data["approve_channel"] else 'None'}
+            `Auto delete commands:` {data["autodel"]}
+            `Upvote emoji:` {data['emojis']['upvote']}
+            `Downvote emoji:` {data['emojis']['downvote']}
+            `Suggestion channel:` {f'<#{data["suggest_channel"]}>' if data["suggest_channel"] else 'None'}
+            `Rejection channel:` {f'<#{data["reject_channel"]}>' if data["reject_channel"] else 'None'}
+            `Approved channel:` {f'<#{data["approve_channel"]}>' if data["approve_channel"] else 'None'}
             """,
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
