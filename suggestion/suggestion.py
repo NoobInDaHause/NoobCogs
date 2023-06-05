@@ -70,7 +70,11 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
-    async def initialize(self):
+    async def cog_load(self):
+        await self.restore_buttons()
+        
+    @staticmethod
+    async def restore_buttons(self):
         for guild in self.bot.guilds:
             data = await self.config.guild(guild).all()
             if not data["suggestions"]:

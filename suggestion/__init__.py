@@ -8,4 +8,3 @@ from .suggestion import Suggestion
 async def setup(bot: Red):
     cog = Suggestion(bot)
     await bot.add_cog(cog)
-    await cog.initialize()
