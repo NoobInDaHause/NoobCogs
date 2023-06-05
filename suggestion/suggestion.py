@@ -86,7 +86,7 @@ class Suggestion(commands.Cog):
                         context = await self.bot.get_context(msg)
                         self.bot.add_view(
                             SuggestView(
-                                downemoji=data["emojis"]["downvote"]],
+                                downemoji=data["emojis"]["downvote"],
                                 upemoji=data["emojis"]["upvote"],
                                 ctx=context,
                                 msg=msg
