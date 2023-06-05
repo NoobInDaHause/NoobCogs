@@ -623,7 +623,7 @@ class Suggestion(commands.Cog):
         """
         current = await self.config.guild(context.guild).autodel()
         await self.config.guild(context.guild).autodel.set(not current)
-        status = "Will not" if current else "Will now"
+        status = "will not" if current else "will now"
         await context.send(content=f"I {status} automatically delete the suggestion commands.")
 
     @suggestionset.command(name="showsettings", aliases=["ss"])
