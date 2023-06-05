@@ -85,7 +85,7 @@ class Suggestion(commands.Cog):
                     if i["status"] == "running":
                         self.bot.add_view(
                             SuggestView(
-                                downemoji=data["emojis"["downvote"]], upemoji=data["emojis"]["upvote"]
+                                downemoji=data["emojis"]["downvote"], upemoji=data["emojis"]["upvote"]
                             ),
                             message_id=i["msg_id"]
                         )
