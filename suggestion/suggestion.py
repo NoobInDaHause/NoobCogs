@@ -75,7 +75,8 @@ class Suggestion(commands.Cog):
 
     async def restore_buttons(self):
         all_guilds = await self.config.all_guilds()
-        for guild in all_guilds:
+        for g in all_guilds:
+            guild = self.bot.get_guild(g)
             data = await self.config.guild(guild).all()
             if not data["suggestions"]:
                 continue
