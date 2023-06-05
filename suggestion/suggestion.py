@@ -74,6 +74,7 @@ class Suggestion(commands.Cog):
         await self.restore_buttons()
 
     async def restore_buttons(self):
+        await self.bot.wait_until_red_ready()
         all_guilds = await self.config.all_guilds()
         for g in all_guilds:
             guild = self.bot.get_guild(g)
