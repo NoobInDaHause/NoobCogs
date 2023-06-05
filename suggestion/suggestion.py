@@ -70,6 +70,26 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
+    async def cog_load(self):
+        await self.restore_buttons()
+
+    async def restore_buttons(self):
+        all_guilds = await self.config.all_guilds()
+        for guild in all_guilds:
+            data = await self.config.guild(guild).all()
+            if not data["suggestions"]:
+                continue
+            async with self.config.guild(guild).suggestions() as s:
+                for i in s:
+                    if i["status"] == "running":
+                        self.bot.add_view(
+                            SuggestView(
+                                downemoji=data["emojis"["downvote"]], upemoji=data["emojis"]["upvote"]
+                            ),
+                            message_id=i["msg_id"]
+                        )
+                    
+
     async def maybe_send_to_author(self, member: discord.Member, url: str = None, *args, **kwargs):
         if url:
             view = discord.ui.View()
