@@ -72,7 +72,7 @@ class SuggestView(discord.ui.View):
         self.context = context
         self.message = msg
 
-    @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="up_button")
+    @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="up_suggest_button")
     async def up_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         async with self.config.guild(interaction.guild).suggestions() as s:
             for i in s:
@@ -102,7 +102,7 @@ class SuggestView(discord.ui.View):
                     content="You have upvoted this suggestion.", ephemeral=True
                 )
 
-    @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="down_button")
+    @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="down_sugegst_button")
     async def down_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         async with self.config.guild(interaction.guild).suggestions() as s:
             for i in s:

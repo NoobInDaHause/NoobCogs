@@ -51,10 +51,6 @@ class Suggestion(commands.Cog):
         Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
-    async def initialize(self):
-        await self.bot.wait_until_red_ready()
-        self.bot.add_view(SuggestView(downemoji="⬇️", upemoji="⬆️"))
-
     async def red_delete_data_for_user(
         self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
     ):
