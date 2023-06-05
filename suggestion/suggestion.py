@@ -70,7 +70,7 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
-    async def cog_load(self):
+    async def initialize(self):
         for guild in self.bot.guilds:
             data = await self.config.guild(guild).all()
             if not data["suggestions"]:
