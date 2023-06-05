@@ -87,7 +87,6 @@ class Suggestion(commands.Cog):
                             ),
                             message_id=i["msg_id"]
                         )
-                    
 
     async def maybe_send_to_author(self, member: discord.Member, url: str = None, *args, **kwargs):
         if url:
