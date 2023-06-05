@@ -92,7 +92,7 @@ class SuggestView(discord.ui.View):
                     content="You have upvoted this suggestion.", ephemeral=True
                 )
 
-    @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="down_sugegst_button")
+    @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="down_suggest_button")
     async def down_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         data = await self.cog.config.guild(interaction.guild).all()
         async with self.cog.config.guild(interaction.guild).suggestions() as s:
