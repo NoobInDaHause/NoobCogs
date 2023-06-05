@@ -280,7 +280,8 @@ class Suggestion(commands.Cog):
             )
         elif et == "notfound":
             await context.send(
-                content="The suggestion message for this ID could not be found. Perhaps it was deleted."
+                content="The suggestion message for this ID could not be found. "
+                "Perhaps it was deleted or the suggestion channel was changed."
             )
         elif et == "error":
             await context.send(
