@@ -81,12 +81,19 @@ class Suggestion(commands.Cog):
             async with self.config.guild(guild).suggestions() as s:
                 for i in s:
                     if i["status"] == "running":
+                        channel = guild.get_channel(data["suggest_channel"])
+                        msg = await channel.fetch_message(i["msg_id"])
+                        context = await self.bot.get_context(msg)
                         self.bot.add_view(
                             SuggestView(
-                                downemoji=data["emojis"]["downvote"], upemoji=data["emojis"]["upvote"]
+                                downemoji=data["emojis"["downvote"]],
+                                upemoji=data["emojis"]["upvote"],
+                                ctx=context,
+                                msg=msg
                             ),
                             message_id=i["msg_id"]
                         )
+                    
 
     async def maybe_send_to_author(self, member: discord.Member, url: str = None, *args, **kwargs):
         if url:
@@ -163,8 +170,12 @@ class Suggestion(commands.Cog):
             authname=f"{context.author} ({context.author.id})",
             authic=is_have_avatar(context.author)
         )
-        view = SuggestView(downemoji=data["emojis"]["downvote"], upemoji=data["emojis"]["upvote"])
-        await view.start(context, channel, self.config, embed=embed)
+        view = SuggestView(
+            downemoji=data["emojis"]["downvote"],
+            upemoji=data["emojis"]["upvote"],
+            ctx=context
+        )
+        view.message = await channel.send(embed=embed, view=view)
         await self.add_suggestion(context=context, suggest_msg=view.message, suggestion=suggestion)
         return [embed, view.message.jump_url]
 

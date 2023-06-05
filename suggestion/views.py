@@ -54,27 +54,16 @@ class Confirmation(discord.ui.View):
         await self.message.edit(content="You took too long to respond.", view=self)
 
 class SuggestView(discord.ui.View):
-    def __init__(self, downemoji: str, upemoji: str):
+    def __init__(self, downemoji: str, upemoji: str, ctx=None, msg=None):
         super().__init__(timeout=None)
-        self.channel: discord.TextChannel = None
-        self.message: discord.Message = None
-        self.context: commands.Context = None
-        self.config: Config = None
+        self.message: discord.Message = msg
+        self.context: commands.Context = ctx
         self.up_button.emoji = upemoji
         self.down_button.emoji = downemoji
 
-    async def start(
-        self, context: commands.Context, channel: discord.TextChannel, config: Config, *args, **kwargs
-    ):
-        msg = await channel.send(view=self, *args, **kwargs)
-        self.channel = channel
-        self.config = config
-        self.context = context
-        self.message = msg
-
     @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="up_suggest_button")
     async def up_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        async with self.config.guild(self.context.guild).suggestions() as s:
+        async with self.context.cog.config.guild(interaction.guild).suggestions() as s:
             for i in s:
                 if interaction.message.id != i["msg_id"]:
                     continue
@@ -104,7 +93,7 @@ class SuggestView(discord.ui.View):
 
     @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="down_sugegst_button")
     async def down_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        async with self.config.guild(self.context.guild).suggestions() as s:
+        async with self.context.cog.config.guild(interaction.guild).suggestions() as s:
             for i in s:
                 if interaction.message.id != i["msg_id"]:
                     continue
