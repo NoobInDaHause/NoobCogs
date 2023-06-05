@@ -147,7 +147,7 @@ class Suggestion(commands.Cog):
             authname=f"{context.author} ({context.author.id})",
             authic=is_have_avatar(context.author)
         )
-        view = SuggestView()
+        view = SuggestView(self)
         view.down_button.emoji = data["emojis"]["downvote"]
         view.up_button.emoji = data["emojis"]["upvote"]
         msg = await channel.send(embed=embed, view=view)
