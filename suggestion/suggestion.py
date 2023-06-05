@@ -31,6 +31,10 @@ class Suggestion(commands.Cog):
             "suggest_channel": None,
             "reject_channel": None,
             "approve_channel": None,
+            "button_colour": {
+                "upbutton": "blurple",
+                "downbutton": "blurple"
+            },
             "suggestions": []
         }
         self.config.register_guild(**default_guild)
@@ -150,6 +154,24 @@ class Suggestion(commands.Cog):
         view = SuggestView(self)
         view.down_button.emoji = data["emojis"]["downvote"]
         view.up_button.emoji = data["emojis"]["upvote"]
+        view.down_button.style = (
+            discord.ButtonStyle.blurple
+            if data["button_colour"]["downbutton"] == "blurple"
+            else discord.ButtonStyle.red
+            if data["button_colour"]["downbutton"] == "red"
+            else discord.ButtonStyle.green
+            if data["button_colour"]["downbutton"] == "green"
+            else discord.ButtonStyle.grey
+        )
+        view.up_button.style = (
+            discord.ButtonStyle.blurple
+            if data["button_colour"]["upbutton"] == "blurple"
+            else discord.ButtonStyle.red
+            if data["button_colour"]["upbutton"] == "red"
+            else discord.ButtonStyle.green
+            if data["button_colour"]["upbutton"] == "green"
+            else discord.ButtonStyle.grey
+        )
         msg = await channel.send(embed=embed, view=view)
         await self.add_suggestion(context=context, suggest_msg=msg, suggestion=suggestion)
         return [embed, msg.jump_url]
@@ -321,10 +343,45 @@ class Suggestion(commands.Cog):
                 content="Error occurred while editting suggestion, please check my permissions."
             )
 
-    @commands.command(name="viewsuggestion")
+    @commands.group(name="suggestionset", aliases=["suggestset"])
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.bot_has_permissions(embed_links=True)
     @commands.guild_only()
-    async def showsuggestion(self, context: commands.Context, suggestion_id: int):
+    async def suggestionset(self, context: commands.Context):
+        """
+        Configure the suggestion cog.
+        """
+        pass
+
+    @suggestionset.command(name="buttoncolor", aliases=["buttoncolour"])
+    async def suggestionset_buttoncolor(
+        self,
+        context: commands.Context,
+        types: Literal["upvote", "downvote"],
+        colour: Optional[Literal["red", "green", "blurple", "grey"]]
+    ):
+        """
+        Change the upvote or downvotes button colour.
+
+        Leave `colour` blank to reset the colour of the type you put.
+        
+        Available colours:
+        """
+        if types == "upvote":
+            if not colour:
+                await self.config.guild(context.guild).button_colour.upbutton.clear()
+                return await context.send(content="Successfully reset the upvote button color to blurple.")
+            await self.config.guild(context.guild).button_colour.upbutton.set(colour)
+            await context.send(content=f"The upvote button colour has been set to {colour}.")
+        if types == "downvote":
+            if not colour:
+                await self.config.guild(context.guild).button_colour.downbutton.clear()
+                return await context.send(content="Successfully reset the downvote button color to blurple.")
+            await self.config.guild(context.guild).button_colour.downbutton.set(colour)
+            await context.send(content=f"The downvote button colour has been set to {colour}.")
+
+    @suggestionset.command(name="view")
+    async def suggestionset_view(self, context: commands.Context, suggestion_id: int):
         # sourcery skip: low-code-quality
         """
         View a suggestion.
@@ -388,15 +445,6 @@ class Suggestion(commands.Cog):
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
                     await context.send(embed=embed, view=view)
                     break
-
-    @commands.group(name="suggestionset", aliases=["suggestset"])
-    @commands.admin_or_permissions(manage_guild=True)
-    @commands.guild_only()
-    async def suggestionset(self, context: commands.Context):
-        """
-        Configure the suggestion cog.
-        """
-        pass
 
     @suggestionset.command(name="editreason")
     async def suggestionset_editreason(self, context: commands.Context, suggestion_id: int, *, reason: str):

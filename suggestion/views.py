@@ -58,8 +58,9 @@ class SuggestView(discord.ui.View):
         super().__init__(timeout=None)
         self.cog = cog
 
-    @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="up_suggest_button")
+    @discord.ui.button(label="0", custom_id="up_suggest_button")
     async def up_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # sourcery skip: low-code-quality
         data = await self.cog.config.guild(interaction.guild).all()
         async with self.cog.config.guild(interaction.guild).suggestions() as s:
             for i in s:
@@ -71,8 +72,26 @@ class SuggestView(discord.ui.View):
                     i["upvotes"].append(interaction.user.id)
                     button.label = str(len(i["upvotes"]))
                     button.emoji = data["emojis"]["upvote"]
+                    button.style = (
+                        discord.ButtonStyle.blurple
+                        if data["button_colour"]["upbutton"] == "blurple"
+                        else discord.ButtonStyle.red
+                        if data["button_colour"]["upbutton"] == "red"
+                        else discord.ButtonStyle.blurple
+                        if data["button_colour"]["upbutton"] == "green"
+                        else discord.ButtonStyle.grey
+                    )
                     self.down_button.label = str(len(i["downvotes"]))
                     self.down_button.emoji = data["emojis"]["downvote"]
+                    self.down_button.style = (
+                        discord.ButtonStyle.blurple
+                        if data["button_colour"]["downbutton"] == "blurple"
+                        else discord.ButtonStyle.red
+                        if data["button_colour"]["downbutton"] == "red"
+                        else discord.ButtonStyle.blurple
+                        if data["button_colour"]["downbutton"] == "green"
+                        else discord.ButtonStyle.grey
+                    )
                     await interaction.response.edit_message(view=self)
                     return await interaction.followup.send(
                         content="You have changed your vote to upvote.", ephemeral=True
@@ -87,13 +106,23 @@ class SuggestView(discord.ui.View):
                 i["upvotes"].append(interaction.user.id)
                 button.label = str(len(i["upvotes"]))
                 button.emoji = data["emojis"]["upvote"]
+                button.style = (
+                    discord.ButtonStyle.blurple
+                    if data["button_colour"]["upbutton"] == "blurple"
+                    else discord.ButtonStyle.red
+                    if data["button_colour"]["upbutton"] == "red"
+                    else discord.ButtonStyle.blurple
+                    if data["button_colour"]["upbutton"] == "green"
+                    else discord.ButtonStyle.grey
+                )
                 await interaction.response.edit_message(view=self)
                 await interaction.followup.send(
                     content="You have upvoted this suggestion.", ephemeral=True
                 )
 
-    @discord.ui.button(label="0", style=discord.ButtonStyle.blurple, custom_id="down_suggest_button")
+    @discord.ui.button(label="0", custom_id="down_suggest_button")
     async def down_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # sourcery skip: low-code-quality
         data = await self.cog.config.guild(interaction.guild).all()
         async with self.cog.config.guild(interaction.guild).suggestions() as s:
             for i in s:
@@ -105,8 +134,26 @@ class SuggestView(discord.ui.View):
                     i["downvotes"].append(interaction.user.id)
                     button.label = str(len(i["downvotes"]))
                     button.emoji = data["emojis"]["downvote"]
+                    button.style = (
+                        discord.ButtonStyle.blurple
+                        if data["button_colour"]["downbutton"] == "blurple"
+                        else discord.ButtonStyle.red
+                        if data["button_colour"]["downbutton"] == "red"
+                        else discord.ButtonStyle.blurple
+                        if data["button_colour"]["downbutton"] == "green"
+                        else discord.ButtonStyle.grey
+                    )
                     self.up_button.label = str(len(i["upvotes"]))
                     self.up_button.emoji = data["emojis"]["upvote"]
+                    self.up_button.style = (
+                        discord.ButtonStyle.blurple
+                        if data["button_colour"]["upbutton"] == "blurple"
+                        else discord.ButtonStyle.red
+                        if data["button_colour"]["upbutton"] == "red"
+                        else discord.ButtonStyle.blurple
+                        if data["button_colour"]["upbutton"] == "green"
+                        else discord.ButtonStyle.grey
+                    )
                     await interaction.response.edit_message(view=self)
                     return await interaction.followup.send(
                         content="You have changed your vote to downvote.", ephemeral=True
@@ -120,6 +167,16 @@ class SuggestView(discord.ui.View):
 
                 i["downvotes"].append(interaction.user.id)
                 button.label = str(len(i["downvotes"]))
+                button.emoji = data["emojis"]["downvote"]
+                button.style = (
+                    discord.ButtonStyle.blurple
+                    if data["button_colour"]["downbutton"] == "blurple"
+                    else discord.ButtonStyle.red
+                    if data["button_colour"]["downbutton"] == "red"
+                    else discord.ButtonStyle.blurple
+                    if data["button_colour"]["downbutton"] == "green"
+                    else discord.ButtonStyle.grey
+                )
                 await interaction.response.edit_message(view=self)
                 await interaction.followup.send(
                     content="You have downvoted this suggestion.", ephemeral=True
