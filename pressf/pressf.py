@@ -104,7 +104,7 @@ class PressF(commands.Cog):
     async def pressfset_buttoncolour(
         self,
         context: commands.Context,
-        colour: Literal["red", "green", "blurple", "grey"]
+        colour: Optional[Literal["red", "green", "blurple", "grey"]]
     ):
         """
         Change the Press F button colour.
