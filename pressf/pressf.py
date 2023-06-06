@@ -47,6 +47,7 @@ class PressF(commands.Cog):
 
     @commands.hybrid_command(name="pressf")
     @commands.guild_only()
+    @commands.cooldown(1, 60, commands.BucketType.channel)
     @commands.bot_has_permissions(embed_links=True, use_external_emojis=True)
     @app_commands.guild_only()
     @app_commands.describe(
