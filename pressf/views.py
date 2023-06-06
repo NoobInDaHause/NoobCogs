@@ -42,10 +42,11 @@ class Confirmation(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if await self.context.bot.is_owner(interaction.user):
             return True
-        elif interaction.user.id != self.context.author.id:
+        elif interaction.user != self.context.author:
             await interaction.response.send_message(content=access_denied(), ephemeral=True)
             return False
-        return True
+        else:
+            return True
 
     async def on_timeout(self):
         for x in self.children:
