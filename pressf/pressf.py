@@ -11,6 +11,11 @@ from .utils import EmojiConverter
 from .views import Confirmation, PressFView
 
 class PressF(commands.Cog):
+    """
+    F.
+
+    Press F to pay respect on something using buttons.
+    """
     def __init__(self, bot: Red) -> None:
         self.bot = bot
 
