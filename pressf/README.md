@@ -18,12 +18,12 @@ Pay respects on something.
 Configure the cogs settings.
 
 ## pressfset emoji
- - Usage: `[p]pressfset emoji <emoji> `
+ - Usage: `[p]pressfset emoji [emoji] `
 
 Change the F emoji.<br/><br/>Leave emoji blank to see current set emoji.
 
 ## pressfset buttoncolour
- - Usage: `[p]pressfset buttoncolour <colour> `
+ - Usage: `[p]pressfset buttoncolour [colour] `
  - Aliases: `buttoncolor`
 
 Change the Press F button colour.<br/><br/>Leave colour blank to see current set colour.
