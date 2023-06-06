@@ -53,13 +53,10 @@ class PressF(commands.Cog):
     @app_commands.describe(
         thing="The thing that you want to pay respects to."
     )
-    async def pressf(self, context: commands.Context, *, thing: Optional[str]):
+    async def pressf(self, context: commands.Context, *, thing: str):
         """
         Pay respects on something.
         """
-        if not thing:
-            context.command.reset_cooldown(context)
-            return await context.send_help()
         e = await self.config.guild(context.guild).emoji()
         c = await self.config.guild(context.guild).buttoncolour()
         view = PressFView()
