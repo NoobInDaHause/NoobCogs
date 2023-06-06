@@ -16,7 +16,7 @@ class PressF(commands.Cog):
 
         self.config = Config.get_conf(self, identifier=5434354373844151563453, force_registration=True)
         default_guild = {
-            "emoji": None,
+            "emoji": "🇫",
             "buttoncolour": "blurple"
         }
         self.config.register_guild(**default_guild)
