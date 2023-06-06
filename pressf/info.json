@@ -1,0 +1,20 @@
+{
+    "name": "PressF",
+    "short": "F.",
+    "description": "Press F to pay respect on something using buttons.",
+    "end_user_data_statement": "This cog does not store any end user data whatsoever.",
+    "install_msg": "Thank you for installing PressF. Load the cog with `[p]load pressf`.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": ["emoji"],
+    "tags": [
+        "F",
+        "PressF"
+    ],
+    "type": "COG"
+}
