@@ -23,6 +23,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
 | Afk             |  v1.2.0   | Notify users whenever you go AFK with pings logging.             |
+| AmariLevel      |  v1.0.0   | Check your amari level but through red.                          |
 | CustomError     |  v1.0.8   | Customize your bots error message.                               |
 | GlobalBan       |  v1.0.6   | Globally ban a user from all the guilds the bot is in.           |
 | PressF          |  v1.0.0   | F.                                                               |
