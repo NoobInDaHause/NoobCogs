@@ -1,0 +1,21 @@
+{
+    "name": "CookieClicker",
+    "short": "Play a cookie clicker.",
+    "description": "Anti stress 100%.",
+    "end_user_data_statement": "This cog does not store any end user data whatsoever.",
+    "install_msg": "Thank you for installing CookieClicker. Load the cog with `[p]load cookieclicker`.",
+    "author": [
+        "Noobindahause#2808"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": ["emoji"],
+    "tags": [
+        "Cookie",
+        "Clicker",
+        "CookieClicker"
+    ],
+    "type": "COG"
+}
