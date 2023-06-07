@@ -41,7 +41,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -102,6 +102,8 @@ class Suggestion(commands.Cog):
             but1 = discord.ui.Button(label=b[0], emoji=data["emojis"]["upvote"], style=style1)
             but2 = discord.ui.Button(label=b[1], emoji=data["emojis"]["downvote"], style=style2)
             but3 = discord.ui.Button(label="Jump To Suggestion", url=url)
+            but1.disabled = True
+            but2.disabled = True
             view.add_item(but1)
             view.add_item(but2)
             view.add_item(but3)
