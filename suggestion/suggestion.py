@@ -41,7 +41,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -75,10 +75,36 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
-    async def maybe_send_to_author(self, member: discord.Member, url: str = None, *args, **kwargs):
+    async def maybe_send_to_author(
+        self, member: discord.Member, url: str = None, b: list = None, *args, **kwargs
+    ):
+        data = await self.config.guild(member.guild).all()
+        style1 = (
+            discord.ButtonStyle.blurple
+            if data["button_colour"]["upbutton"] == "blurple"
+            else discord.ButtonStyle.red
+            if data["button_colour"]["upbutton"] == "red"
+            else discord.ButtonStyle.green
+            if data["button_colour"]["upbutton"] == "green"
+            else discord.ButtonStyle.grey
+        )
+        style2 = (
+            discord.ButtonStyle.blurple
+            if data["button_colour"]["downbutton"] == "blurple"
+            else discord.ButtonStyle.red
+            if data["button_colour"]["downbutton"] == "red"
+            else discord.ButtonStyle.green
+            if data["button_colour"]["downbutton"] == "green"
+            else discord.ButtonStyle.grey
+        )
         if url:
             view = discord.ui.View()
-            view.add_item(discord.ui.Button(label="Jump To Suggestion", url=url))
+            but1 = discord.ui.Button(label=b[0], emoji=data["emojis"]["upvote"], style=style1)
+            but2 = discord.ui.Button(label=b[1], emoji=data["emojis"]["downvote"], style=style2)
+            but3 = discord.ui.Button(label="Jump To Suggestion", url=url)
+            view.add_item(but1)
+            view.add_item(but2)
+            view.add_item(but3)
             await member.send(view=view, *args, **kwargs)
         else:
             await member.send(*args, **kwargs)
@@ -241,15 +267,16 @@ class Suggestion(commands.Cog):
                             views = discord.ui.View()
                             views.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
                             await a.send(embed=embed, view=views)
+                    b = [str(len(i["upvotes"])), str(len(i["downvotes"]))]
                     if mem:
                         cont = (
                             f"Your suggestion **#{id}** was `{status_type}` by {context.author} "
                             f"({context.author.id}).\nReason: {reason}"
                         )
                         with contextlib.suppress(discord.errors.Forbidden):
-                            await self.maybe_send_to_author(mem, msg.jump_url, cont)
+                            await self.maybe_send_to_author(mem, msg.jump_url, b, cont)
                     try:
-                        await self.maybe_edit_msg(msg, embed, str(len(i["upvotes"])), str(len(i["downvotes"])))
+                        await self.maybe_edit_msg(msg, embed, b[0], b[1])
                     except discord.errors.Forbidden:
                         return "error"
                     break

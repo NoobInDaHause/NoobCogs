@@ -32,7 +32,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | Reach           |  v1.0.1   | Reach roles on a channel.                                        |
 | ServerDonations |  v2.0.9   | Donate bot currencies or other things to servers.                |
 | SplitOrSteal    |  v1.0.5   | A fun split or steal game.                                       |
-| Suggestion      |  v1.0.1   | Suggestion system.                                               |
+| Suggestion      |  v1.0.2   | Suggestion system.                                               |
 
 ## License
 
