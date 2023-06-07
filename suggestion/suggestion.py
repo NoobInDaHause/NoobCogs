@@ -41,7 +41,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.0.5"
+    __version__ = "1.0.6"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -110,7 +110,7 @@ class Suggestion(commands.Cog):
             await member.send(view=view, *args, **kwargs)
         elif url is not None and b1 is None and b2 is None:
             viewurl = discord.ui.View()
-            viewurl.add_item(discord.ui.Button(label="Jump To Suggestion"), url=url)
+            viewurl.add_item(discord.ui.Button(label="Jump To Suggestion", url=url))
             await member.send(view=viewurl, *args, **kwargs)
         else:
             await member.send(*args, **kwargs)
