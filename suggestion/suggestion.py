@@ -41,7 +41,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -97,7 +97,7 @@ class Suggestion(commands.Cog):
             if data["button_colour"]["downbutton"] == "green"
             else discord.ButtonStyle.grey
         )
-        if url:
+        if url and b1 and b2:
             view = discord.ui.View()
             but1 = discord.ui.Button(label=b1, emoji=data["emojis"]["upvote"], style=style1)
             but2 = discord.ui.Button(label=b2, emoji=data["emojis"]["downvote"], style=style2)
@@ -108,6 +108,10 @@ class Suggestion(commands.Cog):
             view.add_item(but2)
             view.add_item(but3)
             await member.send(view=view, *args, **kwargs)
+        elif url is not None and b1 is None and b2 is None:
+            viewurl = discord.ui.View()
+            viewurl.add_item(discord.ui.Button(label="Jump To Suggestion"), url=url)
+            await member.send(view=viewurl, *args, **kwargs)
         else:
             await member.send(*args, **kwargs)
 
@@ -222,7 +226,7 @@ class Suggestion(commands.Cog):
         )
         msg = await channel.send(embed=embed, view=view)
         await self.add_suggestion(context=context, chan=channel, suggest_msg=msg, suggestion=suggestion)
-        return [embed, msg.jump_url]
+        return [msg.jump_url, embed]
 
     async def end_suggestion(self, context: commands.Context, status_type: str, id: int, reason: str):
         # sourcery skip: low-code-quality
@@ -311,9 +315,11 @@ class Suggestion(commands.Cog):
             with contextlib.suppress(discord.errors.Forbidden):
                 await self.maybe_send_to_author(
                     context.author,
-                    em[1],
+                    em[0],
+                    None,
+                    None,
                     content="Your suggestion has been submitted for votes and review.",
-                    embed=em[0]
+                    embed=em[1]
                 )
         except Exception as e:
             return await context.reply(
