@@ -29,7 +29,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.3"
+    __version__ = "1.1.4"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
 
@@ -452,7 +452,7 @@ class GlobalBan(commands.Cog):
 
         confirm_msg = f"Are you sure you want to globally unban **{member}**?"
         confirm_action = "Alright this might take a while."
-        view = Confirmation(bot=self.bot, author=context.author, timeout=30, confirm_action=confirm_action)
+        view = Confirmation(timeout=30.0)
         await view.start(context=context, confirm_action=confirm_action, confirmation_msg=confirm_msg)
 
         await view.wait()
