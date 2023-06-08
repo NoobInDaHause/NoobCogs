@@ -61,7 +61,6 @@ class GbanViewReset(discord.ui.View):
         super().__init__(timeout=timeout)
         self.message: discord.Message = None
         self.context: commands.Context = None
-        self.select_value = None
 
     async def start(self, context: commands.Context, msg: str):
         msg = await context.send(content=msg, view=self)
@@ -77,7 +76,6 @@ class GbanViewReset(discord.ui.View):
             discord.SelectOption(label="Cog", emoji="⚙️", description="Reset the whole cogs config.")
         ]
     )
-
     async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         for x in self.children:
             x.disabled = True
@@ -95,7 +93,7 @@ class GbanViewReset(discord.ui.View):
             await confview.wait()
 
             if confview.value == "yes":
-                self.select_value = "banlist"
+                await self.context.cog.config.banlist.clear()
 
         if select.values[0] == "Logs":
             confirm_msg = "Are you sure you want to reset the globalban banlogs?"
@@ -108,7 +106,7 @@ class GbanViewReset(discord.ui.View):
             await confview.wait()
 
             if confview.value == "yes":
-                self.select_value = "banlogs"
+                await self.context.cog.banlogs.clear()
 
         if select.values[0] == "Cog":
             confirm_msg = "This will reset the globalban cogs whole configuration, do you want to continue?"
@@ -121,7 +119,7 @@ class GbanViewReset(discord.ui.View):
             await confview.wait()
 
             if confview.value == "yes":
-                self.select_value = "cog"
+                await self.context.cog.config.clear_all()
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if await self.context.bot.is_owner(interaction.user):

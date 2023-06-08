@@ -29,7 +29,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.4"
+    __version__ = "1.1.5"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
 
@@ -417,15 +417,6 @@ class GlobalBan(commands.Cog):
         msg = "Choose what config to reset."
         view = GbanViewReset(timeout=30)
         await view.start(context=context, msg=msg)
-
-        await view.wait()
-
-        if view.select_value == "banlist":
-            await self.config.banlist.clear()
-        elif view.select_value == "banlogs":
-            await self.config.banlogs.clear()
-        elif view.select_value == "cog":
-            await self.config.clear_all()
 
     @globalban.command(name="unban")
     async def globalban_unban(
