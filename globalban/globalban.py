@@ -29,7 +29,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.2"
+    __version__ = "1.1.3"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
 
@@ -255,6 +255,7 @@ class GlobalBan(commands.Cog):
                     i["amender"] = context.author.id
                     i["last_modified"] = round(dt.datetime.now(dt.timezone.utc).timestamp())
                     break
+        await context.tick()
 
     @globalban.command(name="ban")
     async def globalban_ban(
