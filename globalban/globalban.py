@@ -29,7 +29,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
 
@@ -51,15 +51,14 @@ class GlobalBan(commands.Cog):
         This cog stores user id for the purpose of ban logs and ban list and some other.
         People can remove their data but offenders who are in the ban logs or list can't.
         """
-        for guild in self.bot.guilds:
-            async with self.config.guild(guild).banlogs as gblog:
-                if not gblog:
-                    return
-                for i in gblog:
-                    if user_id == i["authorizer"]:
-                        i["authorizer"] = None
-                    if user_id == i["amender"]:
-                        i["amender"] = None
+        async with self.config.banlogs as gblog:
+            if not gblog:
+                return
+            for i in gblog:
+                if user_id == i["authorizer"]:
+                    i["authorizer"] = None
+                if user_id == i["amender"]:
+                    i["amender"] = None
 
     async def cog_load(self):
         await self.register_casetypes()
@@ -84,7 +83,7 @@ class GlobalBan(commands.Cog):
             await modlog.register_casetypes(globalban_types)
 
     async def log_bans(self, context: commands.Context, gtype: str, user_id: int, reason: str):
-        async with self.config.guild(context.guild).banlogs() as gblog:
+        async with self.config.banlogs() as gblog:
             log = {
                 "case": len(gblog) + 1,
                 "type": gtype,
