@@ -29,7 +29,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
 
@@ -245,7 +245,7 @@ class GlobalBan(commands.Cog):
 
         Bot owners only.
         """
-        async with self.config.guild(context.guild).banlogs() as gblog:
+        async with self.config.banlogs() as gblog:
             if not gblog:
                 return await context.send(content="It appears there are no cases logged yet.")
             if case_id <= 0 or case_id > len(gblog):

@@ -26,7 +26,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | AmariLevel      |  v1.0.0   | Check your amari level but through red.                          |
 | CookieClicker   |  v1.0.0   | Play a cookie clicker.                                           |
 | CustomError     |  v1.0.8   | Customize your bots error message.                               |
-| GlobalBan       |  v1.1.0   | Globally ban a user from all the guilds the bot is in.           |
+| GlobalBan       |  v1.1.1   | Globally ban a user from all the guilds the bot is in.           |
 | PressF          |  v1.0.0   | F.                                                               |
 | RainbowRole     |  v1.0.9   | Have a role that changes colour every 20 minutes.                |
 | Reach           |  v1.0.1   | Reach roles on a channel.                                        |
