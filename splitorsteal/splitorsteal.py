@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.SplitOrSteal")
         
-    __version__ = "1.0.5"
+    __version__ = "1.0.6"
     __author__ = ["Noobindahause#2808"]
     __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/splitorsteal/README.md"
     
@@ -132,7 +132,7 @@ class SplitOrSteal(commands.Cog):
         )
         embed.add_field(name="Prize:", value=prize, inline=False)
         embed.set_footer(text="You have 30 seconds to answer or you will automatically forfeit the game.")
-        view.start(embed=embed, player=player)
+        await view.start(embed=embed, player=player)
         
         await view.wait()
         
@@ -348,7 +348,7 @@ class SplitOrSteal(commands.Cog):
             colour=await context.embed_colour()
         )
         view = SosManager()
-        view.start(context=context, embed=embed)
+        await view.start(context=context, embed=embed)
         
         await view.wait()
     
@@ -369,7 +369,7 @@ class SplitOrSteal(commands.Cog):
         confirm_action = "Successfully resetted the SplitOrSteal guild settings."
         conf_msg = "Are you sure you want to reset the splitorsteal guild settings?"
         view = Confirmation()
-        view.start(context=context, confirm_action=confirm_action, confirmation_msg=conf_msg)
+        await view.start(context=context, confirm_action=confirm_action, confirmation_msg=conf_msg)
         
         await view.wait()
         
@@ -385,7 +385,7 @@ class SplitOrSteal(commands.Cog):
         confirm_action = "Successfully cleared the splitorsteal cogs configuration."
         conf_msg = "Are you sure you want to reset the SplitOrSteal cogs configuration?"
         view = Confirmation()
-        view.start(context=context, confirm_action=confirm_action, confirmation_msg=conf_msg)
+        await view.start(context=context, confirm_action=confirm_action, confirmation_msg=conf_msg)
         
         await view.wait()
         
