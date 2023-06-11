@@ -11,6 +11,8 @@ from redbot.core.utils.chat_formatting import humanize_list, box
 
 from typing import Literal, Optional
 
+from .views import Confirmation
+
 class CustomError(commands.Cog):
     """
     Customize your bots error message.
@@ -141,7 +143,6 @@ class CustomError(commands.Cog):
         await context.send(content=f"The error message has been set to: {box(message, 'py')}")
 
     @customerror.command(name="plzerror")
-    @commands.is_owner()
     async def customerror_plzerror(self, context: commands.Context):
         """
         Test the bots error message. (Bot owners only)
@@ -149,10 +150,25 @@ class CustomError(commands.Cog):
         msg = await context.maybe_send_embed(message="Testing out error message please wait...")
         await asyncio.sleep(1.0)
         await msg.delete()
+        await asyncio.sleep(0.5)
         raise NotImplementedError("This is a test error.")
 
+    @customerror.command(name="reset")
+    async def customerror_reset(self, context: commands.Context):
+        """
+        Reset the cogs settings.
+        """
+        act = "Successfully reset the cogs settings."
+        msg = "Are you sure you want to reset the cogs settings?"
+        view = Confirmation()
+        await view.start(context, confirm_action=act, confirmation_msg=msg)
+
+        await view.wait()
+
+        if view.value == "yes":
+            await self.config.clear_all()
+
     @customerror.command(name="showsettings", aliases=["ss"])
-    @commands.is_owner()
     async def customerror_showsettings(self, context: commands.Context):
         """
         See your current settings for the CustomError cog. (Bot owners only)
