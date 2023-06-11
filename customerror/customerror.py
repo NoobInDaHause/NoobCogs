@@ -1,3 +1,5 @@
+import asyncio
+import contextlib
 import datetime
 import discord
 import logging
@@ -12,123 +14,149 @@ from typing import Literal, Optional
 class CustomError(commands.Cog):
     """
     Customize your bots error message.
-    
-    Red already has a core command that changes the error message but the customization is limited so I made my own.
-    This cog requires the Dev cog enabled, start your bot with `--dev` flag to enable the cog.
-    Credits to sitryk for some of the code.
+
+    Red already has a core command that changes the error message but I made my own with customization.
+    This cog uses TagScriptEngine so be sure you have knowledge in that.
+    Credits to sitryk, cray and phen for some of the code.
     """
     def __init__(self, bot: Red):
         self.bot = bot
-        
+
         self.config = Config.get_conf(self, identifier=9874825374237, force_registration=True)
-        default_msg = """await ctx.send(f"`Error in command '{ctx.command.qualified_name}'. Check your console or logs for details.`")"""
         default_global = {
-            "error_msg": default_msg
+            "error_msg": "`Error in command '{command}'. Check your console or logs for details."
         }
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.CustomError")
         self.old_error = self.bot.on_command_error
         
         bot.on_command_error = self.on_command_error
-        
-    __version__ = "1.0.8"
+
+    __version__ = "1.1.0"
     __author__ = ["Noobindahause#2808"]
-    __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/customerror/README.md"
-    
+    __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/customerror/README.md"
+
     def format_help_for_context(self, context: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
         """
         p = "s" if len(self.__author__) != 1 else ""
         return f"""{super().format_help_for_context(context)}
-        
+
         Cog Version: **{self.__version__}**
         Cog Author{p}: {humanize_list([f"**{auth}**" for auth in self.__author__])}
-        Cog Documentation: [[Click here]]({self.__documentation__})
-        """
-    
-    async def red_delete_data_for_user(self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int):
+        Cog Documentation: [[Click here]]({self.__docs__})"""
+
+    async def red_delete_data_for_user(
+        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
+    ):
         """
         This cog does not store any end user data whatsoever.
         """
-        # This cog does not store any end user data whatsoever.
         return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
-    
+
     # https://github.com/Sitryk/sitcogsv3/blob/e1d8d0f3524dfec17872379c12c0edcb9360948d/errorhandler/cog.py#L30
-    async def on_command_error(self, ctx: commands.Context, error, unhandled_by_cog = False):
+    # modified to work with tagscriptengine and my code
+    async def on_command_error(self, context: commands.Context, error, unhandled_by_cog = False):
+        import TagScriptEngine as tse
+        tagengine = tse.AsyncInterpreter(
+            blocks=[
+                tse.EmbedBlock(),
+                tse.LooseVariableGetterBlock(),
+                tse.StrictVariableGetterBlock()
+            ]
+        )
         if isinstance(error, commands.CommandInvokeError):
-            self.log.exception(f"Exception in command '{ctx.command.qualified_name}'", exc_info=error.original)
-            exception_log = f"Exception in command '{ctx.command.qualified_name}'\n"
+            self.log.exception(
+                msg=f"Exception in command '{context.command.qualified_name}'", exc_info=error.original
+            )
+            exception_log = f"Exception in command '{context.command.qualified_name}'\n"
             exception_log += "".join(
                 traceback.format_exception(type(error), error, error.__traceback__)
             )
-            ctx.bot._last_exception = exception_log
-            
-            ce = ctx.bot.get_cog("CustomError")
-            cmd = ctx.bot.get_command("eval")
-            msg = await ce.config.error_msg()
-            error_msg = msg.replace("{error}", f"{error}")
-            try:
-                await ctx.invoke(cmd, body=error_msg)
-            except Exception:
-                await ctx.send(f"Failed to eval code most likely that the set code has syntax error: `{ctx.command.qualified_name}` errored.")
+            context.bot._last_exception = exception_log
+
+            cog = context.bot.get_cog("CustomError")
+            msg = await cog.config.error_msg()
+            processed = await tagengine.process(
+                message=msg,
+                seed_variables={
+                    "author": tse.MemberAdapter(context.author),
+                    "guild": tse.GuildAdapter(context.author.guild),
+                    "channel": tse.ChannelAdapter(context.message.channel),
+                    "error": tse.StringAdapter(error),
+                    "command": tse.StringAdapter(context.command.qualified_name),
+                    "message_content": tse.StringAdapter(context.message.content),
+                    "message_id": tse.StringAdapter(context.message.id),
+                    "message_jump_url": tse.StringAdapter(context.message.jump_url)
+                }
+            )
+            with contextlib.suppress((discord.errors.Forbidden, discord.errors.HTTPException)):
+                await context.send(
+                    content=processed.body or "",
+                    embed=processed.actions.get("embed"),
+                    allowed_mentions=discord.AllowedMentions(users=True, roles=False, everyone=False)
+                )
             return
-        
-        await self.old_error(ctx, error, unhandled_by_cog)
-    
+
+        await self.old_error(context, error, unhandled_by_cog)
+
     async def cog_unload(self):
         self.bot.on_command_error = self.old_error
-    
+
     @commands.group(name="customerror")
     @commands.is_owner()
     async def customerror(self, context: commands.Context):
         """
         Base commands for customizing the bots error message. (Bot owners only)
         """
-        
+        pass
+
     @customerror.command(name="message")
     async def customerror_message(self, context: commands.Context, *, message: Optional[str]):
         """
         Customize [botname]'s error message. (Bot owners only)
-        
-        Requires knowledge of python and discord.py.
-        And the dev cog loaded.
 
-        See `[p]help eval` to check all the available variables.
-        Add `{error}` to show what was the error.
+        Be sure that you have TagScriptEgnine knowledge.
+        Available variables:
+        {author} - The command invoker.
+        {author(id)} - The command invokers ID.
+        {author(mention)} - Mention the command invoker.
+        {guild} - The guild.
+        {guild(id)} - The guilds ID.
+        {channel} - The channel.
+        {channel(id)} - The channel ID.
+        {channel(mention)} - Mention the channel.
+        {error} - The raised command error.
+        {command} - The command name.
+        {message_content} - The message content.
+        {message_id} - The message ID.
+        {message_jump_url} - The message jump url.
         """
-        cmd = self.bot.get_command('eval')
-        if not cmd:
-            return await context.reply(content="The dev cog isn't loaded, load it when you start the bot with the `--dev` flag.")
-        
         if not message:
             await self.config.error_msg.clear()
-            return await context.reply(content="The error message has been reset.", ephemeral=True, mention_author=False)
-        
+            return await context.send(content="The error message has been reset.")
+
         await self.config.error_msg.set(message)
-        await context.reply(content=f"The error message has been set to: {box(message, 'py')}", ephemeral=True, mention_author=False)
-        
+        await context.send(content=f"The error message has been set to: {box(message, 'py')}")
+
     @customerror.command(name="plzerror")
     @commands.is_owner()
     async def customerror_plzerror(self, context: commands.Context):
         """
         Test the bots error message. (Bot owners only)
         """
-        if self.bot.get_command('eval'):
-            raise NotImplementedError("plzerror")
-        else:
-            return await context.reply(content="The dev cog isn't loaded, load it when you start the bot with the `--dev` flag.")
-    
+        msg = await context.maybe_send_embed(message="Testing out error message please wait...")
+        await asyncio.sleep(3)
+        await msg.delete()
+        raise NotImplementedError("This is a test error.")
+
     @customerror.command(name="showsettings", aliases=["ss"])
     @commands.is_owner()
     async def customerror_showsettings(self, context: commands.Context):
         """
         See your current settings for the CustomError cog. (Bot owners only)
         """
-        cmd = self.bot.get_command('eval')
-        if not cmd:
-            return await context.reply(content="The dev cog isn't loaded, load it when you start the bot with the `--dev` flag.")
-        
         settings = await self.config.error_msg()
         embed = discord.Embed(
             title="Current error message",

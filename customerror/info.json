@@ -1,9 +1,9 @@
 {
     "name": "CustomError",
     "short": "Customize your bots error message.",
-    "description": "Red already has a core command that changes the error message but the customization is limited so I made my own.\nThis cog requires the Dev cog enabled, start your bot with `--dev` flag to enable the cog.\nCredits to sitryk for some of the code.",
+    "description": "Red already has a core command that changes the error message but I made my own with customization.\nThis cog uses TagScriptEngine so be sure you have knowledge in that.\nCredits to sitryk, cray and phen for some of the code.",
     "end_user_data_statement": "This cog does not store any end user data whatsoever.",
-    "install_msg": "Thank you for installing CustomError. Load the cog with `[p]load customerror`. This cog requires the Dev cog enabled, start your bot with `--dev` flag to enable the cog.",
+    "install_msg": "Thank you for installing CustomError. Load the cog with `[p]load customerror`. This cog uses TagScriptEgnine so before using this cog make sure you know TagScript if not learn it at https://phen-cogs.readthedocs.io/en/latest.",
     "author": [
         "Noobindahause#2808"
     ],
@@ -11,7 +11,9 @@
     "hidden": false,
     "disabled": false,
     "required_cogs": {},
-    "requirements": [],
+    "requirements": [
+        "TagScript"
+    ],
     "tags": [
         "Error",
         "Customerror"
