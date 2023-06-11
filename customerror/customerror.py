@@ -119,7 +119,7 @@ class CustomError(commands.Cog):
     @customerror.command(name="message")
     async def customerror_message(self, context: commands.Context, *, message: Optional[str]):
         """
-        Customize [botname]'s error message. (Bot owners only)
+        Customize [botname]'s error message.
 
         Bot owners only.
         Be sure that you have TagScriptEgnine knowledge.
