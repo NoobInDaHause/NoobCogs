@@ -24,7 +24,7 @@ class CustomError(commands.Cog):
 
         self.config = Config.get_conf(self, identifier=9874825374237, force_registration=True)
         default_global = {
-            "error_msg": "`Error in command '{command}'. Check your console or logs for details."
+            "error_msg": "`Error in command '{command}'. Check your console or logs for details.`"
         }
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.CustomError")
@@ -147,7 +147,7 @@ class CustomError(commands.Cog):
         Test the bots error message. (Bot owners only)
         """
         msg = await context.maybe_send_embed(message="Testing out error message please wait...")
-        await asyncio.sleep(3)
+        await asyncio.sleep(1.0)
         await msg.delete()
         raise NotImplementedError("This is a test error.")
 
