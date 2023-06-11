@@ -21,7 +21,7 @@ Test the bots error message.<br/><br/>Bot owners only.
 ## customerror message
  - Usage: `[p]customerror message <message> `
 
-Customize [botname]'s error message. (Bot owners only)<br/><br/>Bot owners only.<br/>Be sure that you have TagScriptEgnine knowledge.<br/>Available variables:<br/>{author} - The command invoker.<br/>{author(id)} - The command invokers ID.<br/>{author(mention)} - Mention the command invoker.<br/>{guild} - The guild.<br/>{guild(id)} - The guilds ID.<br/>{channel} - The channel.<br/>{channel(id)} - The channel ID.<br/>{channel(mention)} - Mention the channel.<br/>{error} - The raised command error.<br/>{command} - The command name.<br/>{message_content} - The message content.<br/>{message_id} - The message ID.<br/>{message_jump_url} - The message jump url.
+Customize [botname]'s error message.<br/><br/>Bot owners only.<br/>Be sure that you have TagScriptEgnine knowledge.<br/>Available variables:<br/>{author} - The command invoker.<br/>{author(id)} - The command invokers ID.<br/>{author(mention)} - Mention the command invoker.<br/>{guild} - The guild.<br/>{guild(id)} - The guilds ID.<br/>{channel} - The channel.<br/>{channel(id)} - The channel ID.<br/>{channel(mention)} - Mention the channel.<br/>{error} - The raised command error.<br/>{command} - The command name.<br/>{message_content} - The message content.<br/>{message_id} - The message ID.<br/>{message_jump_url} - The message jump url.
 
 ## customerror showsettings
  - Usage: `[p]customerror showsettings `
