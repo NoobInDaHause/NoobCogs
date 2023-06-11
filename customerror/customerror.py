@@ -110,7 +110,9 @@ class CustomError(commands.Cog):
     @commands.is_owner()
     async def customerror(self, context: commands.Context):
         """
-        Base commands for customizing the bots error message. (Bot owners only)
+        Base commands for customizing the bots error message.
+
+        Bot owners only.
         """
         pass
 
@@ -119,6 +121,7 @@ class CustomError(commands.Cog):
         """
         Customize [botname]'s error message. (Bot owners only)
 
+        Bot owners only.
         Be sure that you have TagScriptEgnine knowledge.
         Available variables:
         {author} - The command invoker.
@@ -145,7 +148,9 @@ class CustomError(commands.Cog):
     @customerror.command(name="plzerror")
     async def customerror_plzerror(self, context: commands.Context):
         """
-        Test the bots error message. (Bot owners only)
+        Test the bots error message.
+
+        Bot owners only.
         """
         msg = await context.maybe_send_embed(message="Testing out error message please wait...")
         await asyncio.sleep(1.0)
@@ -157,6 +162,8 @@ class CustomError(commands.Cog):
     async def customerror_reset(self, context: commands.Context):
         """
         Reset the cogs settings.
+
+        Bot owners only.
         """
         act = "Successfully reset the cogs settings."
         msg = "Are you sure you want to reset the cogs settings?"
@@ -171,7 +178,9 @@ class CustomError(commands.Cog):
     @customerror.command(name="showsettings", aliases=["ss"])
     async def customerror_showsettings(self, context: commands.Context):
         """
-        See your current settings for the CustomError cog. (Bot owners only)
+        See your current settings for the CustomError cog.
+
+        Bot owners only.
         """
         settings = await self.config.error_msg()
         embed = discord.Embed(
