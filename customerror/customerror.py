@@ -34,7 +34,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/customerror/README.md"
 
@@ -86,6 +86,7 @@ class CustomError(commands.Cog):
                     "author": tse.MemberAdapter(context.author),
                     "guild": tse.GuildAdapter(context.author.guild),
                     "channel": tse.ChannelAdapter(context.message.channel),
+                    "prefix": tse.StringAdapter(context.prefix),
                     "error": tse.StringAdapter(error),
                     "command": tse.StringAdapter(context.command.qualified_name),
                     "message_content": tse.StringAdapter(context.message.content),
@@ -132,6 +133,7 @@ class CustomError(commands.Cog):
         {channel} - The channel.
         {channel(id)} - The channel ID.
         {channel(mention)} - Mention the channel.
+        {prefix} - The prefix used.
         {error} - The raised command error.
         {command} - The command name.
         {message_content} - The message content.
