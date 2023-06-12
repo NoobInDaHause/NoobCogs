@@ -34,7 +34,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/customerror/README.md"
 
@@ -63,9 +63,9 @@ class CustomError(commands.Cog):
         import TagScriptEngine as tse
         tagengine = tse.AsyncInterpreter(
             blocks=[
-                tse.EmbedBlock(),
-                tse.LooseVariableGetterBlock(),
-                tse.StrictVariableGetterBlock()
+                tse.EmbedBlock(), tse.LooseVariableGetterBlock(), tse.StrictVariableGetterBlock(),
+                tse.IfBlock(), tse.RandomBlock(), tse.CommandBlock(), tse.RedirectBlock(), tse.FiftyFiftyBlock(),
+                tse.AllBlock(), tse.AnyBlock(), tse.BlacklistBlock(), tse.ReplaceBlock()
             ]
         )
         if isinstance(error, commands.CommandInvokeError):
