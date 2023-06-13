@@ -29,7 +29,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.6"
+    __version__ = "1.1.7"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
 
@@ -270,7 +270,7 @@ class GlobalBan(commands.Cog):
 
         Bot owners only.
         """
-        if isinstance(member, int):
+        if isinstance(user, int):
             try:
                 member = await context.bot.get_or_fetch_user(user)
             except discord.errors.NotFound:
@@ -436,7 +436,7 @@ class GlobalBan(commands.Cog):
 
         Bot owners only.
         """
-        if isinstance(member, int):
+        if isinstance(user, int):
             try:
                 member = await context.bot.get_or_fetch_user(user)
             except discord.errors.NotFound:
