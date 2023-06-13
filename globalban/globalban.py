@@ -9,7 +9,7 @@ from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, pagify
 from redbot.core.utils.menus import menu
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 from .views import Confirmation, GbanViewReset
 
@@ -29,9 +29,9 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.5"
+    __version__ = "1.1.6"
     __author__ = ["Noobindahause#2808"]
-    __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/globalban/README.md"
+    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -49,6 +49,7 @@ class GlobalBan(commands.Cog):
     ):
         """
         This cog stores user id for the purpose of ban logs and ban list and some other.
+
         People can remove their data but offenders who are in the ban logs or list can't.
         """
         async with self.config.banlogs as gblog:
@@ -116,8 +117,7 @@ class GlobalBan(commands.Cog):
             except discord.errors.NotFound:
                 try:
                     res = (
-                        f"Global Ban Authorized by {context.author} (ID: {context.author.id}). |"
-                        f" Reason: {reason}"
+                        f"GlobalBan Authorized by {context.author} (ID: {context.author.id}). Reason: {reason}"
                     )
                     await guild.ban(
                         member,
@@ -180,8 +180,7 @@ class GlobalBan(commands.Cog):
             await asyncio.sleep(10)
             try:
                 res = (
-                    f"Global UnBan Authorized by {context.author} (ID: {context.author.id}). "
-                    f"| Reason: {reason}"
+                    f"GlobalUnBan Authorized by {context.author} (ID: {context.author.id}). Reason: {reason}"
                 )
                 await guild.unban(
                     member,
@@ -217,7 +216,7 @@ class GlobalBan(commands.Cog):
             for ind, page in enumerate(pages, 1):
                 embed = discord.Embed(
                     title=f"An error occured when unbanning {member}.",
-                    description="Most likely that I don't have ban permission or the user is not banned.\n"
+                    description="Most likely that I do not have ban permission or the user is not banned.\n"
                     f"Errored guild(s):\n{page}",
                     colour=await context.embed_colour(),
                     timestamp=dt.datetime.now(dt.timezone.utc),
@@ -244,6 +243,7 @@ class GlobalBan(commands.Cog):
 
         Bot owners only.
         """
+        await context.typing()
         async with self.config.banlogs() as gblog:
             if not gblog:
                 return await context.send(content="It appears there are no cases logged yet.")
@@ -261,7 +261,7 @@ class GlobalBan(commands.Cog):
     async def globalban_ban(
         self,
         context: commands.Context,
-        user_id: int,
+        user: Union[discord.Member, int],
         *,
         reason: Optional[str] = "No reason provided."
     ):
@@ -270,12 +270,17 @@ class GlobalBan(commands.Cog):
 
         Bot owners only.
         """
-        try:
-            member = await context.bot.get_or_fetch_user(user_id)
-        except discord.errors.NotFound:
-            return await context.send(
-                content="I could not find a user with this ID. Perhaps the user was deleted or ID is invalid."
-            )
+        if isinstance(member, int):
+            try:
+                member = await context.bot.get_or_fetch_user(user)
+            except discord.errors.NotFound:
+                return await context.send(
+                    content=(
+                        "I could not find a user with this ID. Perhaps the user was deleted or ID is invalid."
+                    )
+                )
+        else:
+            member = user
 
         if member.id in await self.config.banlist():
             return await context.send(content=f"It appears **{member}** is already globally banned.")
@@ -422,7 +427,7 @@ class GlobalBan(commands.Cog):
     async def globalban_unban(
         self,
         context: commands.Context,
-        user_id: int,
+        user: Union[discord.Member, int],
         *,
         reason: Optional[str] = "No reason provided."
     ):
@@ -431,12 +436,17 @@ class GlobalBan(commands.Cog):
 
         Bot owners only.
         """
-        try:
-            member = await context.bot.get_or_fetch_user(user_id)
-        except discord.errors.NotFound:
-            return await context.send(
-                content="I could not find a user with this ID. Perhaps the user was deleted or ID is invalid."
-            )
+        if isinstance(member, int):
+            try:
+                member = await context.bot.get_or_fetch_user(user)
+            except discord.errors.NotFound:
+                return await context.send(
+                    content=(
+                        "I could not find a user with this ID. Perhaps the user was deleted or ID is invalid."
+                    )
+                )
+        else:
+            member = user
 
         if member.id not in await self.config.banlist():
             return await context.send(content=f"It appears **{member}** is not globally banned.")
