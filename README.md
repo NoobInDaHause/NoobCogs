@@ -22,7 +22,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| Afk             |  v1.2.1   | Notify users whenever you go AFK with pings logging.             |
+| Afk             |  v1.2.2   | Notify users whenever you go AFK with pings logging.             |
 | AmariLevel      |  v1.0.0   | Check your amari level but through red.                          |
 | CookieClicker   |  v1.0.0   | Play a cookie clicker.                                           |
 | CustomError     |  v1.1.2   | Customize your bots error message.                               |

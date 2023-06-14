@@ -38,7 +38,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.1"
+    __version__ = "1.2.2"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -286,20 +286,21 @@ class Afk(commands.Cog):
 
     @afkset.command(name="members")
     @commands.admin_or_permissions(manage_guild=True)
-    async def afkset_afkmembers(self, context: commands.Context):
+    async def afkset_members(self, context: commands.Context):
         """
         Check who are all the afk members in your guild.
         """
-        afk_users = []
+        afk_list = []
         for member in context.guild.members:
             if not member.bot and await self.config.member(member).afk():
-                afk_users.append(member.id)
+                timestamp = await self.config.member(member).timestamp()
+                afk_list.append(f"{member.mention} (`{member.id}`) AFK since **<t:{timestamp}:R>**.")
 
-        if not afk_users:
+        if not afk_list:
             return await context.send(content="No members are AFK in this guild.")
 
-        afk_list = "\n".join([f'<@{memb}> ({memb})' for memb in afk_users])
-        pages = list(pagify(afk_list, delims=["\n"], page_length=2000))
+        afk_users = "\n".join(afk_list)
+        pages = list(pagify(afk_users, delims=["\n"], page_length=2000))
         final_page = {}
 
         for ind, page in enumerate(pages, 1):
