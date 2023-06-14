@@ -55,9 +55,10 @@ class Confirmation(discord.ui.View):
         await self.message.edit(content="You took too long to respond.", view=self)
 
 class PressFView(discord.ui.View):
-    def __init__(self, timeout: Optional[float] = 180.0):
+    def __init__(self, cog: commands.Cog, timeout: Optional[float] = 180.0):
         super().__init__(timeout=timeout)
         self.message: discord.Message = None
+        self.cog = cog
         self.context: commands.Context = None
         self.thing: str = None
         self.paid_users = []
@@ -100,4 +101,6 @@ class PressFView(discord.ui.View):
             content=f"**{len(self.paid_users)}** member{plural} has paid their respects to **{self.thing}**.",
             allowed_mentions=discord.AllowedMentions.none()
         )
-        self.paid_users = []
+        act_chan: list = self.cog.active_cache
+        index = act_chan.index(self.context.channel.id)
+        act_chan.pop(index)

@@ -7,7 +7,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 
 from typing import Literal, Optional
 
-from .utils import EmojiConverter
+from .utils import EmojiConverter, get_button_colour
 from .views import Confirmation, PressFView
 
 class PressF(commands.Cog):
@@ -26,8 +26,9 @@ class PressF(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
+        self.active_cache = []
 
-    __version__ = "1.0.0"
+    __version__ = "1.1.0"
     __author__ = ["Noobindahause#2808"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/pressf/README.md"
 
@@ -52,29 +53,23 @@ class PressF(commands.Cog):
 
     @commands.hybrid_command(name="pressf")
     @commands.guild_only()
-    @commands.cooldown(1, 60, commands.BucketType.channel)
     @commands.bot_has_permissions(embed_links=True, use_external_emojis=True)
     @app_commands.guild_only()
-    @app_commands.describe(
-        thing="The thing that you want to pay respects to."
-    )
+    @app_commands.describe(thing="The thing that you want to pay respects to.")
     async def pressf(self, context: commands.Context, *, thing: str):
         """
         Pay respects on something.
         """
+        if context.channel.id in self.active_cache:
+            return await context.send(
+                content="You are already paying respects on something in this channel, wait for it to finish."
+            )
+        self.active_cache.append(context.channel.id)
         e = await self.config.guild(context.guild).emoji()
         c = await self.config.guild(context.guild).buttoncolour()
-        view = PressFView()
+        view = PressFView(self)
         view.press_f_button.emoji = e
-        view.press_f_button.style = (
-            discord.ButtonStyle.red
-            if c == "red"
-            else discord.ButtonStyle.green
-            if c == "green"
-            else discord.ButtonStyle.blurple
-            if c == "blurple"
-            else discord.ButtonStyle.grey
-        )
+        view.press_f_button.style = get_button_colour(c)
         await view.start(context, thing)
 
     @commands.group(name="pressfset")
@@ -117,6 +112,22 @@ class PressF(commands.Cog):
         await self.config.guild(context.guild).buttoncolour.set(colour)
         await context.send(content=f"The new Press F button colour has been set to {colour}.")
 
+    @pressfset.command(name="resetcog")
+    @commands.is_owner()
+    async def pressfset_resetcog(self, context: commands.Context):
+        """
+        Reset the cogs configuration.
+        """
+        conf_msg = "Are you sure you want to reset the cogs config?"
+        conf_act = "Successfully reset the cogs config."
+        view = Confirmation()
+        await view.start(context=context, confirm_action=conf_act, confirmation_msg=conf_msg)
+    
+        await view.wait()
+
+        if view.value == "yes":
+            await self.config.clear_all()
+
     @pressfset.command(name="reset")
     async def pressfset_reset(self, context: commands.Context):
         """
@@ -130,4 +141,4 @@ class PressF(commands.Cog):
         await view.wait()
 
         if view.value == "yes":
-            await self.config.clear_all()
+            await self.config.guild(context.guild).clear()

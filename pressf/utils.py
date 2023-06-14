@@ -32,3 +32,13 @@ def is_have_avatar(thing: Union[discord.Member, discord.Guild] = None):
 
 def access_denied() -> str:
     return "https://cdn.discordapp.com/attachments/1000751975308197918/1110013262835228814/1.mp4"
+
+def get_button_colour(colour: str) -> discord.ButtonStyle:
+    if colour.lower() == "blurple":
+        return discord.ButtonStyle.blurple
+    elif colour.lower() == "red":
+        return discord.ButtonStyle.red
+    elif colour.lower() == "green":
+        return discord.ButtonStyle.green
+    elif colour.lower() == "grey":
+        return discord.ButtonStyle.grey

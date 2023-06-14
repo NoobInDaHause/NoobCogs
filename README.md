@@ -27,7 +27,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | CookieClicker   |  v1.0.0   | Play a cookie clicker.                                           |
 | CustomError     |  v1.1.2   | Customize your bots error message.                               |
 | GlobalBan       |  v1.1.7   | Globally ban a user from all the guilds the bot is in.           |
-| PressF          |  v1.0.0   | F.                                                               |
+| PressF          |  v1.1.0   | F.                                                               |
 | RainbowRole     |  v1.0.9   | Have a role that changes colour every 20 minutes.                |
 | Reach           |  v1.0.1   | Reach roles on a channel.                                        |
 | ServerDonations |  v2.0.9   | Donate bot currencies or other things to servers.                |
