@@ -38,9 +38,9 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
     __author__ = ["Noobindahause#2808"]
-    __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/afk/README.md"
+    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -51,8 +51,7 @@ class Afk(commands.Cog):
 
         Cog Version: **{self.__version__}**
         Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
-        Cog Documentation: [[Click here]]({self.__docs__})
-        """
+        Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
@@ -66,8 +65,14 @@ class Afk(commands.Cog):
 
         Also thanks sravan and aikaterna for the end user data statement!
         """
-        for guild in self.bot.guilds:
-            await self.config.member_from_ids(guild_id=guild.id, member_id=user_id).clear()
+        for g in await self.config.all_guilds():
+            await self.config.member_from_ids(guild_id=g, member_id=user_id).clear()
+            async with self.config.member_from_ids(guild_id=g, member_id=user_id).pinglogs as pl:
+                if not pl:
+                    continue
+                for i in pl:
+                    if i["pinger_id"] == user_id:
+                        i["pinger_id"] = None
 
     async def start_afk(self, payload: discord.Message, user: discord.Member, reason: str):
         """
@@ -116,11 +121,21 @@ class Afk(commands.Cog):
                         "I'm missing the manage nicknames permission.", delete_after=10
                     )
 
-        if not await self.config.member(user).toggle_logs():
-            return await self.config.member(user).pinglogs.clear()
-
         if pings := await self.config.member(user).pinglogs():
-            pinglist = """\n""".join(pings)
+            final_log = []
+            for i in pings:
+                try:
+                    member = await self.bot.get_or_fetch_user(i["pinger_id"])
+                    m = member.mention
+                except (discord.errors.NotFound, discord.errors.HTTPException):
+                    m = "||Unknown or Deleted User||"
+                logs = (
+                    f"` - ` {m} [pinged you in]({i['jump_url']}) <#{i['channel_id']}> <t:{i['timestamp']}:R>."
+                    f"\n**Message:** {i['message']}"
+                )
+                final_log.append(logs)
+            
+            pinglist = "\n".join(final_log)
             pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
             final_page = {}
 
@@ -136,18 +151,20 @@ class Afk(commands.Cog):
             await self.config.member(user).pinglogs.clear()
             await menu(context, list(final_page.values()), DEFAULT_CONTROLS, timeout=60)
 
-    async def log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
+    async def maybe_log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
         """
         Log pings and at the same time notify members when they mentioned an AFK memebr.
         """
-        async with self.config.member(afk_user).pinglogs() as pl:
-            ping_log = (
-                f"` - ` {payload.author.mention} [pinged you in]"
-                f"({payload.jump_url}) {payload.channel.mention} "
-                f"<t:{round(dt.datetime.now(dt.timezone.utc).timestamp())}:R>.\n"
-                f"**Message:** {payload.content}"
-            )
-            pl.append(ping_log)
+        if await self.config.member(afk_user).toggle_logs():
+            async with self.config.member(afk_user).pinglogs() as pl:
+                dict_log = {
+                    "pinger_id": payload.author.id,
+                    "jump_url": payload.jump_url,
+                    "channel_id": payload.channel.id,
+                    "timestamp": round(dt.datetime.now(dt.timezone.utc).timestamp()),
+                    "message": payload.content
+                }
+                pl.append(dict_log)
 
         afk_reason = await self.config.member(afk_user).reason()
         timestamp = await self.config.member(afk_user).timestamp()
@@ -184,25 +201,16 @@ class Afk(commands.Cog):
         if not payload.mentions:
             return
         for afk_user in payload.mentions:
-            if afk_user == payload.author:
-                continue
-            if await self.config.member(afk_user).afk():
-                await self.log_and_notify(payload=payload, afk_user=afk_user)
+            if afk_user != payload.author and await self.config.member(afk_user).afk():
+                await self.maybe_log_and_notify(payload=payload, afk_user=afk_user)
 
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True, manage_nicknames=True)
     @app_commands.guild_only()
-    @app_commands.describe(
-        reason="The optional reason for the AFK."
-    )
-    async def afk(
-        self,
-        context: commands.Context,
-        *,
-        reason: Optional[str] = "No reason given."
-    ):
+    @app_commands.describe(reason="The optional reason for the AFK.")
+    async def afk(self, context: commands.Context, *, reason: Optional[str] = "No reason given."):
         """
         Be afk and notify users whenever they ping you.
 
@@ -284,9 +292,7 @@ class Afk(commands.Cog):
         """
         afk_users = []
         for member in context.guild.members:
-            if member.bot:
-                continue
-            if await self.config.member(member).afk():
+            if not member.bot and await self.config.member(member).afk():
                 afk_users.append(member.id)
 
         if not afk_users:
@@ -309,11 +315,7 @@ class Afk(commands.Cog):
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_nicknames=True)
-    async def afkset_nick(
-        self,
-        context: commands.Context,
-        state: bool
-    ):
+    async def afkset_nick(self, context: commands.Context, state: bool):
         """
         Toggle whether to change the users nick with ***[AFK] {user_display_name}*** or not.
 
@@ -384,11 +386,7 @@ class Afk(commands.Cog):
         await context.send(embed=embed)
 
     @afkset.command(name="sticky")
-    async def afkset_sticky(
-        self,
-        context: commands.Context,
-        state: bool
-    ):
+    async def afkset_sticky(self, context: commands.Context, state: bool):
         """
         Toggle whether to sticky your afk or not.
 
@@ -399,11 +397,7 @@ class Afk(commands.Cog):
         await context.send(content=f"I {status} sticky your AFK.")
 
     @afkset.command(name="togglelogs", aliases=["tl"])
-    async def afkset_togglelogs(
-        self,
-        context: commands.Context,
-        state: bool
-    ):
+    async def afkset_togglelogs(self, context: commands.Context, state: bool):
         """
         Toggle whether to log all pings you recieved or not.
         """

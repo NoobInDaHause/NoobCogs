@@ -7,10 +7,7 @@ from typing import Optional
 from .utils import access_denied
 
 class Confirmation(discord.ui.View):
-    def __init__(
-        self,
-        timeout: Optional[float] = 60
-    ):
+    def __init__(self, timeout: Optional[float] = 60):
         super().__init__(timeout=timeout)
         self.confirm_action: str = None
         self.context: commands.Context = None
