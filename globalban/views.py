@@ -4,7 +4,7 @@ from redbot.core import commands
 
 from typing import Optional
 
-from .utils import access_denied
+from .noobutils import access_denied
 
 class Confirmation(discord.ui.View):
     def __init__(

@@ -34,8 +34,8 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.2"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "1.1.3"
+    __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/customerror/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:

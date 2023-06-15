@@ -7,7 +7,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 
 from typing import Literal, Optional
 
-from .utils import EmojiConverter, get_button_colour
+from .noobutils import EmojiConverter, get_button_colour
 from .views import Confirmation, PressFView
 
 class PressF(commands.Cog):
@@ -28,8 +28,8 @@ class PressF(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.PressF")
         self.active_cache = []
 
-    __version__ = "1.1.0"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "1.1.1"
+    __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/pressf/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:

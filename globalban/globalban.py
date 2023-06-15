@@ -29,8 +29,8 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.7"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "1.1.8"
+    __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:

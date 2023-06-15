@@ -12,7 +12,7 @@ from redbot.core.utils.menus import menu
 from typing import Literal, Optional
 
 from .constants import SosGifs, SosHelp
-from .utils import is_have_avatar
+from .noobutils import is_have_avatar
 from .views import Confirmation, SosManager, SosButton
 
 class SplitOrSteal(commands.Cog):
@@ -33,9 +33,9 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.SplitOrSteal")
         
-    __version__ = "1.0.6"
-    __author__ = ["Noobindahause#2808"]
-    __documentation__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/splitorsteal/README.md"
+    __version__ = "1.0.7"
+    __author__ = ["NoobInDaHause"]
+    __documentation__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
     
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -46,8 +46,7 @@ class SplitOrSteal(commands.Cog):
         
         Cog Version: {self.__version__}
         Cog Author{p}: {humanize_list(self.__author__)}
-        Cog Documentation: {self.__documentation__}
-        """
+        Cog Documentation: {self.__documentation__}"""
     
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int

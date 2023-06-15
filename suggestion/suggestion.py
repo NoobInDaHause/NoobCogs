@@ -9,7 +9,7 @@ from redbot.core.utils.chat_formatting import humanize_list, box
 
 from typing import Literal, Optional
 
-from .utils import EmojiConverter, is_have_avatar
+from .noobutils import EmojiConverter, is_have_avatar, get_button_colour
 from .views import SuggestView, Confirmation
 
 class Suggestion(commands.Cog):
@@ -41,8 +41,8 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.0.6"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "1.0.7"
+    __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -79,31 +79,13 @@ class Suggestion(commands.Cog):
         self, member: discord.Member, url: str = None, b1: str = None, b2: str = None, *args, **kwargs
     ):
         data = await self.config.guild(member.guild).all()
-        style1 = (
-            discord.ButtonStyle.blurple
-            if data["button_colour"]["upbutton"] == "blurple"
-            else discord.ButtonStyle.red
-            if data["button_colour"]["upbutton"] == "red"
-            else discord.ButtonStyle.green
-            if data["button_colour"]["upbutton"] == "green"
-            else discord.ButtonStyle.grey
-        )
-        style2 = (
-            discord.ButtonStyle.blurple
-            if data["button_colour"]["downbutton"] == "blurple"
-            else discord.ButtonStyle.red
-            if data["button_colour"]["downbutton"] == "red"
-            else discord.ButtonStyle.green
-            if data["button_colour"]["downbutton"] == "green"
-            else discord.ButtonStyle.grey
-        )
+        style1 = get_button_colour(data["button_colour"]["upbutton"])
+        style2 = get_button_colour(data["button_colour"]["downbutton"])
         if url and b1 and b2:
             view = discord.ui.View()
-            but1 = discord.ui.Button(label=b1, emoji=data["emojis"]["upvote"], style=style1)
-            but2 = discord.ui.Button(label=b2, emoji=data["emojis"]["downvote"], style=style2)
+            but1 = discord.ui.Button(label=b1, emoji=data["emojis"]["upvote"], style=style1, disabled=True)
+            but2 = discord.ui.Button(label=b2, emoji=data["emojis"]["downvote"], style=style2, disabled=True)
             but3 = discord.ui.Button(label="Jump To Suggestion", url=url)
-            but1.disabled = True
-            but2.disabled = True
             view.add_item(but1)
             view.add_item(but2)
             view.add_item(but3)
@@ -118,30 +100,12 @@ class Suggestion(commands.Cog):
     async def maybe_edit_msg(self, msg: discord.Message, embed: discord.Embed, label1: str, label2: str):
         data = await self.config.guild(msg.guild).all()
         view = discord.ui.View()
-        but1 = discord.ui.Button(label=label1, style=discord.ButtonStyle.blurple)
-        but2 = discord.ui.Button(label=label2, style=discord.ButtonStyle.blurple)
-        but1.disabled = True
-        but2.disabled = True
+        but1 = discord.ui.Button(label=label1, style=discord.ButtonStyle.blurple, disabled=True)
+        but2 = discord.ui.Button(label=label2, style=discord.ButtonStyle.blurple, disabled=True)
         but1.emoji = data["emojis"]["upvote"]
         but2.emoji = data["emojis"]["downvote"]
-        but1.style = (
-            discord.ButtonStyle.blurple
-            if data["button_colour"]["upbutton"] == "blurple"
-            else discord.ButtonStyle.red
-            if data["button_colour"]["upbutton"] == "red"
-            else discord.ButtonStyle.green
-            if data["button_colour"]["upbutton"] == "green"
-            else discord.ButtonStyle.grey
-        )
-        but2.style = (
-            discord.ButtonStyle.blurple
-            if data["button_colour"]["downbutton"] == "blurple"
-            else discord.ButtonStyle.red
-            if data["button_colour"]["downbutton"] == "red"
-            else discord.ButtonStyle.green
-            if data["button_colour"]["downbutton"] == "green"
-            else discord.ButtonStyle.grey
-        )
+        but1.style = get_button_colour(data["button_colour"]["upbutton"])
+        but2.style = get_button_colour(data["button_colour"]["downbutton"])
         view.add_item(but1)
         view.add_item(but2)
         await msg.edit(embed=embed, view=view)
@@ -206,24 +170,8 @@ class Suggestion(commands.Cog):
         view = SuggestView(self)
         view.down_button.emoji = data["emojis"]["downvote"]
         view.up_button.emoji = data["emojis"]["upvote"]
-        view.down_button.style = (
-            discord.ButtonStyle.blurple
-            if data["button_colour"]["downbutton"] == "blurple"
-            else discord.ButtonStyle.red
-            if data["button_colour"]["downbutton"] == "red"
-            else discord.ButtonStyle.green
-            if data["button_colour"]["downbutton"] == "green"
-            else discord.ButtonStyle.grey
-        )
-        view.up_button.style = (
-            discord.ButtonStyle.blurple
-            if data["button_colour"]["upbutton"] == "blurple"
-            else discord.ButtonStyle.red
-            if data["button_colour"]["upbutton"] == "red"
-            else discord.ButtonStyle.green
-            if data["button_colour"]["upbutton"] == "green"
-            else discord.ButtonStyle.grey
-        )
+        view.down_button.style = get_button_colour(data["button_colour"]["downbutton"])
+        view.up_button.style = get_button_colour(data["button_colour"]["upbutton"])
         msg = await channel.send(embed=embed, view=view)
         await self.add_suggestion(context=context, chan=channel, suggest_msg=msg, suggestion=suggestion)
         return [msg.jump_url, embed]
@@ -515,24 +463,8 @@ class Suggestion(commands.Cog):
                     but2.disabled = True
                     but1.emoji = data["emojis"]["upvote"]
                     but2.emoji = data["emojis"]["downvote"]
-                    but1.style = (
-                        discord.ButtonStyle.blurple
-                        if data["button_colour"]["upbutton"] == "blurple"
-                        else discord.ButtonStyle.red
-                        if data["button_colour"]["upbutton"] == "red"
-                        else discord.ButtonStyle.green
-                        if data["button_colour"]["upbutton"] == "green"
-                        else discord.ButtonStyle.grey
-                    )
-                    but2.style = (
-                        discord.ButtonStyle.blurple
-                        if data["button_colour"]["downbutton"] == "blurple"
-                        else discord.ButtonStyle.red
-                        if data["button_colour"]["downbutton"] == "red"
-                        else discord.ButtonStyle.green
-                        if data["button_colour"]["downbutton"] == "green"
-                        else discord.ButtonStyle.grey
-                    )
+                    but1.style = get_button_colour(data["button_colour"]["upbutton"])
+                    but2.style = get_button_colour(data["button_colour"]["downbutton"])
                     view.add_item(but1)
                     view.add_item(but2)
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))

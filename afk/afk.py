@@ -9,7 +9,7 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 from typing import Literal, Optional
 
-from .utils import is_have_avatar
+from .noobutils import is_have_avatar
 from .views import Confirmation
 
 class Afk(commands.Cog):
@@ -38,8 +38,8 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.2"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "1.2.3"
+    __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:

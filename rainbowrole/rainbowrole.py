@@ -31,9 +31,9 @@ class RainbowRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RainbowRole")
 
-    __version__ = "1.0.9"
-    __author__ = ["Noobindahause#2808"]
-    __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/rainbowrole/README.md"
+    __version__ = "1.0.10"
+    __author__ = ["NoobInDaHause"]
+    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/rainbowrole/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """

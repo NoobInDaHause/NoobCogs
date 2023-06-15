@@ -8,7 +8,7 @@ from redbot.core.utils.chat_formatting import humanize_list, humanize_number
 
 from typing import Literal, Optional
 
-from .utils import is_have_avatar, FuzzyRole
+from .noobutils import is_have_avatar, FuzzyRole
 
 class Reach(commands.Cog):
     """
@@ -20,8 +20,8 @@ class Reach(commands.Cog):
         self.bot = bot
         self.log = logging.getLogger("red.NoobCogs.Reach")
 
-    __version__ = "1.0.1"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "1.0.2"
+    __author__ = ["NoobInDaHause"]
     __documentation__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/reach/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -36,10 +36,7 @@ class Reach(commands.Cog):
         Cog Documentation: [[Click here]]({self.__documentation__})"""
 
     async def red_delete_data_for_user(
-        self,
-        *,
-        requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'],
-        user_id: int
+        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
     ):
         # This cog does not store any end user data whatsoever.
         return await super().red_delete_data_for_user(requester=requester, user_id=user_id)

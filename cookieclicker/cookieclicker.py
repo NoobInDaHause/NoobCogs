@@ -8,7 +8,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 from typing import Literal, Optional
 
 from .views import Confirmation, CookieClickerView
-from .utils import EmojiConverter
+from .noobutils import EmojiConverter
 
 class CookieClicker(commands.Cog):
     """
@@ -27,8 +27,8 @@ class CookieClicker(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.0.0"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "1.0.1"
+    __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:

@@ -9,7 +9,7 @@ from redbot.core.utils.chat_formatting import humanize_list, box
 from amari import AmariClient
 from typing import Literal, Optional
 
-from .utils import is_have_avatar
+from .noobutils import is_have_avatar
 
 class AmariLevel(commands.Cog):
     """
@@ -24,8 +24,8 @@ class AmariLevel(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.AmariLevel")
 
-    __version__ = "1.0.0"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "1.0.1"
+    __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/amarilevel/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -52,9 +52,7 @@ class AmariLevel(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
     @app_commands.guild_only()
-    @app_commands.describe(
-        member="The member that you want to level check."
-    )
+    @app_commands.describe(member="The member that you want to level check.")
     async def amarilevel(self, context: commands.Context, member: Optional[discord.Member]):
         """
         Check your or someone else's amari level.

@@ -1,11 +1,11 @@
 {
-    "name": "WintersCogs",
+    "name": "NoobCogs",
     "short": "Some random cogs for red made by Noobindahause.",
     "description": "Probably some badly coded cogs made by a noob.",
     "end_user_data_statement": "This cog does not store any end user data whatsoever.",
     "install_msg": "Thanks for adding my repo :).\nIf you have any suggestions or found any bugs then feel free to make a PR or open an issue on my repo (https://github.com/NoobInDaHause/NoobCogs).",
     "author": [
-        "Noobindahause#2808"
+        "NoobInDaHause"
     ],
     "min_bot_version": "3.5.0",
     "max_bot_version": "3.5.99",

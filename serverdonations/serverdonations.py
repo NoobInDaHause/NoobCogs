@@ -11,7 +11,7 @@ from redbot.core.utils.menus import menu
 from typing import Literal, Optional
 
 from .cog_data import SdonateDesc, SdonateDefaults, SDEmbedData
-from .utils import is_have_avatar
+from .noobutils import is_have_avatar
 from .views import Confirmation, GiveawayFields, EventFields, HeistFields
 
 class Coordinate(dict):
@@ -39,8 +39,8 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
     
-    __version__ = "2.0.9"
-    __author__ = ["Noobindahause#2808"]
+    __version__ = "2.0.10"
+    __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
@@ -52,8 +52,7 @@ class ServerDonations(commands.Cog):
         
         Cog Version: **{self.__version__}**
         Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
-        Cog Documentation: [[Click here]]({self.__docs__})
-        """
+        Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
         self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int

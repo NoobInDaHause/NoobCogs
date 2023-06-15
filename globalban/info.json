@@ -5,7 +5,7 @@
     "end_user_data_statement": "This cog stores user id for the purpose of ban logs and ban list and some other. People can remove their data but offenders who are in the ban logs or list can't.",
     "install_msg": "Thank you for installing GlobalBan. Load the cog with `[p]load globalban`. Please note that this cog can be API intense and might get your bot rate limited.",
     "author": [
-        "Noobindahause#2808"
+        "NoobInDaHause"
     ],
     "min_bot_version": "3.5.0",
     "hidden": false,

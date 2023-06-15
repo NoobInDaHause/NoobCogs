@@ -22,17 +22,17 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 
 | Name            |  Version  | Description                                                      |
 | --------------- | --------- | ---------------------------------------------------------------- |
-| Afk             |  v1.2.2   | Notify users whenever you go AFK with pings logging.             |
-| AmariLevel      |  v1.0.0   | Check your amari level but through red.                          |
-| CookieClicker   |  v1.0.0   | Play a cookie clicker.                                           |
-| CustomError     |  v1.1.2   | Customize your bots error message.                               |
-| GlobalBan       |  v1.1.7   | Globally ban a user from all the guilds the bot is in.           |
-| PressF          |  v1.1.0   | F.                                                               |
-| RainbowRole     |  v1.0.9   | Have a role that changes colour every 20 minutes.                |
-| Reach           |  v1.0.1   | Reach roles on a channel.                                        |
-| ServerDonations |  v2.0.9   | Donate bot currencies or other things to servers.                |
-| SplitOrSteal    |  v1.0.6   | A fun split or steal game.                                       |
-| Suggestion      |  v1.0.6   | Suggestion system.                                               |
+| Afk             |  v1.2.3   | Notify users whenever you go AFK with pings logging.             |
+| AmariLevel      |  v1.0.1   | Check your amari level but through red.                          |
+| CookieClicker   |  v1.0.1   | Play a cookie clicker.                                           |
+| CustomError     |  v1.1.3   | Customize your bots error message.                               |
+| GlobalBan       |  v1.1.8   | Globally ban a user from all the guilds the bot is in.           |
+| PressF          |  v1.1.1   | F.                                                               |
+| RainbowRole     |  v1.0.10  | Have a role that changes colour every 20 minutes.                |
+| Reach           |  v1.0.2   | Reach roles on a channel.                                        |
+| ServerDonations |  v2.0.10  | Donate bot currencies or other things to servers.                |
+| SplitOrSteal    |  v1.0.7   | A fun split or steal game.                                       |
+| Suggestion      |  v1.0.7   | Suggestion system.                                               |
 
 ## License
 
