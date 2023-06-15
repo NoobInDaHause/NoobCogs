@@ -31,7 +31,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | RainbowRole     |  v1.0.10  | Have a role that changes colour every 20 minutes.                |
 | Reach           |  v1.0.2   | Reach roles on a channel.                                        |
 | ServerDonations |  v2.0.10  | Donate bot currencies or other things to servers.                |
-| SplitOrSteal    |  v1.0.7   | A fun split or steal game.                                       |
+| SplitOrSteal    |  v1.0.8   | A fun split or steal game.                                       |
 | Suggestion      |  v1.0.7   | Suggestion system.                                               |
 
 ## License

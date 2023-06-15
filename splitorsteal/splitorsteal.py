@@ -33,7 +33,7 @@ class SplitOrSteal(commands.Cog):
         self.config.register_guild(**default_guild_settings)
         self.log = logging.getLogger("red.NoobCogs.SplitOrSteal")
         
-    __version__ = "1.0.7"
+    __version__ = "1.0.8"
     __author__ = ["NoobInDaHause"]
     __documentation__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
     
@@ -273,7 +273,7 @@ class SplitOrSteal(commands.Cog):
 
         await self._start_sos(context=context, host=context.author, player_1=player_1, player_2=player_2, prize=prize)
     
-    @commands.hybrid_command(name="splitorstealhelp", aliases=["soshelp"])
+    @commands.command(name="splitorstealhelp", aliases=["soshelp"])
     @commands.bot_has_permissions(embed_links=True)
     async def splitorstealhelp(self, context: commands.Context):
         """
@@ -282,8 +282,6 @@ class SplitOrSteal(commands.Cog):
         Know how to play or what the rules of split or steal game is.
         And know some of the commands.
         """
-        await context.reply(content="SplitOrSteal help menu sent.", ephemeral=True, mention_author=False)
-        
         em1 = discord.Embed(
             title="***__What is Split or Steal__***",
             description=SosHelp.em1desc,
