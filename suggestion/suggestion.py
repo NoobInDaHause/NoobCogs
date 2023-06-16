@@ -40,7 +40,7 @@ class Suggestion(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
 
-    __version__ = "1.0.10"
+    __version__ = "1.0.11"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -208,6 +208,8 @@ class Suggestion(commands.Cog):
         self, context: commands.Context, channel_id: int, jump_url: str, embed: discord.Embed
     ):
         r = context.guild.get_channel(channel_id)
+        if not r:
+            return
         with contextlib.suppress(discord.errors.Forbidden):
             view = discord.ui.View()
             view.add_item(discord.ui.Button(label="Jump To Suggestion", url=jump_url))
@@ -217,12 +219,15 @@ class Suggestion(commands.Cog):
         self, context: commands.Context, channel_id: int, jump_url: str, embed: discord.Embed
     ):
         a = context.guild.get_channel(channel_id)
+        if not a:
+            return
         with contextlib.suppress(discord.errors.Forbidden):
             view = discord.ui.View()
             view.add_item(discord.ui.Button(label="Jump To Suggestion", url=jump_url))
             await a.send(embed=embed, view=view)
 
     async def end_suggestion(self, context: commands.Context, status_type: str, id: int, reason: str):
+        # sourcery skip: low-code-quality
         data = await self.config.guild(context.guild).all()
         async with self.config.guild(context.guild).suggestions() as s:
             for i in s:
