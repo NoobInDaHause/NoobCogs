@@ -40,7 +40,7 @@ class Suggestion(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
 
-    __version__ = "1.0.9"
+    __version__ = "1.0.10"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -123,7 +123,6 @@ class Suggestion(commands.Cog):
         view.add_item(
             discord.ui.Button(
                 label=label1,
-                style=discord.ButtonStyle.blurple,
                 disabled=True,
                 emoji=data["emojis"]["upvote"],
                 style=get_button_colour(data["button_colour"]["upbutton"])
@@ -132,7 +131,6 @@ class Suggestion(commands.Cog):
         view.add_item(
             discord.ui.Button(
                 label=label2,
-                style=discord.ButtonStyle.blurple,
                 disabled=True,
                 emoji=data["emojis"]["downvote"],
                 style=get_button_colour(data["button_colour"]["downbutton"])
