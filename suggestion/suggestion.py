@@ -7,7 +7,7 @@ from redbot.core import commands, app_commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, box
 
-from typing import Literal, Optional, List
+from typing import Literal, Optional
 
 from .noobutils import EmojiConverter, is_have_avatar, get_button_colour
 from .views import SuggestView, Confirmation
@@ -38,10 +38,9 @@ class Suggestion(commands.Cog):
             "suggestions": []
         }
         self.config.register_guild(**default_guild)
-        self.active_suggestions: List[SuggestView] = []
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
 
-    __version__ = "1.0.8"
+    __version__ = "1.0.9"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -56,31 +55,13 @@ class Suggestion(commands.Cog):
         Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
-    async def cog_load(self):
-        for g in await self.config.all_guilds():
-            guild = self.bot.get_guild(g)
-            async with self.config.guild(guild).suggestions() as s:
-                if not s:
-                    continue
-                for i in s:
-                    if i["status"] == "running":
-                        try:
-                            channel = guild.get_channel(i["channel_id"])
-                            msg = await channel.fetch_message(i["msg_id"])
-                            self.bot.add_view(SuggestView(self), message_id=msg.id)
-                            view = discord.ui.View.from_message(msg)
-                            self.active_suggestions.append(view)
-                        except Exception:
-                            continue
-
-    async def cog_unload(self):
-        for view in self.active_suggestions:
-            view.stop()
-
     async def red_delete_data_for_user(
         self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
     ):
-        for guild in self.bot.guilds:
+        for g in self.config.all_guilds():
+            guild = self.bot.get_guild(g)
+            if not guild:
+                continue
             async with self.config.guild(guild).suggestions() as s:
                 if not s:
                     continue
@@ -96,6 +77,23 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
+    async def cog_load(self):
+        for g in await self.config.all_guilds():
+            guild = self.bot.get_guild(g)
+            if not guild:
+                continue
+            async with self.config.guild(guild).suggestions() as s:
+                if not s:
+                    continue
+                for i in s:
+                    if i["status"] == "running":
+                        try:
+                            channel = guild.get_channel(i["channel_id"])
+                            msg = await channel.fetch_message(i["msg_id"])
+                            self.bot.add_view(SuggestView(self), message_id=msg.id)
+                        except Exception:
+                            continue
+
     async def maybe_send_to_author(
         self, member: discord.Member, url: str = None, b1: str = None, b2: str = None, *args, **kwargs
     ):
@@ -104,12 +102,13 @@ class Suggestion(commands.Cog):
         style2 = get_button_colour(data["button_colour"]["downbutton"])
         if url and b1 and b2:
             view = discord.ui.View()
-            but1 = discord.ui.Button(label=b1, emoji=data["emojis"]["upvote"], style=style1, disabled=True)
-            but2 = discord.ui.Button(label=b2, emoji=data["emojis"]["downvote"], style=style2, disabled=True)
-            but3 = discord.ui.Button(label="Jump To Suggestion", url=url)
-            view.add_item(but1)
-            view.add_item(but2)
-            view.add_item(but3)
+            view.add_item(
+                discord.ui.Button(label=b1, emoji=data["emojis"]["upvote"], style=style1, disabled=True)
+            )
+            view.add_item(
+                discord.ui.Button(label=b2, emoji=data["emojis"]["downvote"], style=style2, disabled=True)
+            )
+            view.add_item(discord.ui.Button(label="Jump To Suggestion", url=url))
             await member.send(view=view, *args, **kwargs)
         elif url is not None and b1 is None and b2 is None:
             viewurl = discord.ui.View()
@@ -121,14 +120,24 @@ class Suggestion(commands.Cog):
     async def maybe_edit_msg(self, msg: discord.Message, embed: discord.Embed, label1: str, label2: str):
         data = await self.config.guild(msg.guild).all()
         view = discord.ui.View()
-        but1 = discord.ui.Button(label=label1, style=discord.ButtonStyle.blurple, disabled=True)
-        but2 = discord.ui.Button(label=label2, style=discord.ButtonStyle.blurple, disabled=True)
-        but1.emoji = data["emojis"]["upvote"]
-        but2.emoji = data["emojis"]["downvote"]
-        but1.style = get_button_colour(data["button_colour"]["upbutton"])
-        but2.style = get_button_colour(data["button_colour"]["downbutton"])
-        view.add_item(but1)
-        view.add_item(but2)
+        view.add_item(
+            discord.ui.Button(
+                label=label1,
+                style=discord.ButtonStyle.blurple,
+                disabled=True,
+                emoji=data["emojis"]["upvote"],
+                style=get_button_colour(data["button_colour"]["upbutton"])
+            )
+        )
+        view.add_item(
+            discord.ui.Button(
+                label=label2,
+                style=discord.ButtonStyle.blurple,
+                disabled=True,
+                emoji=data["emojis"]["downvote"],
+                style=get_button_colour(data["button_colour"]["downbutton"])
+            )
+        )
         await msg.edit(embed=embed, view=view)
 
     async def maybe_make_embed(
@@ -194,12 +203,28 @@ class Suggestion(commands.Cog):
         view.down_button.style = get_button_colour(data["button_colour"]["downbutton"])
         view.up_button.style = get_button_colour(data["button_colour"]["upbutton"])
         msg = await channel.send(embed=embed, view=view)
-        self.active_suggestions.append(view)
         await self.add_suggestion(context=context, chan=channel, suggest_msg=msg, suggestion=suggestion)
         return [msg.jump_url, embed]
 
+    async def maybe_send_reject(
+        self, context: commands.Context, channel_id: int, jump_url: str, embed: discord.Embed
+    ):
+        r = context.guild.get_channel(channel_id)
+        with contextlib.suppress(discord.errors.Forbidden):
+            view = discord.ui.View()
+            view.add_item(discord.ui.Button(label="Jump To Suggestion", url=jump_url))
+            await r.send(embed=embed, view=view)
+
+    async def maybe_send_approve(
+        self, context: commands.Context, channel_id: int, jump_url: str, embed: discord.Embed
+    ):
+        a = context.guild.get_channel(channel_id)
+        with contextlib.suppress(discord.errors.Forbidden):
+            view = discord.ui.View()
+            view.add_item(discord.ui.Button(label="Jump To Suggestion", url=jump_url))
+            await a.send(embed=embed, view=view)
+
     async def end_suggestion(self, context: commands.Context, status_type: str, id: int, reason: str):
-        # sourcery skip: low-code-quality
         data = await self.config.guild(context.guild).all()
         async with self.config.guild(context.guild).suggestions() as s:
             for i in s:
@@ -231,18 +256,10 @@ class Suggestion(commands.Cog):
                         stattype=status_type,
                         reason=reason
                     )
-                    r = context.guild.get_channel(data["reject_channel"])
-                    a = context.guild.get_channel(data["approve_channel"])
-                    if r and status_type == "rejected":
-                        with contextlib.suppress(discord.errors.Forbidden):
-                            viewr = discord.ui.View()
-                            viewr.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
-                            await r.send(embed=embed, view=viewr)
-                    if a and status_type == "approved":
-                        with contextlib.suppress(discord.errors.Forbidden):
-                            views = discord.ui.View()
-                            views.add_item(discord.ui.Button(label="Jump To Suggestion", url=msg.jump_url))
-                            await a.send(embed=embed, view=views)
+                    if status_type == "approved":
+                        await self.maybe_send_approve(context, data["approve_channel"], msg.jump_url, embed)
+                    elif status_type == "rejected":
+                        await self.maybe_send_reject(context, data["reject_channel"], msg.jump_url, embed)
                     b = [str(len(i["upvotes"])), str(len(i["downvotes"]))]
                     if mem:
                         cont = (
@@ -477,18 +494,22 @@ class Suggestion(commands.Cog):
                     )
                     view = discord.ui.View()
                     u = f"https://discord.com/channels/{context.guild.id}/{channel.id}/{msg.id}"
-                    but1 = discord.ui.Button(label=str(len(i["upvotes"])), style=discord.ButtonStyle.blurple)
-                    but2 = discord.ui.Button(
-                        label=str(len(i["downvotes"])), style=discord.ButtonStyle.blurple
+                    view.add_item(
+                        discord.ui.Button(
+                            label=str(len(i["upvotes"])),
+                            style=get_button_colour(data["button_colour"]["upbutton"]),
+                            disabled=True,
+                            emoji=data["emojis"]["upvote"]
+                        )
                     )
-                    but1.disabled = True
-                    but2.disabled = True
-                    but1.emoji = data["emojis"]["upvote"]
-                    but2.emoji = data["emojis"]["downvote"]
-                    but1.style = get_button_colour(data["button_colour"]["upbutton"])
-                    but2.style = get_button_colour(data["button_colour"]["downbutton"])
-                    view.add_item(but1)
-                    view.add_item(but2)
+                    view.add_item(
+                        discord.ui.Button(
+                            label=str(len(i["downvotes"])),
+                            style=get_button_colour(data["button_colour"]["downbutton"]),
+                            disabled=True,
+                            emoji=data["emojis"]["downvote"]
+                        )
+                    )
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
                     await context.send(embed=embed, view=view)
                     break

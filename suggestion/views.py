@@ -7,10 +7,7 @@ from typing import Optional
 from .noobutils import access_denied, get_button_colour
 
 class Confirmation(discord.ui.View):
-    def __init__(
-        self,
-        timeout: Optional[float] = 60
-    ):
+    def __init__(self, timeout: Optional[float] = 60.0):
         super().__init__(timeout=timeout)
         self.confirm_action: str = None
         self.context: commands.Context = None
@@ -54,7 +51,7 @@ class Confirmation(discord.ui.View):
         await self.message.edit(content="You took too long to respond.", view=self)
 
 class SuggestView(discord.ui.View):
-    def __init__(self, cog):
+    def __init__(self, cog: commands.Cog):
         super().__init__(timeout=None)
         self.cog = cog
 
