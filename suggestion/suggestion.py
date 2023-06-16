@@ -7,7 +7,7 @@ from redbot.core import commands, app_commands, Config
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list, box
 
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 
 from .noobutils import EmojiConverter, is_have_avatar, get_button_colour
 from .views import SuggestView, Confirmation
@@ -38,10 +38,10 @@ class Suggestion(commands.Cog):
             "suggestions": []
         }
         self.config.register_guild(**default_guild)
+        self.active_suggestions: List[SuggestView] = []
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
-        bot.add_view(SuggestView(self))
 
-    __version__ = "1.0.7"
+    __version__ = "1.0.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -55,6 +55,27 @@ class Suggestion(commands.Cog):
         Cog Version: **{self.__version__}**
         Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
+
+    async def cog_load(self):
+        for g in await self.config.all_guilds():
+            guild = self.bot.get_guild(g)
+            async with self.config.guild(guild).suggestions() as s:
+                if not s:
+                    continue
+                for i in s:
+                    if i["status"] == "running":
+                        try:
+                            channel = guild.get_channel(i["channel_id"])
+                            msg = await channel.fetch_message(i["msg_id"])
+                            self.bot.add_view(SuggestView(self), message_id=msg.id)
+                            view = discord.ui.View.from_message(msg)
+                            self.active_suggestions.append(view)
+                        except Exception:
+                            continue
+
+    async def cog_unload(self):
+        for view in self.active_suggestions:
+            view.stop()
 
     async def red_delete_data_for_user(
         self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
@@ -173,6 +194,7 @@ class Suggestion(commands.Cog):
         view.down_button.style = get_button_colour(data["button_colour"]["downbutton"])
         view.up_button.style = get_button_colour(data["button_colour"]["upbutton"])
         msg = await channel.send(embed=embed, view=view)
+        self.active_suggestions.append(view)
         await self.add_suggestion(context=context, chan=channel, suggest_msg=msg, suggestion=suggestion)
         return [msg.jump_url, embed]
 
