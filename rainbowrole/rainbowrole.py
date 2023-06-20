@@ -31,7 +31,7 @@ class RainbowRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RainbowRole")
 
-    __version__ = "1.0.10"
+    __version__ = "1.0.11"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/rainbowrole/README.md"
 
@@ -62,20 +62,17 @@ class RainbowRole(commands.Cog):
         self.log.info("Rainbowrole task cancelled.")
         await self.change_rainbowrole_color.cancel()
 
-    @tasks.loop(minutes=20)
+    @tasks.loop(minutes=10)
     async def change_rainbowrole_color(self):
         for guild in self.bot.guilds:
-            await asyncio.sleep(5)
+            await asyncio.sleep(2.5)
             settings = await self.config.guild(guild).all()
-            if not settings["status"]:
-                continue
-            if not settings["role"]:
-                continue
-            try:
-                rainbowrole = guild.get_role(settings["role"])
-                await rainbowrole.edit(colour=discord.Colour.random(), reason="Rainbow Role.")
-            except Exception:
-                continue
+            if settings["status"] and settings["role"]:
+                try:
+                    rainbowrole = guild.get_role(settings["role"])
+                    await rainbowrole.edit(colour=discord.Colour.random(), reason="Rainbow Role.")
+                except Exception:
+                    continue
 
     @change_rainbowrole_color.before_loop
     async def change_rainbowrole_color_before_loop(self):
