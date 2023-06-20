@@ -31,7 +31,7 @@ class RainbowRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RainbowRole")
 
-    __version__ = "1.0.11"
+    __version__ = "1.0.12"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/rainbowrole/README.md"
 
@@ -67,7 +67,7 @@ class RainbowRole(commands.Cog):
         for guild in self.bot.guilds:
             await asyncio.sleep(2.5)
             settings = await self.config.guild(guild).all()
-            if settings["status"] and settings["role"]:
+            if settings["status"] is True and settings["role"] is not None:
                 try:
                     rainbowrole = guild.get_role(settings["role"])
                     await rainbowrole.edit(colour=discord.Colour.random(), reason="Rainbow Role.")
