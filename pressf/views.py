@@ -7,10 +7,7 @@ from typing import Optional
 from .noobutils import access_denied
 
 class Confirmation(discord.ui.View):
-    def __init__(
-        self,
-        timeout: Optional[float] = 60.0
-    ):
+    def __init__(self, timeout: Optional[float] = 60.0):
         super().__init__(timeout=timeout)
         self.confirm_action: str = None
         self.context: commands.Context = None
@@ -83,7 +80,7 @@ class PressFView(discord.ui.View):
         button.label = str(len(self.paid_users))
         await interaction.response.edit_message(view=self)
         await interaction.followup.send(
-            content=f"**{interaction.user.name}** has paid their respects."
+            content=f"**{interaction.user}** has paid their respects."
         )
 
     async def on_timeout(self):
@@ -102,5 +99,6 @@ class PressFView(discord.ui.View):
             allowed_mentions=discord.AllowedMentions.none()
         )
         act_chan: list = self.cog.active_cache
-        index = act_chan.index(self.context.channel.id)
-        act_chan.pop(index)
+        if self.context.channel.id in act_chan:
+            index = act_chan.index(self.context.channel.id)
+            act_chan.pop(index)

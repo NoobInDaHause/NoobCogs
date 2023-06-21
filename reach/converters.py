@@ -49,17 +49,3 @@ class FuzzyRole(commands.RoleConverter):
 
         sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
         return sorted_result[0][0]
-
-def is_have_avatar(thing: Union[discord.Member, discord.Guild] = None):
-    if not thing:
-        return ""
-    if isinstance(thing, discord.Member):
-        try:
-            return thing.avatar.url
-        except AttributeError:
-            return ""
-    if isinstance(thing, discord.Guild):
-        try:
-            return thing.icon.url
-        except AttributeError:
-            return ""

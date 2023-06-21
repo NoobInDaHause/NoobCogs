@@ -8,7 +8,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 from typing import Literal, Optional
 
 from .views import Confirmation, CookieClickerView
-from .noobutils import EmojiConverter
+from .converters import EmojiConverter
 
 class CookieClicker(commands.Cog):
     """

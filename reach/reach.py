@@ -8,7 +8,8 @@ from redbot.core.utils.chat_formatting import humanize_list, humanize_number
 
 from typing import Literal, Optional
 
-from .noobutils import is_have_avatar, FuzzyRole
+from .converters import FuzzyRole
+from .noobutils import is_have_avatar
 
 class Reach(commands.Cog):
     """

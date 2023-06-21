@@ -95,9 +95,9 @@ class CustomError(commands.Cog):
                     "message_jump_url": tse.StringAdapter(context.message.jump_url)
                 }
             )
-            with contextlib.suppress((discord.errors.Forbidden, discord.errors.HTTPException)):
+            with contextlib.suppress(discord.errors.Forbidden, discord.errors.HTTPException):
                 await context.send(
-                    content=processed.body or "",
+                    content=processed.body,
                     embed=processed.actions.get("embed"),
                     allowed_mentions=discord.AllowedMentions(users=True, roles=False, everyone=False)
                 )

@@ -7,10 +7,7 @@ from typing import Optional
 from .noobutils import access_denied
 
 class Confirmation(discord.ui.View):
-    def __init__(
-        self,
-        timeout: Optional[float] = 60
-    ):
+    def __init__(self, timeout: Optional[float] = 60.0):
         super().__init__(timeout=timeout)
         self.confirm_action: str = None
         self.context: commands.Context = None
@@ -52,7 +49,8 @@ class Confirmation(discord.ui.View):
         elif interaction.user != self.context.author:
             await interaction.response.send_message(content=access_denied(), ephemeral=True)
             return False
-        return True
+        else:
+            return True
 
     async def on_timeout(self):
         for x in self.children:
@@ -92,12 +90,7 @@ class GiveawayFields(discord.ui.View):
         self.context: commands.Context = None
         self.message: discord.Message = None
 
-    async def start(
-        self,
-        context: commands.Context,
-        *args,
-        **kwargs
-    ):
+    async def start(self, context: commands.Context, *args, **kwargs):
         msg = await context.send(view=self, *args, **kwargs)
         self.context = context
         self.message = msg
@@ -450,7 +443,8 @@ class GiveawayFields(discord.ui.View):
         elif interaction.user != self.context.author:
             await interaction.response.send_message(content=access_denied(), ephemeral=True)
             return False
-        return True
+        else:
+            return True
 
     async def on_timeout(self):
         for x in self.children:
@@ -464,12 +458,7 @@ class EventFields(discord.ui.View):
         self.context: commands.Context = None
         self.message: discord.Message = None
 
-    async def start(
-        self,
-        context: commands.Context,
-        *args,
-        **kwargs
-    ):
+    async def start(self, context: commands.Context, *args, **kwargs):
         msg = await context.send(view=self, *args, **kwargs)
         self.context = context
         self.message = msg
@@ -775,7 +764,8 @@ class EventFields(discord.ui.View):
         elif interaction.user != self.context.author:
             await interaction.response.send_message(content=access_denied(), ephemeral=True)
             return False
-        return True
+        else:
+            return True
 
     async def on_timeout(self):
         for x in self.children:
@@ -789,12 +779,7 @@ class HeistFields(discord.ui.View):
         self.context: commands.Context = None
         self.message: discord.Message = None
 
-    async def start(
-        self,
-        context: commands.Context,
-        *args,
-        **kwargs
-    ):
+    async def start(self, context: commands.Context, *args, **kwargs):
         msg = await context.send(view=self, *args, **kwargs)
         self.context = context
         self.message = msg
@@ -1053,7 +1038,8 @@ class HeistFields(discord.ui.View):
         elif interaction.user != self.context.author:
             await interaction.response.send_message(content=access_denied(), ephemeral=True)
             return False
-        return True
+        else:
+            return True
 
     async def on_timeout(self):
         for x in self.children:

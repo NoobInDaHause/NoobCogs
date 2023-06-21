@@ -1,4 +1,3 @@
-import discord
 import logging
 
 from redbot.core import commands, Config, app_commands
@@ -7,7 +6,8 @@ from redbot.core.utils.chat_formatting import humanize_list
 
 from typing import Literal, Optional
 
-from .noobutils import EmojiConverter, get_button_colour
+from .converters import EmojiConverter
+from .noobutils import get_button_colour
 from .views import Confirmation, PressFView
 
 class PressF(commands.Cog):

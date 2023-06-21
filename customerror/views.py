@@ -7,10 +7,7 @@ from typing import Optional
 from .noobutils import access_denied
 
 class Confirmation(discord.ui.View):
-    def __init__(
-        self,
-        timeout: Optional[float] = 60
-    ):
+    def __init__(self, timeout: Optional[float] = 60.0):
         super().__init__(timeout=timeout)
         self.confirm_action: str = None
         self.context: commands.Context = None
@@ -42,10 +39,11 @@ class Confirmation(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if await self.context.bot.is_owner(interaction.user):
             return True
-        elif interaction.user.id != self.context.author.id:
+        elif interaction.user != self.context.author:
             await interaction.response.send_message(content=access_denied(), ephemeral=True)
             return False
-        return True
+        else:
+            return True
 
     async def on_timeout(self):
         for x in self.children:

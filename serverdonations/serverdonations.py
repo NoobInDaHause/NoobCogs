@@ -11,12 +11,8 @@ from redbot.core.utils.menus import menu
 from typing import Literal, Optional
 
 from .cog_data import SdonateDesc, SdonateDefaults, SDEmbedData
-from .noobutils import is_have_avatar
+from .noobutils import is_have_avatar, Coordinate
 from .views import Confirmation, GiveawayFields, EventFields, HeistFields
-
-class Coordinate(dict):
-    def __missing__(self, key):
-        return key
 
 class ServerDonations(commands.Cog):
     """

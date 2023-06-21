@@ -9,7 +9,8 @@ from redbot.core.utils.chat_formatting import humanize_list, box
 
 from typing import Literal, Optional
 
-from .noobutils import EmojiConverter, is_have_avatar, get_button_colour
+from .converters import EmojiConverter
+from .noobutils import is_have_avatar, get_button_colour
 from .views import SuggestView, Confirmation
 
 class Suggestion(commands.Cog):
