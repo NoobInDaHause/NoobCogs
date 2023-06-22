@@ -85,10 +85,10 @@ class JoinDM(commands.Cog):
     async def on_member_join(self, member: discord.Member):
         data = await self.config.guild(member.guild).all()
         if (
-            member.guild is not None
+            not member.bot
+            and member.guild is not None
             and data["message"] is not None
             and data["toggled"] is True
-            and not member.bot
         ):
             await self.dm_user(member, data["message"])
 
