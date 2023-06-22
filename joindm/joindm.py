@@ -86,6 +86,7 @@ class JoinDM(commands.Cog):
             member.guild is not None
             and data["message"] is not None
             and data["toggled"] is True
+            and not member.bot
         ):
             await self.dm_user(member, data["message"])
 
