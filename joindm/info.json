@@ -1,0 +1,23 @@
+{
+    "name": "JoinDM",
+    "short": "DM newly joined users from your guild with your set message.",
+    "description": "This cog uses TagScriptEngine and requires you basic tagscript knowledge to use this cog.",
+    "end_user_data_statement": "Cog does not store any EUD.",
+    "install_msg": "Thank you for installing JoinDM. Load the cog with `[p]load joindm`.",
+    "author": [
+        "NoobInDaHause"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [
+        "TagScript"
+    ],
+    "tags": [
+        "join",
+        "dm",
+        "joindm"
+    ],
+    "type": "COG"
+}
