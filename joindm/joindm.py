@@ -77,7 +77,9 @@ class JoinDM(commands.Cog):
             )
         )
         with contextlib.suppress(discord.errors.Forbidden, discord.errors.HTTPException):
-            await member.send(content=proccessed.body, embed=proccessed.actions.get("embed"))
+            await member.send(
+                content=proccessed.body, embed=proccessed.actions.get("embed"), view=view
+            )
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member: discord.Member):
