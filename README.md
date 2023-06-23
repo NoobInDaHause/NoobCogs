@@ -31,7 +31,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | PressF           |  v1.1.1   | F.                                                               |
 | RandomColourRole |  v1.1.1   | Have a role that changes colour every 5 minutes.                 |
 | Reach            |  v1.0.2   | Reach roles on a channel.                                        |
-| ServerDonations  |  v2.0.10  | Donate bot currencies or other things to servers.                |
+| ServerDonations  |  v2.0.11  | Donate bot currencies or other things to servers.                |
 | SplitOrSteal     |  v1.0.8   | A fun split or steal game.                                       |
 | Suggestion       |  v1.0.11  | Suggestion system.                                               |
 
