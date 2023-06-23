@@ -32,7 +32,7 @@ class RandomColourRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RandomColourRole")
 
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/randomcolourrole/README.md"
 
@@ -137,7 +137,7 @@ class RandomColourRole(commands.Cog):
         await self.config.guild(context.guild).role.set(role.id)
         await context.send(
             content=f"**{role.name}** has been set as the guilds randomcolourrole. "
-            f"Start the cog with `{context.prefix}rrset status` if you haven't already."
+            f"Start the cog with `{context.prefix}rcrset status` if you haven't already."
         )
 
     @randomcolourroleset.command(name="status")

@@ -29,7 +29,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | GlobalBan        |  v1.1.8   | Globally ban a user from all the guilds the bot is in.           |
 | JoinDM           |  v1.0.0   | M newly joined users from your guild with your set message.      |
 | PressF           |  v1.1.1   | F.                                                               |
-| RandomColourRole |  v1.1.0   | Have a role that changes colour every 5 minutes.                 |
+| RandomColourRole |  v1.1.1   | Have a role that changes colour every 5 minutes.                 |
 | Reach            |  v1.0.2   | Reach roles on a channel.                                        |
 | ServerDonations  |  v2.0.10  | Donate bot currencies or other things to servers.                |
 | SplitOrSteal     |  v1.0.8   | A fun split or steal game.                                       |
