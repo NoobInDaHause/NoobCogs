@@ -1,0 +1,22 @@
+{
+    "name": "RandomColourRole",
+    "short": "Have a role that changes colour every 5 minutes.",
+    "description": "May or may not be API intense but the cog is cool.",
+    "end_user_data_statement": "This cog does not store any end user data whatsoever.",
+    "install_msg": "Thank you for installing RandomColourRole. Load the cog with `[p]load randomcolourrole`. This cog can be API intense sometimes depending on how many guilds the bot is in.",
+    "author": [
+        "NoobInDaHause"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "Random",
+        "Colour",
+        "RandomColour",
+        "RandomColourRole"
+    ],
+    "type": "COG"
+}
