@@ -1,0 +1,22 @@
+{
+    "name": "DevLogs",
+    "short": "Keep a log of all that evals and debugs.",
+    "description": "Logs all the Dev commands in a channel. Originally and formerly from sravan but I got permission to maintain it now.",
+    "end_user_data_statement": "This cog does not persistently store any data or metadata about users.",
+    "install_msg": "Thank you for installing DevLogs. Load the cog with `[p]load devlogs`.",
+    "author": [
+        "sravan",
+        "NoobInDaHause"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "Dev",
+        "Logs",
+        "DevLogs"
+    ],
+    "type": "COG"
+}
