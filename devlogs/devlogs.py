@@ -25,7 +25,7 @@ class DevLogs(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.DevLogs")
 
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["sravan", "NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
 
@@ -91,7 +91,7 @@ class DevLogs(commands.Cog):
         )
 
         view = discord.ui.View()
-        view.add_item(discord.ui.Button(label="Jump To Command"), url=context.message.jump_url)
+        view.add_item(discord.ui.Button(label="Jump To Command", url=context.message.jump_url))
         try:
             await self.bot.get_channel(partialchannel).send(embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
