@@ -25,7 +25,7 @@ class DevLogs(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.DevLogs")
 
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["sravan", "NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
 
@@ -97,17 +97,19 @@ class DevLogs(commands.Cog):
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             self.log.exception("Error occurred while sending eval/debug logs.", exc_info=e)
 
-    @commands.group()
+    @commands.group(name="devlogset", aliases=["devset"])
     @commands.guild_only()
     @commands.is_owner()
-    async def devset(self, context: commands.Context) -> None:
+    async def devlogset(self, context: commands.Context) -> None:
         """
         Configure DevLogs settings.
         """
         pass
 
-    @devset.command()
-    async def channel(self, context: commands.Context, channel: Optional[discord.TextChannel]) -> None:
+    @devlogset.command(name="channel", aliases=["chan"])
+    async def devlogset_channel(
+        self, context: commands.Context, channel: Optional[discord.TextChannel]
+    ) -> None:
         """
         Set the channel to log to.
         """
@@ -116,17 +118,17 @@ class DevLogs(commands.Cog):
             return await context.send("Default channel cleared.")
 
         await self.config.default_channel.set(channel.id)
-        await context.send(f"Successfully set the logging channel to {channel.mention}.")
+        await context.send(f"Successfully set the DevLogs logging channel to {channel.mention}.")
 
-    @devset.group()
-    async def bypass(self, context: commands.Context) -> None:
+    @devlogset.group(name="bypass")
+    async def devlogset_bypass(self, context: commands.Context) -> None:
         """
         Manage the bypass list.
         """
         pass
 
-    @bypass.command()
-    async def add(self, context: commands.Context, user: discord.User) -> None:
+    @devlogset_bypass.command(name="add", aliases=["+"])
+    async def devlogset_bypass_add(self, context: commands.Context, user: discord.User) -> None:
         """
         Add a user to the bypass list.
         """
@@ -138,8 +140,8 @@ class DevLogs(commands.Cog):
             b.append(user.id)
             await context.send(f"{user.mention} added to the bypass list.")
 
-    @bypass.command()
-    async def remove(self, context: commands.Context, user: discord.User) -> None:
+    @devlogset_bypass.command(name="remove", aliases=["-"])
+    async def devlogset_bypass_remove(self, context: commands.Context, user: discord.User) -> None:
         """
         Remove a user from the bypass list.
         """
@@ -151,8 +153,8 @@ class DevLogs(commands.Cog):
             b.remove(user.id)
             await context.send(f"{user.mention} removed from the bypass list.")
 
-    @bypass.command()
-    async def list(self, context: commands.Context) -> None:
+    @devlogset_bypass.command(name="list")
+    async def devlogset_bypass_list(self, context: commands.Context) -> None:
         """
         list the users in the bypass list.
         """
@@ -165,12 +167,12 @@ class DevLogs(commands.Cog):
             for user in b:
                 try:
                     user_obj = await context.bot.get_or_fetch_user(user)
-                    final += f"{user_obj} (`{user_obj.id}`)\n"
+                    final += f"{user_obj} (`{user_obj.id}`).\n"
                 except discord.errors.NotFound:
-                    final += f"{user} (`{user}`)\n"
+                    final += f"{user} (`{user}`).\n"
             embed = discord.Embed(
                 title="DevLogs Bypass List",
-                description=f"A list of users that bypass the DevLogs cog.\n{final}",
+                description=f"A list of users that bypasses the DevLogs cog:\n{final}",
                 color=context.author.colour,
             )
             await context.send(embed=embed)
