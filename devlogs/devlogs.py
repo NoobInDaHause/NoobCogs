@@ -25,7 +25,7 @@ class DevLogs(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.DevLogs")
 
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["sravan", "NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
 
@@ -71,7 +71,6 @@ class DevLogs(commands.Cog):
         content = context.message.content.replace("```", "")
         if content.startswith("```"):
             content = content.replace("```", "")
-
         embed = discord.Embed(
             title=f"{context.command.name.upper()} Logs",
             description=box(content, lang="py"),
@@ -81,7 +80,9 @@ class DevLogs(commands.Cog):
         embed.set_author(name=context.author, icon_url=is_have_avatar(context.author))
         try:
             embed.add_field(
-                name="Channel", value=f"{context.channel.mention}\n({context.channel.id})", inline=True
+                name="Channel",
+                value=f"{context.channel.mention}\n{context.channel.name}\n({context.channel.id})",
+                inline=True
             )
             embed.add_field(name="Guild", value=f"{context.guild.name}\n({context.guild.id})", inline=True)
         except AttributeError:
@@ -89,10 +90,9 @@ class DevLogs(commands.Cog):
         embed.add_field(
             name="Author", value=f"{context.author.name}\n({context.author.id})", inline=True
         )
-
-        view = discord.ui.View()
-        view.add_item(discord.ui.Button(label="Jump To Command", url=context.message.jump_url))
         try:
+            view = discord.ui.View()
+            view.add_item(discord.ui.Button(label="Jump To Command", url=context.message.jump_url))
             await self.bot.get_channel(partialchannel).send(embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             self.log.exception("Error occurred while sending eval/debug logs.", exc_info=e)

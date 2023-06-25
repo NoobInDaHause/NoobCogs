@@ -26,7 +26,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | AmariLevel       |  v1.0.1   | Check your amari level but through red.                     |
 | CookieClicker    |  v1.0.1   | Play a cookie clicker.                                      |
 | CustomError      |  v1.1.4   | Customize your bots error message.                          |
-| DevLogs          |  v1.0.1   | Keep a log of all that evals and debugs.                    |
+| DevLogs          |  v1.0.2   | Keep a log of all that evals and debugs.                    |
 | GlobalBan        |  v1.1.8   | Globally ban a user from all the guilds the bot is in.      |
 | JoinDM           |  v1.0.0   | M newly joined users from your guild with your set message. |
 | PressF           |  v1.1.1   | F.                                                          |
