@@ -3,10 +3,9 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, Config
-from redbot.core.bot import Red
+from redbot.core import bot, commands, Config
 from redbot.core.utils.chat_formatting import humanize_list, box
-from redbot.core.utils.menus import menu
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 from typing import Literal, Optional
 
@@ -17,12 +16,13 @@ from .views import Confirmation, GiveawayFields, EventFields, HeistFields
 class ServerDonations(commands.Cog):
     """
     Donate bot currencies or other things to servers.
-    
+
     Base commands to donate to server giveaways, events, heists etc.
     """
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: bot.Red, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.bot = bot
-        
+
         self.config = Config.get_conf(self, identifier=7364456583646323, force_registration=True)
         #default_guild_settings = {
         #    "gman_id": None,
@@ -34,8 +34,8 @@ class ServerDonations(commands.Cog):
         #}
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
-    
-    __version__ = "2.0.10"
+
+    __version__ = "2.0.11"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -200,7 +200,7 @@ class ServerDonations(commands.Cog):
                 *args,
                 **kwargs
             )
-    
+
     async def send_to_g_chan(self, context: commands.Context, embed: discord.Embed):
         """
         Sends to the set giveaway donation request channel.
@@ -214,7 +214,7 @@ class ServerDonations(commands.Cog):
         view.add_item(button)
 
         channel = context.guild.get_channel(settings["channels"]["gchan"])
-        
+
         if not settings["roles"]["gman"]:
             try:
                 await channel.send(
@@ -234,7 +234,7 @@ class ServerDonations(commands.Cog):
                     content="An error has occurred while sending the giveaway donation request.\n"
                     f"Here is the traceback: {box(e, 'py')}"
                 )
-        
+
         role = context.guild.get_role(settings["roles"]["gman"])
         try:
             await self.forcemention(
@@ -270,7 +270,7 @@ class ServerDonations(commands.Cog):
         view.add_item(button)
 
         channel = context.guild.get_channel(settings["channels"]["echan"])
-        
+
         if not settings["roles"]["eman"]:
             try:
                 await channel.send(
@@ -290,7 +290,7 @@ class ServerDonations(commands.Cog):
                     content="An error has occurred while sending the event donation request.\n"
                     f"Here is the traceback: {box(e, 'py')}"
                 )
-        
+
         role = context.guild.get_role(settings["roles"]["eman"])
         try:
             await self.forcemention(
@@ -326,7 +326,7 @@ class ServerDonations(commands.Cog):
         view.add_item(button)
 
         channel = context.guild.get_channel(settings["channels"]["hchan"])
-        
+
         if not settings["roles"]["hman"]:
             try:
                 await channel.send(
@@ -346,7 +346,7 @@ class ServerDonations(commands.Cog):
                     content="An error has occurred while sending the heist donation request.\n"
                     f"Here is the traceback: {box(e, 'py')}"
                 )
-        
+
         role = context.guild.get_role(settings["roles"]["hman"])
         try:
             await self.forcemention(
@@ -422,7 +422,7 @@ class ServerDonations(commands.Cog):
     async def sdonatehelp(self, context: commands.Context):
         """
         Know how to run the donation commands.
-        
+
         Available commands:
         `[p]giveawaydonate`
         `[p]eventdonate`
@@ -436,7 +436,7 @@ class ServerDonations(commands.Cog):
             text=f"Command executed by: {context.author} | Page 1/3",
             icon_url=is_have_avatar(context.author)
         )
-        
+
         em2 = discord.Embed(
             title=f"How to use `{context.prefix}eventdonate` command",
             description=SdonateDesc.edonodesc.replace("[p]", f"{context.prefix}"),
@@ -445,7 +445,7 @@ class ServerDonations(commands.Cog):
             text=f"Command executed by: {context.author} | Page 2/3",
             icon_url=is_have_avatar(context.author)
         )
-        
+
         em3 = discord.Embed(
             title=f"How to use `{context.prefix}heistdonate` command",
             description=SdonateDesc.hdonodesc.replace("[p]", f"{context.prefix}"),
@@ -454,9 +454,9 @@ class ServerDonations(commands.Cog):
             text=f"Command executed by: {context.author} | Page 3/3",
             icon_url=is_have_avatar(context.author)
         )
-        
+
         bemeds = [em1, em2, em3]
-        await menu(context, bemeds, timeout=60)
+        await menu(context, bemeds, DEFAULT_CONTROLS, timeout=60)
 
     @commands.group(name="serverdonationsset", aliases=["sdonateset", "sdonoset"])
     @commands.guild_only()
@@ -477,9 +477,9 @@ class ServerDonations(commands.Cog):
         conf_act = "Successfully resetted the guild's settings to default."
         view = Confirmation(timeout=30)
         await view.start(context, conf_msg, conf_act)
-        
+
         await view.wait()
-        
+
         if view.value == "yes":
             await self.config.guild(context.guild).clear()
 
@@ -568,7 +568,7 @@ class ServerDonations(commands.Cog):
         Customize the giveaway, event or heist donation request embed.
         """
         pass
-    
+
     @serverdonationsset_embed.command(name="content")
     async def serverdonationsset_embed_content(
         self,
@@ -619,7 +619,7 @@ class ServerDonations(commands.Cog):
     ):
         """
         Customize the title for giveaway, event or heist donation embed.
-        
+
         Leave `title` blank to reset it to default for the given type
 
         Available variables:
@@ -657,7 +657,7 @@ class ServerDonations(commands.Cog):
     ):
         """
         Customize the description for giveaway, event or heist donation embed.
-        
+
         Leave `description` blank to reset it to default.
 
         Available variables:
@@ -701,7 +701,7 @@ class ServerDonations(commands.Cog):
     ):
         """
         Customize the colour for giveaway, event or heist donation embed.
-        
+
         Leave `colour` blank to reset it to default.
 
         All the colours defaults to bots embed colour.
@@ -945,9 +945,9 @@ class ServerDonations(commands.Cog):
         conf_act = "Successfully cleared the serverdonations cogs configuration."
         view = Confirmation(30)
         await view.start(context, conf_msg, conf_act)
-        
+
         await view.wait()
-        
+
         if view.value == "yes":
             await self.config.clear_all()
 
@@ -1112,11 +1112,10 @@ class ServerDonations(commands.Cog):
             .set_footer(text="Page (5/5)", icon_url=is_have_avatar(context.author))
         )
         list_embeds = [chanembed, roleembed, gawembed, eventembed, heistembed]
-        await menu(context, list_embeds, timeout=60)
+        await menu(context, list_embeds, DEFAULT_CONTROLS, timeout=60)
 
     @commands.command(
         name="giveawaydonate",
-        aliases=["gdonate", "gdono"],
         usage="<type> | <duration> | <winners> | [requirements] | <prize> | [message]"
     )
     @commands.guild_only()
@@ -1130,7 +1129,7 @@ class ServerDonations(commands.Cog):
     ):
         """
         Donate to server giveaways.
-        
+
         Split arguments with `|`.
         See `[p]sdonatehelp` to know how to donate.
         """
@@ -1250,7 +1249,6 @@ class ServerDonations(commands.Cog):
 
     @commands.command(
         name="eventdonate",
-        aliases=["edonate", "edono"],
         usage="<type> | <name> | [requirements] | <prize> | [message]"
     )
     @commands.guild_only()
@@ -1264,7 +1262,7 @@ class ServerDonations(commands.Cog):
     ):
         """
         Donate to server events.
-        
+
         Split arguments with `|`.
         See `[p]sdonatehelp` to know how to donate.
         """
@@ -1272,7 +1270,7 @@ class ServerDonations(commands.Cog):
 
         if not settings["channels"]["echan"]:
             return await context.send("No event donation request channel set.")
-            
+
         edonos = emsg.split("|")
 
         if len(edonos) < 5:
@@ -1377,7 +1375,6 @@ class ServerDonations(commands.Cog):
 
     @commands.command(
         name="heistdonate",
-        aliases=["hdonate", "hdono"],
         usage="<type> | <amount> | [requirements] | [message]"
     )
     @commands.guild_only()
@@ -1391,7 +1388,7 @@ class ServerDonations(commands.Cog):
     ):
         """
         Donate to server heists.
-        
+
         Split arguments with `|`.
         This command is especially designed for Bro bot and/or Dank Memer Bot or any other bot that has the similar feature.
         See `[p]sdonatehelp` to know how to donate.
@@ -1400,7 +1397,7 @@ class ServerDonations(commands.Cog):
 
         if not settings["channels"]["hchan"]:
             return await context.send("No heist donation request channel set.")
-            
+
         hdonos = hmsg.split("|")
 
         if len(hdonos) < 4:

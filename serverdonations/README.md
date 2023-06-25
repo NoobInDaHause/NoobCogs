@@ -91,7 +91,6 @@ Set the giveaway, event or heist donation request channel.<br/><br/>Leave channe
 
 # giveawaydonate
  - Usage: `[p]giveawaydonate <type> | <duration> | <winners> | [requirements] | <prize> | [message] `
- - Aliases: `gdonate and gdono`
  - Cooldown: `1 per 10.0 seconds`
  - Checks: `server_only`
 
@@ -99,7 +98,6 @@ Donate to guild giveaways.<br/><br/>Split arguments with |.<br/>See [p]sdonatehe
 
 # eventdonate
  - Usage: `[p]eventdonate <type> | <name> | [requirements] | <prize> | [message] `
- - Aliases: `edonate and edono`
  - Cooldown: `1 per 10.0 seconds`
  - Checks: `server_only`
 
@@ -107,7 +105,6 @@ Donate to guild events.<br/><br/>Split arguments with |.<br/>See [p]sdonatehelp 
 
 # heistdonate
  - Usage: `[p]heistdonate <type> | <amount> | [requirements] | [message] `
- - Aliases: `hdonate and hdono`
  - Cooldown: `1 per 10.0 seconds`
  - Checks: `server_only`
 
