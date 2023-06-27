@@ -25,7 +25,7 @@ class DevLogs(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.DevLogs")
 
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["sravan", "NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
 
@@ -158,21 +158,20 @@ class DevLogs(commands.Cog):
         """
         list the users in the bypass list.
         """
-        async with self.config.bypass() as bypass:
-            b: list = bypass
-            if not b:
-                return await context.send("There are no users in the bypass list.")
+        b: list = await self.config.bypass()
+        if not b:
+            return await context.send("There are no users in the bypass list.")
 
-            final = ""
-            for user in b:
-                try:
-                    user_obj = await context.bot.get_or_fetch_user(user)
-                    final += f"{user_obj} (`{user_obj.id}`).\n"
-                except discord.errors.NotFound:
-                    final += f"{user} (`{user}`).\n"
-            embed = discord.Embed(
-                title="DevLogs Bypass List",
-                description=f"A list of users that bypasses the DevLogs cog:\n{final}",
-                color=context.author.colour,
-            )
-            await context.send(embed=embed)
+        final = ""
+        for user in b:
+            try:
+                user_obj = await context.bot.get_or_fetch_user(user)
+                final += f"{user_obj} (`{user_obj.id}`).\n"
+            except discord.errors.NotFound:
+                final += f"{user} (`{user}`).\n"
+        embed = discord.Embed(
+            title="DevLogs Bypass List",
+            description=f"A list of users that bypasses the DevLogs cog:\n{final}",
+            color=context.author.colour,
+        )
+        await context.send(embed=embed)
