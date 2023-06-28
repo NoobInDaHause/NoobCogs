@@ -6,7 +6,7 @@ class Coordinate(dict):
     def __missing__(self, key):
         return key
 
-def is_have_avatar(thing: Union[discord.Member, discord.Guild] = None):
+def is_have_avatar(thing: Union[discord.Member, discord.Guild] = None) -> str:
     if not thing:
         return ""
     if isinstance(thing, discord.Member):
