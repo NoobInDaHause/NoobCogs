@@ -2,12 +2,10 @@ import discord
 
 from redbot.core import commands
 
-from typing import Optional
-
 from .noobutils import access_denied
 
 class Confirmation(discord.ui.View):
-    def __init__(self, timeout: Optional[float] = 60.0):
+    def __init__(self, timeout: float = 60.0):
         super().__init__(timeout=timeout)
         self.confirm_action: str = None
         self.context: commands.Context = None

@@ -1,12 +1,10 @@
-import datetime as dt
 import discord
 import logging
 
-from redbot.core import app_commands, commands, Config
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, pagify
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core import app_commands, bot, commands, Config
+from redbot.core.utils import menus, chat_formatting as cf
 
+from datetime import datetime, timezone
 from typing import Literal, Optional
 
 from .noobutils import is_have_avatar
@@ -18,7 +16,8 @@ class Afk(commands.Cog):
 
     Be afk and notify users who ping you with a reason of your choice.
     """
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: bot.Red, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.bot = bot
 
         self.config = Config.get_conf(self, identifier=54646544526864548, force_registration=True)
@@ -38,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.3"
+    __version__ = "1.2.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -50,7 +49,7 @@ class Afk(commands.Cog):
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -74,49 +73,49 @@ class Afk(commands.Cog):
                     if i["pinger_id"] == user_id:
                         i["pinger_id"] = None
 
-    async def start_afk(self, payload: discord.Message, user: discord.Member, reason: str):
+    async def start_afk(self, message: discord.Message, user: discord.Member, reason: str):
         """
         Start AFK status.
         """
         await self.config.member(user).afk.set(True)
-        await self.config.member(user).timestamp.set(round(dt.datetime.now(dt.timezone.utc).timestamp()))
+        await self.config.member(user).timestamp.set(round(datetime.now(timezone.utc).timestamp()))
         await self.config.member(user).reason.set(reason)
 
-        if await self.config.guild(payload.guild).nick():
+        if await self.config.guild(message.guild).nick():
             try:
                 await user.edit(nick=f"[AFK] {user.display_name}", reason="User is AFK.")
             except discord.errors.Forbidden:
-                if user.id == payload.guild.owner.id:
-                    await payload.channel.send(
+                if user.id == message.guild.owner.id:
+                    await message.channel.send(
                         content="Could not change your nick cause you are the guild owner.", delete_after=10
                     )
                 else:
-                    await payload.channel.send(
+                    await message.channel.send(
                         content="Could not change your nick due to role hierarchy or "
                         "I'm missing the manage nicknames permission.", delete_after=10
                     )
 
-    async def end_afk(self, payload: discord.Message, user: discord.Member):
+    async def end_afk(self, message: discord.Message, user: discord.Member):
         """
         End AFK status.
         """
-        await payload.channel.send(content=f"Welcome back {user.name}! I have removed your AFK status.")
+        await message.channel.send(content=f"Welcome back {user.name}! I have removed your AFK status.")
         await self.config.member(user).afk.set(False)
         await self.config.member(user).timestamp.clear()
         await self.config.member(user).reason.clear()
 
-        if await self.config.guild(payload.guild).nick():
+        if await self.config.guild(message.guild).nick():
             try:
                 await user.edit(
                     nick=f"{user.display_name}".replace("[AFK]", ""), reason="User is no longer AFK."
                 )
             except discord.errors.Forbidden:
-                if user.id == payload.guild.owner.id:
-                    await payload.channel.send(
+                if user.id == message.guild.owner.id:
+                    await message.channel.send(
                         content="Could not change your nick cause you are the guild owner.", delete_after=10
                     )
                 else:
-                    await payload.channel.send(
+                    await message.channel.send(
                         content="Could not change your nick due to role hierarchy or "
                         "I'm missing the manage nicknames permission.", delete_after=10
                     )
@@ -134,35 +133,36 @@ class Afk(commands.Cog):
                     f"\n**Message:** {i['message']}"
                 )
                 final_log.append(logs)
-            
-            pinglist = "\n".join(final_log)
-            pages = list(pagify(pinglist, delims=["` - `"], page_length=2000))
-            final_page = {}
 
-            for ind, page in enumerate(pages, 1):
+            pinglist = "\n".join(final_log)
+            pages = list(cf.pagify(pinglist, delims=["` - `"], page_length=2000))
+            final_page = []
+
+            for index, page in enumerate(pages, 1):
                 embed = discord.Embed(
                     title=f"You have recieved some pings while you were AFK, {user.name}.",
                     description=page,
                     color=user.colour
-                ).set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(user))
-                final_page[ind - 1] = embed
+                ).set_footer(text=f"Page ({index}/{len(pages)})", icon_url=is_have_avatar(user))
+                final_page.append(embed)
 
-            context = await self.bot.get_context(payload)
+            context = await self.bot.get_context(message)
             await self.config.member(user).pinglogs.clear()
-            await menu(context, list(final_page.values()), DEFAULT_CONTROLS, timeout=60)
+            await menus.menu(context, final_page, menus.DEFAULT_CONTROLS, timeout=60)
 
-    async def maybe_log_and_notify(self, payload: discord.Message, afk_user: discord.Member):
+    async def maybe_log_and_notify(self, message: discord.Message, afk_user: discord.Member):
         """
         Log pings and at the same time notify members when they mentioned an AFK memebr.
         """
         if await self.config.member(afk_user).toggle_logs():
-            async with self.config.member(afk_user).pinglogs() as pl:
+            async with self.config.member(afk_user).pinglogs() as ping_logs:
+                pl: list = ping_logs
                 dict_log = {
-                    "pinger_id": payload.author.id,
-                    "jump_url": payload.jump_url,
-                    "channel_id": payload.channel.id,
-                    "timestamp": round(dt.datetime.now(dt.timezone.utc).timestamp()),
-                    "message": payload.content
+                    "pinger_id": message.author.id,
+                    "jump_url": message.jump_url,
+                    "channel_id": message.channel.id,
+                    "timestamp": round(datetime.now(timezone.utc).timestamp()),
+                    "message": message.content
                 }
                 pl.append(dict_log)
 
@@ -174,35 +174,32 @@ class Afk(commands.Cog):
             colour=afk_user.colour
         ).set_thumbnail(url=is_have_avatar(afk_user))
 
-        da = await self.config.guild(payload.guild).delete_after()
+        da = await self.config.guild(message.guild).delete_after()
 
         return (
-            await payload.channel.send(embed=embed, reference=payload, mention_author=False, delete_after=da)
+            await message.channel.send(embed=embed, reference=message, mention_author=False, delete_after=da)
             if da != 0
-            else await payload.channel.send(embed=embed, reference=payload, mention_author=False)
+            else await message.channel.send(embed=embed, reference=message, mention_author=False)
         )
 
     @commands.Cog.listener("on_message")
-    async def _afk_listener(self, payload: discord.Message):
-        context: commands.Context = await self.bot.get_context(payload)
-        tup = (f"{context.prefix}afk", f"{context.prefix}away")
-        if not payload.guild:
-            return
-        if not payload.channel.permissions_for(payload.guild.me).send_messages:
-            return
-        if payload.author.bot:
-            return
-        if await self.config.member(payload.author).sticky():
-            return
-        if payload.content.startswith(tup):
-            return
-        if await self.config.member(payload.author).afk():
-            await self.end_afk(payload=payload, user=payload.author)
-        if not payload.mentions:
-            return
-        for afk_user in payload.mentions:
-            if afk_user != payload.author and await self.config.member(afk_user).afk():
-                await self.maybe_log_and_notify(payload=payload, afk_user=afk_user)
+    async def afk_listener(self, message: discord.Message):
+        context: commands.Context = await self.bot.get_context(message)
+        tuple_cmds = (f"{context.prefix}afk", f"{context.prefix}away")
+        if (
+            message.channel.permissions_for(message.guild.me).send_messages
+            and not await self.config.member(message.author).sticky()
+            and await self.config.member(message.author).afk()
+            and not message.content.startswith(tuple_cmds)
+            and message.guild is not None
+            and not message.author.bot
+        ):
+            await self.end_afk(message=message, user=message.author)
+
+        if message.mentions:
+            for afk_user in message.mentions:
+                if afk_user != message.author and await self.config.member(afk_user).afk():
+                    await self.maybe_log_and_notify(message=message, afk_user=afk_user)
 
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
@@ -220,7 +217,7 @@ class Afk(commands.Cog):
             return await context.send(content="It appears you are already AFK.")
 
         await context.send(content="You are now AFK. Any member that pings you will now get notified.")
-        await self.start_afk(payload=context.message, user=context.author, reason=reason)
+        await self.start_afk(message=context.message, user=context.author, reason=reason)
 
     @commands.group(name="afkset", aliases=["awayset"])
     @commands.guild_only()
@@ -233,11 +230,7 @@ class Afk(commands.Cog):
 
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.admin_or_permissions(manage_guild=True)
-    async def afkset_deleteafter(
-        self,
-        context: commands.Context,
-        seconds: Optional[int]
-    ):
+    async def afkset_deleteafter(self, context: commands.Context, seconds: Optional[int]):
         """
         Change the delete after on every AFK notify.
 
@@ -248,7 +241,9 @@ class Afk(commands.Cog):
             await self.config.guild(context.guild).delete_after.set(0)
             return await context.send(content="The delete after has been disabled.")
 
-        if seconds >= 121:
+        if seconds < 0:
+            return await context.send(content="You can not set the delete after lower than 0.")
+        if seconds > 120:
             return await context.send(content="The maximum seconds of delete after is 120 seconds.")
 
         await self.config.guild(context.guild).delete_after.set(seconds)
@@ -257,11 +252,7 @@ class Afk(commands.Cog):
     @afkset.command(name="forceafk", aliases=["forceaway"])
     @commands.admin_or_permissions(manage_guild=True)
     async def afkset_forceafk(
-        self,
-        context: commands.Context,
-        member: discord.Member,
-        *,
-        reason: Optional[str] = "No reason given."
+        self, context: commands.Context, member: discord.Member, *, reason: Optional[str] = "No reason given."
     ):
         """
         Forcefully add or remove an AFK status on a user.
@@ -279,10 +270,10 @@ class Afk(commands.Cog):
 
         if await self.config.member(member).afk():
             await context.send(content=f"Forcefully removed **{member}**'s AFK status.")
-            return await self.end_afk(payload=context.message, user=member)
+            return await self.end_afk(message=context.message, user=member)
 
         await context.send(content=f"Forcefully added **{member}**'s AFK status.")
-        await self.start_afk(payload=context.message, user=member, reason=reason)
+        await self.start_afk(message=context.message, user=member, reason=reason)
 
     @afkset.command(name="members")
     @commands.admin_or_permissions(manage_guild=True)
@@ -300,18 +291,18 @@ class Afk(commands.Cog):
             return await context.send(content="No members are AFK in this guild.")
 
         afk_users = "\n".join(afk_list)
-        pages = list(pagify(afk_users, delims=["\n"], page_length=2000))
-        final_page = {}
+        pages = list(cf.pagify(afk_users, delims=["\n"], page_length=2000))
+        final_page = []
 
-        for ind, page in enumerate(pages, 1):
+        for index, page in enumerate(pages, 1):
             embed = discord.Embed(
                 title="Here are the members who are afk in this guild.",
                 description=page,
                 color=await context.embed_colour()
-            ).set_footer(text=f"Page ({ind}/{len(pages)})", icon_url=is_have_avatar(context.guild))
-            final_page[ind - 1] = embed
+            ).set_footer(text=f"Page ({index}/{len(pages)})", icon_url=is_have_avatar(context.guild))
+            final_page.append(embed)
 
-        await menu(context, list(final_page.values()), DEFAULT_CONTROLS, timeout=60)
+        await menus.menu(context, final_page, menus.DEFAULT_CONTROLS, timeout=60)
 
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True)
@@ -379,7 +370,7 @@ class Afk(commands.Cog):
             description=f"`Is afk:` {member_settings['afk']}\n`Is sticky:` {member_settings['sticky']}\n"
             f"`Ping logging:` {member_settings['toggle_logs']}",
             colour=context.author.colour,
-            timestamp=dt.datetime.now(dt.timezone.utc)
+            timestamp=datetime.now(timezone.utc)
         )
 
         if await context.bot.is_owner(context.author) or context.author.guild_permissions.manage_guild:
