@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.4"
+    __version__ = "1.2.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -184,14 +184,15 @@ class Afk(commands.Cog):
 
     @commands.Cog.listener("on_message")
     async def afk_listener(self, message: discord.Message):
+        if not message.guild:
+            return
         context: commands.Context = await self.bot.get_context(message)
         tuple_cmds = (f"{context.prefix}afk", f"{context.prefix}away")
         if (
             message.channel.permissions_for(message.guild.me).send_messages
-            and not await self.config.member(message.author).sticky()
             and await self.config.member(message.author).afk()
+            and not await self.config.member(message.author).sticky()
             and not message.content.startswith(tuple_cmds)
-            and message.guild is not None
             and not message.author.bot
         ):
             await self.end_afk(message=message, user=message.author)
