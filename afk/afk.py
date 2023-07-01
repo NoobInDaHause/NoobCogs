@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.5"
+    __version__ = "1.2.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -184,23 +184,24 @@ class Afk(commands.Cog):
 
     @commands.Cog.listener("on_message")
     async def afk_listener(self, message: discord.Message):
-        if not message.guild:
-            return
         context: commands.Context = await self.bot.get_context(message)
         tuple_cmds = (f"{context.prefix}afk", f"{context.prefix}away")
-        if (
-            message.channel.permissions_for(message.guild.me).send_messages
-            and await self.config.member(message.author).afk()
-            and not await self.config.member(message.author).sticky()
-            and not message.content.startswith(tuple_cmds)
-            and not message.author.bot
-        ):
-            await self.end_afk(message=message, user=message.author)
-
+        if not message.guild:
+            return
+        if not message.channel.permissions_for(message.guild.me).send_messages:
+            return
+        if message.author.bot:
+            return
+        if message.content.startswith(tuple_cmds):
+            return
         if message.mentions:
             for afk_user in message.mentions:
                 if afk_user != message.author and await self.config.member(afk_user).afk():
                     await self.maybe_log_and_notify(message=message, afk_user=afk_user)
+        if await self.config.member(message.author).sticky():
+            return
+        if await self.config.member(message.author).afk():
+            await self.end_afk(message=message, user=message.author)
 
     @commands.hybrid_command(name="afk", aliases=["away"])
     @commands.guild_only()
