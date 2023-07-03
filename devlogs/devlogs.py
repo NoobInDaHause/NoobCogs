@@ -3,7 +3,7 @@ import discord
 import logging
 
 from redbot.core import bot, commands, Config
-from redbot.core.utils.chat_formatting import box, humanize_list
+from redbot.core.utils import menus, chat_formatting as cf
 
 from typing import Literal, Optional
 
@@ -25,19 +25,19 @@ class DevLogs(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.DevLogs")
 
-    __version__ = "1.0.5"
-    __author__ = ["sravan", "NoobInDaHause"]
+    __version__ = "1.0.6"
+    __author__ = ["sravan_krishna", "NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -77,7 +77,7 @@ class DevLogs(commands.Cog):
             content = content.replace("```", "")
         embed = discord.Embed(
             title=f"{context.command.name.upper()} Logs",
-            description=box(content, lang="py"),
+            description=cf.box(content, lang="py"),
             color=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
@@ -119,7 +119,7 @@ class DevLogs(commands.Cog):
         """
         if not channel:
             await self.config.default_channel.clear()
-            return await context.send(content="Default channel cleared.")
+            return await context.send(content="The DevLogs logging channel has been cleared.")
 
         await self.config.default_channel.set(channel.id)
         await context.send(content=f"Successfully set the DevLogs logging channel to {channel.mention}.")
@@ -166,16 +166,23 @@ class DevLogs(commands.Cog):
         if not b:
             return await context.send(content="There are no users in the bypass list.")
 
-        final = ""
+        users = ""
         for user in b:
             try:
                 user_obj = await context.bot.get_or_fetch_user(user)
-                final += f"{user_obj} (`{user_obj.id}`).\n"
+                users += f"` - ` {user_obj} (`{user_obj.id}`).\n"
             except discord.errors.NotFound:
-                final += f"Unknown User (`{user}`).\n"
-        embed = discord.Embed(
-            title="DevLogs Bypass List",
-            description=f"A list of users that bypasses the DevLogs cog:\n{final}",
-            color=context.author.colour,
-        )
-        await context.send(embed=embed)
+                users += f"` - ` Unknown User (`{user}`).\n"
+        final_users = list(cf.pagify(users, delims=["` - `"], page_length=2000))
+        final_page = []
+        for index, page in enumerate(final_users, 1):
+            embed = discord.Embed(
+                title="A list of users that bypasses the DevLogs cog",
+                description=page,
+                color=context.author.colour,
+            ).set_footer(
+                text=f"Command executed by {context.author} | Page ({index}/{len(final_users)})",
+                icon_url=is_have_avatar(context.author)
+            )
+            final_page.append(embed)
+        await menus.menu(context, final_page, menus.DEFAULT_CONTROLS, timeout=60)

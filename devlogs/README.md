@@ -1,35 +1,39 @@
 # DevLogs Help
 
-Keep a log of all that evals and debugs.<br/>Logs all the Dev commands in a channel.<br/>Originally and formerly from sravan but I got permission to maintain it now.
+Keep a log of all that evals and debugs.<br/><br/>Logs all the Dev commands in a channel.<br/>Originally and formerly from sravan but I got permission to maintain it now.
 
-# devset
- - Usage: `[p]devset `
+# devlogset
+ - Usage: `[p]devlogset `
  - Restricted to: `BOT_OWNER`
+ - Aliases: `devset`
  - Checks: `guild_only`
 
 Configure DevLogs settings.
 
-## devset channel
- - Usage: `[p]devset channel [channel=None] `
+## devlogset channel
+ - Usage: `[p]devlogset channel <channel> `
+ - Aliases: `chan`
 
 Set the channel to log to.
 
-## devset bypass
- - Usage: `[p]devset bypass `
+## devlogset bypass
+ - Usage: `[p]devlogset bypass `
 
 Manage the bypass list.
 
-### devset bypass remove
- - Usage: `[p]devset bypass remove <user> `
+### devlogset bypass list
+ - Usage: `[p]devlogset bypass list `
 
-Remove a user from the bypass list.
+list the users in the bypass list.
 
-### devset bypass add
- - Usage: `[p]devset bypass add <user> `
+### devlogset bypass add
+ - Usage: `[p]devlogset bypass add <user> `
+ - Aliases: `+`
 
 Add a user to the bypass list.
 
-### devset bypass list
- - Usage: `[p]devset bypass list `
+### devlogset bypass remove
+ - Usage: `[p]devlogset bypass remove <user> `
+ - Aliases: `-`
 
-list the users in the bypass list.
+Remove a user from the bypass list.
