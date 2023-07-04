@@ -2,11 +2,10 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, app_commands
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, box
+from redbot.core import app_commands, bot, commands
+from redbot.core.utils import chat_formatting as cf
 
-from amari import AmariClient
+from amari import AmariClient, NotFound, InvalidToken
 from typing import Literal, Optional
 
 from .noobutils import is_have_avatar
@@ -15,16 +14,16 @@ class AmariLevel(commands.Cog):
     """
     Check your amari level but through red.
 
-    You will need an amari api token for this to work.
+    If you are the bot owner you will need an amari api token for this to work.
     You can apply for one [here](https://forms.gle/TEZ3YbbMPMEWYuuMA).
     Then set it with `[p]set api amari auth,<your_api_key>`.
     """
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: bot.Red) -> None:
         self.bot = bot
 
         self.log = logging.getLogger("red.NoobCogs.AmariLevel")
 
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/amarilevel/README.md"
 
@@ -32,11 +31,11 @@ class AmariLevel(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -47,7 +46,7 @@ class AmariLevel(commands.Cog):
         """
         return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
 
-    @commands.hybrid_command(name="amarilevel", aliases=["alvl", "alevel"])
+    @commands.hybrid_command(name="amarilevel", aliases=["alvl", "alevel", "amari"])
     @commands.guild_only()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True)
@@ -57,7 +56,8 @@ class AmariLevel(commands.Cog):
         """
         Check your or someone else's amari level.
 
-        Requires amari api token, apply for one [here](https://forms.gle/TEZ3YbbMPMEWYuuMA).
+        Requires amari api token.
+        If you are the bot owner apply for one [here](https://forms.gle/TEZ3YbbMPMEWYuuMA).
         If you already have an amari api token set it with:
         `[p]set api amari auth,<your_api_key>`
         """
@@ -78,25 +78,28 @@ class AmariLevel(commands.Cog):
             lb = await amari.fetch_full_leaderboard(context.guild.id)
             memb = await amari.fetch_user(context.guild.id, member.id)
             rank = lb.get_user(member.id)
-
-            embed = (
-                discord.Embed(
-                    description=f"{member.mention}'s amari.",
-                    colour=member.colour,
-                    timestamp=datetime.datetime.now(datetime.timezone.utc)
-                )
-                .set_thumbnail(url=is_have_avatar(member))
-                .add_field(name="Amari Rank:", value=rank.position + 1, inline=False)
-                .add_field(name="Amari Level:", value=memb.level, inline=False)
-                .add_field(name="Amari EXP:", value=memb.exp, inline=False)
-                .add_field(name="Amari Weekly EXP:", value=memb.weeklyexp, inline=False)
+            embed = discord.Embed(
+                title="Amari Rank",
+                description=(
+                    f"> - **Rank**: {cf.humanize_number(rank.position + 1)}\n"
+                    f"> - **Level**: {cf.humanize_number(memb.level)}\n"
+                    f"> - **EXP**: {cf.humanize_number(memb.exp)}\n"
+                    f"> - **Weekly EXP**: {cf.humanize_number(memb.weeklyexp)}"
+                ),
+                colour=member.colour,
+                timestamp=datetime.datetime.now(datetime.timezone.utc)
             )
+            embed.set_thumbnail(url=is_have_avatar(member))
+            embed.set_footer(text=member, icon_url=is_have_avatar(context.guild))
             await context.send(embed=embed)
+        except InvalidToken:
+            await context.send(content="The amari api token is invalid please report this to the bot owner.")
+        except NotFound:
+            await context.send(content="No amari data found.")
         except Exception as e:
             self.log.exception(e, exc_info=e)
             await context.send(
                 content="An error has occurred.\nPlease report this to the bot owner.\n"
-                f"Here is the traceback: {box(e, 'py')}"
+                f"Here is the traceback: {cf.box(e, 'py')}"
             )
-
         await amari.close()

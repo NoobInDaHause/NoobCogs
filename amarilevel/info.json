@@ -1,7 +1,7 @@
 {
     "name": "AmariLevel",
     "short": "Check your amari level but through red.",
-    "description": "You will need an amari api token for this to work. You can apply for one [here](https://forms.gle/TEZ3YbbMPMEWYuuMA). Then set it with `[p]set api amari auth,<your_api_key>`.",
+    "description": "If you are the bot owner you will need an amari api token for this to work. You can apply for one [here](https://forms.gle/TEZ3YbbMPMEWYuuMA). Then set it with `[p]set api amari auth,<your_api_key>`.",
     "end_user_data_statement": "This cog does not store any end user data whatsoever.",
     "install_msg": "Thank you for installing AmariLevel. Load the cog with `[p]load amarilevel`.",
     "author": [
@@ -11,7 +11,9 @@
     "hidden": false,
     "disabled": false,
     "required_cogs": {},
-    "requirements": ["amari.py"],
+    "requirements": [
+        "amari.py"
+    ],
     "tags": [
         "Amari",
         "Level",
