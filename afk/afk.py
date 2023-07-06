@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.6"
+    __version__ = "1.2.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -192,12 +192,12 @@ class Afk(commands.Cog):
             return
         if message.author.bot:
             return
-        if message.content.startswith(tuple_cmds):
-            return
         if message.mentions:
             for afk_user in message.mentions:
                 if afk_user != message.author and await self.config.member(afk_user).afk():
                     await self.maybe_log_and_notify(message=message, afk_user=afk_user)
+        if message.content.startswith(tuple_cmds):
+            return
         if await self.config.member(message.author).sticky():
             return
         if await self.config.member(message.author).afk():
