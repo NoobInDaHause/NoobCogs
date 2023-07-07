@@ -3,6 +3,7 @@ import contextlib
 import datetime
 import discord
 import logging
+import TagScriptEngine as tse
 import traceback
 
 from redbot.core import commands, Config
@@ -34,9 +35,9 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.4"
+    __version__ = "1.1.5"
     __author__ = ["NoobInDaHause"]
-    __docs__ = "https://github.com/NoobInDaHause/WintersCogs/blob/red-3.5/customerror/README.md"
+    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -60,7 +61,6 @@ class CustomError(commands.Cog):
     # https://github.com/Sitryk/sitcogsv3/blob/e1d8d0f3524dfec17872379c12c0edcb9360948d/errorhandler/cog.py#L30
     # modified to work with tagscriptengine and my code
     async def on_command_error(self, ctx: commands.Context, error, unhandled_by_cog = False):
-        import TagScriptEngine as tse
         context = ctx
         tagengine = tse.AsyncInterpreter(
             blocks=[
