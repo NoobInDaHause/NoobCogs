@@ -1,8 +1,8 @@
 from redbot.core import bot, utils
 
-__red_end_user_data_statement__ = utils.get_end_user_data_statement(__file__)
-
 from .serverdonations import ServerDonations
+
+__red_end_user_data_statement__ = utils.get_end_user_data_statement(__file__)
 
 async def setup(bot: bot.Red):
     cog = ServerDonations(bot)

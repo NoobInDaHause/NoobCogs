@@ -1,4 +1,3 @@
-import asyncio
 import contextlib
 import datetime
 import discord
@@ -6,13 +5,12 @@ import logging
 import TagScriptEngine as tse
 import traceback
 
-from redbot.core import commands, Config
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, box
+from redbot.core import bot, commands, Config
+from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal, Optional
 
-from .views import Confirmation
+from noobutils import NoobConfirmation
 
 class CustomError(commands.Cog):
     """
@@ -20,9 +18,9 @@ class CustomError(commands.Cog):
 
     Red already has a core command that changes the error message but I made my own with customization.
     This cog uses TagScriptEngine so be sure you have knowledge in that.
-    Credits to sitryk, cray and phen for some of the code.
+    Credits to sitryk and phen for some of the code.
     """
-    def __init__(self, bot: Red):
+    def __init__(self, bot: bot.Red):
         self.bot = bot
 
         self.config = Config.get_conf(self, identifier=9874825374237, force_registration=True)
@@ -35,7 +33,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.5"
+    __version__ = "1.1.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
 
@@ -43,11 +41,11 @@ class CustomError(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        p = "s" if len(self.__author__) != 1 else ""
+        p = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{p}: {humanize_list([f"**{auth}**" for auth in self.__author__])}
+        Cog Author{p}: {cf.humanize_list([f"**{auth}**" for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -65,8 +63,8 @@ class CustomError(commands.Cog):
         tagengine = tse.AsyncInterpreter(
             blocks=[
                 tse.EmbedBlock(), tse.LooseVariableGetterBlock(), tse.StrictVariableGetterBlock(),
-                tse.IfBlock(), tse.RandomBlock(), tse.CommandBlock(), tse.RedirectBlock(), tse.FiftyFiftyBlock(),
-                tse.AllBlock(), tse.AnyBlock(), tse.BlacklistBlock(), tse.ReplaceBlock()
+                tse.IfBlock(), tse.RandomBlock(), tse.CommandBlock(), tse.FiftyFiftyBlock(),
+                tse.AllBlock(), tse.AnyBlock(), tse.ReplaceBlock()
             ]
         )
         if isinstance(error, commands.CommandInvokeError):
@@ -122,6 +120,8 @@ class CustomError(commands.Cog):
     async def customerror_message(self, context: commands.Context, *, message: Optional[str]):
         """
         Customize [botname]'s error message.
+        
+        
 
         Bot owners only.
         Be sure that you have TagScriptEgnine knowledge.
@@ -140,13 +140,16 @@ class CustomError(commands.Cog):
         {message_content} - The message content.
         {message_id} - The message ID.
         {message_jump_url} - The message jump url.
+
+        There is also:
+        IfBlock, RandomBlock, CommandBlock, FiftyFiftyBlock, AllBlock, AnyBlock, ReplaceBlock
         """
         if not message:
             await self.config.error_msg.clear()
             return await context.send(content="The error message has been reset.")
 
         await self.config.error_msg.set(message)
-        await context.send(content=f"The error message has been set to: {box(message, 'py')}")
+        await context.send(content=f"The error message has been set to: {cf.box(message, 'py')}")
 
     @customerror.command(name="plzerror")
     async def customerror_plzerror(self, context: commands.Context):
@@ -156,9 +159,7 @@ class CustomError(commands.Cog):
         Bot owners only.
         """
         msg = await context.maybe_send_embed(message="Testing out error message please wait...")
-        await asyncio.sleep(1.0)
-        await msg.delete()
-        await asyncio.sleep(0.5)
+        await msg.delete(delay=1.5)
         raise NotImplementedError("This is a test error.")
 
     @customerror.command(name="reset")
@@ -170,12 +171,12 @@ class CustomError(commands.Cog):
         """
         act = "Successfully reset the cogs settings."
         msg = "Are you sure you want to reset the cogs settings?"
-        view = Confirmation()
-        await view.start(context, confirm_action=act, confirmation_msg=msg)
+        view = NoobConfirmation()
+        await view.start(context, confirm_action=act, confirm_msg=msg)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.clear_all()
 
     @customerror.command(name="showsettings", aliases=["ss"])
@@ -188,7 +189,7 @@ class CustomError(commands.Cog):
         settings = await self.config.error_msg()
         embed = discord.Embed(
             title="Current error message",
-            description=box(settings, "py"),
+            description=cf.box(settings, "py"),
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )

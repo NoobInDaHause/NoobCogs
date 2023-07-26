@@ -12,7 +12,8 @@
     "disabled": false,
     "required_cogs": {},
     "requirements": [
-        "TagScript"
+        "TagScript",
+        "git+https://github.com/NoobInDaHause/noobutils.git"
     ],
     "tags": [
         "join",

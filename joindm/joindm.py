@@ -5,12 +5,10 @@ import logging
 import TagScriptEngine as tse
 
 from redbot.core import bot, commands, Config
-from redbot.core.utils.chat_formatting import humanize_list, box
+from redbot.core.utils import chat_formatting as cf
 
+from noobutils import NoobConfirmation, is_have_avatar, get_button_colour
 from typing import Literal, Optional
-
-from .noobutils import is_have_avatar, get_button_colour
-from .views import Confirmation
 
 class JoinDM(commands.Cog):
     """
@@ -30,7 +28,7 @@ class JoinDM(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.JoinDM")
 
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/joindm/README.md"
 
@@ -38,11 +36,11 @@ class JoinDM(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -108,12 +106,12 @@ class JoinDM(commands.Cog):
         """
         c_act = "Successfully reset your joindm guild settings."
         c_conf = "Are you sure you want to reset your joindm guild settings?"
-        view = Confirmation()
+        view = NoobConfirmation()
         await view.start(context, c_conf, c_act)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.guild(context.guild).clear()
 
     @joindmset.command(name="resetcog")
@@ -124,12 +122,12 @@ class JoinDM(commands.Cog):
         """
         c_act = "Successfully reset the cogs config."
         c_conf = "Are you sure you want to reset the cogs config?"
-        view = Confirmation()
+        view = NoobConfirmation()
         await view.start(context, c_conf, c_act)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.clear_all()
 
     @joindmset.command(name="message", aliases=["msg"])
@@ -151,7 +149,7 @@ class JoinDM(commands.Cog):
             return await context.send(content="The joindm message has been cleared.")
 
         await self.config.guild(context.guild).message.set(message)
-        await context.send(content=f"Successfully set your joindm message to: {box(message, 'py')}")
+        await context.send(content=f"Successfully set your joindm message to: {cf.box(message, 'py')}")
 
     @joindmset.command(name="toggle")
     async def joindmset_toggle(self, context: commands.Context):
@@ -181,5 +179,5 @@ class JoinDM(commands.Cog):
         )
         embed.set_thumbnail(url=is_have_avatar(context.guild))
         embed.add_field(name="Toggled:", value=data["toggled"], inline=False)
-        embed.add_field(name="Message:", value=box(data["message"], "py"), inline=False)
+        embed.add_field(name="Message:", value=cf.box(data["message"], "py"), inline=False)
         await context.send(embed=embed)

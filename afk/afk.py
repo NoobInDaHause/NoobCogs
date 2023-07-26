@@ -2,13 +2,11 @@ import discord
 import logging
 
 from redbot.core import app_commands, bot, commands, Config
-from redbot.core.utils import menus, chat_formatting as cf
+from redbot.core.utils import chat_formatting as cf
 
 from datetime import datetime, timezone
+from noobutils import NoobConfirmation, NoobPaginator, is_have_avatar
 from typing import Literal, Optional
-
-from .noobutils import is_have_avatar
-from .views import Confirmation
 
 class Afk(commands.Cog):
     """
@@ -37,7 +35,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.7"
+    __version__ = "1.2.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -45,7 +43,7 @@ class Afk(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
@@ -148,7 +146,8 @@ class Afk(commands.Cog):
 
             context = await self.bot.get_context(message)
             await self.config.member(user).pinglogs.clear()
-            await menus.menu(context, final_page, menus.DEFAULT_CONTROLS, timeout=60)
+            paginator = NoobPaginator(final_page, timeout=60.0)
+            await paginator.start(context)
 
     async def maybe_log_and_notify(self, message: discord.Message, afk_user: discord.Member):
         """
@@ -304,7 +303,8 @@ class Afk(commands.Cog):
             ).set_footer(text=f"Page ({index}/{len(pages)})", icon_url=is_have_avatar(context.guild))
             final_page.append(embed)
 
-        await menus.menu(context, final_page, menus.DEFAULT_CONTROLS, timeout=60)
+        paginator = NoobPaginator(final_page, timeout=60.0)
+        await paginator.start(context)
 
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True)
@@ -326,12 +326,14 @@ class Afk(commands.Cog):
         """
         confirmation_msg = "Are you sure you want to reset your AFK settings?"
         confirm_action = "Successfully resetted your AFK settings."
-        view = Confirmation(timeout=30)
-        await view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
+        view = NoobConfirmation(timeout=30)
+        await view.start(
+            context=context, confirm_msg=confirmation_msg, confirm_action=confirm_action
+        )
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.member(context.author).clear()
 
     @afkset.command(name="resetcog")
@@ -342,12 +344,14 @@ class Afk(commands.Cog):
         """
         confirmation_msg = "Are you sure you want to reset the AFK cogs whole configuration?"
         confirm_action = "Successfully resetted the AFK cogs configuration."
-        view = Confirmation(timeout=30)
-        await view.start(context=context, confirmation_msg=confirmation_msg, confirm_action=confirm_action)
+        view = NoobConfirmation(timeout=30)
+        await view.start(
+            context=context, confirm_msg=confirmation_msg, confirm_action=confirm_action
+        )
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.clear_all_guilds()
             await self.config.clear_all_members()
 

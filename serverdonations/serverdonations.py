@@ -4,14 +4,13 @@ import discord
 import logging
 
 from redbot.core import bot, commands, Config
-from redbot.core.utils.chat_formatting import humanize_list, box
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core.utils import chat_formatting as cf
 
+from noobutils import NoobConfirmation, NoobCoordinate, NoobPaginator, is_have_avatar
 from typing import Literal, Optional
 
 from .cog_data import SdonateDesc, SdonateDefaults, SDEmbedData
-from .noobutils import is_have_avatar, Coordinate
-from .views import Confirmation, GiveawayFields, EventFields, HeistFields
+from .views import GiveawayFields, EventFields, HeistFields
 
 class ServerDonations(commands.Cog):
     """
@@ -35,7 +34,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**SdonateDefaults.default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "2.0.11"
+    __version__ = "2.0.12"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -43,11 +42,11 @@ class ServerDonations(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
         
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -84,7 +83,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content="Invalid variable or url.")
             await self.config.guild(context.guild).embeds.giveaway.g_footer.g_ficon.set(url_or_text)
             return await context.send(
-                content=f"The {types} footer icon has been set to: {box(url_or_text, 'py')}"
+                content=f"The {types} footer icon has been set to: {cf.box(url_or_text, 'py')}"
             )
         if type2 == "text":
             if not url_or_text:
@@ -95,7 +94,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content=f"The {types} footer text has been reset.")
             await self.config.guild(context.guild).embeds.giveaway.g_footer.g_ftext.set(url_or_text)
             return await context.send(
-                content=f"The {types} footer text has been set to: {box(url_or_text, 'py')}"
+                content=f"The {types} footer text has been set to: {cf.box(url_or_text, 'py')}"
             )
 
     async def set_e_embed_footer(
@@ -118,7 +117,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content="Invalid variable or url.")
             await self.config.guild(context.guild).embeds.event.e_footer.e_ficon.set(url_or_text)
             return await context.send(
-                content=f"The {types} footer icon has been set to: {box(url_or_text, 'py')}"
+                content=f"The {types} footer icon has been set to: {cf.box(url_or_text, 'py')}"
             )
         if type2 == "text":
             if not url_or_text:
@@ -129,7 +128,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content=f"The {types} footer text has been reset.")
             await self.config.guild(context.guild).embeds.event.e_footer.e_ftext.set(url_or_text)
             return await context.send(
-                content=f"The {types} footer text has been set to: {box(url_or_text, 'py')}"
+                content=f"The {types} footer text has been set to: {cf.box(url_or_text, 'py')}"
             )
 
     async def set_h_embed_footer(
@@ -152,7 +151,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content="Invalid variable or url.")
             await self.config.guild(context.guild).embeds.heist.h_footer.h_ficon.set(url_or_text)
             return await context.send(
-                content=f"The {types} footer icon has been set to: {box(url_or_text, 'py')}"
+                content=f"The {types} footer icon has been set to: {cf.box(url_or_text, 'py')}"
             )
         if type2 == "text":
             if not url_or_text:
@@ -163,7 +162,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content=f"The {types} footer text has been reset.")
             await self.config.guild(context.guild).embeds.heist.h_footer.h_ftext.set(url_or_text)
             return await context.send(
-                content=f"The {types} footer text has been set to: {box(url_or_text, 'py')}"
+                content=f"The {types} footer text has been set to: {cf.box(url_or_text, 'py')}"
             )
 
     # https://github.com/phenom4n4n/phen-cogs/blob/d60b66c0738937e71ee4865d62235e1b2c3cd819/forcemention/forcemention.py#L64
@@ -219,7 +218,7 @@ class ServerDonations(commands.Cog):
             try:
                 await channel.send(
                     content=f'{settings["embeds"]["giveaway"]["g_content"]}'.format_map(
-                        Coordinate(
+                        NoobCoordinate(
                             role="`No giveaway manager role set.`",
                             donor=context.author,
                             guild=context.guild
@@ -232,7 +231,7 @@ class ServerDonations(commands.Cog):
             except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
                     content="An error has occurred while sending the giveaway donation request.\n"
-                    f"Here is the traceback: {box(e, 'py')}"
+                    f"Here is the traceback: {cf.box(e, 'py')}"
                 )
 
         role = context.guild.get_role(settings["roles"]["gman"])
@@ -242,7 +241,7 @@ class ServerDonations(commands.Cog):
                 role=role,
                 embed=embed,
                 content=f'{settings["embeds"]["giveaway"]["g_content"]}'.format_map(
-                        Coordinate(
+                        NoobCoordinate(
                             role=role.mention,
                             donor=context.author,
                             guild=context.guild
@@ -254,7 +253,7 @@ class ServerDonations(commands.Cog):
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
                 content="An error has occurred while sending the giveaway donation request.\n"
-                    f"Here is the traceback: {box(e, 'py')}"
+                    f"Here is the traceback: {cf.box(e, 'py')}"
             )
 
     async def send_to_e_chan(self, context: commands.Context, embed: discord.Embed):
@@ -275,7 +274,7 @@ class ServerDonations(commands.Cog):
             try:
                 await channel.send(
                     content=f'{settings["embeds"]["event"]["e_content"]}'.format_map(
-                        Coordinate(
+                        NoobCoordinate(
                             role="`No event manager role set.`",
                             donor=context.author,
                             guild=context.guild
@@ -288,7 +287,7 @@ class ServerDonations(commands.Cog):
             except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
                     content="An error has occurred while sending the event donation request.\n"
-                    f"Here is the traceback: {box(e, 'py')}"
+                    f"Here is the traceback: {cf.box(e, 'py')}"
                 )
 
         role = context.guild.get_role(settings["roles"]["eman"])
@@ -298,7 +297,7 @@ class ServerDonations(commands.Cog):
                 role=role,
                 embed=embed,
                 content=f'{settings["embeds"]["event"]["e_content"]}'.format_map(
-                        Coordinate(
+                        NoobCoordinate(
                             role=role.mention,
                             donor=context.author,
                             guild=context.guild
@@ -310,7 +309,7 @@ class ServerDonations(commands.Cog):
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
                 content="An error has occurred while sending the event donation request.\n"
-                    f"Here is the traceback: {box(e, 'py')}"
+                    f"Here is the traceback: {cf.box(e, 'py')}"
             )
 
     async def send_to_h_chan(self, context: commands.Context, embed: discord.Embed):
@@ -331,7 +330,7 @@ class ServerDonations(commands.Cog):
             try:
                 await channel.send(
                     content=f'{settings["embeds"]["heist"]["h_content"]}'.format_map(
-                        Coordinate(
+                        NoobCoordinate(
                             role="`No heist manager role set.`",
                             donor=context.author,
                             guild=context.guild
@@ -344,7 +343,7 @@ class ServerDonations(commands.Cog):
             except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
                 return await context.send(
                     content="An error has occurred while sending the heist donation request.\n"
-                    f"Here is the traceback: {box(e, 'py')}"
+                    f"Here is the traceback: {cf.box(e, 'py')}"
                 )
 
         role = context.guild.get_role(settings["roles"]["hman"])
@@ -354,7 +353,7 @@ class ServerDonations(commands.Cog):
                 role=role,
                 embed=embed,
                 content=f'{settings["embeds"]["heist"]["h_content"]}'.format_map(
-                        Coordinate(
+                        NoobCoordinate(
                             role=role.mention,
                             donor=context.author,
                             guild=context.guild
@@ -366,7 +365,7 @@ class ServerDonations(commands.Cog):
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
             await context.send(
                 content="An error has occurred while sending the heist donation request.\n"
-                    f"Here is the traceback: {box(e, 'py')}"
+                    f"Here is the traceback: {cf.box(e, 'py')}"
             )
 
     async def set_g_thumb(self, context: commands.Context, types: str, url_or_avatar: str = None):
@@ -382,7 +381,7 @@ class ServerDonations(commands.Cog):
             return await context.send(content="Invalid variable or url.")
         await self.config.guild(context.guild).embeds.giveaway.g_thumb.set(url_or_avatar)
         return await context.send(
-            content=f"The {types} embed thumbnail has been set to: {box(url_or_avatar, 'py')}"
+            content=f"The {types} embed thumbnail has been set to: {cf.box(url_or_avatar, 'py')}"
         )
 
     async def set_e_thumb(self, context: commands.Context, types: str, url_or_avatar: str = None):
@@ -398,7 +397,7 @@ class ServerDonations(commands.Cog):
             return await context.send(content="Invalid variable or url.")
         await self.config.guild(context.guild).embeds.event.e_thumb.set(url_or_avatar)
         return await context.send(
-            content=f"The {types} embed thumbnail has been set to: {box(url_or_avatar, 'py')}"
+            content=f"The {types} embed thumbnail has been set to: {cf.box(url_or_avatar, 'py')}"
         )
 
     async def set_h_thumb(self, context: commands.Context, types: str, url_or_avatar: str = None):
@@ -414,7 +413,7 @@ class ServerDonations(commands.Cog):
             return await context.send(content="Invalid variables or url.")
         await self.config.guild(context.guild).embeds.heist.h_thumb.set(url_or_avatar)
         return await context.send(
-            content=f"The {types} embed thumbnail has been set to: {box(url_or_avatar, 'py')}"
+            content=f"The {types} embed thumbnail has been set to: {cf.box(url_or_avatar, 'py')}"
         )
 
     @commands.command(name="sdonatehelp")
@@ -456,7 +455,8 @@ class ServerDonations(commands.Cog):
         )
 
         bemeds = [em1, em2, em3]
-        await menu(context, bemeds, DEFAULT_CONTROLS, timeout=60)
+        paginator = NoobPaginator(bemeds, timeout=60.0)
+        await paginator.start(context)
 
     @commands.group(name="serverdonationsset", aliases=["sdonateset", "sdonoset"])
     @commands.guild_only()
@@ -475,12 +475,12 @@ class ServerDonations(commands.Cog):
         """
         conf_msg = "Are you sure you want to reset the guild's settings to default?"
         conf_act = "Successfully resetted the guild's settings to default."
-        view = Confirmation(timeout=30)
+        view = NoobConfirmation(timeout=30)
         await view.start(context, conf_msg, conf_act)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.guild(context.guild).clear()
 
     @serverdonationsset.command(name="role")
@@ -595,19 +595,19 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(context.guild).embeds.giveaway.g_content.clear()
                 return await context.send(content=f"The {types} embed content has been reset.")
             await self.config.guild(context.guild).embeds.giveaway.g_content.set(content)
-            await context.send(content=f"The {types} embed content has been set to: {box(content, 'py')}")
+            await context.send(content=f"The {types} embed content has been set to: {cf.box(content, 'py')}")
         elif types == "event":
             if not content:
                 await self.config.guild(context.guild).embeds.event.e_content.clear()
                 return await context.send(content=f"The {types} embed content has been reset.")
             await self.config.guild(context.guild).embeds.event.e_content.set(content)
-            await context.send(content=f"The {types} embed content has been set to: {box(content, 'py')}")
+            await context.send(content=f"The {types} embed content has been set to: {cf.box(content, 'py')}")
         elif types == "heist":
             if not content:
                 await self.config.guild(context.guild).embeds.heist.h_content.clear()
                 return await context.send(content=f"The {types} embed content has been reset.")
             await self.config.guild(context.guild).embeds.heist.h_content.set(content)
-            await context.send(content=f"The {types} embed content has been set to: {box(content, 'py')}")
+            await context.send(content=f"The {types} embed content has been set to: {cf.box(content, 'py')}")
 
     @serverdonationsset_embed.command(name="title")
     async def serverdonationsset_embed_title(
@@ -633,19 +633,19 @@ class ServerDonations(commands.Cog):
                 await self.config.guild(context.guild).embeds.giveaway.g_title.clear()
                 return await context.send(content=f"The {types} embed title has been reset.")
             await self.config.guild(context.guild).embeds.giveaway.g_title.set(title)
-            await context.send(content=f"The {types} embed title has been set to: {box(title, 'py')}")
+            await context.send(content=f"The {types} embed title has been set to: {cf.box(title, 'py')}")
         elif types == "event":
             if not title:
                 await self.config.guild(context.guild).embeds.event.e_title.clear()
                 return await context.send(content=f"The {types} embed title has been reset.")
             await self.config.guild(context.guild).embeds.event.e_title.set(title)
-            await context.send(content=f"The {types} embed title has been set to: {box(title, 'py')}")
+            await context.send(content=f"The {types} embed title has been set to: {cf.box(title, 'py')}")
         elif types == "heist":
             if not title:
                 await self.config.guild(context.guild).embeds.heist.h_title.clear()
                 return await context.send(content=f"The {types} embed title has been reset.")
             await self.config.guild(context.guild).embeds.heist.h_title.set(title)
-            await context.send(content=f"The {types} embed title has been set to: {box(title, 'py')}")
+            await context.send(content=f"The {types} embed title has been set to: {cf.box(title, 'py')}")
 
     @serverdonationsset_embed.command(name="description")
     async def serverdonationsset_embed_description(
@@ -673,7 +673,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content=f"The {types} embed description has been reset.")
             await self.config.guild(context.guild).embeds.giveaway.g_desc.set(description)
             await context.send(
-                content=f"The {types} embed description has been set to: {box(description, 'py')}"
+                content=f"The {types} embed description has been set to: {cf.box(description, 'py')}"
             )
         elif types == "event":
             if not description:
@@ -681,7 +681,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content=f"The {types} embed description has been reset.")
             await self.config.guild(context.guild).embeds.event.e_desc.set(description)
             await context.send(
-                content=f"The {types} embed description has been set to: {box(description, 'py')}"
+                content=f"The {types} embed description has been set to: {cf.box(description, 'py')}"
             )
         elif types == "heist":
             if not description:
@@ -689,7 +689,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(content=f"The {type} embed description has been reset.")
             await self.config.guild(context.guild).embeds.heist.h_desc.set(description)
             await context.send(
-                content=f"The {types} embed description has been set to: {box(description, 'py')}"
+                content=f"The {types} embed description has been set to: {cf.box(description, 'py')}"
             )
 
     @serverdonationsset_embed.command(name="colour", aliases=["color"])
@@ -718,7 +718,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(embed=embed)
             await self.config.guild(context.guild).embeds.event.e_colour.set(colour.value)
             embed = self.make_colour_embed(
-                description=f"The {types} donation embed colour has been set to: {box(colour, 'py')}",
+                description=f"The {types} donation embed colour has been set to: {cf.box(colour, 'py')}",
                 colour=colour
             )
             await context.send(embed=embed)
@@ -732,7 +732,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(embed=embed)
             await self.config.guild(context.guild).embeds.giveaway.g_colour.set(colour.value)
             embed = self.make_colour_embed(
-                description=f"The {types} donation embed colour has been set to: {box(colour, 'py')}",
+                description=f"The {types} donation embed colour has been set to: {cf.box(colour, 'py')}",
                 colour=colour
             )
             await context.send(embed=embed)
@@ -746,7 +746,7 @@ class ServerDonations(commands.Cog):
                 return await context.send(embed=embed)
             await self.config.guild(context.guild).embeds.heist.h_colour.set(colour.value)
             embed = self.make_colour_embed(
-                description=f"The {types} donation embed colour has been set to: {box(colour, 'py')}",
+                description=f"The {types} donation embed colour has been set to: {cf.box(colour, 'py')}",
                 colour=colour
             )
             await context.send(embed=embed)
@@ -805,7 +805,7 @@ class ServerDonations(commands.Cog):
             if not url.endswith(acc):
                 return await context.send(content="Invalid url.")
             await self.config.guild(context.guild).embeds.giveaway.g_image.set(url)
-            await context.send(content=f"The {types} embed image has been set to: {box(url, 'py')}")
+            await context.send(content=f"The {types} embed image has been set to: {cf.box(url, 'py')}")
         elif types == "event":
             if not url:
                 await self.config.guild(context.guild).embeds.event.e_image.set("")
@@ -816,7 +816,7 @@ class ServerDonations(commands.Cog):
             if not url.endswith(acc):
                 return await context.send(content="Invalid url.")
             await self.config.guild(context.guild).embeds.event.e_image.set(url)
-            await context.send(content=f"The {types} embed image has been set to: {box(url, 'py')}")
+            await context.send(content=f"The {types} embed image has been set to: {cf.box(url, 'py')}")
         elif types == "heist":
             if not url:
                 await self.config.guild(context.guild).embeds.heist.h_image.set("")
@@ -827,7 +827,7 @@ class ServerDonations(commands.Cog):
             if not url.endswith(acc):
                 return await context.send(content="Invalid url.")
             await self.config.guild(context.guild).embeds.heist.h_image.set(url)
-            await context.send(content=f"The {types} embed image has been set to: {box(url, 'py')}")
+            await context.send(content=f"The {types} embed image has been set to: {cf.box(url, 'py')}")
 
     @serverdonationsset_embed.command(name="footer")
     async def serverdonationsset_embed_footer(
@@ -943,12 +943,12 @@ class ServerDonations(commands.Cog):
         """
         conf_msg = "This will reset the serverdonations cogs whole configuration, do you want to continue?"
         conf_act = "Successfully cleared the serverdonations cogs configuration."
-        view = Confirmation(30)
+        view = NoobConfirmation(30)
         await view.start(context, conf_msg, conf_act)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.clear_all()
 
     @serverdonationsset.command(name="showsettings", aliases=["ss"])
@@ -1029,7 +1029,7 @@ class ServerDonations(commands.Cog):
                 timestamp=datetime.datetime.now(datetime.timezone.utc),
                 colour=await context.embed_colour(),
                 description=SDEmbedData.gaw.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         s1=gaw["g_content"], s2=gaw["g_title"], s3=gaw["g_desc"], s4=gcol,
                         s5=gaw["g_thumb"], s6=gaw["g_image"], s7=gaw["g_footer"]["g_ftext"],
                         s8=gaw["g_footer"]["g_ficon"], s9=gaw["g_fields"]["g_type"]["g_tname"],
@@ -1055,7 +1055,7 @@ class ServerDonations(commands.Cog):
                 timestamp=datetime.datetime.now(datetime.timezone.utc),
                 colour=await context.embed_colour(),
                 description=SDEmbedData.event.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         s1=event["e_content"], s2=event["e_title"], s3=event["e_desc"], s4=ecol,
                         s5=event["e_thumb"], s6=event["e_image"], s7=event["e_footer"]["e_ftext"],
                         s8=event["e_footer"]["e_ficon"], s9=event["e_fields"]["e_spon"]["e_sname"],
@@ -1088,7 +1088,7 @@ class ServerDonations(commands.Cog):
                 timestamp=datetime.datetime.now(datetime.timezone.utc),
                 colour=await context.embed_colour(),
                 description=SDEmbedData.heist.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         s1=heist["h_content"], s2=heist["h_title"], s3=heist["h_desc"], s4=hcol,
                         s5=heist["h_thumb"], s6=heist["h_image"], s7=heist["h_footer"]["h_ftext"],
                         s8=heist["h_footer"]["h_ficon"], s9=heist["h_fields"]["h_type"]["h_tname"],
@@ -1112,7 +1112,8 @@ class ServerDonations(commands.Cog):
             .set_footer(text="Page (5/5)", icon_url=is_have_avatar(context.author))
         )
         list_embeds = [chanembed, roleembed, gawembed, eventembed, heistembed]
-        await menu(context, list_embeds, DEFAULT_CONTROLS, timeout=60)
+        paginator = NoobPaginator(list_embeds, timeout=60.0)
+        await paginator.start(context)
 
     @commands.command(
         name="giveawaydonate",
@@ -1160,10 +1161,10 @@ class ServerDonations(commands.Cog):
                 if gawset["g_colour"]
                 else await context.embed_colour(),
                 title=f'{gawset["g_title"]}'.format_map(
-                    Coordinate(donor=context.author, guild=context.guild)
+                    NoobCoordinate(donor=context.author, guild=context.guild)
                 ),
                 description=f'{gawset["g_desc"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor=context.author, guild=context.guild
                     )
                 )
@@ -1178,7 +1179,7 @@ class ServerDonations(commands.Cog):
             )
             .set_thumbnail(
                 url=f'{gawset["g_thumb"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor_avatar=is_have_avatar(context.author),
                         guild_icon=is_have_avatar(context.guild)
                     )
@@ -1186,10 +1187,10 @@ class ServerDonations(commands.Cog):
             )
             .set_footer(
                 text=f'{gawset["g_footer"]["g_ftext"]}'.format_map(
-                    Coordinate(donor=context.author, guild=context.guild)
+                    NoobCoordinate(donor=context.author, guild=context.guild)
                 ),
                 icon_url=f'{gawset["g_footer"]["g_ficon"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor_avatar=is_have_avatar(context.author),
                         guild_icon=is_have_avatar(context.guild)
                     )
@@ -1198,49 +1199,49 @@ class ServerDonations(commands.Cog):
             .add_field(
                 name=gfields["g_spon"]["g_sname"],
                 value=f'{gfields["g_spon"]["g_svalue"]}'.format_map(
-                    Coordinate(sponsor=context.author)
+                    NoobCoordinate(sponsor=context.author)
                 ),
                 inline=gfields["g_spon"]["g_sinline"]
             )
             .add_field(
                 name=gfields["g_type"]["g_tname"],
                 value=f'{gfields["g_type"]["g_tvalue"]}'.format_map(
-                    Coordinate(type=gdonos[0].strip())
+                    NoobCoordinate(type=gdonos[0].strip())
                 ),
                 inline=gfields["g_type"]["g_tinline"]
             )
             .add_field(
                 name=gfields["g_dura"]["g_dname"],
                 value=f'{gfields["g_dura"]["g_dvalue"]}'.format_map(
-                    Coordinate(duration=gdonos[1].strip())
+                    NoobCoordinate(duration=gdonos[1].strip())
                 ),
                 inline=gfields["g_dura"]["g_dinline"]
             )
             .add_field(
                 name=gfields["g_winn"]["g_wname"],
                 value=f'{gfields["g_winn"]["g_wvalue"]}'.format_map(
-                    Coordinate(winners=gdonos[2].strip())
+                    NoobCoordinate(winners=gdonos[2].strip())
                 ),
                 inline=gfields["g_winn"]["g_winline"]
             )
             .add_field(
                 name=gfields["g_requ"]["g_rname"],
                 value=f'{gfields["g_requ"]["g_rvalue"]}'.format_map(
-                    Coordinate(requirements=gdonos[3].strip())
+                    NoobCoordinate(requirements=gdonos[3].strip())
                 ),
                 inline=gfields["g_requ"]["g_rinline"]
             )
             .add_field(
                 name=gfields["g_priz"]["g_pname"],
                 value=f'{gfields["g_priz"]["g_pvalue"]}'.format_map(
-                    Coordinate(prize=gdonos[4].strip())
+                    NoobCoordinate(prize=gdonos[4].strip())
                 ),
                 inline=gfields["g_priz"]["g_pinline"]
             )
             .add_field(
                 name=gfields["g_mess"]["g_mname"],
                 value=f'{gfields["g_mess"]["g_mvalue"]}'.format_map(
-                    Coordinate(message=gdonos[5].strip())
+                    NoobCoordinate(message=gdonos[5].strip())
                 ),
                 inline=gfields["g_mess"]["g_minline"]
             )
@@ -1293,10 +1294,10 @@ class ServerDonations(commands.Cog):
                 if eventset["e_colour"]
                 else await context.embed_colour(),
                 title=f'{eventset["e_title"]}'.format_map(
-                    Coordinate(donor=context.author, guild=context.guild)
+                    NoobCoordinate(donor=context.author, guild=context.guild)
                 ),
                 description=f'{eventset["e_desc"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor=context.author, guild=context.guild
                     )
                 )
@@ -1311,7 +1312,7 @@ class ServerDonations(commands.Cog):
             )
             .set_thumbnail(
                 url=f'{eventset["e_thumb"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor_avatar=is_have_avatar(context.author),
                         guild_icon=is_have_avatar(context.guild)
                     )
@@ -1319,10 +1320,10 @@ class ServerDonations(commands.Cog):
             )
             .set_footer(
                 text=f'{eventset["e_footer"]["e_ftext"]}'.format_map(
-                    Coordinate(donor=context.author, guild=context.guild)
+                    NoobCoordinate(donor=context.author, guild=context.guild)
                 ),
                 icon_url=f'{eventset["e_footer"]["e_ficon"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor_avatar=is_have_avatar(context.author),
                         guild_icon=is_have_avatar(context.guild)
                     )
@@ -1331,42 +1332,42 @@ class ServerDonations(commands.Cog):
             .add_field(
                 name=efields["e_spon"]["e_sname"],
                 value=f'{efields["e_spon"]["e_svalue"]}'.format_map(
-                    Coordinate(sponsor=context.author)
+                    NoobCoordinate(sponsor=context.author)
                 ),
                 inline=efields["e_spon"]["e_sinline"]
             )
             .add_field(
                 name=efields["e_type"]["e_tname"],
                 value=f'{efields["e_type"]["e_tvalue"]}'.format_map(
-                    Coordinate(type=edonos[0].strip())
+                    NoobCoordinate(type=edonos[0].strip())
                 ),
                 inline=efields["e_type"]["e_tinline"]
             )
             .add_field(
                 name=efields["e_name"]["e_nname"],
                 value=f'{efields["e_name"]["e_nvalue"]}'.format_map(
-                    Coordinate(name=edonos[1].strip())
+                    NoobCoordinate(name=edonos[1].strip())
                 ),
                 inline=efields["e_name"]["e_ninline"]
             )
             .add_field(
                 name=efields["e_requ"]["e_rname"],
                 value=f'{efields["e_requ"]["e_rvalue"]}'.format_map(
-                    Coordinate(requirements=edonos[2].strip())
+                    NoobCoordinate(requirements=edonos[2].strip())
                 ),
                 inline=efields["e_requ"]["e_rinline"]
             )
             .add_field(
                 name=efields["e_priz"]["e_pname"],
                 value=f'{efields["e_priz"]["e_pvalue"]}'.format_map(
-                    Coordinate(prize=edonos[3].strip())
+                    NoobCoordinate(prize=edonos[3].strip())
                 ),
                 inline=efields["e_priz"]["e_pinline"]
             )
             .add_field(
                 name=efields["e_mess"]["e_mname"],
                 value=f'{efields["e_mess"]["e_mvalue"]}'.format_map(
-                    Coordinate(message=edonos[4].strip())
+                    NoobCoordinate(message=edonos[4].strip())
                 ),
                 inline=efields["e_mess"]["e_minline"]
             )
@@ -1420,10 +1421,10 @@ class ServerDonations(commands.Cog):
                 if heistset["h_colour"]
                 else await context.embed_colour(),
                 title=f'{heistset["h_title"]}'.format_map(
-                    Coordinate(donor=context.author, guild=context.guild)
+                    NoobCoordinate(donor=context.author, guild=context.guild)
                 ),
                 description=f'{heistset["h_desc"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor=context.author, guild=context.guild
                     )
                 )
@@ -1438,7 +1439,7 @@ class ServerDonations(commands.Cog):
             )
             .set_thumbnail(
                 url=f'{heistset["h_thumb"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor_avatar=is_have_avatar(context.author),
                         guild_icon=is_have_avatar(context.guild)
                     )
@@ -1446,10 +1447,10 @@ class ServerDonations(commands.Cog):
             )
             .set_footer(
                 text=f'{heistset["h_footer"]["h_ftext"]}'.format_map(
-                    Coordinate(donor=context.author, guild=context.guild)
+                    NoobCoordinate(donor=context.author, guild=context.guild)
                 ),
                 icon_url=f'{heistset["h_footer"]["h_ficon"]}'.format_map(
-                    Coordinate(
+                    NoobCoordinate(
                         donor_avatar=is_have_avatar(context.author),
                         guild_icon=is_have_avatar(context.guild)
                     )
@@ -1458,35 +1459,35 @@ class ServerDonations(commands.Cog):
             .add_field(
                 name=hfields["h_spon"]["h_sname"],
                 value=f'{hfields["h_spon"]["h_svalue"]}'.format_map(
-                    Coordinate(sponsor=context.author)
+                    NoobCoordinate(sponsor=context.author)
                 ),
                 inline=hfields["h_spon"]["h_sinline"]
             )
             .add_field(
                 name=hfields["h_type"]["h_tname"],
                 value=f'{hfields["h_type"]["h_tvalue"]}'.format_map(
-                    Coordinate(type=hdonos[0].strip())
+                    NoobCoordinate(type=hdonos[0].strip())
                 ),
                 inline=hfields["h_type"]["h_tinline"]
             )
             .add_field(
                 name=hfields["h_amou"]["h_aname"],
                 value=f'{hfields["h_amou"]["h_avalue"]}'.format_map(
-                    Coordinate(amount=hdonos[1].strip())
+                    NoobCoordinate(amount=hdonos[1].strip())
                 ),
                 inline=hfields["h_amou"]["h_ainline"]
             )
             .add_field(
                 name=hfields["h_requ"]["h_rname"],
                 value=f'{hfields["h_requ"]["h_rvalue"]}'.format_map(
-                    Coordinate(requirements=hdonos[2].strip())
+                    NoobCoordinate(requirements=hdonos[2].strip())
                 ),
                 inline=hfields["h_requ"]["h_rinline"]
             )
             .add_field(
                 name=hfields["h_mess"]["h_mname"],
                 value=f'{hfields["h_mess"]["h_mvalue"]}'.format_map(
-                    Coordinate(message=hdonos[3].strip())
+                    NoobCoordinate(message=hdonos[3].strip())
                 ),
                 inline=hfields["h_mess"]["h_minline"]
             )

@@ -2,14 +2,13 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, humanize_number
+from redbot.core import bot, commands
+from redbot.core.utils import chat_formatting as cf
 
+from noobutils import is_have_avatar
 from typing import Literal, Optional
 
 from .converters import FuzzyRole
-from .noobutils import is_have_avatar
 
 class Reach(commands.Cog):
     """
@@ -17,11 +16,11 @@ class Reach(commands.Cog):
     
     See how many members in a role who can view a channel.
     """
-    def __init__(self, bot: Red):
+    def __init__(self, bot: bot.Red):
         self.bot = bot
         self.log = logging.getLogger("red.NoobCogs.Reach")
 
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["NoobInDaHause"]
     __documentation__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/reach/README.md"
 
@@ -29,11 +28,11 @@ class Reach(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        p = "s" if len(self.__author__) != 0 or 1 else ""
+        p = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
         
         Cog Version: **{self.__version__}**
-        Cog Author{p}: {humanize_list([f"**{auth}**" for auth in self.__author__])}
+        Cog Author{p}: {cf.humanize_list([f"**{auth}**" for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__documentation__})"""
 
     async def red_delete_data_for_user(
@@ -96,15 +95,15 @@ class Reach(commands.Cog):
                 if not reached:
                     b = (
                         f"` #{len(final) + 1} ` {iid}: 0 out of "
-                        f"{humanize_number(len([m for m in i.members if not m.bot]))} members - **0%**\n"
+                        f"{cf.humanize_number(len([m for m in i.members if not m.bot]))} members - **0%**\n"
                     )
                     final.append(b)
                     continue
 
                 div = reached / len([m for m in i.members if not m.bot]) * 100
                 f = (
-                    f"` #{len(final) + 1} ` {iid}: {humanize_number(reached)} out of "
-                    f"{humanize_number(len([m for m in i.members if not m.bot]))} members "
+                    f"` #{len(final) + 1} ` {iid}: {cf.humanize_number(reached)} out of "
+                    f"{cf.humanize_number(len([m for m in i.members if not m.bot]))} members "
                     f"- **{round(div, 2)}%**\n"
                 )
                 final.append(f)
@@ -124,12 +123,12 @@ class Reach(commands.Cog):
                             total_reach.append(member)
 
                     if not reached:
-                        oy = f"` #{len(final) + 1} ` @everyone: 0 out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **0%**\n"
+                        oy = f"` #{len(final) + 1} ` @everyone: 0 out of {cf.humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **0%**\n"
                         final.append(oy)
                         continue
 
                     div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
-                    oy = f"` #{len(final) + 1} ` @everyone: {humanize_number(reached)} out of {humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **{round(div, 2)}%**\n"
+                    oy = f"` #{len(final) + 1} ` @everyone: {cf.humanize_number(reached)} out of {cf.humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **{round(div, 2)}%**\n"
                     final.append(oy)
 
                 elif i.lower() == "here":
@@ -150,12 +149,12 @@ class Reach(commands.Cog):
                             total_reach.append(member)
 
                     if not reached:
-                        yo = f"` #{len(final) + 1} ` @here: 0 out of {humanize_number(here_members)} members - **0%**\n"
+                        yo = f"` #{len(final) + 1} ` @here: 0 out of {cf.humanize_number(here_members)} members - **0%**\n"
                         final.append(yo)
                         continue
 
                     div = reached / here_members * 100
-                    yo = f"` #{len(final) + 1} ` @here: {humanize_number(reached)} out of {humanize_number(here_members)} members - **{round(div, 2)}%**\n"
+                    yo = f"` #{len(final) + 1} ` @here: {cf.humanize_number(reached)} out of {cf.humanize_number(here_members)} members - **{round(div, 2)}%**\n"
                     final.append(yo)
 
                 else:
@@ -165,8 +164,8 @@ class Reach(commands.Cog):
 
         divov = len(total_reach) / len(total_members) * 100
         ov = (
-            f"> ` - ` Overall Reach: **{humanize_number(len(total_reach))}**\n"
-            f"> ` - ` Overall Members: **{humanize_number(len(total_members))}**\n"
+            f"> ` - ` Overall Reach: **{cf.humanize_number(len(total_reach))}**\n"
+            f"> ` - ` Overall Members: **{cf.humanize_number(len(total_members))}**\n"
             f"> ` - ` Overall Percentage: **{round(divov, 2)}%**"
         )
         embed = (

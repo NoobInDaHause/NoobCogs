@@ -8,7 +8,7 @@ from redbot.core.utils import chat_formatting as cf
 from amari import AmariClient, NotFound, InvalidToken
 from typing import Literal, Optional
 
-from .noobutils import is_have_avatar
+from noobutils import is_have_avatar
 
 class AmariLevel(commands.Cog):
     """
@@ -23,7 +23,7 @@ class AmariLevel(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.AmariLevel")
 
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/amarilevel/README.md"
 

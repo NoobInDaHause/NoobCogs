@@ -1,62 +1,10 @@
 import discord
 
 from redbot.core import commands
-from redbot.core.utils.chat_formatting import box
+from redbot.core.utils import chat_formatting as cf
 
+from noobutils import access_denied
 from typing import Optional
-from .noobutils import access_denied
-
-class Confirmation(discord.ui.View):
-    def __init__(self, timeout: Optional[float] = 60.0):
-        super().__init__(timeout=timeout)
-        self.confirm_action: str = None
-        self.context: commands.Context = None
-        self.message: discord.Message = None
-        self.value = None
-
-    async def start(
-        self,
-        context: commands.Context,
-        confirmation_msg: str,
-        confirm_action: str,
-        *args,
-        **kwargs
-    ):
-        msg = await context.send(content=confirmation_msg, view=self, *args, **kwargs)
-        self.confirm_action = confirm_action
-        self.context = context
-        self.message = msg
-
-    @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
-    async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
-        for x in self.children:
-            x.disabled = True
-        self.value = "yes"
-        self.stop()
-        await interaction.response.edit_message(content=self.confirm_action, view=self)
-
-    @discord.ui.button(label="No", style=discord.ButtonStyle.red)
-    async def no(self, interaction: discord.Interaction, button: discord.ui.Button):
-        for x in self.children:
-            x.disabled = True
-        self.value = "no"
-        self.stop()
-        await interaction.response.edit_message(content="Alright not doing that then.", view=self)
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if await self.context.bot.is_owner(interaction.user):
-            return True
-        elif interaction.user != self.context.author:
-            await interaction.response.send_message(content=access_denied(), ephemeral=True)
-            return False
-        else:
-            return True
-
-    async def on_timeout(self):
-        for x in self.children:
-            x.disabled = True
-        self.stop()
-        await self.message.edit(content="You took too long to respond.", view=self)
 
 class FieldsModal(discord.ui.Modal):
     def __init__(self, title: str):
@@ -126,11 +74,11 @@ class GiveawayFields(discord.ui.View):
 
         final = f"""
         The giveaway embed type field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The giveaway embed type field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The giveaway embed type field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -165,11 +113,11 @@ class GiveawayFields(discord.ui.View):
 
         final = f"""
         The giveaway embed sponsor field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The giveaway embed sponsor field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The giveaway embed sponsor field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -204,11 +152,11 @@ class GiveawayFields(discord.ui.View):
 
         final = f"""
         The giveaway embed duration field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The giveaway embed duration field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The giveaway embed duration field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -243,11 +191,11 @@ class GiveawayFields(discord.ui.View):
 
         final = f"""
         The giveaway embed winners field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The giveaway embed winners field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The giveaway embed winners field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -282,11 +230,11 @@ class GiveawayFields(discord.ui.View):
 
         final = f"""
         The giveaway embed requirements field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The giveaway embed requirements field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The giveaway embed requirements field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -321,11 +269,11 @@ class GiveawayFields(discord.ui.View):
 
         final = f"""
         The giveaway embed prize field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The giveaway embed prize field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The giveaway embed prize field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -360,11 +308,11 @@ class GiveawayFields(discord.ui.View):
 
         final = f"""
         The giveaway embed message field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The giveaway embed message field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The giveaway embed message field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -494,11 +442,11 @@ class EventFields(discord.ui.View):
 
         final = f"""
         The event embed sponsor field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The event embed sponsor field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The event embed sponsor field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -533,11 +481,11 @@ class EventFields(discord.ui.View):
 
         final = f"""
         The event embed name field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The event embed name field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The event embed name field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -572,11 +520,11 @@ class EventFields(discord.ui.View):
 
         final = f"""
         The event embed requirements field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The event embed requirements field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The event embed requirements field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -611,11 +559,11 @@ class EventFields(discord.ui.View):
 
         final = f"""
         The event embed prize field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The event embed prize field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The event embed prize field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -650,11 +598,11 @@ class EventFields(discord.ui.View):
 
         final = f"""
         The event embed message field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The event embed message field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The event embed message field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -689,11 +637,11 @@ class EventFields(discord.ui.View):
 
         final = f"""
         The event embed type field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The event embed type field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The event embed type field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -815,11 +763,11 @@ class HeistFields(discord.ui.View):
 
         final = f"""
         The heist embed sponsor field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The heist embed sponsor field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The heist embed sponsor field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -854,11 +802,11 @@ class HeistFields(discord.ui.View):
 
         final = f"""
         The heist embed amount field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The heist embed amount field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The heist embed amount field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -893,11 +841,11 @@ class HeistFields(discord.ui.View):
 
         final = f"""
         The heist embed requirements field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The heist embed requirements field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The heist embed requirements field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -932,11 +880,11 @@ class HeistFields(discord.ui.View):
 
         final = f"""
         The heist embed message field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The heist embed message field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The heist embed message field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
 
@@ -971,11 +919,11 @@ class HeistFields(discord.ui.View):
 
         final = f"""
         The heist embed type field name has been set to:
-        {box(name, 'py')}
+        {cf.box(name, 'py')}
         The heist embed type field value has been set to:
-        {box(value, 'py')}
+        {cf.box(value, 'py')}
         The heist embed type field inline has been set to:
-        {box(inline, 'py')}
+        {cf.box(inline, 'py')}
         """
         await self.message.edit(content=final, embed=None)
     

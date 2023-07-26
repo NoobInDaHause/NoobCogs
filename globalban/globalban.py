@@ -1,23 +1,22 @@
 import asyncio
 import contextlib
-import datetime as dt
 import discord
 import logging
 
-from redbot.core import modlog, commands, Config
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, pagify
-from redbot.core.utils.menus import menu
+from redbot.core import bot, commands, Config, modlog
+from redbot.core.utils import chat_formatting as cf
 
+from datetime import datetime, timezone
+from noobutils import NoobConfirmation, NoobPaginator, pagify_this
 from typing import Literal, Optional, Union
 
-from .views import Confirmation, GbanViewReset
+from .views import GbanViewReset
 
 class GlobalBan(commands.Cog):
     """
     Globally ban a user from all the guilds the bot is in.
     """
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: bot.Red) -> None:
         self.bot = bot
 
         self.config = Config.get_conf(self, identifier=74654871231365754648, force_registration=True)
@@ -29,7 +28,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.8"
+    __version__ = "1.1.9"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
 
@@ -37,11 +36,11 @@ class GlobalBan(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -91,7 +90,7 @@ class GlobalBan(commands.Cog):
                 "offender": user_id,
                 "authorizer": context.author.id,
                 "reason": reason,
-                "timestamp": round(dt.datetime.now(dt.timezone.utc).timestamp()),
+                "timestamp": round(datetime.now(timezone.utc).timestamp()),
                 "last_modified": None,
                 "amender": None,
             }
@@ -128,7 +127,7 @@ class GlobalBan(commands.Cog):
                         await modlog.create_case(
                             bot=context.bot,
                             guild=guild,
-                            created_at=dt.datetime.now(dt.timezone.utc),
+                            created_at=datetime.now(timezone.utc),
                             action_type="globalban",
                             user=member,
                             moderator=context.bot.user,
@@ -148,21 +147,19 @@ class GlobalBan(commands.Cog):
 
         if errors:
             em = ", ".join(errors)
-            pages = list(pagify(em, delims=[", "], page_length=2000))
-            final_page = {}
+            final_page = await pagify_this(
+                em,
+                ", ",
+                "Page {index}/{pages}",
+                embed_title=(
+                    "It's either I do not have ban permission or "
+                    f"{member} is already banned in these guilds."
+                ),
+                embed_colour=await context.embed_colour()
+            )
 
-            for ind, page in enumerate(pages, 1):
-                embed = discord.Embed(
-                    title=f"An error occured when banning {member}.",
-                    description="Most likely that I don't have ban permission or the user is already banned."
-                    f"\nErrored guild(s):\n{page}",
-                    colour=await context.embed_colour(),
-                    timestamp=dt.datetime.now(dt.timezone.utc),
-                )
-                embed.set_footer(text=f"Page ({ind}/{len(pages)})")
-                final_page[ind - 1] = embed
-
-            return await menu(context, list(final_page.values()), timeout=60)
+            paginator = NoobPaginator(final_page, timeout=60.0)
+            await paginator.start(context)
 
     async def _globalunban_user(self, context: commands.Context, member: discord.Member, reason: str):
         """
@@ -191,7 +188,7 @@ class GlobalBan(commands.Cog):
                     await modlog.create_case(
                         bot=context.bot,
                         guild=guild,
-                        created_at=dt.datetime.now(dt.timezone.utc),
+                        created_at=datetime.now(timezone.utc),
                         action_type="globalunban",
                         user=member,
                         moderator=context.bot.user,
@@ -210,20 +207,19 @@ class GlobalBan(commands.Cog):
 
         if errors:
             em = ", ".join(errors)
-            pages = list(pagify(em, delims=[", "], page_length=2000))
-            final_page = {}
+            final_page = await pagify_this(
+                em,
+                ", ",
+                "Page {index}/{pages}",
+                embed_title=(
+                    "It's either I do not have ban permission or "
+                    f"{member} is not banned in these guilds."
+                ),
+                embed_colour=await context.embed_colour()
+            )
 
-            for ind, page in enumerate(pages, 1):
-                embed = discord.Embed(
-                    title=f"An error occured when unbanning {member}.",
-                    description="Most likely that I do not have ban permission or the user is not banned.\n"
-                    f"Errored guild(s):\n{page}",
-                    colour=await context.embed_colour(),
-                    timestamp=dt.datetime.now(dt.timezone.utc),
-                ).set_footer(text=f"Page ({ind}/{len(pages)})")
-                final_page[ind - 1] = embed
-
-            return await menu(context, list(final_page.values()), timeout=60)
+            paginator = NoobPaginator(final_page, timeout=60.0)
+            await paginator.start(context)
 
     @commands.group(name="globalban", aliases=["gban"])
     @commands.is_owner()
@@ -253,7 +249,7 @@ class GlobalBan(commands.Cog):
                 if case_id == i["case"]:
                     i["reason"] = reason
                     i["amender"] = context.author.id
-                    i["last_modified"] = round(dt.datetime.now(dt.timezone.utc).timestamp())
+                    i["last_modified"] = round(datetime.now(timezone.utc).timestamp())
                     break
         await context.tick()
 
@@ -293,12 +289,12 @@ class GlobalBan(commands.Cog):
 
         confirmation_msg = f"Are you sure you want to globally ban **{member}**?"
         confirm_action = "Alright this might take a while."
-        view = Confirmation(timeout=30)
-        await view.start(context=context, confirm_action=confirm_action, confirmation_msg=confirmation_msg)
+        view = NoobConfirmation(timeout=30)
+        await view.start(context=context, confirm_action=confirm_action, confirm_msg=confirmation_msg)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await context.typing()
             await self._globalban_user(context=context, member=member, reason=reason)
 
@@ -339,19 +335,16 @@ class GlobalBan(commands.Cog):
                 users.append(l)
 
         banlist = "\n".join(users)
-        pages = list(pagify(banlist, delims=["\n"], page_length=2000))
-        final_page = {}
+        final_page = await pagify_this(
+            banlist,
+            "\n",
+            "Page {index}/{pages}",
+            embed_title="GlobalBan Ban List",
+            embed_colour=await context.embed_colour()
+        )
 
-        for ind, page in enumerate(pages, 1):
-            embed = discord.Embed(
-                title="Globalban Ban List",
-                description=page,
-                colour=await context.embed_colour(),
-                timestamp=dt.datetime.now(dt.timezone.utc),
-            ).set_footer(text=f"Page ({ind}/{len(pages)})")
-            final_page[ind - 1] = embed
-
-        return await menu(context, list(final_page.values()), timeout=60)
+        paginator = NoobPaginator(final_page, timeout=60.0)
+        await paginator.start(context)
 
     @globalban.command(name="logs")
     async def globalban_logs(self, context: commands.Context):
@@ -397,20 +390,16 @@ class GlobalBan(commands.Cog):
             gl.append(l)
         
         banlogs = """\n\n""".join(gl)
-        pages = list(pagify(banlogs, delims=["> "], page_length=2000))
-        final_page = {}
+        final_page = await pagify_this(
+            banlogs,
+            "> ",
+            "Page {index}/{pages}",
+            embed_title="GlobalBan Ban Logs",
+            embed_colour=await context.embed_colour()
+        )
 
-        for ind, page in enumerate(pages, 1):
-            embed = discord.Embed(
-                title="Globalban Case Logs",
-                description=page,
-                colour=await context.embed_colour(),
-                timestamp=dt.datetime.now(dt.timezone.utc),
-            )
-            embed.set_footer(text=f"Page ({ind}/{len(pages)})")
-            final_page[ind - 1] = embed
-
-        return await menu(context, list(final_page.values()), timeout=60)
+        paginator = NoobPaginator(final_page, timeout=60.0)
+        await paginator.start(context)
 
     @globalban.command(name="reset")
     async def globalban_reset(self, context: commands.Context):
@@ -453,11 +442,11 @@ class GlobalBan(commands.Cog):
 
         confirm_msg = f"Are you sure you want to globally unban **{member}**?"
         confirm_action = "Alright this might take a while."
-        view = Confirmation(timeout=30.0)
-        await view.start(context=context, confirm_action=confirm_action, confirmation_msg=confirm_msg)
+        view = NoobConfirmation(timeout=30.0)
+        await view.start(context=context, confirm_action=confirm_action, confirm_msg=confirm_msg)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await context.typing()
             await self._globalunban_user(context=context, member=member, reason=reason)

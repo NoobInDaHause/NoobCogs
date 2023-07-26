@@ -3,15 +3,13 @@ import datetime
 import discord
 import logging
 
-from redbot.core import commands, app_commands, Config
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list, box
+from redbot.core import app_commands, bot, commands, Config
+from redbot.core.utils import chat_formatting as cf
 
+from noobutils import is_have_avatar, get_button_colour, NoobEmojiConverter, NoobConfirmation
 from typing import Literal, Optional
 
-from .converters import EmojiConverter
-from .noobutils import is_have_avatar, get_button_colour
-from .views import SuggestView, Confirmation
+from .views import SuggestView
 
 class Suggestion(commands.Cog):
     """
@@ -19,7 +17,7 @@ class Suggestion(commands.Cog):
     
     Have users submit suggestions to help improve some things.
     """
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: bot.Red) -> None:
         self.bot = bot
 
         self.config = Config.get_conf(self, identifier=8642187646324, force_registration=True)
@@ -41,7 +39,7 @@ class Suggestion(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
 
-    __version__ = "1.0.11"
+    __version__ = "1.0.12"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
 
@@ -49,11 +47,11 @@ class Suggestion(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 0 or 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -315,7 +313,7 @@ class Suggestion(commands.Cog):
         except Exception as e:
             return await context.reply(
                 content="An error has occurred while sending the suggestion.\n"
-                f"Here is the traceback: {box(e, 'py')}",
+                f"Here is the traceback: {cf.box(e, 'py')}",
                 ephemeral=True,
                 mention_author=False
             )
@@ -621,7 +619,7 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         vote: Literal["upvote", "downvote"],
-        emoji: Optional[EmojiConverter]
+        emoji: Optional[NoobEmojiConverter]
     ):
         """
         Change the UpVote or DownVote emoji.
@@ -648,12 +646,12 @@ class Suggestion(commands.Cog):
         """
         act = "Successfully reset the guilds whole configuration."
         conf = "Are you sure you want to reset the guilds whole confirguration?"
-        view = Confirmation()
-        await view.start(context=context, confirm_action=act, confirmation_msg=conf)
+        view = NoobConfirmation()
+        await view.start(context=context, confirm_action=act, confirm_msg=conf)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.guild(context.guild).clear()
 
     @suggestionset.command(name="resetcog")
@@ -664,12 +662,12 @@ class Suggestion(commands.Cog):
         """
         act = "Successfully reset the cogs whole configuration."
         conf = "Are you sure you want to reset the cogs whole confirguration?"
-        view = Confirmation()
+        view = NoobConfirmation()
         await view.start(context=context, confirm_action=act, confirmation_msg=conf)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.clear_all()
 
     @suggestionset.command(name="autodelete", aliases=["autodel"])

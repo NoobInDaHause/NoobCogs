@@ -3,11 +3,11 @@ import discord
 import logging
 
 from redbot.core import bot, commands, Config
-from redbot.core.utils import menus, chat_formatting as cf
+from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal, Optional
 
-from .noobutils import is_have_avatar
+from noobutils import NoobPaginator, is_have_avatar, pagify_this
 
 class DevLogs(commands.Cog):
     """
@@ -25,7 +25,7 @@ class DevLogs(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.DevLogs")
 
-    __version__ = "1.0.6"
+    __version__ = "1.0.7"
     __author__ = ["sravan_krishna", "NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
 
@@ -173,16 +173,18 @@ class DevLogs(commands.Cog):
                 users += f"` - ` {user_obj} (`{user_obj.id}`).\n"
             except discord.errors.NotFound:
                 users += f"` - ` Unknown User (`{user}`).\n"
-        final_users = list(cf.pagify(users, delims=["` - `"], page_length=2000))
-        final_page = []
-        for index, page in enumerate(final_users, 1):
-            embed = discord.Embed(
-                title="A list of users that bypasses the DevLogs cog",
-                description=page,
-                color=context.author.colour,
-            ).set_footer(
-                text=f"Command executed by {context.author} | Page ({index}/{len(final_users)})",
-                icon_url=is_have_avatar(context.author)
-            )
-            final_page.append(embed)
-        await menus.menu(context, final_page, menus.DEFAULT_CONTROLS, timeout=60)
+        text = (
+            f"Command executed by {context.author} |"
+            " Page ({index}/{pages})"
+        )
+        title = "A list of users that bypasses the DevLogs cog"
+        final_page = await pagify_this(
+            users,
+            "` - `",
+            text,
+            embed_title=title,
+            embed_colour=context.author.colour,
+            footer_icon=is_have_avatar(context.author)
+        )
+        paginator = NoobPaginator(final_page, timeout=60.0)
+        await paginator.start(context)

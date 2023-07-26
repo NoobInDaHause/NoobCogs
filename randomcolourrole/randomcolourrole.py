@@ -5,12 +5,11 @@ import logging
 import random
 
 from redbot.core import bot, commands, Config
-from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core.utils import chat_formatting as cf
 
 from discord.ext import tasks
+from noobutils import NoobConfirmation
 from typing import Literal, Optional
-
-from .views import Confirmation
 
 class RandomColourRole(commands.Cog):
     """
@@ -32,7 +31,7 @@ class RandomColourRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RandomColourRole")
 
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/randomcolourrole/README.md"
 
@@ -40,11 +39,11 @@ class RandomColourRole(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -95,12 +94,12 @@ class RandomColourRole(commands.Cog):
         """
         act = "Successfully resetted the guilds randomcolourrole settings."
         conf = "Are you sure you want to reset the guilds randomcolourrole settings?"
-        view = Confirmation(timeout=30)
-        await view.start(context=context, confirmation_msg=conf, confirm_action=act)
+        view = NoobConfirmation(timeout=30)
+        await view.start(context=context, confirm_msg=conf, confirm_action=act)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.guild(context.guild).clear()
 
     @randomcolourroleset.command(name="resetcog")
@@ -111,12 +110,12 @@ class RandomColourRole(commands.Cog):
         """
         act = "Successfully resetted the randomcolourrole cogs config."
         conf = "Are you sure you want to reset the randomcolourrole cogs whole config?"
-        view = Confirmation(timeout=30)
-        await view.start(context=context, confirmation_msg=conf, confirm_action=act)
+        view = NoobConfirmation(timeout=30)
+        await view.start(context=context, confirm_msg=conf, confirm_action=act)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.clear_all()
 
     @randomcolourroleset.command(name="role")

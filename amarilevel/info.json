@@ -12,7 +12,8 @@
     "disabled": false,
     "required_cogs": {},
     "requirements": [
-        "amari.py"
+        "amari.py",
+        "git+https://github.com/NoobInDaHause/noobutils.git"
     ],
     "tags": [
         "Amari",

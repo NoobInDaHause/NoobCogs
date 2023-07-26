@@ -1,14 +1,12 @@
 import logging
 
-from redbot.core import commands, Config, app_commands
-from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core import app_commands, bot, commands, Config
+from redbot.core.utils import chat_formatting as cf
 
+from noobutils import NoobConfirmation, NoobEmojiConverter, get_button_colour
 from typing import Literal, Optional
 
-from .converters import EmojiConverter
-from .noobutils import get_button_colour
-from .views import Confirmation, PressFView
+from .views import PressFView
 
 class PressF(commands.Cog):
     """
@@ -16,7 +14,7 @@ class PressF(commands.Cog):
 
     Press F to pay respect on something using buttons.
     """
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: bot.Red) -> None:
         self.bot = bot
 
         self.config = Config.get_conf(self, identifier=5434354373844151563453, force_registration=True)
@@ -28,7 +26,7 @@ class PressF(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.PressF")
         self.active_cache = []
 
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/pressf/README.md"
 
@@ -36,11 +34,11 @@ class PressF(commands.Cog):
         """
         Thanks Sinbad and sravan!
         """
-        plural = "s" if len(self.__author__) != 0 or 1 else ""
+        plural = "s" if len(self.__author__) > 1 else ""
         return f"""{super().format_help_for_context(context)}
 
         Cog Version: **{self.__version__}**
-        Cog Author{plural}: {humanize_list([f'**{auth}**' for auth in self.__author__])}
+        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
@@ -83,7 +81,7 @@ class PressF(commands.Cog):
         pass
 
     @pressfset.command(name="emoji")
-    async def pressfset_emoji(self, context: commands.Context, emoji: Optional[EmojiConverter]):
+    async def pressfset_emoji(self, context: commands.Context, emoji: Optional[NoobEmojiConverter]):
         """
         Change the F emoji.
 
@@ -120,12 +118,12 @@ class PressF(commands.Cog):
         """
         conf_msg = "Are you sure you want to reset the cogs config?"
         conf_act = "Successfully reset the cogs config."
-        view = Confirmation()
-        await view.start(context=context, confirm_action=conf_act, confirmation_msg=conf_msg)
+        view = NoobConfirmation()
+        await view.start(context=context, confirm_action=conf_act, confirm_msg=conf_msg)
     
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.clear_all()
 
     @pressfset.command(name="reset")
@@ -135,10 +133,10 @@ class PressF(commands.Cog):
         """
         confirmation_msg = "Are you sure you want to reset the current guild settings?"
         confirm_action = "Successfully reset the guilds settings."
-        view = Confirmation()
-        await view.start(context=context, confirm_action=confirm_action, confirmation_msg=confirmation_msg)
+        view = NoobConfirmation()
+        await view.start(context=context, confirm_action=confirm_action, confirm_msg=confirmation_msg)
 
         await view.wait()
 
-        if view.value == "yes":
+        if view.value is True:
             await self.config.guild(context.guild).clear()
