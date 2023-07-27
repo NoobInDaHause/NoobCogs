@@ -5,7 +5,12 @@ from redbot.core import app_commands, bot, commands, Config
 from redbot.core.utils import chat_formatting as cf
 
 from datetime import datetime, timezone
-from noobutils import NoobConfirmation, NoobPaginator, is_have_avatar, pagify_this
+from noobutils import (
+    NoobConfirmation,
+    NoobPaginator,
+    is_have_avatar,
+    pagify_this
+)
 from typing import Literal, Optional
 
 class Afk(commands.Cog):
@@ -301,17 +306,14 @@ class Afk(commands.Cog):
             return await context.send(content="No members are AFK in this guild.")
 
         afk_users = "\n".join(afk_list)
-        pages = list(cf.pagify(afk_users, delims=["\n"], page_length=2000))
-        final_page = []
-
-        for index, page in enumerate(pages, 1):
-            embed = discord.Embed(
-                title="Here are the members who are afk in this guild.",
-                description=page,
-                color=await context.embed_colour()
-            ).set_footer(text=f"Page ({index}/{len(pages)})", icon_url=is_have_avatar(context.guild))
-            final_page.append(embed)
-
+        final_page = await pagify_this(
+            afk_users,
+            "\n",
+            "Page {index}/{pages}",
+            embed_title="Here are the members who are afk in this guild.",
+            embed_colour=await context.embed_colour(),
+            footer_icon=is_have_avatar(context.guild)
+        )
         paginator = NoobPaginator(final_page, timeout=60.0)
         await paginator.start(context)
 
