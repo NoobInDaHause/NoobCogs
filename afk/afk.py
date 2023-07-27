@@ -5,7 +5,7 @@ from redbot.core import app_commands, bot, commands, Config
 from redbot.core.utils import chat_formatting as cf
 
 from datetime import datetime, timezone
-from noobutils import NoobConfirmation, NoobPaginator, is_have_avatar
+from noobutils import NoobConfirmation, NoobPaginator, is_have_avatar, pagify_this
 from typing import Literal, Optional
 
 class Afk(commands.Cog):
@@ -35,7 +35,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.2.8"
+    __version__ = "1.2.9"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -78,20 +78,26 @@ class Afk(commands.Cog):
         await self.config.member(user).afk.set(True)
         await self.config.member(user).timestamp.set(round(datetime.now(timezone.utc).timestamp()))
         await self.config.member(user).reason.set(reason)
+        channel = message.channel
+        guild = message.guild
 
-        if await self.config.guild(message.guild).nick():
+        if await self.config.guild(guild).nick():
             try:
                 await user.edit(nick=f"[AFK] {user.display_name}", reason="User is AFK.")
             except discord.errors.Forbidden:
-                if user.id == message.guild.owner.id:
-                    await message.channel.send(
+                if user.id == guild.owner.id:
+                    await channel.send(
                         content="Could not change your nick cause you are the guild owner.", delete_after=10
                     )
-                else:
-                    await message.channel.send(
-                        content="Could not change your nick due to role hierarchy or "
-                        "I'm missing the manage nicknames permission.", delete_after=10
-                    )
+                    return
+                await channel.send(
+                    content="Could not change your nick due to role hierarchy or "
+                    "I'm missing the manage nicknames permission.", delete_after=10
+                )
+            except discord.errors.HTTPException:
+                await channel.send(
+                    content="It seems your nick name is too long for me to add '[AFK]' beside it."
+                )
 
     async def end_afk(self, message: discord.Message, user: discord.Member):
         """
@@ -101,22 +107,28 @@ class Afk(commands.Cog):
         await self.config.member(user).afk.set(False)
         await self.config.member(user).timestamp.clear()
         await self.config.member(user).reason.clear()
+        channel = message.channel
+        guild = message.guild
 
-        if await self.config.guild(message.guild).nick():
+        if await self.config.guild(guild).nick():
             try:
                 await user.edit(
                     nick=f"{user.display_name}".replace("[AFK]", ""), reason="User is no longer AFK."
                 )
             except discord.errors.Forbidden:
-                if user.id == message.guild.owner.id:
-                    await message.channel.send(
+                if user.id == guild.owner.id:
+                    await channel.send(
                         content="Could not change your nick cause you are the guild owner.", delete_after=10
                     )
-                else:
-                    await message.channel.send(
-                        content="Could not change your nick due to role hierarchy or "
-                        "I'm missing the manage nicknames permission.", delete_after=10
-                    )
+                    return
+                await channel.send(
+                    content="Could not change your nick due to role hierarchy or "
+                    "I'm missing the manage nicknames permission.", delete_after=10
+                )
+            except discord.errors.HTTPException:
+                await channel.send(
+                    content="It seems your nick name is too long for me to add '[AFK]' beside it."
+                )
 
         if pings := await self.config.member(user).pinglogs():
             final_log = []
@@ -133,17 +145,14 @@ class Afk(commands.Cog):
                 final_log.append(logs)
 
             pinglist = "\n".join(final_log)
-            pages = list(cf.pagify(pinglist, delims=["` - `"], page_length=2000))
-            final_page = []
-
-            for index, page in enumerate(pages, 1):
-                embed = discord.Embed(
-                    title=f"You have recieved some pings while you were AFK, {user.name}.",
-                    description=page,
-                    color=user.colour
-                ).set_footer(text=f"Page ({index}/{len(pages)})", icon_url=is_have_avatar(user))
-                final_page.append(embed)
-
+            final_page = await pagify_this(
+                pinglist,
+                "` - `",
+                "Page {index}/{pages}",
+                embed_title=f"You have recieved some pings while you were AFK, {user.display_name}.",
+                embed_colour=user.colour,
+                footer_icon=is_have_avatar(user)
+            )
             context = await self.bot.get_context(message)
             await self.config.member(user).pinglogs.clear()
             paginator = NoobPaginator(final_page, timeout=60.0)
