@@ -36,7 +36,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.3.0"
+    __version__ = "1.3.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -348,7 +348,7 @@ class Afk(commands.Cog):
         """
         afk_list = []
         members = await self.config.all_members(guild=context.guild)
-        for m in members:
+        for m in members.keys():
             member = await context.bot.get_or_fetch_member(
                 guild=context.guild, member_id=m
             )
