@@ -9,26 +9,29 @@ from typing import Literal, Optional
 
 from .views import CookieClickerView
 
+
 class CookieClicker(commands.Cog):
     """
     Play a cookie clicker.
 
     Anti stress 100%.
     """
+
     def __init__(self, bot: bot.Red) -> None:
         self.bot = bot
 
-        self.config = Config.get_conf(self, identifier=348468464655768, force_registration=True)
-        default_guild = {
-            "emoji": "🍪",
-            "buttoncolour": "blurple"
-        }
+        self.config = Config.get_conf(
+            self, identifier=348468464655768, force_registration=True
+        )
+        default_guild = {"emoji": "🍪", "buttoncolour": "blurple"}
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["NoobInDaHause"]
-    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
+    __docs__ = (
+        "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
+    )
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -42,12 +45,17 @@ class CookieClicker(commands.Cog):
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         """
         No EUD to delete.
         """
-        return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return await super().red_delete_data_for_user(
+            requester=requester, user_id=user_id
+        )
 
     @commands.hybrid_command(name="cookieclicker")
     @commands.bot_has_permissions(embed_links=True)
@@ -95,15 +103,19 @@ class CookieClicker(commands.Cog):
         """
         if not emoji:
             e = await self.config.guild(context.guild).emoji()
-            return await context.send(content=f"The current CookieClicker emoji is {e}.")
+            return await context.send(
+                content=f"The current CookieClicker emoji is {e}."
+            )
         await self.config.guild(context.guild).emoji.set(str(emoji))
-        await context.send(content=f"The new CookieClicker emoji has been set to {emoji}.")
+        await context.send(
+            content=f"The new CookieClicker emoji has been set to {emoji}."
+        )
 
     @cookieclickerset.command(name="buttoncolour", aliases=["buttoncolor"])
     async def cookieclickerset_buttoncolour(
         self,
         context: commands.Context,
-        colour: Optional[Literal["red", "green", "blurple", "grey"]]
+        colour: Optional[Literal["red", "green", "blurple", "grey"]],
     ):
         """
         Change the CookieClicker button colour.
@@ -112,9 +124,13 @@ class CookieClicker(commands.Cog):
         """
         if not colour:
             c = await self.config.guild(context.guild).buttoncolour()
-            return await context.send(content=f"The current CookieClicker button colour is {c}")
+            return await context.send(
+                content=f"The current CookieClicker button colour is {c}"
+            )
         await self.config.guild(context.guild).buttoncolour.set(colour)
-        await context.send(content=f"The new CookieClicker button colour has been set to {colour}.")
+        await context.send(
+            content=f"The new CookieClicker button colour has been set to {colour}."
+        )
 
     @cookieclickerset.command(name="reset")
     async def cookieclickerset_reset(self, context: commands.Context):
@@ -124,7 +140,9 @@ class CookieClicker(commands.Cog):
         confirmation_msg = "Are you sure you want to reset the current guild settings?"
         confirm_action = "Successfully reset the guilds settings."
         view = NoobConfirmation()
-        await view.start(context=context, confirm_action=confirm_action, confirm_msg=confirmation_msg)
+        await view.start(
+            context=context, confirm_action=confirm_action, confirm_msg=confirmation_msg
+        )
 
         await view.wait()
 
