@@ -36,7 +36,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.3.1"
+    __version__ = "1.4.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -215,6 +215,10 @@ class Afk(commands.Cog):
             )
         )
 
+    @commands.Cog.listener("on_member_remove")
+    async def m_remove(self, member: discord.Member):
+        await self.config.member_from_ids(guild_id=member.guild.id, member_id=member.id).clear()
+
     @commands.Cog.listener("on_message")
     async def afk_listener(self, message: discord.Message):
         context: commands.Context = await self.bot.get_context(message)
@@ -225,7 +229,7 @@ class Afk(commands.Cog):
             return
         if message.author.bot:
             return
-        if await self.bot.cog_disabled_in_guild:
+        if self.bot.cog_disabled_in_guild:
             return
         if message.mentions:
             for afk_user in message.mentions:
