@@ -46,7 +46,7 @@ class SuggestView(discord.ui.View):
                             ephemeral=True,
                         )
 
-                    if interaction.user.id in i["upvotes"]:
+                    elif interaction.user.id in i["upvotes"]:
                         upindex = i["upvotes"].index(interaction.user.id)
                         i["upvotes"].pop(upindex)
                         button.label = str(len(i["upvotes"]))
@@ -100,7 +100,7 @@ class SuggestView(discord.ui.View):
                             ephemeral=True,
                         )
 
-                    if interaction.user.id in i["downvotes"]:
+                    elif interaction.user.id in i["downvotes"]:
                         downindex = i["downvotes"].index(interaction.user.id)
                         i["downvotes"].pop(downindex)
                         button.label = str(len(i["downvotes"]))

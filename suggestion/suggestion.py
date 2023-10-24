@@ -37,7 +37,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.bot.add_view(SuggestView(self))
 
-    __version__ = "1.2.7"
+    __version__ = "1.2.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
