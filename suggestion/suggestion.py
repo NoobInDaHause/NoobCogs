@@ -37,7 +37,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.persistence_cache = []
 
-    __version__ = "1.2.5"
+    __version__ = "1.2.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -80,6 +80,20 @@ class Suggestion(commands.Cog):
                         i["downvotes"].pop(index)
 
     async def cog_load(self):
+        await self.initialize()
+    
+        await self.load_views()
+
+    async def cog_unload(self):
+        for g in (await self.config.all_guilds()).keys():
+            if guild := self.bot.get_guild(g):
+                for i in await self.config.guild(guild).suggestions():
+                    if view := discord.utils.get(
+                        self.bot.persistent_views, _cache_key=i["msg_id"]
+                    ):
+                        view.stop()
+
+    async def initialize(self):
         for g in (await self.config.all_guilds()).keys():
             if guild := self.bot.get_guild(g):
                 async with self.config.guild(guild).suggestions() as s:
@@ -92,25 +106,13 @@ class Suggestion(commands.Cog):
                                     self.persistence_cache.append(msg.id)
                                 except Exception:
                                     continue
-    
-        await self.load_views()
-
-    async def cog_unload(self):
-        for g in (await self.config.all_guilds()).keys():
-            guild = self.bot.get_guild(g)
-            if not guild:
-                continue
-            for i in await self.config.guild(guild).suggestions():
-                if view := discord.utils.get(
-                    self.bot.persistent_views, _cache_key=i["msg_id"]
-                ):
-                    view.stop()
 
     async def load_views(self):
         view = SuggestView(self)
-        for i in self.persistence_cache:
-            self.bot.add_view(view, message_id=i)
-        self.persistence_cache.clear()
+        if self.persistence_cache:
+            for i in self.persistence_cache:
+                self.bot.add_view(view, message_id=i)
+            self.persistence_cache.clear()
 
     async def maybe_send_to_author(
         self,
