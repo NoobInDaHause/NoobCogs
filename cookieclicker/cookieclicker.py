@@ -26,7 +26,7 @@ class CookieClicker(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.1.6"
+    __version__ = "1.1.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
@@ -132,7 +132,7 @@ class CookieClicker(commands.Cog):
         Don't know why you would want this but hey who am I to judge.
         """
         user_lb: dict = await self.config.guild(context.guild).user_lb()
-        if context.author.id not in set(user_lb):
+        if str(context.author.id) not in set(user_lb):
             return await context.send(content="You are not in the leaderboard.")
 
         act = "You are no longer on this guild's cookie clicker leaderboard."
