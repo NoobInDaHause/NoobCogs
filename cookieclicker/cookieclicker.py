@@ -26,7 +26,7 @@ class CookieClicker(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
@@ -103,7 +103,7 @@ class CookieClicker(commands.Cog):
             [f"` {g}. ` <@{k}> - **{v} :cookie:**" for g, (k, v) in enumerate(sorted_members.items(), 1)]
         )
 
-        pages = nu.pagify_this(
+        pages = await nu.pagify_this(
             ctop,
             ["\n"],
             "Page ({index}/{pages})",
