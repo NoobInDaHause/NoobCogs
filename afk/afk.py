@@ -35,7 +35,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.4.3"
+    __version__ = "1.4.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -229,8 +229,6 @@ class Afk(commands.Cog):
         if not message.channel.permissions_for(message.guild.me).send_messages:
             return
         if message.author.bot:
-            return
-        if self.bot.cog_disabled_in_guild:
             return
         if message.mentions:
             for afk_user in message.mentions:
