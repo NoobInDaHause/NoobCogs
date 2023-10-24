@@ -36,7 +36,7 @@ class Suggestion(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
 
-    __version__ = "1.2.1"
+    __version__ = "1.2.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -78,7 +78,7 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
-    async def initialize(self):
+    async def cog_load(self):
         await self.load_views()
 
     async def cog_unload(self):
