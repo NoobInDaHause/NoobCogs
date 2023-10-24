@@ -1,11 +1,10 @@
 import discord
+import noobutils as nu
 import logging
 
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from datetime import datetime, timezone
-from noobutils import NoobConfirmation, NoobPaginator, is_have_avatar, pagify_this
 from typing import Literal, Optional
 
 
@@ -36,7 +35,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.4.0"
+    __version__ = "1.4.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -85,7 +84,7 @@ class Afk(commands.Cog):
         """
         await self.config.member(user).afk.set(True)
         await self.config.member(user).timestamp.set(
-            round(datetime.now(timezone.utc).timestamp())
+            round(discord.utils.utcnow().timestamp())
         )
         await self.config.member(user).reason.set(reason)
         channel = message.channel
@@ -164,17 +163,17 @@ class Afk(commands.Cog):
                 final_log.append(logs)
 
             pinglist = "\n".join(final_log)
-            final_page = await pagify_this(
+            final_page = await nu.pagify_this(
                 pinglist,
                 "` - `",
                 "Page {index}/{pages}",
                 embed_title=f"You have recieved some pings while you were AFK, {user.display_name}.",
                 embed_colour=user.colour,
-                footer_icon=is_have_avatar(user),
+                footer_icon=nu.is_have_avatar(user),
             )
             context = await self.bot.get_context(message)
             await self.config.member(user).pinglogs.clear()
-            paginator = NoobPaginator(final_page, timeout=60.0)
+            paginator = nu.NoobPaginator(final_page, timeout=60.0)
             await paginator.start(context)
 
     async def maybe_log_and_notify(
@@ -190,7 +189,7 @@ class Afk(commands.Cog):
                     "pinger_id": message.author.id,
                     "jump_url": message.jump_url,
                     "channel_id": message.channel.id,
-                    "timestamp": round(datetime.now(timezone.utc).timestamp()),
+                    "timestamp": round(discord.utils.utcnow().timestamp()),
                     "message": message.content,
                 }
                 pl.append(dict_log)
@@ -201,7 +200,7 @@ class Afk(commands.Cog):
             description=f"{afk_user.mention} is currently AFK since <t:{timestamp}:R>.\n\n"
             f"**Reason:**\n{afk_reason}",
             colour=afk_user.colour,
-        ).set_thumbnail(url=is_have_avatar(afk_user))
+        ).set_thumbnail(url=nu.is_have_avatar(afk_user))
 
         da = await self.config.guild(message.guild).delete_after()
 
@@ -217,7 +216,9 @@ class Afk(commands.Cog):
 
     @commands.Cog.listener("on_member_remove")
     async def m_remove(self, member: discord.Member):
-        await self.config.member_from_ids(guild_id=member.guild.id, member_id=member.id).clear()
+        await self.config.member_from_ids(
+            guild_id=member.guild.id, member_id=member.id
+        ).clear()
 
     @commands.Cog.listener("on_message")
     async def afk_listener(self, message: discord.Message):
@@ -366,15 +367,15 @@ class Afk(commands.Cog):
             return await context.send(content="No members are AFK in this guild.")
 
         afk_users = "\n".join(afk_list)
-        final_page = await pagify_this(
+        final_page = await nu.pagify_this(
             afk_users,
             "\n",
             "Page {index}/{pages}",
             embed_title="Here are the members who are afk in this guild.",
             embed_colour=await context.embed_colour(),
-            footer_icon=is_have_avatar(context.guild),
+            footer_icon=nu.is_have_avatar(context.guild),
         )
-        paginator = NoobPaginator(final_page, timeout=60.0)
+        paginator = nu.NoobPaginator(final_page, timeout=60.0)
         await paginator.start(context)
 
     @afkset.command(name="nick")
@@ -399,7 +400,7 @@ class Afk(commands.Cog):
         """
         confirmation_msg = "Are you sure you want to reset your AFK settings?"
         confirm_action = "Successfully resetted your AFK settings."
-        view = NoobConfirmation(timeout=30)
+        view = nu.NoobConfirmation(timeout=30)
         await view.start(
             context=context, confirm_msg=confirmation_msg, confirm_action=confirm_action
         )
@@ -419,7 +420,7 @@ class Afk(commands.Cog):
             "Are you sure you want to reset the AFK cogs whole configuration?"
         )
         confirm_action = "Successfully resetted the AFK cogs configuration."
-        view = NoobConfirmation(timeout=30)
+        view = nu.NoobConfirmation(timeout=30)
         await view.start(
             context=context, confirm_msg=confirmation_msg, confirm_action=confirm_action
         )
@@ -451,7 +452,7 @@ class Afk(commands.Cog):
             description=f"`Is afk:` {member_settings['afk']}\n`Is sticky:` {member_settings['sticky']}\n"
             f"`Ping logging:` {member_settings['toggle_logs']}",
             colour=context.author.colour,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=discord.utils.utcnow(),
         )
 
         if (

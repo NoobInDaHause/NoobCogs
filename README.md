@@ -22,9 +22,9 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 
 | Cog Name         |  Version  | Cog Description                                             |
 | ---------------- | --------- | ----------------------------------------------------------- |
-| Afk              |  v1.2.10  | Notify users whenever you go AFK with pings logging.        |
+| Afk              |  v1.4.1  | Notify users whenever you go AFK with pings logging.        |
 | AmariLevel       |  v1.0.3   | Check your amari level but through red.                     |
-| CookieClicker    |  v1.0.2   | Play a cookie clicker.                                      |
+| CookieClicker    |  v1.0.3   | Play a cookie clicker.                                      |
 | CustomError      |  v1.1.6   | Customize your bots error message.                          |
 | DevLogs          |  v1.0.7   | Keep a log of all that evals and debugs.                    |
 | GlobalBan        |  v1.1.9   | Globally ban a user from all the guilds the bot is in.      |
