@@ -35,10 +35,8 @@ class Suggestion(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
-        self.view = SuggestView(self)
-        self.bot.add_view(self.view)
 
-    __version__ = "1.2.9"
+    __version__ = "1.2.10"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -80,6 +78,9 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
+    async def cog_load(self):
+        await self.initialize()
+
     async def cog_unload(self):
         for g in (await self.config.all_guilds()).keys():
             if guild := self.bot.get_guild(g):
@@ -89,19 +90,28 @@ class Suggestion(commands.Cog):
                     ):
                         view.stop()
 
-    #async def initialize(self):
-    #    for g in (await self.config.all_guilds()).keys():
-    #        if guild := self.bot.get_guild(g):
-    #            async with self.config.guild(guild).suggestions() as s:
-    #                if s:
-    #                    for i in s:
-    #                        if i["status"] == "running":
-    #                            try:
-    #                                channel = guild.get_channel(i["channel_id"])
-    #                                msg = await channel.fetch_message(i["msg_id"])
-    #                                self.persistence_cache.append(msg.id)
-    #                            except Exception:
-    #                                continue
+    async def initialize(self):
+        alist = []
+        for g in (await self.config.all_guilds()).keys():
+            if guild := self.bot.get_guild(g):
+                async with self.config.guild(guild).suggestions() as s:
+                    if s:
+                        for i in s:
+                            if i["status"] == "running":
+                                try:
+                                    channel = guild.get_channel(i["channel_id"])
+                                    msg = await channel.fetch_message(i["msg_id"])
+                                    alist.append(msg.id)
+                                except Exception:
+                                    continue
+
+        if alist:
+            await self.load_views(alist)
+
+    async def load_views(self, alist: list):
+        for i in alist:
+            view = SuggestView(self)
+            self.bot.add_view(view, message_id=int(i))
 
     async def maybe_send_to_author(
         self,
