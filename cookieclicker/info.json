@@ -2,7 +2,7 @@
     "name": "CookieClicker",
     "short": "Play a cookie clicker.",
     "description": "Anti stress 100%.",
-    "end_user_data_statement": "This cog does not store any end user data whatsoever.",
+    "end_user_data_statement": "This cog stores user ids for cookie clicker leaderboard purposes.",
     "install_msg": "Thank you for installing CookieClicker. Load the cog with `[p]load cookieclicker`.",
     "author": [
         "NoobInDaHause"

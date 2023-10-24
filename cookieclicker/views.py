@@ -2,14 +2,18 @@ import discord
 
 from redbot.core import commands
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from noobutils import access_denied
 
+if TYPE_CHECKING:
+    from . import CookieClicker
+
 
 class CookieClickerView(discord.ui.View):
-    def __init__(self, timeout: Optional[float] = 60.0):
+    def __init__(self, cog: "CookieClicker", timeout: Optional[float] = 60.0):
         super().__init__(timeout=timeout)
+        self.cog = cog
         self.message: discord.Message = None
         self.context: commands.Context = None
         self.clicked = 0
@@ -36,6 +40,10 @@ class CookieClickerView(discord.ui.View):
         self.stop()
         await interaction.response.edit_message(view=self)
 
+        if self.clicked > 0:
+            async with self.cog.config.guild(interaction.guild).user_lb() as ulb:
+                ulb[interaction.user.id] += self.clicked
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if await self.context.bot.is_owner(interaction.user):
             return True
@@ -52,3 +60,7 @@ class CookieClickerView(discord.ui.View):
             x.disabled = True
         self.stop()
         await self.message.edit(view=self)
+
+        if self.clicked > 0:
+            async with self.cog.config.guild(self.context.guild).user_lb() as ulb:
+                ulb[self.context.author.id] += self.clicked
