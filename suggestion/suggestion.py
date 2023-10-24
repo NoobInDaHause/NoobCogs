@@ -35,9 +35,9 @@ class Suggestion(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
-        self.persistence_cache = []
+        self.bot.add_view(SuggestView(self))
 
-    __version__ = "1.2.6"
+    __version__ = "1.2.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -79,11 +79,6 @@ class Suggestion(commands.Cog):
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
 
-    async def cog_load(self):
-        await self.initialize()
-    
-        await self.load_views()
-
     async def cog_unload(self):
         for g in (await self.config.all_guilds()).keys():
             if guild := self.bot.get_guild(g):
@@ -106,13 +101,6 @@ class Suggestion(commands.Cog):
                                     self.persistence_cache.append(msg.id)
                                 except Exception:
                                     continue
-
-    async def load_views(self):
-        view = SuggestView(self)
-        if self.persistence_cache:
-            for i in self.persistence_cache:
-                self.bot.add_view(view, message_id=i)
-            self.persistence_cache.clear()
 
     async def maybe_send_to_author(
         self,
