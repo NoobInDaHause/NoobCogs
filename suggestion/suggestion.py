@@ -35,9 +35,10 @@ class Suggestion(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
-        self.bot.add_view(SuggestView(self))
+        self.view = SuggestView(self)
+        self.bot.add_view(self.view)
 
-    __version__ = "1.2.8"
+    __version__ = "1.2.9"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -88,19 +89,19 @@ class Suggestion(commands.Cog):
                     ):
                         view.stop()
 
-    async def initialize(self):
-        for g in (await self.config.all_guilds()).keys():
-            if guild := self.bot.get_guild(g):
-                async with self.config.guild(guild).suggestions() as s:
-                    if s:
-                        for i in s:
-                            if i["status"] == "running":
-                                try:
-                                    channel = guild.get_channel(i["channel_id"])
-                                    msg = await channel.fetch_message(i["msg_id"])
-                                    self.persistence_cache.append(msg.id)
-                                except Exception:
-                                    continue
+    #async def initialize(self):
+    #    for g in (await self.config.all_guilds()).keys():
+    #        if guild := self.bot.get_guild(g):
+    #            async with self.config.guild(guild).suggestions() as s:
+    #                if s:
+    #                    for i in s:
+    #                        if i["status"] == "running":
+    #                            try:
+    #                                channel = guild.get_channel(i["channel_id"])
+    #                                msg = await channel.fetch_message(i["msg_id"])
+    #                                self.persistence_cache.append(msg.id)
+    #                            except Exception:
+    #                                continue
 
     async def maybe_send_to_author(
         self,
