@@ -10,25 +10,26 @@ from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal, Optional
 
+
 class JoinDM(commands.Cog):
     """
     DM newly joined users from your guild with your set message.
 
     This cog uses TagScriptEngine and requires you basic tagscript knowledge to use this cog.
     """
+
     def __init__(self, bot: Red, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot = bot
 
-        default_guild = {
-            "message": None,
-            "toggled": False
-        }
-        self.config = Config.get_conf(self, identifier=947_123_432_421, force_registration=True)
+        default_guild = {"message": None, "toggled": False}
+        self.config = Config.get_conf(
+            self, identifier=947_123_432_421, force_registration=True
+        )
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.JoinDM")
 
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/joindm/README.md"
 
@@ -44,39 +45,54 @@ class JoinDM(commands.Cog):
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         """
         This cog does not store any end user data whatsoever.
         """
-        return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return await super().red_delete_data_for_user(
+            requester=requester, user_id=user_id
+        )
 
     async def dm_user(self, member: discord.Member, message: str):
         tagengine = tse.AsyncInterpreter(
             blocks=[
-                tse.EmbedBlock(), tse.LooseVariableGetterBlock(), tse.StrictVariableGetterBlock(),
-                tse.IfBlock(), tse.RandomBlock(), tse.FiftyFiftyBlock(), tse.AllBlock(), tse.AnyBlock(),
-                tse.ReplaceBlock()
+                tse.EmbedBlock(),
+                tse.LooseVariableGetterBlock(),
+                tse.StrictVariableGetterBlock(),
+                tse.IfBlock(),
+                tse.RandomBlock(),
+                tse.FiftyFiftyBlock(),
+                tse.AllBlock(),
+                tse.AnyBlock(),
+                tse.ReplaceBlock(),
             ]
         )
         proccessed = await tagengine.process(
             message=message,
             seed_variables={
                 "member": tse.MemberAdapter(member),
-                "guild": tse.GuildAdapter(member.guild)
-            }
+                "guild": tse.GuildAdapter(member.guild),
+            },
         )
         view = discord.ui.View()
         view.add_item(
             discord.ui.Button(
-                label=f"Sent from {member.guild.name} ({member.guild.id}).",
+                label=f"Sent from: {member.guild.name} ({member.guild.id}).",
                 disabled=True,
-                style=nu.get_button_colour("grey")
+                style=nu.get_button_colour("grey"),
             )
         )
-        with contextlib.suppress(discord.errors.Forbidden, discord.errors.HTTPException):
+        with contextlib.suppress(
+            discord.errors.Forbidden, discord.errors.HTTPException
+        ):
             await member.send(
-                content=proccessed.body, embed=proccessed.actions.get("embed"), view=view
+                content=proccessed.body,
+                embed=proccessed.actions.get("embed"),
+                view=view,
             )
 
     @commands.Cog.listener("on_member_join")
@@ -131,7 +147,9 @@ class JoinDM(commands.Cog):
             await self.config.clear_all()
 
     @joindmset.command(name="message", aliases=["msg"])
-    async def joindmset_message(self, context: commands.Context, *, message: Optional[str]):
+    async def joindmset_message(
+        self, context: commands.Context, *, message: Optional[str]
+    ):
         """
         Set the join dm message.
 
@@ -149,7 +167,9 @@ class JoinDM(commands.Cog):
             return await context.send(content="The joindm message has been cleared.")
 
         await self.config.guild(context.guild).message.set(message)
-        await context.send(content=f"Successfully set your joindm message to: {cf.box(message, 'py')}")
+        await context.send(
+            content=f"Successfully set your joindm message to: {cf.box(message, 'py')}"
+        )
 
     @joindmset.command(name="toggle")
     async def joindmset_toggle(self, context: commands.Context):
@@ -175,9 +195,11 @@ class JoinDM(commands.Cog):
         embed = discord.Embed(
             title=f"{context.guild}'s current guild settings",
             colour=await context.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
+            timestamp=datetime.datetime.now(datetime.timezone.utc),
         )
         embed.set_thumbnail(url=nu.is_have_avatar(context.guild))
         embed.add_field(name="Toggled:", value=data["toggled"], inline=False)
-        embed.add_field(name="Message:", value=cf.box(data["message"], "py"), inline=False)
+        embed.add_field(
+            name="Message:", value=cf.box(data["message"], "py"), inline=False
+        )
         await context.send(embed=embed)

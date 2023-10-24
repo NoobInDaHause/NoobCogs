@@ -6,6 +6,7 @@ from typing import Union
 from rapidfuzz import process
 from unidecode import unidecode
 
+
 # https://github.com/phenom4n4n/phen-cogs/blob/327fc78c66814ac01f644c6b775dc4d6db6e1e5f/roleutils/converters.py#L36
 # original converter from https://github.com/TrustyJAID/Trusty-cogs/blob/master/serverstats/converters.py#L19
 class FuzzyRole(commands.RoleConverter):
@@ -23,7 +24,9 @@ class FuzzyRole(commands.RoleConverter):
         self.response = response
         super().__init__()
 
-    async def convert(self, ctx: commands.Context, argument: str) -> Union[discord.Role, str]:
+    async def convert(
+        self, ctx: commands.Context, argument: str
+    ) -> Union[discord.Role, str]:
         if argument.lower() in {"here", "@here"}:
             return "here"
         if argument.lower() in {"everyone", "@everyone"}:
@@ -45,7 +48,9 @@ class FuzzyRole(commands.RoleConverter):
             )
         ]
         if not result:
-            raise commands.BadArgument(f'Role "{argument}" not found.' if self.response else None)
+            raise commands.BadArgument(
+                f'Role "{argument}" not found.' if self.response else None
+            )
 
         sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
         return sorted_result[0][0]

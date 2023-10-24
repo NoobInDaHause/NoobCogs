@@ -1,13 +1,13 @@
 import datetime
 import discord
 import logging
+import noobutils as nu
 
-from redbot.core import bot, commands, Config
+from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal, Optional
 
-from noobutils import NoobPaginator, is_have_avatar, pagify_this
 
 class DevLogs(commands.Cog):
     """
@@ -16,18 +16,23 @@ class DevLogs(commands.Cog):
     Logs all the Dev commands in a channel.
     Originally and formerly from sravan but I got permission to maintain it now.
     """
-    def __init__(self, bot: bot.Red, *args, **kwargs):
+
+    def __init__(self, bot: Red, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot = bot
 
-        self.config = Config.get_conf(self, identifier=0x2_412_214_4315312_9, force_registration=True)
+        self.config = Config.get_conf(
+            self, identifier=0x2_412_214_4315312_9, force_registration=True
+        )
         default_global = {"default_channel": None, "bypass": []}
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.DevLogs")
 
-    __version__ = "1.0.7"
+    __version__ = "1.0.8"
     __author__ = ["sravan_krishna", "NoobInDaHause"]
-    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
+    __docs__ = (
+        "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
+    )
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -41,7 +46,10 @@ class DevLogs(commands.Cog):
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         """
         This cog stores user ID's for the logging bypass, users can delete their data.
@@ -79,27 +87,39 @@ class DevLogs(commands.Cog):
             title=f"{context.command.name.upper()} Logs",
             description=cf.box(content, lang="py"),
             color=await context.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
+            timestamp=datetime.datetime.now(datetime.timezone.utc),
         )
-        embed.set_author(name=context.author, icon_url=is_have_avatar(context.author))
+        embed.set_author(
+            name=context.author, icon_url=nu.is_have_avatar(context.author)
+        )
         try:
             embed.add_field(
                 name="Channel",
                 value=f"{context.channel.mention}\n{context.channel.name}\n({context.channel.id})",
-                inline=True
+                inline=True,
             )
-            embed.add_field(name="Guild", value=f"{context.guild.name}\n({context.guild.id})", inline=True)
+            embed.add_field(
+                name="Guild",
+                value=f"{context.guild.name}\n({context.guild.id})",
+                inline=True,
+            )
         except AttributeError:
             embed.add_field(name="Channel", value="DMs", inline=True)
         embed.add_field(
-            name="Author", value=f"{context.author.name}\n({context.author.id})", inline=True
+            name="Author",
+            value=f"{context.author.name}\n({context.author.id})",
+            inline=True,
         )
         try:
             view = discord.ui.View()
-            view.add_item(discord.ui.Button(label="Jump To Command", url=context.message.jump_url))
+            view.add_item(
+                discord.ui.Button(label="Jump To Command", url=context.message.jump_url)
+            )
             await self.bot.get_channel(partialchannel).send(embed=embed, view=view)
         except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
-            self.log.exception("Error occurred while sending eval/debug logs.", exc_info=e)
+            self.log.exception(
+                "Error occurred while sending eval/debug logs.", exc_info=e
+            )
 
     @commands.group(name="devlogset", aliases=["devset"])
     @commands.guild_only()
@@ -119,10 +139,14 @@ class DevLogs(commands.Cog):
         """
         if not channel:
             await self.config.default_channel.clear()
-            return await context.send(content="The DevLogs logging channel has been cleared.")
+            return await context.send(
+                content="The DevLogs logging channel has been cleared."
+            )
 
         await self.config.default_channel.set(channel.id)
-        await context.send(content=f"Successfully set the DevLogs logging channel to {channel.mention}.")
+        await context.send(
+            content=f"Successfully set the DevLogs logging channel to {channel.mention}."
+        )
 
     @devlogset.group(name="bypass")
     async def devlogset_bypass(self, context: commands.Context) -> None:
@@ -132,7 +156,9 @@ class DevLogs(commands.Cog):
         pass
 
     @devlogset_bypass.command(name="add", aliases=["+"])
-    async def devlogset_bypass_add(self, context: commands.Context, user: discord.User) -> None:
+    async def devlogset_bypass_add(
+        self, context: commands.Context, user: discord.User
+    ) -> None:
         """
         Add a user to the bypass list.
         """
@@ -145,7 +171,9 @@ class DevLogs(commands.Cog):
             await context.send(content=f"{user.mention} added to the bypass list.")
 
     @devlogset_bypass.command(name="remove", aliases=["-"])
-    async def devlogset_bypass_remove(self, context: commands.Context, user: discord.User) -> None:
+    async def devlogset_bypass_remove(
+        self, context: commands.Context, user: discord.User
+    ) -> None:
         """
         Remove a user from the bypass list.
         """
@@ -173,18 +201,15 @@ class DevLogs(commands.Cog):
                 users += f"` - ` {user_obj} (`{user_obj.id}`).\n"
             except discord.errors.NotFound:
                 users += f"` - ` Unknown User (`{user}`).\n"
-        text = (
-            f"Command executed by {context.author} |"
-            " Page ({index}/{pages})"
-        )
+        text = f"Command executed by {context.author} |" " Page ({index}/{pages})"
         title = "A list of users that bypasses the DevLogs cog"
-        final_page = await pagify_this(
+        final_page = await nu.pagify_this(
             users,
             "` - `",
             text,
             embed_title=title,
             embed_colour=context.author.colour,
-            footer_icon=is_have_avatar(context.author)
+            footer_icon=nu.is_have_avatar(context.author),
         )
-        paginator = NoobPaginator(final_page, timeout=60.0)
+        paginator = nu.NoobPaginator(final_page, timeout=60.0)
         await paginator.start(context)

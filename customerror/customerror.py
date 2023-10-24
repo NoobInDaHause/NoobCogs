@@ -11,6 +11,7 @@ from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal, Optional
 
+
 class CustomError(commands.Cog):
     """
     Customize your bots error message.
@@ -19,22 +20,27 @@ class CustomError(commands.Cog):
     This cog uses TagScriptEngine so be sure you have knowledge in that.
     Credits to sitryk and phen for some of the code.
     """
+
     def __init__(self, bot: Red):
         self.bot = bot
 
-        self.config = Config.get_conf(self, identifier=9874825374237, force_registration=True)
+        self.config = Config.get_conf(
+            self, identifier=9874825374237, force_registration=True
+        )
         default_global = {
             "error_msg": "`Error in command '{command}'. Check your console or logs for details.`"
         }
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.CustomError")
         self.old_error = self.bot.on_command_error
-        
+
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.7"
+    __version__ = "1.1.8"
     __author__ = ["NoobInDaHause"]
-    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
+    __docs__ = (
+        "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
+    )
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -48,27 +54,42 @@ class CustomError(commands.Cog):
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         """
         This cog does not store any end user data whatsoever.
         """
-        return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return await super().red_delete_data_for_user(
+            requester=requester, user_id=user_id
+        )
 
     # https://github.com/Sitryk/sitcogsv3/blob/e1d8d0f3524dfec17872379c12c0edcb9360948d/errorhandler/cog.py#L30
     # modified to work with tagscriptengine and my code
-    async def on_command_error(self, ctx: commands.Context, error, unhandled_by_cog = False):
+    async def on_command_error(
+        self, ctx: commands.Context, error, unhandled_by_cog=False
+    ):
         context = ctx
         tagengine = tse.AsyncInterpreter(
             blocks=[
-                tse.EmbedBlock(), tse.LooseVariableGetterBlock(), tse.StrictVariableGetterBlock(),
-                tse.IfBlock(), tse.RandomBlock(), tse.CommandBlock(), tse.FiftyFiftyBlock(),
-                tse.AllBlock(), tse.AnyBlock(), tse.ReplaceBlock()
+                tse.EmbedBlock(),
+                tse.LooseVariableGetterBlock(),
+                tse.StrictVariableGetterBlock(),
+                tse.IfBlock(),
+                tse.RandomBlock(),
+                tse.CommandBlock(),
+                tse.FiftyFiftyBlock(),
+                tse.AllBlock(),
+                tse.AnyBlock(),
+                tse.ReplaceBlock(),
             ]
         )
         if isinstance(error, commands.CommandInvokeError):
             self.log.exception(
-                msg=f"Exception in command '{context.command.qualified_name}'", exc_info=error.original
+                msg=f"Exception in command '{context.command.qualified_name}'",
+                exc_info=error.original,
             )
             exception_log = f"Exception in command '{context.command.qualified_name}'\n"
             exception_log += "".join(
@@ -89,14 +110,18 @@ class CustomError(commands.Cog):
                     "command": tse.StringAdapter(context.command.qualified_name),
                     "message_content": tse.StringAdapter(context.message.content),
                     "message_id": tse.StringAdapter(context.message.id),
-                    "message_jump_url": tse.StringAdapter(context.message.jump_url)
-                }
+                    "message_jump_url": tse.StringAdapter(context.message.jump_url),
+                },
             )
-            with contextlib.suppress(discord.errors.Forbidden, discord.errors.HTTPException):
+            with contextlib.suppress(
+                discord.errors.Forbidden, discord.errors.HTTPException
+            ):
                 await context.send(
                     content=processed.body,
                     embed=processed.actions.get("embed"),
-                    allowed_mentions=discord.AllowedMentions(users=True, roles=False, everyone=False)
+                    allowed_mentions=discord.AllowedMentions(
+                        users=True, roles=False, everyone=False
+                    ),
                 )
             return
 
@@ -116,11 +141,13 @@ class CustomError(commands.Cog):
         pass
 
     @customerror.command(name="message")
-    async def customerror_message(self, context: commands.Context, *, message: Optional[str]):
+    async def customerror_message(
+        self, context: commands.Context, *, message: Optional[str]
+    ):
         """
         Customize [botname]'s error message.
-        
-        
+
+
 
         Bot owners only.
         Be sure that you have TagScriptEgnine knowledge.
@@ -148,7 +175,9 @@ class CustomError(commands.Cog):
             return await context.send(content="The error message has been reset.")
 
         await self.config.error_msg.set(message)
-        await context.send(content=f"The error message has been set to: {cf.box(message, 'py')}")
+        await context.send(
+            content=f"The error message has been set to: {cf.box(message, 'py')}"
+        )
 
     @customerror.command(name="plzerror")
     async def customerror_plzerror(self, context: commands.Context):
@@ -157,7 +186,9 @@ class CustomError(commands.Cog):
 
         Bot owners only.
         """
-        msg = await context.maybe_send_embed(message="Testing out error message please wait...")
+        msg = await context.maybe_send_embed(
+            message="Testing out error message please wait..."
+        )
         await msg.delete(delay=1.5)
         raise NotImplementedError("This is a test error.")
 
@@ -190,6 +221,6 @@ class CustomError(commands.Cog):
             title="Current error message",
             description=cf.box(settings, "py"),
             colour=await context.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
+            timestamp=datetime.datetime.now(datetime.timezone.utc),
         )
         await context.send(embed=embed)

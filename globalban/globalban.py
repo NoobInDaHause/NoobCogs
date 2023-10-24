@@ -2,35 +2,37 @@ import asyncio
 import contextlib
 import discord
 import logging
+import noobutils as nu
 
-from redbot.core import bot, commands, Config, modlog
+from redbot.core.bot import commands, Config, modlog, Red
 from redbot.core.utils import chat_formatting as cf
 
 from datetime import datetime, timezone
-from noobutils import NoobConfirmation, NoobPaginator, pagify_this
 from typing import Literal, Optional, Union
 
 from .views import GbanViewReset
+
 
 class GlobalBan(commands.Cog):
     """
     Globally ban a user from all the guilds the bot is in.
     """
-    def __init__(self, bot: bot.Red) -> None:
+
+    def __init__(self, bot: Red) -> None:
         self.bot = bot
 
-        self.config = Config.get_conf(self, identifier=74654871231365754648, force_registration=True)
-        default_global = {
-            "banlist": [],
-            "banlogs": [],
-            "create_modlog": False
-        }
+        self.config = Config.get_conf(
+            self, identifier=74654871231365754648, force_registration=True
+        )
+        default_global = {"banlist": [], "banlogs": [], "create_modlog": False}
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.9"
+    __version__ = "1.1.10"
     __author__ = ["NoobInDaHause"]
-    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
+    __docs__ = (
+        "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
+    )
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -44,14 +46,17 @@ class GlobalBan(commands.Cog):
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         """
         This cog stores user id for the purpose of ban logs and ban list and some other.
 
         People can remove their data but offenders who are in the ban logs or list can't.
         """
-        async with self.config.banlogs as gblog:
+        async with self.config.banlogs() as gblog:
             if not gblog:
                 return
             for i in gblog:
@@ -77,12 +82,14 @@ class GlobalBan(commands.Cog):
                 "default_setting": True,
                 "image": ":earth_americas::dove:",
                 "case_str": "GlobalUnBan",
-            }
+            },
         ]
         with contextlib.suppress(RuntimeError):
             await modlog.register_casetypes(globalban_types)
 
-    async def log_bans(self, context: commands.Context, gtype: str, user_id: int, reason: str):
+    async def log_bans(
+        self, context: commands.Context, gtype: str, user_id: int, reason: str
+    ):
         async with self.config.banlogs() as gblog:
             log = {
                 "case": len(gblog) + 1,
@@ -96,14 +103,17 @@ class GlobalBan(commands.Cog):
             }
             gblog.append(log)
 
-    async def _globalban_user(self, context: commands.Context, member: discord.Member, reason: str):
+    async def _globalban_user(
+        self, context: commands.Context, member: discord.Member, reason: str
+    ):
         """
         Global ban the user.
         """
         await self.log_bans(context, "GlobalBan", member.id, reason)
 
         async with self.config.banlist() as gblist:
-            gblist.append(member.id)
+            gl: list = gblist
+            gl.append(member.id)
 
         errors = []
         guilds = []
@@ -115,13 +125,8 @@ class GlobalBan(commands.Cog):
                     errors.append(f"{guild} (ID: `{guild.id}`)")
             except discord.errors.NotFound:
                 try:
-                    res = (
-                        f"GlobalBan Authorized by {context.author} (ID: {context.author.id}). Reason: {reason}"
-                    )
-                    await guild.ban(
-                        member,
-                        reason=res
-                    )
+                    res = f"GlobalBan Authorized by {context.author} (ID: {context.author.id}). Reason: {reason}"
+                    await guild.ban(member, reason=res)
                     guilds.append(guild.id)
                     if await self.config.create_modlog():
                         await modlog.create_case(
@@ -134,12 +139,13 @@ class GlobalBan(commands.Cog):
                             reason=res,
                             until=None,
                             channel=None,
-                            
                         )
                 except discord.errors.HTTPException:
                     errors.append(f"{guild} (ID: `{guild.id}`)")
 
-        await context.send(content=f"Globally banned **{member}** in **{len(guilds)}** guilds.")
+        await context.send(
+            content=f"Globally banned **{member}** in **{len(guilds)}** guilds."
+        )
         self.log.info(
             f"{context.author} (ID: {context.author.id}) Globally Banned "
             f"{member} (ID: {member.id}) in {len(guilds)} guilds."
@@ -147,7 +153,7 @@ class GlobalBan(commands.Cog):
 
         if errors:
             em = ", ".join(errors)
-            final_page = await pagify_this(
+            final_page = await nu.pagify_this(
                 em,
                 ", ",
                 "Page {index}/{pages}",
@@ -155,34 +161,32 @@ class GlobalBan(commands.Cog):
                     "It's either I do not have ban permission or "
                     f"{member} is already banned in these guilds."
                 ),
-                embed_colour=await context.embed_colour()
+                embed_colour=await context.embed_colour(),
             )
 
-            paginator = NoobPaginator(final_page, timeout=60.0)
+            paginator = nu.NoobPaginator(final_page, timeout=60.0)
             await paginator.start(context)
 
-    async def _globalunban_user(self, context: commands.Context, member: discord.Member, reason: str):
+    async def _globalunban_user(
+        self, context: commands.Context, member: discord.Member, reason: str
+    ):
         """
         Global Unban a user.
         """
         await self.log_bans(context, "GlobalUnBan", member.id, reason)
 
         async with self.config.banlist() as gblist:
-            index = gblist.index(member.id)
-            gblist.pop(index)
+            gl: list = gblist
+            index = gl.index(member.id)
+            gl.pop(index)
 
         errors = []
         guilds = []
         for guild in self.bot.guilds:
             await asyncio.sleep(10)
             try:
-                res = (
-                    f"GlobalUnBan Authorized by {context.author} (ID: {context.author.id}). Reason: {reason}"
-                )
-                await guild.unban(
-                    member,
-                    reason=res
-                )
+                res = f"GlobalUnBan Authorized by {context.author} (ID: {context.author.id}). Reason: {reason}"
+                await guild.unban(member, reason=res)
                 guilds.append(guild.id)
                 if await self.config.create_modlog():
                     await modlog.create_case(
@@ -199,7 +203,9 @@ class GlobalBan(commands.Cog):
             except discord.errors.HTTPException:
                 errors.append(f"{guild} (ID: `{guild.id}`)")
 
-        await context.send(content=f"Globally unbanned **{member}** in **{len(guilds)}** guilds.")
+        await context.send(
+            content=f"Globally unbanned **{member}** in **{len(guilds)}** guilds."
+        )
         self.log.info(
             f"{context.author} (ID: {context.author.id}) Globally UnBanned"
             f" {member} (ID: {member.id}) in {len(guilds)} guilds."
@@ -207,7 +213,7 @@ class GlobalBan(commands.Cog):
 
         if errors:
             em = ", ".join(errors)
-            final_page = await pagify_this(
+            final_page = await nu.pagify_this(
                 em,
                 ", ",
                 "Page {index}/{pages}",
@@ -215,10 +221,10 @@ class GlobalBan(commands.Cog):
                     "It's either I do not have ban permission or "
                     f"{member} is not banned in these guilds."
                 ),
-                embed_colour=await context.embed_colour()
+                embed_colour=await context.embed_colour(),
             )
 
-            paginator = NoobPaginator(final_page, timeout=60.0)
+            paginator = nu.NoobPaginator(final_page, timeout=60.0)
             await paginator.start(context)
 
     @commands.group(name="globalban", aliases=["gban"])
@@ -233,7 +239,9 @@ class GlobalBan(commands.Cog):
         pass
 
     @globalban.command(name="editreason")
-    async def globalban_editreason(self, context: commands.Context, case_id: int, *, reason: str):
+    async def globalban_editreason(
+        self, context: commands.Context, case_id: int, *, reason: str
+    ):
         """
         Edit a global ban case reason.
 
@@ -242,14 +250,18 @@ class GlobalBan(commands.Cog):
         await context.typing()
         async with self.config.banlogs() as gblog:
             if not gblog:
-                return await context.send(content="It appears there are no cases logged yet.")
+                return await context.send(
+                    content="It appears there are no cases logged yet."
+                )
             if case_id <= 0 or case_id > len(gblog):
-                return await context.send(content="It appears the case for this ID does not exist.")
+                return await context.send(
+                    content="It appears the case for this ID does not exist."
+                )
             for i in gblog:
                 if case_id == i["case"]:
                     i["reason"] = reason
                     i["amender"] = context.author.id
-                    i["last_modified"] = round(datetime.now(timezone.utc).timestamp())
+                    i["last_modified"] = round(discord.utils.utcnow().timestamp())
                     break
         await context.tick()
 
@@ -259,7 +271,7 @@ class GlobalBan(commands.Cog):
         context: commands.Context,
         user: Union[discord.Member, int],
         *,
-        reason: Optional[str] = "No reason provided."
+        reason: Optional[str] = "No reason provided.",
     ):
         """
         Globally ban a user.
@@ -279,18 +291,26 @@ class GlobalBan(commands.Cog):
             member = user
 
         if member.id in await self.config.banlist():
-            return await context.send(content=f"It appears **{member}** is already globally banned.")
+            return await context.send(
+                content=f"It appears **{member}** is already globally banned."
+            )
         if member.id == context.author.id:
-            return await context.send(content="I can not let you globally ban yourself.")
+            return await context.send(
+                content="I can not let you globally ban yourself."
+            )
         if await context.bot.is_owner(member):
-            return await context.send(content="You can not globally ban other bot owners.")
+            return await context.send(
+                content="You can not globally ban other bot owners."
+            )
         if member.id == context.bot.user.id:
-            return await context.send(content="You can not globally ban me... Dumbass. >:V")
+            return await context.send(
+                content="You can not globally ban me... Dumbass. >:V"
+            )
 
         confirmation_msg = f"Are you sure you want to globally ban **{member}**?"
         confirm_action = "Alright this might take a while."
-        view = NoobConfirmation(timeout=30)
-        await view.start(context=context, confirm_action=confirm_action, confirm_msg=confirmation_msg)
+        view = nu.NoobConfirmation(timeout=30)
+        await view.start(context, confirm_action, content=confirmation_msg)
 
         await view.wait()
 
@@ -335,15 +355,15 @@ class GlobalBan(commands.Cog):
                 users.append(l)
 
         banlist = "\n".join(users)
-        final_page = await pagify_this(
+        final_page = await nu.pagify_this(
             banlist,
             "\n",
             "Page {index}/{pages}",
             embed_title="GlobalBan Ban List",
-            embed_colour=await context.embed_colour()
+            embed_colour=await context.embed_colour(),
         )
 
-        paginator = NoobPaginator(final_page, timeout=60.0)
+        paginator = nu.NoobPaginator(final_page, timeout=60.0)
         await paginator.start(context)
 
     @globalban.command(name="logs")
@@ -356,7 +376,9 @@ class GlobalBan(commands.Cog):
         logs = await self.config.banlogs()
 
         if not logs:
-            return await context.send(content="It appears there are no cases logged yet.")
+            return await context.send(
+                content="It appears there are no cases logged yet."
+            )
 
         gl = []
         for i in logs:
@@ -388,17 +410,17 @@ class GlobalBan(commands.Cog):
                 f"`Timestamp:` <t:{i['timestamp']}:F>{eff}{ts}"
             )
             gl.append(l)
-        
+
         banlogs = """\n\n""".join(gl)
-        final_page = await pagify_this(
+        final_page = await nu.pagify_this(
             banlogs,
             "> ",
             "Page {index}/{pages}",
             embed_title="GlobalBan Ban Logs",
-            embed_colour=await context.embed_colour()
+            embed_colour=await context.embed_colour(),
         )
 
-        paginator = NoobPaginator(final_page, timeout=60.0)
+        paginator = nu.NoobPaginator(final_page, timeout=60.0)
         await paginator.start(context)
 
     @globalban.command(name="reset")
@@ -418,7 +440,7 @@ class GlobalBan(commands.Cog):
         context: commands.Context,
         user: Union[discord.Member, int],
         *,
-        reason: Optional[str] = "No reason provided."
+        reason: Optional[str] = "No reason provided.",
     ):
         """
         Globally unban a user.
@@ -438,12 +460,14 @@ class GlobalBan(commands.Cog):
             member = user
 
         if member.id not in await self.config.banlist():
-            return await context.send(content=f"It appears **{member}** is not globally banned.")
+            return await context.send(
+                content=f"It appears **{member}** is not globally banned."
+            )
 
         confirm_msg = f"Are you sure you want to globally unban **{member}**?"
         confirm_action = "Alright this might take a while."
-        view = NoobConfirmation(timeout=30.0)
-        await view.start(context=context, confirm_action=confirm_action, confirm_msg=confirm_msg)
+        view = nu.NoobConfirmation(timeout=30.0)
+        await view.start(context, confirm_action, content=confirm_msg)
 
         await view.wait()
 

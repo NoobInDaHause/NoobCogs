@@ -35,7 +35,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.4.5"
+    __version__ = "1.4.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -65,16 +65,18 @@ class Afk(commands.Cog):
 
         Also thanks sravan and aikaterna for the end user data statement!
         """
-        for g in await self.config.all_guilds():
+        for g in (await self.config.all_guilds()).keys():
             await self.config.member_from_ids(guild_id=g, member_id=user_id).clear()
-            async with self.config.member_from_ids(
-                guild_id=g, member_id=user_id
-            ).pinglogs() as pl:
-                if not pl:
-                    continue
-                for i in pl:
-                    if i["pinger_id"] == user_id:
-                        i["pinger_id"] = None
+
+            if guild := self.bot.get_guild(g):
+                for m in (await self.config.all_members(guild)).keys():
+                    if member := guild.get_member(m):
+                        async with self.config.member(member).pinglogs() as pl:
+                            if not pl:
+                                continue
+                            for i in pl:
+                                if i["pinger_id"] == user_id:
+                                    i["pinger_id"] = None
 
     async def start_afk(
         self, message: discord.Message, user: discord.Member, reason: str

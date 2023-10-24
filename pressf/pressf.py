@@ -1,12 +1,13 @@
 import logging
+import noobutils as nu
 
-from redbot.core import app_commands, bot, commands, Config
+from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from noobutils import NoobConfirmation, NoobEmojiConverter, get_button_colour
 from typing import Literal, Optional
 
 from .views import PressFView
+
 
 class PressF(commands.Cog):
     """
@@ -14,19 +15,19 @@ class PressF(commands.Cog):
 
     Press F to pay respect on something using buttons.
     """
-    def __init__(self, bot: bot.Red) -> None:
+
+    def __init__(self, bot: Red) -> None:
         self.bot = bot
 
-        self.config = Config.get_conf(self, identifier=5434354373844151563453, force_registration=True)
-        default_guild = {
-            "emoji": "🇫",
-            "buttoncolour": "blurple"
-        }
+        self.config = Config.get_conf(
+            self, identifier=5434354373844151563453, force_registration=True
+        )
+        default_guild = {"emoji": "🇫", "buttoncolour": "blurple"}
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
         self.active_cache = []
 
-    __version__ = "1.1.2"
+    __version__ = "1.1.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/pressf/README.md"
 
@@ -42,12 +43,17 @@ class PressF(commands.Cog):
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         """
         No EUD to delete.
         """
-        return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return await super().red_delete_data_for_user(
+            requester=requester, user_id=user_id
+        )
 
     @commands.hybrid_command(name="pressf")
     @commands.guild_only()
@@ -67,7 +73,7 @@ class PressF(commands.Cog):
         c = await self.config.guild(context.guild).buttoncolour()
         view = PressFView(self)
         view.press_f_button.emoji = e
-        view.press_f_button.style = get_button_colour(c)
+        view.press_f_button.style = nu.get_button_colour(c)
         await view.start(context, thing)
 
     @commands.group(name="pressfset")
@@ -81,7 +87,9 @@ class PressF(commands.Cog):
         pass
 
     @pressfset.command(name="emoji")
-    async def pressfset_emoji(self, context: commands.Context, emoji: Optional[NoobEmojiConverter]):
+    async def pressfset_emoji(
+        self, context: commands.Context, emoji: Optional[nu.NoobEmojiConverter]
+    ):
         """
         Change the F emoji.
 
@@ -97,7 +105,7 @@ class PressF(commands.Cog):
     async def pressfset_buttoncolour(
         self,
         context: commands.Context,
-        colour: Optional[Literal["red", "green", "blurple", "grey"]]
+        colour: Optional[Literal["red", "green", "blurple", "grey"]],
     ):
         """
         Change the Press F button colour.
@@ -106,9 +114,13 @@ class PressF(commands.Cog):
         """
         if not colour:
             c = await self.config.guild(context.guild).buttoncolour()
-            return await context.send(content=f"The current Press F button colour is {c}")
+            return await context.send(
+                content=f"The current Press F button colour is {c}"
+            )
         await self.config.guild(context.guild).buttoncolour.set(colour)
-        await context.send(content=f"The new Press F button colour has been set to {colour}.")
+        await context.send(
+            content=f"The new Press F button colour has been set to {colour}."
+        )
 
     @pressfset.command(name="resetcog")
     @commands.is_owner()
@@ -118,9 +130,9 @@ class PressF(commands.Cog):
         """
         conf_msg = "Are you sure you want to reset the cogs config?"
         conf_act = "Successfully reset the cogs config."
-        view = NoobConfirmation()
-        await view.start(context=context, confirm_action=conf_act, confirm_msg=conf_msg)
-    
+        view = nu.NoobConfirmation()
+        await view.start(context, conf_act, content=conf_msg)
+
         await view.wait()
 
         if view.value is True:
@@ -133,8 +145,8 @@ class PressF(commands.Cog):
         """
         confirmation_msg = "Are you sure you want to reset the current guild settings?"
         confirm_action = "Successfully reset the guilds settings."
-        view = NoobConfirmation()
-        await view.start(context=context, confirm_action=confirm_action, confirm_msg=confirmation_msg)
+        view = nu.NoobConfirmation()
+        await view.start(context, confirm_action, content=confirmation_msg)
 
         await view.wait()
 

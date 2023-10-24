@@ -6,6 +6,7 @@ from typing import Optional
 
 from noobutils import access_denied, NoobConfirmation
 
+
 class GbanViewReset(discord.ui.View):
     def __init__(self, timeout: Optional[float] = 60.0):
         super().__init__(timeout=timeout)
@@ -21,12 +22,20 @@ class GbanViewReset(discord.ui.View):
         min_values=1,
         max_values=1,
         options=[
-            discord.SelectOption(label="List", emoji="📰", description="Reset the cogs banlist config."),
-            discord.SelectOption(label="Logs", emoji="📜", description="Reset the cogs banlogs config."),
-            discord.SelectOption(label="Cog", emoji="⚙️", description="Reset the whole cogs config.")
-        ]
+            discord.SelectOption(
+                label="List", emoji="📰", description="Reset the cogs banlist config."
+            ),
+            discord.SelectOption(
+                label="Logs", emoji="📜", description="Reset the cogs banlogs config."
+            ),
+            discord.SelectOption(
+                label="Cog", emoji="⚙️", description="Reset the whole cogs config."
+            ),
+        ],
     )
-    async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+    async def select_callback(
+        self, interaction: discord.Interaction, select: discord.ui.Select
+    ):
         for x in self.children:
             x.disabled = True
         await interaction.response.defer()
@@ -37,7 +46,9 @@ class GbanViewReset(discord.ui.View):
             confirm_action = "Successfully resetted the globalban banlist."
             confview = NoobConfirmation(timeout=30)
             await confview.start(
-                context=self.context, confirm_msg=confirm_msg, confirm_action=confirm_action
+                context=self.context,
+                confirm_msg=confirm_msg,
+                confirm_action=confirm_action,
             )
 
             await confview.wait()
@@ -50,7 +61,9 @@ class GbanViewReset(discord.ui.View):
             confirm_action = "Successfully resetted the globalban banlogs."
             confview = NoobConfirmation(timeout=30)
             await confview.start(
-                context=self.context, confirm_msg=confirm_msg, confirm_action=confirm_action
+                context=self.context,
+                confirm_msg=confirm_msg,
+                confirm_action=confirm_action,
             )
 
             await confview.wait()
@@ -63,7 +76,9 @@ class GbanViewReset(discord.ui.View):
             confirm_action = "Successfully cleared the globalban cogs configuration."
             confview = NoobConfirmation(timeout=30)
             await confview.start(
-                context=self.context, confirm_msg=confirm_msg, confirm_action=confirm_action
+                context=self.context,
+                confirm_msg=confirm_msg,
+                confirm_action=confirm_action,
             )
 
             await confview.wait()
@@ -75,7 +90,9 @@ class GbanViewReset(discord.ui.View):
         if await self.context.bot.is_owner(interaction.user):
             return True
         elif interaction.user != self.context.author:
-            await interaction.response.send_message(content=access_denied(), ephemeral=True)
+            await interaction.response.send_message(
+                content=access_denied(), ephemeral=True
+            )
             return False
         else:
             return True

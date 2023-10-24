@@ -1,15 +1,15 @@
 import asyncio
-import datetime
 import discord
 import logging
 import random
 
-from redbot.core import bot, commands, Config
+from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
 from discord.ext import tasks
 from noobutils import NoobConfirmation
 from typing import Literal, Optional
+
 
 class RandomColourRole(commands.Cog):
     """
@@ -19,19 +19,19 @@ class RandomColourRole(commands.Cog):
     Due to API rate limits you can only have 1 randomcolourrole pre guild.
     The role colour changes every 20 minutes or so depending on how many guilds the bot is in.
     """
-    def __init__(self, bot: bot.Red, *args, **kwargs):
+
+    def __init__(self, bot: Red, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot = bot
 
-        self.config = Config.get_conf(self, identifier=128943761874, force_registration=True)
-        default_guild = {
-            "role": None,
-            "status": False
-        }
+        self.config = Config.get_conf(
+            self, identifier=128943761874, force_registration=True
+        )
+        default_guild = {"role": None, "status": False}
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RandomColourRole")
 
-    __version__ = "1.1.2"
+    __version__ = "1.1.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/randomcolourrole/README.md"
 
@@ -47,12 +47,17 @@ class RandomColourRole(commands.Cog):
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal["discord_deleted_user", "owner", "user", "user_strict"], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ) -> None:
         """
         This cog does not store any end user data whatsoever.
         """
-        return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return await super().red_delete_data_for_user(
+            requester=requester, user_id=user_id
+        )
 
     async def cog_load(self):
         self.log.info("Random Colour Role task started.")
@@ -70,7 +75,9 @@ class RandomColourRole(commands.Cog):
             if settings["status"] is True and settings["role"] is not None:
                 try:
                     role = guild.get_role(settings["role"])
-                    await role.edit(colour=random.randint(0, 0xFFFFFF), reason="Random Colour Role.")
+                    await role.edit(
+                        colour=random.randint(0, 0xFFFFFF), reason="Random Colour Role."
+                    )
                 except Exception:
                     continue
 
@@ -78,7 +85,9 @@ class RandomColourRole(commands.Cog):
     async def change_random_colour_role_before_loop(self):
         await self.bot.wait_until_red_ready()
 
-    @commands.group(name="randomcolourroleset", aliases=["rcrset", "randomcolorroleset"])
+    @commands.group(
+        name="randomcolourroleset", aliases=["rcrset", "randomcolorroleset"]
+    )
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def randomcolourroleset(self, context: commands.Context):
@@ -95,7 +104,7 @@ class RandomColourRole(commands.Cog):
         act = "Successfully resetted the guilds randomcolourrole settings."
         conf = "Are you sure you want to reset the guilds randomcolourrole settings?"
         view = NoobConfirmation(timeout=30)
-        await view.start(context=context, confirm_msg=conf, confirm_action=act)
+        await view.start(context, act, content=conf)
 
         await view.wait()
 
@@ -111,16 +120,19 @@ class RandomColourRole(commands.Cog):
         act = "Successfully resetted the randomcolourrole cogs config."
         conf = "Are you sure you want to reset the randomcolourrole cogs whole config?"
         view = NoobConfirmation(timeout=30)
-        await view.start(context=context, confirm_msg=conf, confirm_action=act)
+        await view.start(context, act, content=conf)
 
         await view.wait()
 
         if view.value is True:
             await self.config.clear_all()
+            await self.config.clear_all_guilds()
 
     @randomcolourroleset.command(name="role")
     @commands.bot_has_permissions(manage_roles=True)
-    async def randomcolourroleset_role(self, context: commands.Context, role: Optional[discord.Role]):
+    async def randomcolourroleset_role(
+        self, context: commands.Context, role: Optional[discord.Role]
+    ):
         """
         Set the guilds random colour role.
         """
@@ -155,14 +167,16 @@ class RandomColourRole(commands.Cog):
         See the current guild settings for the RandomColourRole.
         """
         settings = await self.config.guild(context.guild).all()
-        role = context.guild.get_role(settings['role'])
+        role = context.guild.get_role(settings["role"])
         embed = discord.Embed(
             title=f"Current RandomColourRole guild settings for {context.guild}",
             colour=await context.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
+            timestamp=discord.utils.utcnow(),
         )
-        embed.add_field(name="Role:", value=role.mention if role else "None", inline=False)
-        embed.add_field(name="Status:", value=settings['status'], inline=False)
+        embed.add_field(
+            name="Role:", value=role.mention if role else "None", inline=False
+        )
+        embed.add_field(name="Status:", value=settings["status"], inline=False)
 
         warns = ""
         if not context.guild.me.guild_permissions.manage_roles:
@@ -171,7 +185,5 @@ class RandomColourRole(commands.Cog):
             warns += "The set role is higher than my top role! please lower it down below my top role."
 
         if warns:
-            embed.add_field(
-                name="⚠️ Warning", value=warns, inline=False
-            )
+            embed.add_field(name="⚠️ Warning", value=warns, inline=False)
         await context.send(embed=embed)

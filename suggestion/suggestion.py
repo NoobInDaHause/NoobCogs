@@ -1,47 +1,46 @@
 import contextlib
-import datetime
 import discord
 import logging
+import noobutils as nu
 
-from redbot.core import app_commands, bot, commands, Config
+from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from noobutils import is_have_avatar, get_button_colour, NoobEmojiConverter, NoobConfirmation
 from typing import Literal, Optional
 
 from .views import SuggestView
 
+
 class Suggestion(commands.Cog):
     """
     Suggestion system.
-    
+
     Have users submit suggestions to help improve some things.
     """
-    def __init__(self, bot: bot.Red) -> None:
+
+    def __init__(self, bot: Red) -> None:
         self.bot = bot
 
-        self.config = Config.get_conf(self, identifier=8642187646324, force_registration=True)
+        self.config = Config.get_conf(
+            self, identifier=8642187646324, force_registration=True
+        )
         default_guild = {
             "autodel": True,
-            "emojis": {
-                "upvote": "⬆️",
-                "downvote": "⬇️"
-            },
-            "button_colour": {
-                "upbutton": "blurple",
-                "downbutton": "blurple"
-            },
+            "emojis": {"upvote": "⬆️", "downvote": "⬇️"},
+            "button_colour": {"upbutton": "blurple", "downbutton": "blurple"},
             "suggest_channel": None,
             "reject_channel": None,
             "approve_channel": None,
-            "suggestions": []
+            "suggestions": [],
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
 
-    __version__ = "1.0.12"
+    __version__ = "1.1.0"
     __author__ = ["NoobInDaHause"]
-    __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
+    __docs__ = (
+        "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
+    )
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -55,9 +54,12 @@ class Suggestion(commands.Cog):
         Cog Documentation: [[Click here]]({self.__docs__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
-        for g in self.config.all_guilds():
+        for g in (await self.config.all_guilds()).keys():
             guild = self.bot.get_guild(g)
             if not guild:
                 continue
@@ -77,7 +79,7 @@ class Suggestion(commands.Cog):
                         i["downvotes"].pop(index)
 
     async def cog_load(self):
-        for g in await self.config.all_guilds():
+        for g in (await self.config.all_guilds()).keys():
             guild = self.bot.get_guild(g)
             if not guild:
                 continue
@@ -93,19 +95,46 @@ class Suggestion(commands.Cog):
                         except Exception:
                             continue
 
+    async def cog_unload(self):
+        for g in (await self.config.all_guilds()).keys():
+            guild = self.bot.get_guild(g)
+            if not guild:
+                continue
+            for i in await self.config.guild(guild).suggestions():
+                if view := discord.utils.get(
+                    self.bot.persistent_views, _cache_key=i["msg_id"]
+                ):
+                    view.stop()
+
     async def maybe_send_to_author(
-        self, member: discord.Member, url: str = None, b1: str = None, b2: str = None, *args, **kwargs
+        self,
+        member: discord.Member,
+        url: str = None,
+        b1: str = None,
+        b2: str = None,
+        *args,
+        **kwargs,
     ):
         data = await self.config.guild(member.guild).all()
-        style1 = get_button_colour(data["button_colour"]["upbutton"])
-        style2 = get_button_colour(data["button_colour"]["downbutton"])
+        style1 = nu.get_button_colour(data["button_colour"]["upbutton"])
+        style2 = nu.get_button_colour(data["button_colour"]["downbutton"])
         if url and b1 and b2:
             view = discord.ui.View()
             view.add_item(
-                discord.ui.Button(label=b1, emoji=data["emojis"]["upvote"], style=style1, disabled=True)
+                discord.ui.Button(
+                    label=b1,
+                    emoji=data["emojis"]["upvote"],
+                    style=style1,
+                    disabled=True,
+                )
             )
             view.add_item(
-                discord.ui.Button(label=b2, emoji=data["emojis"]["downvote"], style=style2, disabled=True)
+                discord.ui.Button(
+                    label=b2,
+                    emoji=data["emojis"]["downvote"],
+                    style=style2,
+                    disabled=True,
+                )
             )
             view.add_item(discord.ui.Button(label="Jump To Suggestion", url=url))
             await member.send(view=view, *args, **kwargs)
@@ -116,7 +145,9 @@ class Suggestion(commands.Cog):
         else:
             await member.send(*args, **kwargs)
 
-    async def maybe_edit_msg(self, msg: discord.Message, embed: discord.Embed, label1: str, label2: str):
+    async def maybe_edit_msg(
+        self, msg: discord.Message, embed: discord.Embed, label1: str, label2: str
+    ):
         data = await self.config.guild(msg.guild).all()
         view = discord.ui.View()
         view.add_item(
@@ -124,7 +155,7 @@ class Suggestion(commands.Cog):
                 label=label1,
                 disabled=True,
                 emoji=data["emojis"]["upvote"],
-                style=get_button_colour(data["button_colour"]["upbutton"])
+                style=nu.get_button_colour(data["button_colour"]["upbutton"]),
             )
         )
         view.add_item(
@@ -132,7 +163,7 @@ class Suggestion(commands.Cog):
                 label=label2,
                 disabled=True,
                 emoji=data["emojis"]["downvote"],
-                style=get_button_colour(data["button_colour"]["downbutton"])
+                style=nu.get_button_colour(data["button_colour"]["downbutton"]),
             )
         )
         await msg.edit(embed=embed, view=view)
@@ -146,7 +177,7 @@ class Suggestion(commands.Cog):
         authic: str,
         reviewer: str = None,
         stattype: str = None,
-        reason: str = None
+        reason: str = None,
     ) -> discord.Embed:
         e = discord.Embed(
             title=title,
@@ -167,7 +198,7 @@ class Suggestion(commands.Cog):
         context: commands.Context,
         chan: discord.TextChannel,
         suggest_msg: discord.Message,
-        suggestion: str
+        suggestion: str,
     ):
         async with self.config.guild(context.guild).suggestions() as s:
             sug = {
@@ -180,7 +211,7 @@ class Suggestion(commands.Cog):
                 "upvotes": [],
                 "downvotes": [],
                 "reviewer_id": None,
-                "reason": None
+                "reason": None,
             }
             s.append(sug)
 
@@ -192,19 +223,27 @@ class Suggestion(commands.Cog):
             desc=suggestion,
             colour=await context.embed_colour(),
             authname=f"{context.author} ({context.author.id})",
-            authic=is_have_avatar(context.author)
+            authic=nu.is_have_avatar(context.author),
         )
         view = SuggestView(self)
         view.down_button.emoji = data["emojis"]["downvote"]
         view.up_button.emoji = data["emojis"]["upvote"]
-        view.down_button.style = get_button_colour(data["button_colour"]["downbutton"])
-        view.up_button.style = get_button_colour(data["button_colour"]["upbutton"])
+        view.down_button.style = nu.get_button_colour(
+            data["button_colour"]["downbutton"]
+        )
+        view.up_button.style = nu.get_button_colour(data["button_colour"]["upbutton"])
         msg = await channel.send(embed=embed, view=view)
-        await self.add_suggestion(context=context, chan=channel, suggest_msg=msg, suggestion=suggestion)
+        await self.add_suggestion(
+            context=context, chan=channel, suggest_msg=msg, suggestion=suggestion
+        )
         return [msg.jump_url, embed]
 
     async def maybe_send_reject(
-        self, context: commands.Context, channel_id: int, jump_url: str, embed: discord.Embed
+        self,
+        context: commands.Context,
+        channel_id: int,
+        jump_url: str,
+        embed: discord.Embed,
     ):
         r = context.guild.get_channel(channel_id)
         if not r:
@@ -215,7 +254,11 @@ class Suggestion(commands.Cog):
             await r.send(embed=embed, view=view)
 
     async def maybe_send_approve(
-        self, context: commands.Context, channel_id: int, jump_url: str, embed: discord.Embed
+        self,
+        context: commands.Context,
+        channel_id: int,
+        jump_url: str,
+        embed: discord.Embed,
     ):
         a = context.guild.get_channel(channel_id)
         if not a:
@@ -225,7 +268,9 @@ class Suggestion(commands.Cog):
             view.add_item(discord.ui.Button(label="Jump To Suggestion", url=jump_url))
             await a.send(embed=embed, view=view)
 
-    async def end_suggestion(self, context: commands.Context, status_type: str, id: int, reason: str):
+    async def end_suggestion(
+        self, context: commands.Context, status_type: str, id: int, reason: str
+    ):
         # sourcery skip: low-code-quality
         data = await self.config.guild(context.guild).all()
         async with self.config.guild(context.guild).suggestions() as s:
@@ -253,15 +298,19 @@ class Suggestion(commands.Cog):
                         authname=f"{mem} ({mem.id})"
                         if mem
                         else "[Unknown or Deleted User]",
-                        authic=is_have_avatar(mem or context.guild),
+                        authic=nu.is_have_avatar(mem or context.guild),
                         reviewer=str(context.author.mention),
                         stattype=status_type,
-                        reason=reason
+                        reason=reason,
                     )
                     if status_type == "approved":
-                        await self.maybe_send_approve(context, data["approve_channel"], msg.jump_url, embed)
+                        await self.maybe_send_approve(
+                            context, data["approve_channel"], msg.jump_url, embed
+                        )
                     elif status_type == "rejected":
-                        await self.maybe_send_reject(context, data["reject_channel"], msg.jump_url, embed)
+                        await self.maybe_send_reject(
+                            context, data["reject_channel"], msg.jump_url, embed
+                        )
                     b = [str(len(i["upvotes"])), str(len(i["downvotes"]))]
                     if mem:
                         cont = (
@@ -269,7 +318,9 @@ class Suggestion(commands.Cog):
                             f"({context.author.id}).\nReason: {reason}"
                         )
                         with contextlib.suppress(discord.errors.Forbidden):
-                            await self.maybe_send_to_author(mem, msg.jump_url, b[0], b[1], cont)
+                            await self.maybe_send_to_author(
+                                mem, msg.jump_url, b[0], b[1], cont
+                            )
                     try:
                         await self.maybe_edit_msg(msg, embed, b[0], b[1])
                     except discord.errors.Forbidden:
@@ -291,16 +342,13 @@ class Suggestion(commands.Cog):
             return await context.reply(
                 content="No suggestion channel found. Ask an admin to set one.",
                 ephemeral=True,
-                mention_author=False
+                mention_author=False,
             )
 
         try:
             em = await self.send_suggestion(context=context, suggestion=suggestion)
             if context.prefix == "/":
-                await context.reply(
-                    content="Successfully submitted.",
-                    ephemeral=True
-                )
+                await context.reply(content="Successfully submitted.", ephemeral=True)
             with contextlib.suppress(discord.errors.Forbidden):
                 await self.maybe_send_to_author(
                     context.author,
@@ -308,14 +356,14 @@ class Suggestion(commands.Cog):
                     None,
                     None,
                     content="Your suggestion has been submitted for votes and review.",
-                    embed=em[1]
+                    embed=em[1],
                 )
         except Exception as e:
             return await context.reply(
                 content="An error has occurred while sending the suggestion.\n"
                 f"Here is the traceback: {cf.box(e, 'py')}",
                 ephemeral=True,
-                mention_author=False
+                mention_author=False,
             )
 
         if data["autodel"] and context.prefix != "/":
@@ -327,7 +375,11 @@ class Suggestion(commands.Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def approve(
-        self, context: commands.Context, suggestion_id: int, *, reason: Optional[str] = "No reason given."
+        self,
+        context: commands.Context,
+        suggestion_id: int,
+        *,
+        reason: Optional[str] = "No reason given.",
     ):
         """
         Approve a suggestion.
@@ -335,7 +387,9 @@ class Suggestion(commands.Cog):
         data = await self.config.guild(context.guild).all()
 
         if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
-            return await context.send(content="It appears the suggestion with that ID does not exist.")
+            return await context.send(
+                content="It appears the suggestion with that ID does not exist."
+            )
         if data["autodel"]:
             with contextlib.suppress(discord.errors.Forbidden):
                 await context.message.delete()
@@ -366,7 +420,11 @@ class Suggestion(commands.Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     async def reject(
-        self, context: commands.Context, suggestion_id: int, *, reason: Optional[str] = "No reason given."
+        self,
+        context: commands.Context,
+        suggestion_id: int,
+        *,
+        reason: Optional[str] = "No reason given.",
     ):
         """
         Reject a suggestion.
@@ -374,7 +432,9 @@ class Suggestion(commands.Cog):
         data = await self.config.guild(context.guild).all()
 
         if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
-            return await context.send(content="It appears the suggestion with that ID does not exist.")
+            return await context.send(
+                content="It appears the suggestion with that ID does not exist."
+            )
         if data["autodel"]:
             with contextlib.suppress(discord.errors.Forbidden):
                 await context.message.delete()
@@ -413,7 +473,7 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         types: Literal["upvote", "downvote"],
-        colour: Optional[Literal["red", "green", "blurple", "grey"]]
+        colour: Optional[Literal["red", "green", "blurple", "grey"]],
     ):
         """
         Change the upvote or downvotes button colour.
@@ -429,15 +489,23 @@ class Suggestion(commands.Cog):
         if types == "upvote":
             if not colour:
                 await self.config.guild(context.guild).button_colour.upbutton.clear()
-                return await context.send(content="Successfully reset the upvote button color to blurple.")
+                return await context.send(
+                    content="Successfully reset the upvote button color to blurple."
+                )
             await self.config.guild(context.guild).button_colour.upbutton.set(colour)
-            await context.send(content=f"The upvote button colour has been set to {colour}.")
+            await context.send(
+                content=f"The upvote button colour has been set to {colour}."
+            )
         if types == "downvote":
             if not colour:
                 await self.config.guild(context.guild).button_colour.downbutton.clear()
-                return await context.send(content="Successfully reset the downvote button color to blurple.")
+                return await context.send(
+                    content="Successfully reset the downvote button color to blurple."
+                )
             await self.config.guild(context.guild).button_colour.downbutton.set(colour)
-            await context.send(content=f"The downvote button colour has been set to {colour}.")
+            await context.send(
+                content=f"The downvote button colour has been set to {colour}."
+            )
 
     @suggestionset.command(name="view")
     async def suggestionset_view(self, context: commands.Context, suggestion_id: int):
@@ -449,12 +517,18 @@ class Suggestion(commands.Cog):
             return await context.send(content="Suggestion for this ID was not found.")
         data = await self.config.guild(context.guild).all()
         if not data["suggest_channel"]:
-            return await context.send(content="No suggestion channel found, ask an admin to set one,")
+            return await context.send(
+                content="No suggestion channel found, ask an admin to set one,"
+            )
         async with self.config.guild(context.guild).suggestions() as s:
             if not s:
-                return await context.send(content="No suggestions have been submitted yet.")
+                return await context.send(
+                    content="No suggestions have been submitted yet."
+                )
             if suggestion_id > len(s):
-                return await context.send(content="It appears this suggestion does not exist.")
+                return await context.send(
+                    content="It appears this suggestion does not exist."
+                )
             for i in s:
                 if i["id"] == suggestion_id:
                     channel = context.guild.get_channel(i["channel_id"])
@@ -483,33 +557,35 @@ class Suggestion(commands.Cog):
                         authname=f"{mem} ({mem.id})"
                         if mem
                         else "[Unknown or Deleted User]",
-                        authic=is_have_avatar(mem or context.guild),
+                        authic=nu.is_have_avatar(mem or context.guild),
                         reviewer=None
                         if i["status"] == "running"
                         else str(rev.mention)
                         if rev
                         else "[Unknown or Deleted User]",
-                        stattype=i["status"]
-                        if i["status"] != "running"
-                        else None,
-                        reason=i["reason"]
+                        stattype=i["status"] if i["status"] != "running" else None,
+                        reason=i["reason"],
                     )
                     view = discord.ui.View()
                     u = f"https://discord.com/channels/{context.guild.id}/{channel.id}/{msg.id}"
                     view.add_item(
                         discord.ui.Button(
                             label=str(len(i["upvotes"])),
-                            style=get_button_colour(data["button_colour"]["upbutton"]),
+                            style=nu.get_button_colour(
+                                data["button_colour"]["upbutton"]
+                            ),
                             disabled=True,
-                            emoji=data["emojis"]["upvote"]
+                            emoji=data["emojis"]["upvote"],
                         )
                     )
                     view.add_item(
                         discord.ui.Button(
                             label=str(len(i["downvotes"])),
-                            style=get_button_colour(data["button_colour"]["downbutton"]),
+                            style=nu.get_button_colour(
+                                data["button_colour"]["downbutton"]
+                            ),
                             disabled=True,
-                            emoji=data["emojis"]["downvote"]
+                            emoji=data["emojis"]["downvote"],
                         )
                     )
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
@@ -517,16 +593,22 @@ class Suggestion(commands.Cog):
                     break
 
     @suggestionset.command(name="editreason")
-    async def suggestionset_editreason(self, context: commands.Context, suggestion_id: int, *, reason: str):
+    async def suggestionset_editreason(
+        self, context: commands.Context, suggestion_id: int, *, reason: str
+    ):
         # sourcery skip: low-code-quality
         """
         Edit a suggestions reason.
         """
         data = await self.config.guild(context.guild).all()
         if not data["suggest_channel"]:
-            return await context.send(content="No suggestion channel found, ask an admin to set one,")
+            return await context.send(
+                content="No suggestion channel found, ask an admin to set one,"
+            )
         if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
-            return await context.send(content="It appears the suggestion with this ID does not exist.")
+            return await context.send(
+                content="It appears the suggestion with this ID does not exist."
+            )
         async with self.config.guild(context.guild).suggestions() as s:
             for i in s:
                 if i["id"] == suggestion_id:
@@ -559,16 +641,19 @@ class Suggestion(commands.Cog):
                         authname=f"{mem} ({mem.id})"
                         if mem
                         else "[Unknown or Deleted User]",
-                        authic=is_have_avatar(mem or context.guild),
+                        authic=nu.is_have_avatar(mem or context.guild),
                         reviewer=str(rev.mention)
                         if rev
                         else "[Unknown or Deleted User]",
                         stattype=i["status"],
-                        reason=i["reason"]
+                        reason=i["reason"],
                     )
                     try:
                         await self.maybe_edit_msg(
-                            msg, embed, label1=str(len(i["upvotes"])), label2=str(len(i["downvotes"]))
+                            msg,
+                            embed,
+                            label1=str(len(i["upvotes"])),
+                            label2=str(len(i["downvotes"])),
                         )
                     except discord.errors.Forbidden:
                         return await context.send(
@@ -584,7 +669,7 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         type: Literal["suggest", "reject", "approve"],
-        channel: Optional[discord.TextChannel]
+        channel: Optional[discord.TextChannel],
     ):
         """
         Set the suggestion channel.
@@ -593,25 +678,39 @@ class Suggestion(commands.Cog):
         Rejection channel and Approved channel are optional.
         """
         if channel and not channel.permissions_for(context.guild.me).send_messages:
-            return await context.send("I do not have permission to send messages in that channel.")
+            return await context.send(
+                "I do not have permission to send messages in that channel."
+            )
         if type == "suggest":
             if not channel:
                 await self.config.guild(context.guild).suggest_channel.clear()
-                return await context.send(content="The suggestion channel has been removed.")
+                return await context.send(
+                    content="The suggestion channel has been removed."
+                )
             await self.config.guild(context.guild).suggest_channel.set(channel.id)
-            await context.send(f"Successfully set {channel.mention} as the suggestion channel.")
+            await context.send(
+                f"Successfully set {channel.mention} as the suggestion channel."
+            )
         elif type == "reject":
             if not channel:
                 await self.config.guild(context.guild).reject_channel.clear()
-                return await context.send(content="The rejected suggestions channel has been removed.")
+                return await context.send(
+                    content="The rejected suggestions channel has been removed."
+                )
             await self.config.guild(context.guild).reject_channel.set(channel.id)
-            await context.send(f"Successfully set {channel.mention} as the rejected suggestions channel.")
+            await context.send(
+                f"Successfully set {channel.mention} as the rejected suggestions channel."
+            )
         elif type == "approve":
             if not channel:
                 await self.config.guild(context.guild).approve_channel.clear()
-                return await context.send(content="The approved suggestions channel has been removed.")
+                return await context.send(
+                    content="The approved suggestions channel has been removed."
+                )
             await self.config.guild(context.guild).approve_channel.set(channel.id)
-            await context.send(f"Successfully set {channel.mention} as the approved suggestions channel.")
+            await context.send(
+                f"Successfully set {channel.mention} as the approved suggestions channel."
+            )
 
     @suggestionset.command(name="emoji")
     @commands.bot_has_permissions(use_external_emojis=True)
@@ -619,7 +718,7 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         vote: Literal["upvote", "downvote"],
-        emoji: Optional[NoobEmojiConverter]
+        emoji: Optional[nu.NoobEmojiConverter],
     ):
         """
         Change the UpVote or DownVote emoji.
@@ -635,7 +734,9 @@ class Suggestion(commands.Cog):
             if not emoji:
                 await self.config.guild(context.guild).emojis.downvote.clear()
                 down = await self.config.guild(context.guild).emojis.downvote()
-                return await context.send(f"The DownVote emoji has been reset to: {down}")
+                return await context.send(
+                    f"The DownVote emoji has been reset to: {down}"
+                )
             await self.config.guild(context.guild).emojis.downvote.set(str(emoji))
             await context.send(f"Successfully set the DownVote emoji to: {emoji}")
 
@@ -646,8 +747,8 @@ class Suggestion(commands.Cog):
         """
         act = "Successfully reset the guilds whole configuration."
         conf = "Are you sure you want to reset the guilds whole confirguration?"
-        view = NoobConfirmation()
-        await view.start(context=context, confirm_action=act, confirm_msg=conf)
+        view = nu.NoobConfirmation()
+        await view.start(context, act, content=conf)
 
         await view.wait()
 
@@ -662,8 +763,8 @@ class Suggestion(commands.Cog):
         """
         act = "Successfully reset the cogs whole configuration."
         conf = "Are you sure you want to reset the cogs whole confirguration?"
-        view = NoobConfirmation()
-        await view.start(context=context, confirm_action=act, confirmation_msg=conf)
+        view = nu.NoobConfirmation()
+        await view.start(context, act, content=conf)
 
         await view.wait()
 
@@ -678,7 +779,9 @@ class Suggestion(commands.Cog):
         current = await self.config.guild(context.guild).autodel()
         await self.config.guild(context.guild).autodel.set(not current)
         status = "will not" if current else "will now"
-        await context.send(content=f"I {status} automatically delete the suggestion commands.")
+        await context.send(
+            content=f"I {status} automatically delete the suggestion commands."
+        )
 
     @suggestionset.command(name="showsettings", aliases=["ss"])
     async def suggestionset_showsettings(self, context: commands.Context):
@@ -686,17 +789,27 @@ class Suggestion(commands.Cog):
         Show the current suggestion cogs guild settings.
         """
         data = await self.config.guild(context.guild).all()
+        emojis = data["emojis"]
+        channels = {
+            "Suggestion": data["suggest_channel"],
+            "Rejection": data["reject_channel"],
+            "Approved": data["approve_channel"],
+        }
+
+        channels_text = {
+            key: f"<#{value}>" if value else "None" for key, value in channels.items()
+        }
+
         embed = discord.Embed(
             title=f"{context.guild}'s current suggestion settings",
-            description=f"""
-            ` - ` **Auto delete commands:** {data["autodel"]}
-            ` - ` **Upvote emoji:** {data['emojis']['upvote']}
-            ` - ` **Downvote emoji:** {data['emojis']['downvote']}
-            ` - ` **Suggestion channel:** {f'<#{data["suggest_channel"]}>' if data["suggest_channel"] else 'None'}
-            ` - ` **Rejection channel:** {f'<#{data["reject_channel"]}>' if data["reject_channel"] else 'None'}
-            ` - ` **Approved channel:** {f'<#{data["approve_channel"]}>' if data["approve_channel"] else 'None'}
-            """,
+            description=f"` - ` **Auto delete commands:** {data['autodel']}\n"
+            f"` - ` **Upvote emoji:** {emojis['upvote']}\n"
+            f"` - ` **Downvote emoji:** {emojis['downvote']}\n"
+            f"` - ` **Suggestion channel:** {channels_text['Suggestion']}\n"
+            f"` - ` **Rejection channel:** {channels_text['Rejection']}\n"
+            f"` - ` **Approved channel:** {channels_text['Approved']}",
             colour=await context.embed_colour(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
+            timestamp=discord.utils.utcnow(),
         )
+
         await context.send(embed=embed)

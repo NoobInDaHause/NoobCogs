@@ -1,10 +1,10 @@
 import discord
 import logging
+import noobutils as nu
 
-from redbot.core import app_commands, bot, commands, Config
+from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from noobutils import NoobEmojiConverter, NoobConfirmation
 from typing import Literal, Optional
 
 from .views import CookieClickerView
@@ -17,7 +17,7 @@ class CookieClicker(commands.Cog):
     Anti stress 100%.
     """
 
-    def __init__(self, bot: bot.Red) -> None:
+    def __init__(self, bot: Red) -> None:
         self.bot = bot
 
         self.config = Config.get_conf(
@@ -27,7 +27,7 @@ class CookieClicker(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
@@ -71,15 +71,7 @@ class CookieClicker(commands.Cog):
         c = await self.config.guild(context.guild).buttoncolour()
         view = CookieClickerView()
         view.cookieclicker.emoji = e
-        view.cookieclicker.style = (
-            discord.ButtonStyle.red
-            if c == "red"
-            else discord.ButtonStyle.green
-            if c == "green"
-            else discord.ButtonStyle.blurple
-            if c == "blurple"
-            else discord.ButtonStyle.grey
-        )
+        view.cookieclicker.style = nu.get_button_colour(c)
         await view.start(context)
 
     @commands.group(name="cookieclickerset", aliases=["ccset"])
@@ -94,7 +86,7 @@ class CookieClicker(commands.Cog):
 
     @cookieclickerset.command(name="emoji")
     async def cookieclickerset_emoji(
-        self, context: commands.Context, emoji: Optional[NoobEmojiConverter]
+        self, context: commands.Context, emoji: Optional[nu.NoobEmojiConverter]
     ):
         """
         Change the cookie emoji.
@@ -139,10 +131,8 @@ class CookieClicker(commands.Cog):
         """
         confirmation_msg = "Are you sure you want to reset the current guild settings?"
         confirm_action = "Successfully reset the guilds settings."
-        view = NoobConfirmation()
-        await view.start(
-            context=context, confirm_action=confirm_action, confirm_msg=confirmation_msg
-        )
+        view = nu.NoobConfirmation()
+        await view.start(context, confirm_action, content=confirmation_msg)
 
         await view.wait()
 

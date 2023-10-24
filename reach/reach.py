@@ -2,27 +2,31 @@ import datetime
 import discord
 import logging
 
-from redbot.core import bot, commands
+from redbot.core.bot import commands, Red
 from redbot.core.utils import chat_formatting as cf
 
 from noobutils import is_have_avatar
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 
 from .converters import FuzzyRole
+
 
 class Reach(commands.Cog):
     """
     Reach roles on a channel.
-    
+
     See how many members in a role who can view a channel.
     """
-    def __init__(self, bot: bot.Red):
+
+    def __init__(self, bot: Red):
         self.bot = bot
         self.log = logging.getLogger("red.NoobCogs.Reach")
 
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["NoobInDaHause"]
-    __documentation__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/reach/README.md"
+    __documentation__ = (
+        "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/reach/README.md"
+    )
 
     def format_help_for_context(self, context: commands.Context) -> str:
         """
@@ -36,10 +40,15 @@ class Reach(commands.Cog):
         Cog Documentation: [[Click here]]({self.__documentation__})"""
 
     async def red_delete_data_for_user(
-        self, *, requester: Literal['discord_deleted_user', 'owner', 'user', 'user_strict'], user_id: int
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         # This cog does not store any end user data whatsoever.
-        return await super().red_delete_data_for_user(requester=requester, user_id=user_id)
+        return await super().red_delete_data_for_user(
+            requester=requester, user_id=user_id
+        )
 
     @commands.command(name="reach", usage="[channel] <roles...>")
     @commands.guild_only()
@@ -49,11 +58,11 @@ class Reach(commands.Cog):
         self,
         context: commands.Context,
         channel: Optional[discord.TextChannel],
-        *roles: FuzzyRole
+        *roles: FuzzyRole,
     ):  # sourcery skip: low-code-quality
         """
         Reach channel and see how many members who can view the channel.
-        
+
         Separate roles with a space if multiple. (ID's accepted)
         Role searching may or may not be 100% accurate.
         You can pass `everyone` or `here` to check `@everyone` or `@here` reach.
@@ -65,14 +74,16 @@ class Reach(commands.Cog):
             return await context.send_help()
 
         await context.typing()
-        reols = []
+        reols: List[discord.Role] = []
         for x in roles:
             if x in reols:
                 continue
             reols.append(x)
 
         if len(reols) >= 16:
-            return await context.send("Easy there you can only reach up to 15 roles at a time.")
+            return await context.send(
+                "Easy there you can only reach up to 15 roles at a time."
+            )
         total_reach = []
         total_members = []
 
@@ -91,7 +102,11 @@ class Reach(commands.Cog):
                     if mem not in total_reach:
                         total_reach.append(mem)
 
-                iid = f"{i.mention} (`{i.id}`)" if i.id != context.guild.default_role.id else f"{i.mention}"
+                iid = (
+                    f"{i.mention} (`{i.id}`)"
+                    if i.id != context.guild.default_role.id
+                    else f"{i.mention}"
+                )
                 if not reached:
                     b = (
                         f"` #{len(final) + 1} ` {iid}: 0 out of "
@@ -127,7 +142,11 @@ class Reach(commands.Cog):
                         final.append(oy)
                         continue
 
-                    div = reached / len([mem for mem in context.guild.members if not mem.bot]) * 100
+                    div = (
+                        reached
+                        / len([mem for mem in context.guild.members if not mem.bot])
+                        * 100
+                    )
                     oy = f"` #{len(final) + 1} ` @everyone: {cf.humanize_number(reached)} out of {cf.humanize_number(len([mem for mem in context.guild.members if not mem.bot]))} members - **{round(div, 2)}%**\n"
                     final.append(oy)
 
@@ -173,10 +192,10 @@ class Reach(commands.Cog):
                 title="Role Reach",
                 description=f"Channel: {channel.mention} (`{channel.id}`)\n\n{final_roles}\n",
                 colour=await context.embed_colour(),
-                timestamp=datetime.datetime.now(datetime.timezone.utc)
+                timestamp=datetime.datetime.now(datetime.timezone.utc),
             )
             .set_footer(text=context.guild.name, icon_url=is_have_avatar(context.guild))
-            .add_field(name="__**Overall Results:**__",value=ov,inline=False)
+            .add_field(name="__**Overall Results:**__", value=ov, inline=False)
         )
 
         await context.send(embed=embed)

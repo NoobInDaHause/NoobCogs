@@ -9,6 +9,7 @@ try:
 except ImportError:
     CogLoadError = RuntimeError
 
+
 async def setup(bot: bot.Red) -> None:
     if "Dev" not in bot.cogs:
         raise CogLoadError(

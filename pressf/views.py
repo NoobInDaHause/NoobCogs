@@ -2,13 +2,17 @@ import discord
 
 from redbot.core import commands
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from . import PressF
+
 
 class PressFView(discord.ui.View):
     def __init__(self, cog: commands.Cog, timeout: Optional[float] = 180.0):
         super().__init__(timeout=timeout)
         self.message: discord.Message = None
-        self.cog = cog
+        self.cog: PressF = cog
         self.context: commands.Context = None
         self.thing: str = None
         self.paid_users = []
@@ -16,7 +20,7 @@ class PressFView(discord.ui.View):
     async def start(self, context: commands.Context, thing: str):
         embed = discord.Embed(
             description=f"Everyone, let's pay our respects to **{thing}**!",
-            colour=await context.embed_colour()
+            colour=await context.embed_colour(),
         )
         msg = await context.send(embed=embed, view=self)
         self.message = msg
@@ -24,7 +28,9 @@ class PressFView(discord.ui.View):
         self.thing = thing
 
     @discord.ui.button(label="0")
-    async def press_f_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def press_f_button(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
         if interaction.user.id in self.paid_users:
             return await interaction.response.send_message(
                 content="You already paid your respects!", ephemeral=True
@@ -44,12 +50,12 @@ class PressFView(discord.ui.View):
         if len(self.paid_users) == 0:
             return await self.context.channel.send(
                 content=f"No one has paid respects to **{self.thing}**.",
-                allowed_mentions=discord.AllowedMentions.none()
+                allowed_mentions=discord.AllowedMentions.none(),
             )
         plural = "s" if len(self.paid_users) != 1 else ""
         await self.context.channel.send(
             content=f"**{len(self.paid_users)}** member{plural} has paid their respects to **{self.thing}**.",
-            allowed_mentions=discord.AllowedMentions.none()
+            allowed_mentions=discord.AllowedMentions.none(),
         )
         act_chan: list = self.cog.active_cache
         if self.context.channel.id in act_chan:
