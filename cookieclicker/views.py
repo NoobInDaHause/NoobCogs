@@ -28,6 +28,8 @@ class CookieClickerView(discord.ui.View):
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         """Cookie clicker."""
+        async with self.cog.config.guild(interaction.guild).user_lb() as ulb:
+            ulb[str(self.context.author.id)] += 1
         self.clicked += 1
         button.label = str(self.clicked)
         await interaction.response.edit_message(view=self)
@@ -35,9 +37,6 @@ class CookieClickerView(discord.ui.View):
     @discord.ui.button(emoji="✖️", label="Quit", style=discord.ButtonStyle.danger)
     async def quit(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Quit cookie clicker."""
-        if self.clicked > 0:
-            async with self.cog.config.guild(interaction.guild).user_lb() as ulb:
-                ulb[str(self.context.author.id)] += self.clicked
         for x in self.children:
             x.disabled = True
         self.stop()
@@ -55,9 +54,6 @@ class CookieClickerView(discord.ui.View):
             return True
 
     async def on_timeout(self):
-        if self.clicked > 0:
-            async with self.cog.config.guild(self.context.guild).user_lb() as ulb:
-                ulb[str(self.context.author.id)] += self.clicked
         for x in self.children:
             x.disabled = True
         self.stop()
