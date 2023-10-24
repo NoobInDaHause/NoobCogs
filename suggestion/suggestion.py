@@ -35,9 +35,10 @@ class Suggestion(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
-        self.bot.loop.create_task(self.load_views())
+        self.view = SuggestView(self)
+        bot.add_view(self.view)
 
-    __version__ = "1.2.3"
+    __version__ = "1.2.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -90,22 +91,22 @@ class Suggestion(commands.Cog):
                 ):
                     view.stop()
 
-    async def load_views(self):
-        for g in (await self.config.all_guilds()).keys():
-            guild = self.bot.get_guild(g)
-            if not guild:
-                continue
-            async with self.config.guild(guild).suggestions() as s:
-                if not s:
-                    continue
-                for i in s:
-                    if i["status"] == "running":
-                        try:
-                            channel = guild.get_channel(i["channel_id"])
-                            msg = await channel.fetch_message(i["msg_id"])
-                            self.bot.add_view(SuggestView(self), message_id=msg.id)
-                        except Exception:
-                            continue
+    #async def load_views(self):
+    #    for g in (await self.config.all_guilds()).keys():
+    #        guild = self.bot.get_guild(g)
+    #        if not guild:
+    #            continue
+    #        async with self.config.guild(guild).suggestions() as s:
+    #            if not s:
+    #                continue
+    #            for i in s:
+    #                if i["status"] == "running":
+    #                    try:
+    #                        channel = guild.get_channel(i["channel_id"])
+    #                        msg = await channel.fetch_message(i["msg_id"])
+    #                        self.bot.add_view(SuggestView(self), message_id=msg.id)
+    #                    except Exception:
+    #                        continue
 
     async def maybe_send_to_author(
         self,
