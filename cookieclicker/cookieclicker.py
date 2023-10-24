@@ -26,7 +26,7 @@ class CookieClicker(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
@@ -74,7 +74,7 @@ class CookieClicker(commands.Cog):
         if context.author.id not in set(user_lb):
             async with self.config.guild(context.guild).user_lb() as ulb:
                 ul: dict = ulb
-                ul.setdefault(context.author.id, 0)
+                ul.setdefault(str(context.author.id), 0)
         e = await self.config.guild(context.guild).emoji()
         c = await self.config.guild(context.guild).buttoncolour()
         view = CookieClickerView(self)
