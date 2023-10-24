@@ -42,7 +42,7 @@ class CookieClickerView(discord.ui.View):
 
         if self.clicked > 0:
             async with self.cog.config.guild(interaction.guild).user_lb() as ulb:
-                ulb[str(interaction.user.id)] += self.clicked
+                ulb[str(self.context.author.id)] += self.clicked
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if await self.context.bot.is_owner(interaction.user):
