@@ -15,7 +15,7 @@ class SuggestView(discord.ui.View):
         super().__init__(timeout=None)
         self.cog: Suggestion = cog
 
-    @discord.ui.button(label="0", custom_id="up_suggest_button")
+    @discord.ui.button(custom_id="up_suggest_button")
     async def up_button(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
@@ -69,7 +69,7 @@ class SuggestView(discord.ui.View):
                         content="You have upvoted this suggestion.", ephemeral=True
                     )
 
-    @discord.ui.button(label="0", custom_id="down_suggest_button")
+    @discord.ui.button(custom_id="down_suggest_button")
     async def down_button(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):

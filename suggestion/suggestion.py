@@ -36,7 +36,7 @@ class Suggestion(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
 
-    __version__ = "1.1.0"
+    __version__ = "1.2.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -79,6 +79,20 @@ class Suggestion(commands.Cog):
                         i["downvotes"].pop(index)
 
     async def cog_load(self):
+        await self.load_views()
+
+    async def cog_unload(self):
+        for g in (await self.config.all_guilds()).keys():
+            guild = self.bot.get_guild(g)
+            if not guild:
+                continue
+            for i in await self.config.guild(guild).suggestions():
+                if view := discord.utils.get(
+                    self.bot.persistent_views, _cache_key=i["msg_id"]
+                ):
+                    view.stop()
+
+    async def load_views(self):
         for g in (await self.config.all_guilds()).keys():
             guild = self.bot.get_guild(g)
             if not guild:
@@ -94,17 +108,6 @@ class Suggestion(commands.Cog):
                             self.bot.add_view(SuggestView(self), message_id=msg.id)
                         except Exception:
                             continue
-
-    async def cog_unload(self):
-        for g in (await self.config.all_guilds()).keys():
-            guild = self.bot.get_guild(g)
-            if not guild:
-                continue
-            for i in await self.config.guild(guild).suggestions():
-                if view := discord.utils.get(
-                    self.bot.persistent_views, _cache_key=i["msg_id"]
-                ):
-                    view.stop()
 
     async def maybe_send_to_author(
         self,
@@ -232,6 +235,8 @@ class Suggestion(commands.Cog):
             data["button_colour"]["downbutton"]
         )
         view.up_button.style = nu.get_button_colour(data["button_colour"]["upbutton"])
+        view.up_button.label = "0"
+        view.down_button.label = "0"
         msg = await channel.send(embed=embed, view=view)
         await self.add_suggestion(
             context=context, chan=channel, suggest_msg=msg, suggestion=suggestion
