@@ -14,6 +14,7 @@ class SuggestView(discord.ui.View):
     def __init__(self, cog: commands.Cog):
         super().__init__(timeout=None)
         self.cog: Suggestion = cog
+        self.down_button.custom_id = "down_suggest_button"
 
     @discord.ui.button(custom_id="up_suggest_button")
     async def up_button(
@@ -59,15 +60,15 @@ class SuggestView(discord.ui.View):
                             content="You have removed your vote on this suggestion.",
                             ephemeral=True,
                         )
-
-                    i["upvotes"].append(interaction.user.id)
-                    button.label = str(len(i["upvotes"]))
-                    button.emoji = data["emojis"]["upvote"]
-                    button.style = get_button_colour(data["button_colour"]["upbutton"])
-                    await interaction.response.edit_message(view=self)
-                    await interaction.followup.send(
-                        content="You have upvoted this suggestion.", ephemeral=True
-                    )
+                    else:
+                        i["upvotes"].append(interaction.user.id)
+                        button.label = str(len(i["upvotes"]))
+                        button.emoji = data["emojis"]["upvote"]
+                        button.style = get_button_colour(data["button_colour"]["upbutton"])
+                        await interaction.response.edit_message(view=self)
+                        await interaction.followup.send(
+                            content="You have upvoted this suggestion.", ephemeral=True
+                        )
 
     @discord.ui.button(custom_id="down_suggest_button")
     async def down_button(
@@ -95,7 +96,7 @@ class SuggestView(discord.ui.View):
                             data["button_colour"]["upbutton"]
                         )
                         await interaction.response.edit_message(view=self)
-                        return await interaction.followup.send(
+                        await interaction.followup.send(
                             content="You have changed your vote to downvote.",
                             ephemeral=True,
                         )
@@ -109,18 +110,18 @@ class SuggestView(discord.ui.View):
                             data["button_colour"]["downbutton"]
                         )
                         await interaction.response.edit_message(view=self)
-                        return await interaction.followup.send(
+                        await interaction.followup.send(
                             content="You have removed your vote on this suggestion.",
                             ephemeral=True,
                         )
-
-                    i["downvotes"].append(interaction.user.id)
-                    button.label = str(len(i["downvotes"]))
-                    button.emoji = data["emojis"]["downvote"]
-                    button.style = get_button_colour(
-                        data["button_colour"]["downbutton"]
-                    )
-                    await interaction.response.edit_message(view=self)
-                    await interaction.followup.send(
-                        content="You have downvoted this suggestion.", ephemeral=True
-                    )
+                    else:
+                        i["downvotes"].append(interaction.user.id)
+                        button.label = str(len(i["downvotes"]))
+                        button.emoji = data["emojis"]["downvote"]
+                        button.style = get_button_colour(
+                            data["button_colour"]["downbutton"]
+                        )
+                        await interaction.response.edit_message(view=self)
+                        await interaction.followup.send(
+                            content="You have downvoted this suggestion.", ephemeral=True
+                        )
