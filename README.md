@@ -25,10 +25,10 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | Afk              |  v1.4.5   | Notify users whenever you go AFK with pings logging.        |
 | AmariLevel       |  v1.0.3   | Check your amari level but through red.                     |
 | CookieClicker    |  v1.0.3   | Play a cookie clicker.                                      |
-| CustomError      |  v1.1.6   | Customize your bots error message.                          |
+| CustomError      |  v1.1.7   | Customize your bots error message.                          |
 | DevLogs          |  v1.0.7   | Keep a log of all that evals and debugs.                    |
 | GlobalBan        |  v1.1.9   | Globally ban a user from all the guilds the bot is in.      |
-| JoinDM           |  v1.0.1   | M newly joined users from your guild with your set message. |
+| JoinDM           |  v1.0.2   | M newly joined users from your guild with your set message. |
 | PressF           |  v1.1.2   | F.                                                          |
 | RandomColourRole |  v1.1.2   | Have a role that changes colour every 5 minutes.            |
 | Reach            |  v1.0.3   | Reach roles on a channel.                                   |

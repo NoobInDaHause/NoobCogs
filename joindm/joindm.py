@@ -2,12 +2,12 @@ import contextlib
 import datetime
 import discord
 import logging
+import noobutils as nu
 import TagScriptEngine as tse
 
-from redbot.core import bot, commands, Config
+from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from noobutils import NoobConfirmation, is_have_avatar, get_button_colour
 from typing import Literal, Optional
 
 class JoinDM(commands.Cog):
@@ -16,7 +16,7 @@ class JoinDM(commands.Cog):
 
     This cog uses TagScriptEngine and requires you basic tagscript knowledge to use this cog.
     """
-    def __init__(self, bot: bot.Red, *args, **kwargs):
+    def __init__(self, bot: Red, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot = bot
 
@@ -28,7 +28,7 @@ class JoinDM(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.JoinDM")
 
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/joindm/README.md"
 
@@ -71,7 +71,7 @@ class JoinDM(commands.Cog):
             discord.ui.Button(
                 label=f"Sent from {member.guild.name} ({member.guild.id}).",
                 disabled=True,
-                style=get_button_colour("grey")
+                style=nu.get_button_colour("grey")
             )
         )
         with contextlib.suppress(discord.errors.Forbidden, discord.errors.HTTPException):
@@ -106,8 +106,8 @@ class JoinDM(commands.Cog):
         """
         c_act = "Successfully reset your joindm guild settings."
         c_conf = "Are you sure you want to reset your joindm guild settings?"
-        view = NoobConfirmation()
-        await view.start(context, c_conf, c_act)
+        view = nu.NoobConfirmation()
+        await view.start(context, c_act, content=c_conf)
 
         await view.wait()
 
@@ -122,8 +122,8 @@ class JoinDM(commands.Cog):
         """
         c_act = "Successfully reset the cogs config."
         c_conf = "Are you sure you want to reset the cogs config?"
-        view = NoobConfirmation()
-        await view.start(context, c_conf, c_act)
+        view = nu.NoobConfirmation()
+        await view.start(context, c_act, content=c_conf)
 
         await view.wait()
 
@@ -177,7 +177,7 @@ class JoinDM(commands.Cog):
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc)
         )
-        embed.set_thumbnail(url=is_have_avatar(context.guild))
+        embed.set_thumbnail(url=nu.is_have_avatar(context.guild))
         embed.add_field(name="Toggled:", value=data["toggled"], inline=False)
         embed.add_field(name="Message:", value=cf.box(data["message"], "py"), inline=False)
         await context.send(embed=embed)

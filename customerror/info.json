@@ -12,7 +12,7 @@
     "disabled": false,
     "required_cogs": {},
     "requirements": [
-        "TagScript",
+        "AdvancedTagScriptEngine",
         "git+https://github.com/NoobInDaHause/noobutils.git"
     ],
     "tags": [

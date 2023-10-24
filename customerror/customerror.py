@@ -2,15 +2,14 @@ import contextlib
 import datetime
 import discord
 import logging
+import noobutils as nu
 import TagScriptEngine as tse
 import traceback
 
-from redbot.core import bot, commands, Config
+from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal, Optional
-
-from noobutils import NoobConfirmation
 
 class CustomError(commands.Cog):
     """
@@ -20,7 +19,7 @@ class CustomError(commands.Cog):
     This cog uses TagScriptEngine so be sure you have knowledge in that.
     Credits to sitryk and phen for some of the code.
     """
-    def __init__(self, bot: bot.Red):
+    def __init__(self, bot: Red):
         self.bot = bot
 
         self.config = Config.get_conf(self, identifier=9874825374237, force_registration=True)
@@ -33,7 +32,7 @@ class CustomError(commands.Cog):
         
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.6"
+    __version__ = "1.1.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
 
@@ -171,8 +170,8 @@ class CustomError(commands.Cog):
         """
         act = "Successfully reset the cogs settings."
         msg = "Are you sure you want to reset the cogs settings?"
-        view = NoobConfirmation()
-        await view.start(context, confirm_action=act, confirm_msg=msg)
+        view = nu.NoobConfirmation()
+        await view.start(context, act, content=msg)
 
         await view.wait()
 
