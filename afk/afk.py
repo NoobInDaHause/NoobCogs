@@ -35,7 +35,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.4.2"
+    __version__ = "1.4.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -402,7 +402,7 @@ class Afk(commands.Cog):
         confirm_action = "Successfully resetted your AFK settings."
         view = nu.NoobConfirmation(timeout=30)
         await view.start(
-            context=context, confirm_action=confirm_action, content=confirm_msg
+            object=context, confirm_action=confirm_action, content=confirm_msg
         )
 
         await view.wait()
@@ -416,13 +416,11 @@ class Afk(commands.Cog):
         """
         Reset the AFK cogs configuration. (Bot owners only.)
         """
-        confirm_msg = (
-            "Are you sure you want to reset the AFK cogs whole configuration?"
-        )
+        confirm_msg = "Are you sure you want to reset the AFK cogs whole configuration?"
         confirm_action = "Successfully resetted the AFK cogs configuration."
         view = nu.NoobConfirmation(timeout=30)
         await view.start(
-            context=context, confirm_action=confirm_action, content=confirm_msg
+            object=context, confirm_action=confirm_action, content=confirm_msg
         )
 
         await view.wait()
