@@ -37,7 +37,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.3.1"
+    __version__ = "1.3.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -435,6 +435,7 @@ class Suggestion(commands.Cog):
 
     @commands.command(name="suggestvoters", aliases=["sv"])
     async def suggestvoters(self, context: commands.Context, suggestion_id: int):
+        # sourcery skip: low-code-quality
         """
         Check who downvoted or upvoted from a suggestion.
         """
@@ -462,17 +463,36 @@ class Suggestion(commands.Cog):
                             content="The suggestion channel for this ID could not be found."
                         )
                     try:
-                        await channel.fetch_message(i["msg_id"])
+                        msg = await channel.fetch_message(i["msg_id"])
                     except (discord.errors.NotFound, discord.errors.Forbidden):
                         return await context.send(
                             content="The suggestion message for this ID could not be found. "
                             "Perhaps it was deleted or I do not have permission to view, edit or send in the "
                             "suggestion channel."
                         )
-                    embed = discord.Embed(
-                        title=f"Suggestion #{suggestion_id}",
-                        colour=await context.embed_colour(),
+                    mem = context.guild.get_member(i["suggester_id"])
+                    rev = context.guild.get_member(i["reviewer_id"])
+                    embed = await self.maybe_make_embed(
+                        title=f"Suggestion **#{suggestion_id}**",
+                        desc=i["suggestion"],
+                        colour=await context.embed_colour()
+                        if i["status"] == "running"
+                        else discord.Colour.green()
+                        if i["status"] == "approved"
+                        else discord.Colour.red(),
+                        authname=f"{mem} ({mem.id})"
+                        if mem
+                        else "[Unknown or Deleted User]",
+                        authic=nu.is_have_avatar(mem or context.guild),
+                        reviewer=None
+                        if i["status"] == "running"
+                        else str(rev.mention)
+                        if rev
+                        else "[Unknown or Deleted User]",
+                        stattype=i["status"] if i["status"] != "running" else None,
+                        reason=i["reason"],
                     )
+                    u = f"https://discord.com/channels/{context.guild.id}/{channel.id}/{msg.id}"
                     view = SuggestVotersView()
                     view.DownVotesButton.emoji = data["emojis"]["downvote"]
                     view.UpVotesButton.emoji = data["emojis"]["upvote"]
@@ -482,13 +502,16 @@ class Suggestion(commands.Cog):
                     view.UpVotesButton.style = nu.get_button_colour(
                         data["button_colour"]["upbutton"]
                     )
+                    view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
                     await view.start(
                         context,
                         suggestion_id,
                         i["upvotes"],
                         i["downvotes"],
+                        u,
                         embed=embed,
                     )
+                    break
 
     @commands.group(name="suggestionset", aliases=["suggestset"])
     @commands.admin_or_permissions(manage_guild=True)
