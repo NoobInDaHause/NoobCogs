@@ -165,7 +165,7 @@ class SuggestVotersView(discord.ui.View):
         pages = await nu.pagify_this(
             dv,
             ["\n"],
-            "Page ({index}/{page})",
+            "Page ({index}/{pages})",
             embed_colour=await self.context.embed_colour(),
             embed_title=f"List of members who downvoted suggestion #{self.suggestion_id}",
             footer_icon=nu.is_have_avatar(interaction.guild),
@@ -185,7 +185,7 @@ class SuggestVotersView(discord.ui.View):
         pages = await nu.pagify_this(
             du,
             ["\n"],
-            "Page ({index}/{page})",
+            "Page ({index}/{pages})",
             embed_colour=await self.context.embed_colour(),
             embed_title=f"List of members who upvoted suggestion #{self.suggestion_id}",
         )
