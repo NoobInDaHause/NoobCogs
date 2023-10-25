@@ -4,7 +4,7 @@ import noobutils as nu
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Literal
 
 from .views import CookieClickerView
 
@@ -26,7 +26,7 @@ class CookieClicker(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.1.13"
+    __version__ = "1.1.14"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
@@ -100,7 +100,10 @@ class CookieClicker(commands.Cog):
         sorted_members = dict(sorted(user_lb.items(), key=lambda i: i[1], reverse=True))
 
         ctop = "\n".join(
-            [f"` {g}. ` <@{k}> - **{v} :cookie:**" for g, (k, v) in enumerate(sorted_members.items(), 1)]
+            [
+                f"` {g}. ` <@{k}> - **{v} :cookie:**"
+                for g, (k, v) in enumerate(sorted_members.items(), 1)
+            ]
         )
 
         pages = await nu.pagify_this(
@@ -109,7 +112,7 @@ class CookieClicker(commands.Cog):
             "Page ({index}/{pages})",
             embed_title=f"Top cookie clickers in [{context.guild.name}]",
             embed_colour=await context.embed_colour(),
-            footer_icon=nu.is_have_avatar(context.guild)
+            footer_icon=nu.is_have_avatar(context.guild),
         )
 
         pag = nu.NoobPaginator(pages)
@@ -149,7 +152,7 @@ class CookieClicker(commands.Cog):
     @cookieclickerset.command(name="emoji")
     @commands.admin_or_permissions(manage_guild=True)
     async def cookieclickerset_emoji(
-        self, context: commands.Context, *, emoji: commands.EmojiConverter = None
+        self, context: commands.Context, emoji: commands.EmojiConverter = None
     ):
         """
         Change the cookie emoji.
@@ -161,9 +164,6 @@ class CookieClicker(commands.Cog):
             return await context.send(
                 content=f"The current CookieClicker emoji is {e}."
             )
-        #emote = await nu.noob_emoji_converter(context, emoji)
-        #if emote is None:
-        #    return await context.send(content=f'Emoji "{emoji}" not found.')
         await self.config.guild(context.guild).emoji.set(str(emoji))
         await context.send(
             content=f"The new CookieClicker emoji has been set to {emoji}."
@@ -174,7 +174,7 @@ class CookieClicker(commands.Cog):
     async def cookieclickerset_buttoncolour(
         self,
         context: commands.Context,
-        colour: Optional[Literal["red", "green", "blurple", "grey"]],
+        colour: Literal["red", "green", "blurple", "grey"] = None,
     ):
         """
         Change the CookieClicker button colour.

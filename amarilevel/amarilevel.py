@@ -6,7 +6,7 @@ from redbot.core.bot import app_commands, commands, Red
 from redbot.core.utils import chat_formatting as cf
 
 from amari import AmariClient, NotFound, InvalidToken
-from typing import Literal, Optional
+from typing import Literal
 
 from noobutils import is_have_avatar
 
@@ -25,7 +25,7 @@ class AmariLevel(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.AmariLevel")
 
-    __version__ = "1.0.5"
+    __version__ = "1.0.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/amarilevel/README.md"
@@ -62,7 +62,7 @@ class AmariLevel(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(member="The member that you want to level check.")
     async def amarilevel(
-        self, context: commands.Context, member: Optional[discord.Member]
+        self, context: commands.Context, member: discord.Member = None
     ):
         """
         Check your or someone else's amari level.

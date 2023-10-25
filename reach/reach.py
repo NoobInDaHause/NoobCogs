@@ -6,7 +6,7 @@ from redbot.core.bot import commands, Red
 from redbot.core.utils import chat_formatting as cf
 
 from noobutils import is_have_avatar
-from typing import Literal, Optional, List
+from typing import Literal, List
 
 from .converters import FuzzyRole
 
@@ -22,7 +22,7 @@ class Reach(commands.Cog):
         self.bot = bot
         self.log = logging.getLogger("red.NoobCogs.Reach")
 
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["NoobInDaHause"]
     __documentation__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/reach/README.md"
@@ -57,7 +57,7 @@ class Reach(commands.Cog):
     async def reach(
         self,
         context: commands.Context,
-        channel: Optional[discord.TextChannel],
+        channel: discord.TextChannel = None,
         *roles: FuzzyRole,
     ):  # sourcery skip: low-code-quality
         """

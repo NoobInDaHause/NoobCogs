@@ -2,13 +2,11 @@ import discord
 
 from redbot.core import commands
 
-from typing import Optional
-
 from noobutils import access_denied, NoobConfirmation
 
 
 class GbanViewReset(discord.ui.View):
-    def __init__(self, timeout: Optional[float] = 60.0):
+    def __init__(self, timeout: float = 60.0):
         super().__init__(timeout=timeout)
         self.message: discord.Message = None
         self.context: commands.Context = None

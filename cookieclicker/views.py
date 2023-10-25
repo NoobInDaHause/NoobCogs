@@ -2,7 +2,7 @@ import discord
 
 from redbot.core import commands
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from noobutils import access_denied
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class CookieClickerView(discord.ui.View):
-    def __init__(self, cog: "CookieClicker", timeout: Optional[float] = 60.0):
+    def __init__(self, cog: "CookieClicker", timeout: float = 60.0):
         super().__init__(timeout=timeout)
         self.cog = cog
         self.message: discord.Message = None

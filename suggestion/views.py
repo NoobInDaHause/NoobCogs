@@ -3,7 +3,7 @@ import noobutils as nu
 
 from redbot.core import commands
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from . import Suggestion
@@ -129,7 +129,7 @@ class SuggestView(discord.ui.View):
 
 
 class SuggestVotersView(discord.ui.View):
-    def __init__(self, timeout: Optional[float] = 60.0):
+    def __init__(self, timeout: float = 60.0):
         super().__init__(timeout=timeout)
         self.suggestion_id: int = None
         self.upvotes: list = None

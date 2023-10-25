@@ -8,7 +8,7 @@ import TagScriptEngine as tse
 from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Literal
 
 
 class JoinDM(commands.Cog):
@@ -29,7 +29,7 @@ class JoinDM(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.JoinDM")
 
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/joindm/README.md"
 
@@ -148,7 +148,7 @@ class JoinDM(commands.Cog):
 
     @joindmset.command(name="message", aliases=["msg"])
     async def joindmset_message(
-        self, context: commands.Context, *, message: Optional[str]
+        self, context: commands.Context, *, message: str = None
     ):
         """
         Set the join dm message.

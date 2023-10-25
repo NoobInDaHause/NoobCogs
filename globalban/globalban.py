@@ -8,7 +8,7 @@ from redbot.core.bot import commands, Config, modlog, Red
 from redbot.core.utils import chat_formatting as cf
 
 from datetime import datetime, timezone
-from typing import Literal, Optional, Union
+from typing import Literal, Union
 
 from .views import GbanViewReset
 
@@ -28,7 +28,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.10"
+    __version__ = "1.1.11"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
@@ -271,7 +271,7 @@ class GlobalBan(commands.Cog):
         context: commands.Context,
         user: Union[discord.Member, int],
         *,
-        reason: Optional[str] = "No reason provided.",
+        reason: str = "No reason provided.",
     ):
         """
         Globally ban a user.
@@ -440,7 +440,7 @@ class GlobalBan(commands.Cog):
         context: commands.Context,
         user: Union[discord.Member, int],
         *,
-        reason: Optional[str] = "No reason provided.",
+        reason: str = "No reason provided.",
     ):
         """
         Globally unban a user.

@@ -9,7 +9,7 @@ import traceback
 from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Literal
 
 
 class CustomError(commands.Cog):
@@ -36,7 +36,7 @@ class CustomError(commands.Cog):
 
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.8"
+    __version__ = "1.1.9"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
@@ -142,7 +142,7 @@ class CustomError(commands.Cog):
 
     @customerror.command(name="message")
     async def customerror_message(
-        self, context: commands.Context, *, message: Optional[str]
+        self, context: commands.Context, *, message: str = None
     ):
         """
         Customize [botname]'s error message.

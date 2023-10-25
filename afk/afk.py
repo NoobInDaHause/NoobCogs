@@ -5,7 +5,7 @@ import logging
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Literal
 
 
 class Afk(commands.Cog):
@@ -35,7 +35,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.4.6"
+    __version__ = "1.4.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -255,7 +255,7 @@ class Afk(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(reason="The optional reason for the AFK.")
     async def afk(
-        self, context: commands.Context, *, reason: Optional[str] = "No reason given."
+        self, context: commands.Context, *, reason: str = "No reason given."
     ):
         """
         Be afk and notify users whenever they ping you.
@@ -284,7 +284,7 @@ class Afk(commands.Cog):
     @afkset.command(name="deleteafter", aliases=["da"])
     @commands.admin_or_permissions(manage_guild=True)
     async def afkset_deleteafter(
-        self, context: commands.Context, seconds: Optional[int]
+        self, context: commands.Context, seconds: int = None
     ):
         """
         Change the delete after on every AFK notify.
@@ -317,7 +317,7 @@ class Afk(commands.Cog):
         context: commands.Context,
         member: discord.Member,
         *,
-        reason: Optional[str] = "No reason given.",
+        reason: str = "No reason given.",
     ):
         """
         Forcefully add or remove an AFK status on a user.

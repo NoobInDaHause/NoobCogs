@@ -6,7 +6,7 @@ import noobutils as nu
 from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Literal
 
 
 class DevLogs(commands.Cog):
@@ -28,7 +28,7 @@ class DevLogs(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.DevLogs")
 
-    __version__ = "1.0.8"
+    __version__ = "1.0.9"
     __author__ = ["sravan_krishna", "NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/devlogs/README.md"
@@ -132,7 +132,7 @@ class DevLogs(commands.Cog):
 
     @devlogset.command(name="channel", aliases=["chan"])
     async def devlogset_channel(
-        self, context: commands.Context, channel: Optional[discord.TextChannel]
+        self, context: commands.Context, channel: discord.TextChannel = None
     ) -> None:
         """
         Set the channel to log to.

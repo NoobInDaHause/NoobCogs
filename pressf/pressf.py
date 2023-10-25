@@ -4,7 +4,7 @@ import noobutils as nu
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Literal
 
 from .views import PressFView
 
@@ -27,7 +27,7 @@ class PressF(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.PressF")
         self.active_cache = []
 
-    __version__ = "1.1.6"
+    __version__ = "1.1.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/pressf/README.md"
 
@@ -88,7 +88,7 @@ class PressF(commands.Cog):
 
     @pressfset.command(name="emoji")
     async def pressfset_emoji(
-        self, context: commands.Context, *, emoji: commands.EmojiConverter = None
+        self, context: commands.Context, emoji: commands.EmojiConverter = None
     ):
         """
         Change the F emoji.
@@ -98,9 +98,6 @@ class PressF(commands.Cog):
         if not emoji:
             e = await self.config.guild(context.guild).emoji()
             return await context.send(content=f"The current Press F emoji is {e}.")
-        #emote = await nu.noob_emoji_converter(context, emoji)
-        #if emote is None:
-        #    return await context.send(content=f'Emoji "{emoji}" not found.')
         await self.config.guild(context.guild).emoji.set(str(emoji))
         await context.send(content=f"The new Press F emoji has been set to {emoji}.")
 
@@ -108,7 +105,7 @@ class PressF(commands.Cog):
     async def pressfset_buttoncolour(
         self,
         context: commands.Context,
-        colour: Optional[Literal["red", "green", "blurple", "grey"]],
+        colour: Literal["red", "green", "blurple", "grey"] = None,
     ):
         """
         Change the Press F button colour.

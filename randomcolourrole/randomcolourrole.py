@@ -8,7 +8,7 @@ from redbot.core.utils import chat_formatting as cf
 
 from discord.ext import tasks
 from noobutils import NoobConfirmation
-from typing import Literal, Optional
+from typing import Literal
 
 
 class RandomColourRole(commands.Cog):
@@ -31,7 +31,7 @@ class RandomColourRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RandomColourRole")
 
-    __version__ = "1.1.3"
+    __version__ = "1.1.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/randomcolourrole/README.md"
 
@@ -131,7 +131,7 @@ class RandomColourRole(commands.Cog):
     @randomcolourroleset.command(name="role")
     @commands.bot_has_permissions(manage_roles=True)
     async def randomcolourroleset_role(
-        self, context: commands.Context, role: Optional[discord.Role]
+        self, context: commands.Context, role: discord.Role = None
     ):
         """
         Set the guilds random colour role.

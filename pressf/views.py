@@ -2,17 +2,17 @@ import discord
 
 from redbot.core import commands
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from . import PressF
 
 
 class PressFView(discord.ui.View):
-    def __init__(self, cog: commands.Cog, timeout: Optional[float] = 180.0):
+    def __init__(self, cog: "PressF", timeout: float = 180.0):
         super().__init__(timeout=timeout)
         self.message: discord.Message = None
-        self.cog: PressF = cog
+        self.cog = cog
         self.context: commands.Context = None
         self.thing: str = None
         self.paid_users = []

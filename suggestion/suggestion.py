@@ -6,7 +6,7 @@ import noobutils as nu
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Literal
 
 from .views import SuggestView, SuggestVotersView
 
@@ -37,7 +37,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.3.12"
+    __version__ = "1.3.13"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -354,7 +354,7 @@ class Suggestion(commands.Cog):
         context: commands.Context,
         suggestion_id: int,
         *,
-        reason: Optional[str] = "No reason given.",
+        reason="No reason given.",
     ):
         """
         Approve a suggestion.
@@ -399,7 +399,7 @@ class Suggestion(commands.Cog):
         context: commands.Context,
         suggestion_id: int,
         *,
-        reason: Optional[str] = "No reason given.",
+        reason="No reason given.",
     ):
         """
         Reject a suggestion.
@@ -527,7 +527,7 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         types: Literal["upvote", "downvote"],
-        colour: Optional[Literal["red", "green", "blurple", "grey"]],
+        colour: Literal["red", "green", "blurple", "grey"] = None,
     ):
         """
         Change the upvote or downvotes button colour.
@@ -723,7 +723,7 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         type: Literal["suggest", "reject", "approve"],
-        channel: Optional[discord.TextChannel],
+        channel: discord.TextChannel = None,
     ):
         """
         Set the suggestion channel.
@@ -772,7 +772,6 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         vote: Literal["upvote", "downvote"],
-        *,
         emoji: commands.EmojiConverter = None,
     ):
         """
@@ -794,11 +793,6 @@ class Suggestion(commands.Cog):
             return await context.send(
                 f"The {emoji_name} emoji has been reset to: {emoji_value}"
             )
-
-        #emote = await nu.noob_emoji_converter(context, emoji)
-
-        #if emote is None:
-        #    return await context.send(content=f'Emoji "{emoji}" not found.')
 
         await vote_emojis.upvote.set(
             str(emoji)
