@@ -16,7 +16,7 @@ class AmariLevel(commands.Cog):
     Check your amari level but through red.
 
     If you are the bot owner you will need an amari api token for this to work.
-    You can apply for one [here](https://forms.gle/TEZ3YbbMPMEWYuuMA).
+    You can apply for one on their support server [here](https://discord.gg/kqefESMzQj).
     Then set it with `[p]set api amari auth,<your_api_key>`.
     """
 
@@ -25,7 +25,7 @@ class AmariLevel(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.AmariLevel")
 
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/amarilevel/README.md"
@@ -68,7 +68,7 @@ class AmariLevel(commands.Cog):
         Check your or someone else's amari level.
 
         Requires amari api token.
-        If you are the bot owner apply for one [here](https://forms.gle/TEZ3YbbMPMEWYuuMA).
+        If you are the bot owner apply for one in their support server [here](https://discord.gg/kqefESMzQj).
         If you already have an amari api token set it with:
         `[p]set api amari auth,<your_api_key>`
         """
