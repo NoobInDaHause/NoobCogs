@@ -4,7 +4,7 @@ import noobutils as nu
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Any, Literal, Optional
+from typing import Literal, Optional
 
 from .views import CookieClickerView
 
@@ -26,7 +26,7 @@ class CookieClicker(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.1.11"
+    __version__ = "1.1.12"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
@@ -149,7 +149,7 @@ class CookieClicker(commands.Cog):
     @cookieclickerset.command(name="emoji")
     @commands.admin_or_permissions(manage_guild=True)
     async def cookieclickerset_emoji(
-        self, context: commands.Context, *, emoji: Optional[commands.EmojiConverter] = None
+        self, context: commands.Context, *, emoji = None
     ):
         """
         Change the cookie emoji.
@@ -161,12 +161,12 @@ class CookieClicker(commands.Cog):
             return await context.send(
                 content=f"The current CookieClicker emoji is {e}."
             )
-        #emote = await nu.noob_emoji_converter(context, emoji)
-        #if emote is None:
-        #    return await context.send(content=f'Emoji "{emoji}" not found.')
-        await self.config.guild(context.guild).emoji.set(str(emoji))
+        emote = await nu.noob_emoji_converter(context, emoji)
+        if emote is None:
+            return await context.send(content=f'Emoji "{emoji}" not found.')
+        await self.config.guild(context.guild).emoji.set(str(emote))
         await context.send(
-            content=f"The new CookieClicker emoji has been set to {emoji}."
+            content=f"The new CookieClicker emoji has been set to {emote}."
         )
 
     @cookieclickerset.command(name="buttoncolour", aliases=["buttoncolor"])
