@@ -153,26 +153,6 @@ class SuggestVotersView(discord.ui.View):
         self.context = context
         self.message = msg
 
-    @discord.ui.button(label="Down Voters")
-    async def DownVotesButton(
-        self, interaction: discord.Interaction, button: discord.ui.Button
-    ):
-        dv = "\n".join(
-            [f"<@{i}> ({i})" for i in self.downvotes]
-            if self.downvotes
-            else ["No one has downvoted this sugegstion yet."]
-        )
-        pages = await nu.pagify_this(
-            dv,
-            ["\n"],
-            "Page ({index}/{pages})",
-            embed_colour=await self.context.embed_colour(),
-            embed_title=f"List of members who downvoted suggestion #{self.suggestion_id}",
-            footer_icon=nu.is_have_avatar(interaction.guild),
-        )
-        pag = nu.NoobPaginator(pages)
-        await pag.start(interaction, ephemeral=True)
-
     @discord.ui.button(label="Up Voters")
     async def UpVotesButton(
         self, interaction: discord.Interaction, button: discord.ui.Button
@@ -187,7 +167,32 @@ class SuggestVotersView(discord.ui.View):
             ["\n"],
             "Page ({index}/{pages})",
             embed_colour=await self.context.embed_colour(),
-            embed_title=f"List of members who upvoted suggestion #{self.suggestion_id}",
+            embed_title=f"{len(self.upvotes)} members have upvoted the suggestion #{self.suggestion_id}",
+        )
+        pag = nu.NoobPaginator(pages)
+        await pag.start(interaction, ephemeral=True)
+
+    @discord.ui.button(emoji="✖️", style=discord.ButtonStyle.danger)
+    async def quit_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.stop()
+        await interaction.message.delete()
+
+    @discord.ui.button(label="Down Voters")
+    async def DownVotesButton(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        dv = "\n".join(
+            [f"<@{i}> ({i})" for i in self.downvotes]
+            if self.downvotes
+            else ["No one has downvoted this suggestion yet."]
+        )
+        pages = await nu.pagify_this(
+            dv,
+            ["\n"],
+            "Page ({index}/{pages})",
+            embed_colour=await self.context.embed_colour(),
+            embed_title=f"{len(self.downvotes)} members have downvoted the suggestion #{self.suggestion_id}",
+            footer_icon=nu.is_have_avatar(interaction.guild),
         )
         pag = nu.NoobPaginator(pages)
         await pag.start(interaction, ephemeral=True)
@@ -205,7 +210,8 @@ class SuggestVotersView(discord.ui.View):
         return True
 
     async def on_timeout(self):
-        for x in self.children:
-            x.disabled = True
+        self.DownVotesButton.disabled = True
+        self.UpVotesButton.disabled = True
+        self.quit_button.disabled = True
         self.stop()
         await self.message.edit(view=self)
