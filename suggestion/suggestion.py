@@ -6,7 +6,6 @@ import noobutils as nu
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from discord.ext.commands.converter import EmojiConverter
 from typing import Literal, Optional
 
 from .views import SuggestView, SuggestVotersView
@@ -38,7 +37,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.3.7"
+    __version__ = "1.3.8"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -773,27 +772,40 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         vote: Literal["upvote", "downvote"],
-        emoji: Optional[EmojiConverter],
+        *,
+        emoji: Optional[str],
     ):
         """
         Change the UpVote or DownVote emoji.
         """
-        if vote == "upvote":
-            if not emoji:
-                await self.config.guild(context.guild).emojis.upvote.clear()
-                up = await self.config.guild(context.guild).emojis.upvote()
-                return await context.send(f"The UpVote emoji has been reset to: {up}")
-            await self.config.guild(context.guild).emojis.upvote.set(str(emoji))
-            await context.send(f"Successfully set the UpVote emoji to: {emoji}")
-        if vote == "downvote":
-            if not emoji:
-                await self.config.guild(context.guild).emojis.downvote.clear()
-                down = await self.config.guild(context.guild).emojis.downvote()
-                return await context.send(
-                    f"The DownVote emoji has been reset to: {down}"
-                )
-            await self.config.guild(context.guild).emojis.downvote.set(str(emoji))
-            await context.send(f"Successfully set the DownVote emoji to: {emoji}")
+        if vote not in ["upvote", "downvote"]:
+            return await context.send_help()
+
+        vote_emojis = self.config.guild(context.guild).emojis
+
+        if not emoji:
+            await vote_emojis.upvote.clear() if vote == "upvote" else await vote_emojis.downvote.clear()
+            emoji_name = "UpVote" if vote == "upvote" else "DownVote"
+            emoji_value = (
+                await vote_emojis.upvote()
+                if vote == "upvote"
+                else await vote_emojis.downvote()
+            )
+            return await context.send(
+                f"The {emoji_name} emoji has been reset to: {emoji_value}"
+            )
+
+        emoji = emoji.strip()
+        emote = await nu.noob_emoji_converter(context, emoji)
+
+        if emote is None:
+            return await context.send(content=f'Emoji "{emoji}" not found.')
+
+        await vote_emojis.upvote.set(
+            str(emote)
+        ) if vote == "upvote" else await vote_emojis.downvote.set(str(emote))
+        emoji_name = "UpVote" if vote == "upvote" else "DownVote"
+        await context.send(f"Successfully set the {emoji_name} emoji to: {emote}")
 
     @suggestionset.command(name="reset")
     async def suggestionset_reset(self, context: commands.Context):
