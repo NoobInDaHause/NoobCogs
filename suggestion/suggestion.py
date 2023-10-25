@@ -37,7 +37,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.3.11"
+    __version__ = "1.3.12"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -773,7 +773,7 @@ class Suggestion(commands.Cog):
         context: commands.Context,
         vote: Literal["upvote", "downvote"],
         *,
-        emoji = None,
+        emoji: commands.EmojiConverter = None,
     ):
         """
         Change the UpVote or DownVote emoji.
@@ -795,16 +795,16 @@ class Suggestion(commands.Cog):
                 f"The {emoji_name} emoji has been reset to: {emoji_value}"
             )
 
-        emote = await nu.noob_emoji_converter(context, emoji)
+        #emote = await nu.noob_emoji_converter(context, emoji)
 
-        if emote is None:
-            return await context.send(content=f'Emoji "{emoji}" not found.')
+        #if emote is None:
+        #    return await context.send(content=f'Emoji "{emoji}" not found.')
 
         await vote_emojis.upvote.set(
-            str(emote)
-        ) if vote == "upvote" else await vote_emojis.downvote.set(str(emote))
+            str(emoji)
+        ) if vote == "upvote" else await vote_emojis.downvote.set(str(emoji))
         emoji_name = "UpVote" if vote == "upvote" else "DownVote"
-        await context.send(f"Successfully set the {emoji_name} emoji to: {emote}")
+        await context.send(f"Successfully set the {emoji_name} emoji to: {emoji}")
 
     @suggestionset.command(name="reset")
     async def suggestionset_reset(self, context: commands.Context):
