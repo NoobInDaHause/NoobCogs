@@ -153,7 +153,7 @@ class SuggestVotersView(discord.ui.View):
         self.context = context
         self.message = msg
 
-    @discord.ui.button(label="DownVoters")
+    @discord.ui.button(label="Down Voters")
     async def DownVotesButton(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
@@ -173,7 +173,7 @@ class SuggestVotersView(discord.ui.View):
         pag = nu.NoobPaginator(pages)
         await pag.start(interaction, ephemeral=True)
 
-    @discord.ui.button(label="UpVoters")
+    @discord.ui.button(label="Up Voters")
     async def UpVotesButton(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
