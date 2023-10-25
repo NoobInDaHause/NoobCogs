@@ -8,7 +8,7 @@ from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal, Optional
 
-from .views import SuggestView
+from .views import SuggestView, SuggestVotersView
 
 
 class Suggestion(commands.Cog):
@@ -37,7 +37,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.2.11"
+    __version__ = "1.3.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -78,15 +78,6 @@ class Suggestion(commands.Cog):
                     if user_id in i["downvotes"]:
                         index = i["downvotes"].index(user_id)
                         i["downvotes"].pop(index)
-
-    async def cog_unload(self):
-        for g in (await self.config.all_guilds()).keys():
-            if guild := self.bot.get_guild(g):
-                for i in await self.config.guild(guild).suggestions():
-                    if view := discord.utils.get(
-                        self.bot.persistent_views, _cache_key=i["msg_id"]
-                    ):
-                        view.stop()
 
     async def maybe_send_to_author(
         self,
@@ -441,6 +432,63 @@ class Suggestion(commands.Cog):
             return await context.send(
                 content="Error occurred while editting suggestion, please check my permissions."
             )
+
+    @commands.command(name="suggestvoters", aliases=["sv"])
+    async def suggestvoters(self, context: commands.Context, suggestion_id: int):
+        """
+        Check who downvoted or upvoted from a suggestion.
+        """
+        if suggestion_id <= 0:
+            return await context.send(content="Suggestion for this ID was not found.")
+        data = await self.config.guild(context.guild).all()
+        if not data["suggest_channel"]:
+            return await context.send(
+                content="No suggestion channel found, ask an admin to set one,"
+            )
+        async with self.config.guild(context.guild).suggestions() as s:
+            if not s:
+                return await context.send(
+                    content="No suggestions have been submitted yet."
+                )
+            if suggestion_id > len(s):
+                return await context.send(
+                    content="It appears this suggestion does not exist."
+                )
+            for i in s:
+                if i["id"] == suggestion_id:
+                    channel = context.guild.get_channel(i["channel_id"])
+                    if not channel:
+                        return await context.send(
+                            content="The suggestion channel for this ID could not be found."
+                        )
+                    try:
+                        await channel.fetch_message(i["msg_id"])
+                    except (discord.errors.NotFound, discord.errors.Forbidden):
+                        return await context.send(
+                            content="The suggestion message for this ID could not be found. "
+                            "Perhaps it was deleted or I do not have permission to view, edit or send in the "
+                            "suggestion channel."
+                        )
+                    embed = discord.Embed(
+                        title=f"Suggestion #{suggestion_id}",
+                        colour=await context.embed_colour(),
+                    )
+                    view = SuggestVotersView()
+                    view.DownVotesButton.emoji = data["emojis"]["downvote"]
+                    view.UpVotesButton.emoji = data["emojis"]["upvote"]
+                    view.DownVotesButton.style = nu.get_button_colour(
+                        data["button_colour"]["downbutton"]
+                    )
+                    view.UpVotesButton.style = nu.get_button_colour(
+                        data["button_colour"]["upbutton"]
+                    )
+                    await view.start(
+                        context,
+                        suggestion_id,
+                        i["upvotes"],
+                        i["downvotes"],
+                        embed=embed,
+                    )
 
     @commands.group(name="suggestionset", aliases=["suggestset"])
     @commands.admin_or_permissions(manage_guild=True)
