@@ -26,7 +26,7 @@ class CookieClicker(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.PressF")
 
-    __version__ = "1.1.8"
+    __version__ = "1.1.9"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/cookieclicker/README.md"
@@ -149,7 +149,7 @@ class CookieClicker(commands.Cog):
     @cookieclickerset.command(name="emoji")
     @commands.admin_or_permissions(manage_guild=True)
     async def cookieclickerset_emoji(
-        self, context: commands.Context, emoji: Optional[nu.NoobEmojiConverter]
+        self, context: commands.Context, *, emoji: Optional[str]
     ):
         """
         Change the cookie emoji.
@@ -161,9 +161,13 @@ class CookieClicker(commands.Cog):
             return await context.send(
                 content=f"The current CookieClicker emoji is {e}."
             )
-        await self.config.guild(context.guild).emoji.set(str(emoji))
+        emoji = emoji.strip()
+        emote = await nu.noob_emoji_converter(context, emoji)
+        if emote is None:
+            return await context.send(content=f'Emoji "{emoji}" not found.')
+        await self.config.guild(context.guild).emoji.set(str(emote))
         await context.send(
-            content=f"The new CookieClicker emoji has been set to {emoji}."
+            content=f"The new CookieClicker emoji has been set to {emote}."
         )
 
     @cookieclickerset.command(name="buttoncolour", aliases=["buttoncolor"])
