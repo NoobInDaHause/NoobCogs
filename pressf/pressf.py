@@ -4,7 +4,7 @@ import noobutils as nu
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 from .views import PressFView
 
@@ -27,7 +27,7 @@ class PressF(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.PressF")
         self.active_cache = []
 
-    __version__ = "1.1.4"
+    __version__ = "1.1.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/pressf/README.md"
 
@@ -88,7 +88,7 @@ class PressF(commands.Cog):
 
     @pressfset.command(name="emoji")
     async def pressfset_emoji(
-        self, context: commands.Context, *, emoji: Optional[str]
+        self, context: commands.Context, *, emoji: Optional[Any]
     ):
         """
         Change the F emoji.
@@ -98,7 +98,6 @@ class PressF(commands.Cog):
         if not emoji:
             e = await self.config.guild(context.guild).emoji()
             return await context.send(content=f"The current Press F emoji is {e}.")
-        emoji = emoji.strip()
         emote = await nu.noob_emoji_converter(context, emoji)
         if emote is None:
             return await context.send(content=f'Emoji "{emoji}" not found.')

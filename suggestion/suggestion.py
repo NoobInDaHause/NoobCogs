@@ -6,7 +6,7 @@ import noobutils as nu
 from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Any
 
 from .views import SuggestView, SuggestVotersView
 
@@ -37,7 +37,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         bot.add_view(SuggestView(self))
 
-    __version__ = "1.3.9"
+    __version__ = "1.3.10"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -773,7 +773,7 @@ class Suggestion(commands.Cog):
         context: commands.Context,
         vote: Literal["upvote", "downvote"],
         *,
-        emoji: Optional[str],
+        emoji: Optional[Any],
     ):
         """
         Change the UpVote or DownVote emoji.
@@ -795,7 +795,6 @@ class Suggestion(commands.Cog):
                 f"The {emoji_name} emoji has been reset to: {emoji_value}"
             )
 
-        emoji = emoji.strip()
         emote = await nu.noob_emoji_converter(context, emoji)
 
         if emote is None:
