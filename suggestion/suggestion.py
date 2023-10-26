@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.1"
+    __version__ = "1.5.2"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -804,6 +804,7 @@ class Suggestion(commands.Cog):
         """
         data = await self.config.guild(context.guild).all()
         emojis = data["emojis"]
+        button_colour = data["button_colour"]
         channels = {
             "Suggestion": data["suggest_channel"],
             "Rejection": data["reject_channel"],
@@ -816,12 +817,17 @@ class Suggestion(commands.Cog):
 
         embed = discord.Embed(
             title=f"{context.guild}'s current suggestion settings",
-            description=f"` - ` **Auto delete commands:** {data['autodel']}\n"
-            f"` - ` **Upvote emoji:** {emojis['upvote']}\n"
-            f"` - ` **Downvote emoji:** {emojis['downvote']}\n"
-            f"` - ` **Suggestion channel:** {channels_text['Suggestion']}\n"
-            f"` - ` **Rejection channel:** {channels_text['Rejection']}\n"
-            f"` - ` **Approved channel:** {channels_text['Approved']}",
+            description=f"**Auto delete commands:** {data['autodel']}\n"
+            f"**Allow Self Vote:** {data['self_vote']}\n"
+            f"**Upvote Button:**\n"
+            f"    ` - ` Emoji: {emojis['upvote']}\n"
+            f"    ` - ` Colour: {button_colour['upbutton']}\n"
+            f"**Downvote emoji:**\n"
+            f"    ` - ` Emoji: {emojis['downvote']}\n"
+            f"    ` - ` Colour: {button_colour['downbutton']}\n"
+            f"**Suggestion channel:** {channels_text['Suggestion']}\n"
+            f"**Rejection channel:** {channels_text['Rejection']}\n"
+            f"**Approved channel:** {channels_text['Approved']}",
             colour=await context.embed_colour(),
             timestamp=discord.utils.utcnow(),
         )
