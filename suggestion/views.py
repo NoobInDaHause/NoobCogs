@@ -10,9 +10,9 @@ if TYPE_CHECKING:
 
 
 class SuggestView(discord.ui.View):
-    def __init__(self, cog: commands.Cog):
+    def __init__(self, cog: "Suggestion"):
         super().__init__(timeout=None)
-        self.cog: Suggestion = cog
+        self.cog = cog
 
     @discord.ui.button(custom_id="up_persistent_button")
     async def up_button(
@@ -81,6 +81,21 @@ class SuggestView(discord.ui.View):
 
                     await interaction.response.edit_message(view=self)
                     await interaction.followup.send(content=message, ephemeral=True)
+
+    async def interaction_check(self, interaction: discord.Interaction):
+        if await self.cog.config.guild(interaction.guild).self_vote():
+            return True
+        if suggestions := await self.cog.config.guild(interaction.guild).suggestions():
+            for i in suggestions:
+                if interaction.message.id == i["msg_id"]:
+                    if interaction.user.id != i["suggester_id"]:
+                        return True
+                    await interaction.response.send_message(
+                        content="Admins have restricted suggestion self voting in this guild so "
+                        "you can not upvote or downvote your own suggestion.",
+                        ephemeral=True,
+                    )
+                    return False
 
 
 class SuggestVotersView(discord.ui.View):

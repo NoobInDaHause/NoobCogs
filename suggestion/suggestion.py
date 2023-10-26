@@ -33,12 +33,13 @@ class Suggestion(commands.Cog):
             "reject_channel": None,
             "approve_channel": None,
             "suggestions": [],
+            "self_vote": True,
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.4.0"
+    __version__ = "1.5.0"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -782,6 +783,18 @@ class Suggestion(commands.Cog):
         status = "will not" if current else "will now"
         await context.send(
             content=f"I {status} automatically delete the suggestion commands."
+        )
+
+    @suggestionset.command(name="allowselfvote", aliases=["asv"])
+    async def suggestionset_allowselfvote(self, context: commands.Context):
+        """
+        Toggle whether to allow suggestion authors to upvote or downvote their own suggestion or not.
+        """
+        current = await self.config.guild(context.guild).self_vote()
+        await self.config.guild(context.guild).self_vote.set(not current)
+        status = "can no longer" if current else "can now"
+        await context.send(
+            content=f"Suggestion authors {status} upvote or downvote their own suggestion."
         )
 
     @suggestionset.command(name="showsettings", aliases=["ss"])
