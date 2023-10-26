@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import discord
 import logging
@@ -35,9 +36,9 @@ class Suggestion(commands.Cog):
         }
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
-        bot.add_view(SuggestView(self))
+        self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.3.13"
+    __version__ = "1.3.14"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -61,23 +62,46 @@ class Suggestion(commands.Cog):
         user_id: int,
     ):
         for g in (await self.config.all_guilds()).keys():
-            guild = self.bot.get_guild(g)
-            if not guild:
-                continue
-            async with self.config.guild(guild).suggestions() as s:
-                if not s:
-                    continue
-                for i in s:
-                    if user_id == i["suggester_id"]:
-                        i["suggester_id"] = None
-                    if user_id == i["reviewer_id"]:
-                        i["reviewer_id"] = None
-                    if user_id in i["upvotes"]:
-                        index = i["upvotes"].index(user_id)
-                        i["upvotes"].pop(index)
-                    if user_id in i["downvotes"]:
-                        index = i["downvotes"].index(user_id)
-                        i["downvotes"].pop(index)
+            if guild := self.bot.get_guild(g):
+                async with self.config.guild(guild).suggestions() as s:
+                    if not s:
+                        continue
+                    for i in s:
+                        if user_id == i["suggester_id"]:
+                            i["suggester_id"] = None
+                        if user_id == i["reviewer_id"]:
+                            i["reviewer_id"] = None
+                        if user_id in i["upvotes"]:
+                            index = i["upvotes"].index(user_id)
+                            i["upvotes"].pop(index)
+                        if user_id in i["downvotes"]:
+                            index = i["downvotes"].index(user_id)
+                            i["downvotes"].pop(index)
+
+    async def cog_unload(self):
+        for g in (await self.config.all_guilds()).keys():
+            if guild := self.bot.get_guild(g):
+                if suggestions := await self.config.guild(guild).suggestions():
+                    for i in suggestions:
+                        if i["status"] == "running":
+                            if view := discord.utils.get(
+                                self.bot.persistent_views, _cache_key=i["msg_id"]
+                            ):
+                                view.stop()
+
+    async def initialize_views(self):
+        await self.bot.wait_until_red_ready()
+        for g in (await self.config.all_guilds()).keys():
+            if guild := self.bot.get_guild(g):
+                if suggestions := await self.config.guild(guild).suggestions():
+                    for i in suggestions:
+                        if i["status"] == "running":
+                            try:
+                                channel = guild.get_channel(i["channel_id"])
+                                msg = await channel.fetch_message(i["msg_id"])
+                                self.bot.add_view(SuggestView(self), message_id=msg.id)
+                            except Exception:
+                                continue
 
     async def maybe_send_to_author(
         self,
