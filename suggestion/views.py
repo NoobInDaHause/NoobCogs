@@ -108,7 +108,7 @@ class SuggestVotersView(discord.ui.View):
         self.context = context
         self.message = msg
 
-    @discord.ui.button(label="Up Voters")
+    @discord.ui.button()
     async def UpVotesButton(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
@@ -134,7 +134,7 @@ class SuggestVotersView(discord.ui.View):
         self.stop()
         await interaction.message.delete()
 
-    @discord.ui.button(label="Down Voters")
+    @discord.ui.button()
     async def DownVotesButton(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
