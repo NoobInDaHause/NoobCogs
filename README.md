@@ -32,7 +32,7 @@ Some of the cogs are poorly coded and buggy so handle these cogs with care.
 | PressF           |  v1.1.7   | F.                                                          |
 | RandomColourRole |  v1.1.4   | Have a role that changes colour every 5 minutes.            |
 | Reach            |  v1.0.5   | Reach roles on a channel.                                   |
-| Suggestion       |  v1.5.0   | Suggestion system.                                          |
+| Suggestion       |  v1.5.1   | Suggestion system.                                          |
 
 ## License
 

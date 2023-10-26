@@ -127,17 +127,20 @@ class SuggestVotersView(discord.ui.View):
     async def UpVotesButton(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
-        du = "\n".join(
-            [f"<@{i}> ({i})" for i in self.upvotes]
-            if self.upvotes
-            else ["No one has upvoted this suggestion yet."]
-        )
+        upvoters = [
+            f"{member.mention} {member.name} ({member.id})"
+            for x in self.upvotes
+            if (member := interaction.guild.get_member(x))
+        ] or ["No one has upvoted this suggestion yet."]
+
+        du = "\n".join(upvoters)
+
         pages = await nu.pagify_this(
             du,
             ["\n"],
             "Page ({index}/{pages})",
             embed_colour=await self.context.embed_colour(),
-            embed_title=f"{len(self.upvotes)} members have upvoted the suggestion #{self.suggestion_id}",
+            embed_title=f"{len(self.upvotes)} members have upvoted the suggestion **#{self.suggestion_id}**",
         )
         pag = nu.NoobPaginator(pages)
         await pag.start(interaction, ephemeral=True)
@@ -153,17 +156,20 @@ class SuggestVotersView(discord.ui.View):
     async def DownVotesButton(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
-        dv = "\n".join(
-            [f"<@{i}> ({i})" for i in self.downvotes]
-            if self.downvotes
-            else ["No one has downvoted this suggestion yet."]
-        )
+        downvoters = [
+            f"{member.mention} {member.name} ({member.id})"
+            for x in self.downvotes
+            if (member := interaction.guild.get_member(x))
+        ] or ["No one has upvoted this suggestion yet."]
+
+        dv = "\n".join(downvoters)
+
         pages = await nu.pagify_this(
             dv,
             ["\n"],
             "Page ({index}/{pages})",
             embed_colour=await self.context.embed_colour(),
-            embed_title=f"{len(self.downvotes)} members have downvoted the suggestion #{self.suggestion_id}",
+            embed_title=f"{len(self.downvotes)} members have downvoted the suggestion **#{self.suggestion_id}**",
             footer_icon=nu.is_have_avatar(interaction.guild),
         )
         pag = nu.NoobPaginator(pages)
