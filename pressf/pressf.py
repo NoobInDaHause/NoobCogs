@@ -27,7 +27,7 @@ class PressF(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.PressF")
         self.active_cache = []
 
-    __version__ = "1.1.7"
+    __version__ = "1.1.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/pressf/README.md"
 
@@ -88,7 +88,7 @@ class PressF(commands.Cog):
 
     @pressfset.command(name="emoji")
     async def pressfset_emoji(
-        self, context: commands.Context, emoji: commands.EmojiConverter = None
+        self, context: commands.Context, emoji: nu.NoobEmojiConverter = None
     ):
         """
         Change the F emoji.
