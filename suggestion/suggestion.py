@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.10"
+    __version__ = "1.5.11"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -187,7 +187,7 @@ class Suggestion(commands.Cog):
         if reviewer:
             e.add_field(name="Reviewer:", value=reviewer, inline=True)
         if stattype:
-            e.add_field(name="Status:", value=stattype.title(), inline=True)
+            e.add_field(name="Status:", value=f"**{stattype.title()}**", inline=True)
         if results:
             e.add_field(name="Results:", value=results, inline=True)
         if reason:
