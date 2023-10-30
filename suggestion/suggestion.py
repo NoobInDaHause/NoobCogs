@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.5"
+    __version__ = "1.5.6"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -176,6 +176,7 @@ class Suggestion(commands.Cog):
         reviewer: str = None,
         stattype: str = None,
         reason: str = None,
+        results: str = None,
     ) -> discord.Embed:
         e = discord.Embed(
             title=title,
@@ -187,6 +188,8 @@ class Suggestion(commands.Cog):
             e.add_field(name="Reviewer:", value=reviewer, inline=True)
         if stattype:
             e.add_field(name="Status:", value=stattype.title(), inline=True)
+        if results:
+            e.add_field(name="Results:", value=results, inline=True)
         if reason:
             e.add_field(name="Reason:", value=reason, inline=False)
         return e
@@ -288,20 +291,25 @@ class Suggestion(commands.Cog):
                         msg = await channel.fetch_message(i["msg_id"])
                     except (discord.errors.NotFound, discord.errors.Forbidden):
                         return "notfound"
+                    stit = f"Suggestion **#{id}**"
+                    sdesc = i["suggestion"]
+                    col = discord.Colour.green() if status_type == "approved" else discord.Colour.red()
                     mem = context.guild.get_member(i["suggester_id"])
+                    authe = f"{mem} ({mem.id})" if mem else "[Unknown or Deleted User]"
+                    b = [str(len(i["upvotes"])), str(len(i["downvotes"]))]
+                    results = (
+                        f"{data['emojis']['upvote']}: {b[0]}\n{data['emojis']['downvote']}: {b[1]}"
+                    )
                     embed = await self.maybe_make_embed(
-                        title=f"Suggestion **#{id}**",
-                        desc=i["suggestion"],
-                        colour=discord.Colour.green()
-                        if status_type == "approved"
-                        else discord.Colour.red(),
-                        authname=f"{mem} ({mem.id})"
-                        if mem
-                        else "[Unknown or Deleted User]",
+                        title=stit,
+                        desc=sdesc,
+                        colour=col,
+                        authname=authe,
                         authic=nu.is_have_avatar(mem or context.guild),
                         reviewer=str(context.author.mention),
                         stattype=status_type,
                         reason=reason,
+                        results=results
                     )
                     if status_type == "approved":
                         await self.maybe_send_approve(
@@ -311,7 +319,6 @@ class Suggestion(commands.Cog):
                         await self.maybe_send_reject(
                             context, data["reject_channel"], msg.jump_url, embed
                         )
-                    b = [str(len(i["upvotes"])), str(len(i["downvotes"]))]
                     if mem:
                         cont = (
                             f"Your suggestion **#{id}** was `{status_type}` by {context.author} "
@@ -516,19 +523,26 @@ class Suggestion(commands.Cog):
                         else "[Unknown or Deleted User]",
                         stattype=i["status"] if i["status"] != "running" else None,
                         reason=i["reason"],
+                        results=(
+                            f"{data['emojis']['upvote']}: {len(i['upvotes'])}\n"
+                            f"{data['emojis']['downvote']}: {len(i['downvotes'])}"
+                        )
+                        if i["status"] != "running"
+                        else None,
                     )
                     u = f"https://discord.com/channels/{context.guild.id}/{channel.id}/{msg.id}"
                     view = SuggestVotersView()
-                    view.DownVotesButton.emoji = data["emojis"]["downvote"]
-                    view.UpVotesButton.emoji = data["emojis"]["upvote"]
-                    view.DownVotesButton.label = f"{len(i['downvotes'])} Down Voters"
-                    view.UpVotesButton.label = f"{len(i['upvotes'])} Up Voters"
-                    view.DownVotesButton.style = nu.get_button_colour(
-                        data["button_colour"]["downbutton"]
-                    )
-                    view.UpVotesButton.style = nu.get_button_colour(
-                        data["button_colour"]["upbutton"]
-                    )
+                    if i["status"] == "running":
+                        view.DownVotesButton.emoji = data["emojis"]["downvote"]
+                        view.UpVotesButton.emoji = data["emojis"]["upvote"]
+                        view.DownVotesButton.label = f"{len(i['downvotes'])} Down Voters"
+                        view.UpVotesButton.label = f"{len(i['upvotes'])} Up Voters"
+                        view.DownVotesButton.style = nu.get_button_colour(
+                            data["button_colour"]["downbutton"]
+                        )
+                        view.UpVotesButton.style = nu.get_button_colour(
+                            data["button_colour"]["upbutton"]
+                        )
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
                     await view.start(
                         context,
@@ -820,11 +834,11 @@ class Suggestion(commands.Cog):
             description=f"**Auto delete commands:** {data['autodel']}\n"
             f"**Allow Self Vote:** {data['self_vote']}\n"
             f"**Upvote Button:**\n"
-            f"    ` - ` Emoji: {emojis['upvote']}\n"
-            f"    ` - ` Colour: {button_colour['upbutton']}\n"
+            f"` - ` Emoji: {emojis['upvote']}\n"
+            f"` - ` Colour: {button_colour['upbutton']}\n"
             f"**Downvote emoji:**\n"
-            f"    ` - ` Emoji: {emojis['downvote']}\n"
-            f"    ` - ` Colour: {button_colour['downbutton']}\n"
+            f"` - ` Emoji: {emojis['downvote']}\n"
+            f"` - ` Colour: {button_colour['downbutton']}\n"
             f"**Suggestion channel:** {channels_text['Suggestion']}\n"
             f"**Rejection channel:** {channels_text['Rejection']}\n"
             f"**Approved channel:** {channels_text['Approved']}",
