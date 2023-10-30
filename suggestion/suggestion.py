@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.9"
+    __version__ = "1.5.10"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -532,21 +532,16 @@ class Suggestion(commands.Cog):
                     )
                     u = f"https://discord.com/channels/{context.guild.id}/{channel.id}/{msg.id}"
                     view = SuggestViewView()
-                    if i["status"] == "running":
-                        view.DownVotesButton.emoji = data["emojis"]["downvote"]
-                        view.UpVotesButton.emoji = data["emojis"]["upvote"]
-                        view.DownVotesButton.label = f"{len(i['downvotes'])} Down Voters"
-                        view.UpVotesButton.label = f"{len(i['upvotes'])} Up Voters"
-                        view.DownVotesButton.style = nu.get_button_colour(
-                            data["button_colour"]["downbutton"]
-                        )
-                        view.UpVotesButton.style = nu.get_button_colour(
-                            data["button_colour"]["upbutton"]
-                        )
-                        
-                    else:
-                        view.remove_item(view.UpVotesButton)
-                        view.remove_item(view.DownVotesButton)
+                    view.DownVotesButton.emoji = data["emojis"]["downvote"]
+                    view.UpVotesButton.emoji = data["emojis"]["upvote"]
+                    view.DownVotesButton.label = f"{len(i['downvotes'])} Down Voters"
+                    view.UpVotesButton.label = f"{len(i['upvotes'])} Up Voters"
+                    view.DownVotesButton.style = nu.get_button_colour(
+                        data["button_colour"]["downbutton"]
+                    )
+                    view.UpVotesButton.style = nu.get_button_colour(
+                        data["button_colour"]["upbutton"]
+                    )
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
                     await view.start(
                         context,
