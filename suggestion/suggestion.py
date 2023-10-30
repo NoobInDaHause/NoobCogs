@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.3"
+    __version__ = "1.5.4"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -311,7 +311,7 @@ class Suggestion(commands.Cog):
                     )
                     results = (
                         f"{data['emojis']['upvote']}: {len(i['upvotes'])}\n"
-                        f"{data['emojis']['downvotevote']}: {len(i['downvotes'])}"
+                        f"{data['emojis']['downvote']}: {len(i['downvotes'])}"
                     )
                     endembed = await self.maybe_make_embed(
                         stit,
@@ -550,7 +550,7 @@ class Suggestion(commands.Cog):
                 else None,
                 results=(
                     f"{data['emojis']['upvote']}: {len(target_suggestion['upvotes'])}\n"
-                    f"{data['emojis']['downvotevote']}: {len(target_suggestion['downvotes'])}"
+                    f"{data['emojis']['downvote']}: {len(target_suggestion['downvotes'])}"
                 )
                 if target_suggestion["status"] != "running"
                 else None,
@@ -689,7 +689,7 @@ class Suggestion(commands.Cog):
                         stattype=i["status"],
                         results=(
                             f"{data['emojis']['upvote']}: {len(i['upvotes'])}\n"
-                            f"{data['emojis']['downvotevote']}: {len(i['downvotes'])}"
+                            f"{data['emojis']['downvote']}: {len(i['downvotes'])}"
                         )
                         if i["status"] != "running"
                         else None,
