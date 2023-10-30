@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.12"
+    __version__ = "1.5.13"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -348,7 +348,7 @@ class Suggestion(commands.Cog):
         """
         if len(suggestion) >= 4000:
             return await context.reply(
-                content="Your suggestion must be less than 4000 words.",
+                content="Your suggestion must be less than 4000 characters.",
                 ephemeral=True,
                 mention_author=False,
             )
@@ -402,7 +402,7 @@ class Suggestion(commands.Cog):
         """
         if len(reason) >= 1024:
             return await context.send(
-                content="Your reason must be less than 1024 words."
+                content="Your reason must be less than 1024 characters."
             )
 
         data = await self.config.guild(context.guild).all()
@@ -452,7 +452,7 @@ class Suggestion(commands.Cog):
         """
         if len(reason) >= 1024:
             return await context.send(
-                content="Your reason must be less than 1024 words."
+                content="Your reason must be less than 1024 characters."
             )
 
         data = await self.config.guild(context.guild).all()
@@ -630,7 +630,7 @@ class Suggestion(commands.Cog):
         """
         if len(reason) >= 1024:
             return await context.send(
-                content="Your reason must be less than 1024 words."
+                content="Your reason must be less than 1024 characters."
             )
 
         data = await self.config.guild(context.guild).all()
@@ -696,6 +696,14 @@ class Suggestion(commands.Cog):
         if data["autodel"]:
             with contextlib.suppress(discord.errors.Forbidden):
                 await context.message.delete()
+                await context.channel.send(
+                    content=f"The reason for suggestion **#{suggestion_id}** has been successfully changed.",
+                    delete_after=5,
+                )
+            return
+        await context.send(
+            content=f"The reason for suggestion **#{suggestion_id}** has been successfully changed."
+        )
 
     @suggestionset.command(name="channel", aliases=["chan"])
     async def suggestionset_channel(
