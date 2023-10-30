@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.11"
+    __version__ = "1.5.12"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -293,13 +293,15 @@ class Suggestion(commands.Cog):
                         return "notfound"
                     stit = f"Suggestion **#{id}**"
                     sdesc = i["suggestion"]
-                    col = discord.Colour.green() if status_type == "approved" else discord.Colour.red()
+                    col = (
+                        discord.Colour.green()
+                        if status_type == "approved"
+                        else discord.Colour.red()
+                    )
                     mem = context.guild.get_member(i["suggester_id"])
                     authe = f"{mem} ({mem.id})" if mem else "[Unknown or Deleted User]"
                     b = [str(len(i["upvotes"])), str(len(i["downvotes"]))]
-                    results = (
-                        f"{data['emojis']['upvote']}: {b[0]}\n{data['emojis']['downvote']}: {b[1]}"
-                    )
+                    results = f"{data['emojis']['upvote']}: {b[0]}\n{data['emojis']['downvote']}: {b[1]}"
                     embed = await self.maybe_make_embed(
                         title=stit,
                         desc=sdesc,
@@ -309,7 +311,7 @@ class Suggestion(commands.Cog):
                         reviewer=str(context.author.mention),
                         stattype=status_type,
                         reason=reason,
-                        results=results
+                        results=results,
                     )
                     if status_type == "approved":
                         await self.maybe_send_approve(
@@ -344,6 +346,13 @@ class Suggestion(commands.Cog):
         """
         Suggest stuff.
         """
+        if len(suggestion) >= 4000:
+            return await context.reply(
+                content="Your suggestion must be less than 4000 words.",
+                ephemeral=True,
+                mention_author=False,
+            )
+
         data = await self.config.guild(context.guild).all()
         if not data["suggest_channel"]:
             return await context.reply(
@@ -391,6 +400,11 @@ class Suggestion(commands.Cog):
         """
         Approve a suggestion.
         """
+        if len(reason) >= 1024:
+            return await context.send(
+                content="Your reason must be less than 1024 words."
+            )
+
         data = await self.config.guild(context.guild).all()
 
         if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
@@ -436,6 +450,11 @@ class Suggestion(commands.Cog):
         """
         Reject a suggestion.
         """
+        if len(reason) >= 1024:
+            return await context.send(
+                content="Your reason must be less than 1024 words."
+            )
+
         data = await self.config.guild(context.guild).all()
 
         if suggestion_id > len(data["suggestions"]) or suggestion_id <= 0:
@@ -609,6 +628,11 @@ class Suggestion(commands.Cog):
         """
         Edit a suggestions reason.
         """
+        if len(reason) >= 1024:
+            return await context.send(
+                content="Your reason must be less than 1024 words."
+            )
+
         data = await self.config.guild(context.guild).all()
         if not data["suggest_channel"]:
             return await context.send(
