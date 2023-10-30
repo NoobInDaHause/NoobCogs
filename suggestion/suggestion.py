@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.7"
+    __version__ = "1.5.8"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -543,6 +543,10 @@ class Suggestion(commands.Cog):
                         view.UpVotesButton.style = nu.get_button_colour(
                             data["button_colour"]["upbutton"]
                         )
+                        
+                    else:
+                        view.remove_item(view.UpVotesButton)
+                        view.remove_item(view.DownVotesButton)
                     view.add_item(discord.ui.Button(label="Jump To Suggestion", url=u))
                     await view.start(
                         context,
