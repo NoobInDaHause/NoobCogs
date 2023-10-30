@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.13"
+    __version__ = "1.5.14"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -346,7 +346,7 @@ class Suggestion(commands.Cog):
         """
         Suggest stuff.
         """
-        if len(suggestion) >= 4000:
+        if len(suggestion) > 4000:
             return await context.reply(
                 content="Your suggestion must be less than 4000 characters.",
                 ephemeral=True,
@@ -400,7 +400,7 @@ class Suggestion(commands.Cog):
         """
         Approve a suggestion.
         """
-        if len(reason) >= 1024:
+        if len(reason) > 1024:
             return await context.send(
                 content="Your reason must be less than 1024 characters."
             )
@@ -450,7 +450,7 @@ class Suggestion(commands.Cog):
         """
         Reject a suggestion.
         """
-        if len(reason) >= 1024:
+        if len(reason) > 1024:
             return await context.send(
                 content="Your reason must be less than 1024 characters."
             )
@@ -628,7 +628,7 @@ class Suggestion(commands.Cog):
         """
         Edit a suggestions reason.
         """
-        if len(reason) >= 1024:
+        if len(reason) > 1024:
             return await context.send(
                 content="Your reason must be less than 1024 characters."
             )
