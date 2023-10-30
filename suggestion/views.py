@@ -98,7 +98,7 @@ class SuggestView(discord.ui.View):
                     return False
 
 
-class SuggestVotersView(discord.ui.View):
+class SuggestViewView(discord.ui.View):
     def __init__(self, timeout: float = 60.0):
         super().__init__(timeout=timeout)
         self.suggestion_id: int = None

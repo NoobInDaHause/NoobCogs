@@ -9,7 +9,7 @@ from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal
 
-from .views import SuggestView, SuggestVotersView
+from .views import SuggestView, SuggestViewView
 
 
 class Suggestion(commands.Cog):
@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.8"
+    __version__ = "1.5.9"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -465,8 +465,8 @@ class Suggestion(commands.Cog):
                 content="Error occurred while editting suggestion, please check my permissions."
             )
 
-    @commands.command(name="suggestvoters", aliases=["sv"])
-    async def suggestvoters(self, context: commands.Context, suggestion_id: int):
+    @commands.command(name="suggestview", aliases=["sv"])
+    async def suggestview(self, context: commands.Context, suggestion_id: int):
         # sourcery skip: low-code-quality
         """
         Check who downvoted or upvoted from a suggestion.
@@ -531,7 +531,7 @@ class Suggestion(commands.Cog):
                         else None,
                     )
                     u = f"https://discord.com/channels/{context.guild.id}/{channel.id}/{msg.id}"
-                    view = SuggestVotersView()
+                    view = SuggestViewView()
                     if i["status"] == "running":
                         view.DownVotesButton.emoji = data["emojis"]["downvote"]
                         view.UpVotesButton.emoji = data["emojis"]["upvote"]
