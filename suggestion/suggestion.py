@@ -39,7 +39,7 @@ class Suggestion(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.Suggestion")
         self.initialize_view = asyncio.create_task(self.initialize_views())
 
-    __version__ = "1.5.6"
+    __version__ = "1.5.7"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestion/README.md"
@@ -728,7 +728,7 @@ class Suggestion(commands.Cog):
         self,
         context: commands.Context,
         vote: Literal["upvote", "downvote"],
-        emoji: commands.EmojiConverter = None,
+        emoji: nu.NoobEmojiConverter = None,
     ):
         """
         Change the UpVote or DownVote emoji.
