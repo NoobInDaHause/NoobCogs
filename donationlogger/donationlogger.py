@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.7"
+    __version__ = "1.0.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -515,6 +515,7 @@ class DonationLogger(commands.Cog):
         embed = discord.Embed(
             title=f"Top {top} donators for [{bank_name.title()}]",
             colour=random.randint(0, 0xFFFFFF),
+            timestamp=discord.utils.utcnow(),
         )
         embed.set_footer(text=context.guild.name)
         embed.set_thumbnail(url=nu.is_have_avatar(context.guild))
