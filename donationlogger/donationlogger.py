@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.5"
+    __version__ = "1.0.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -1005,8 +1005,19 @@ class DonationLogger(commands.Cog):
         """
         Add, Remove or check the list of managers.
         """
+        if add_remove_list == "list":
+            managers = await self.config.guild(context.guild).managers()
+            embed = discord.Embed(
+                title=f"List of DonationLogger managers for [{context.guild.name}]",
+                description=cf.humanize_list([f"<@&{i}>" for i in managers]),
+                timestamp=discord.utils.utcnow(),
+                colour=await context.embed_colour(),
+            )
+            return await context.send(embed=embed)
+
         if not roles:
             return await context.send_help()
+
         if add_remove_list in ["add", "remove"]:
             success = []
             failed = []
@@ -1034,15 +1045,6 @@ class DonationLogger(commands.Cog):
                     content=f"Failed to {add_remove_list} {cf.humanize_list(failed)} {_type2} the list of "
                     "manager roles since they are already manager roles."
                 )
-        else:
-            managers = await self.config.guild(context.guild).managers()
-            embed = discord.Embed(
-                title=f"List of DonationLogger managers for [{context.guild.name}]",
-                description=cf.humanize_list([f"<@&{i}>" for i in managers]),
-                timestamp=discord.utils.utcnow(),
-                colour=await context.embed_colour(),
-            )
-            await context.send(embed=embed)
 
     @donationloggerset.command(name="logchannel")
     async def donationloggerset_logchannel(
