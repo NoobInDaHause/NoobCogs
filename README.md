@@ -29,7 +29,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | CookieClicker    |  v1.1.15  | Play a cookie clicker.                                      |
 | CustomError      |  v1.1.9   | Customize your bots error message.                          |
 | DevLogs          |  v1.0.9   | Keep a log of all that evals and debugs.                    |
-| DonationLogger   |  v1.0.0   | Donation Logger system.                                     |
+| DonationLogger   |  v1.0.1   | Donation Logger system.                                     |
 | GlobalBan        |  v1.1.11  | Globally ban a user from all the guilds the bot is in.      |
 | JoinDM           |  v1.0.4   | M newly joined users from your guild with your set message. |
 | PressF           |  v1.1.8   | F.                                                          |
