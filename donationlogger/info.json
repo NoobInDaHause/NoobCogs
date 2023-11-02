@@ -1,0 +1,25 @@
+{
+    "name": "DonationLogger",
+    "short": "Donation Logger System.",
+    "description": "Log any donations from your server.",
+    "end_user_data_statement": "This cog stores user ID for donation logs. Users can remove their data at anytime.",
+    "install_msg": "Thank you for installing DonationLogger. Load the cog with `[p]load donationlogger`.",
+    "author": [
+        "NoobInDaHause"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [
+        "rapidfuzz",
+        "unidecode",
+        "git+https://github.com/NoobInDaHause/noobutils.git"
+    ],
+    "tags": [
+        "DonationLogger",
+        "Donation",
+        "Logger"
+    ],
+    "type": "COG"
+}
