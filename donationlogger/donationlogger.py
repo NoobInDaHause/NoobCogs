@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.6"
+    __version__ = "1.0.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -1031,7 +1031,10 @@ class DonationLogger(commands.Cog):
                     ):
                         failed.append(role.mention)
                         continue
-                    managers.append(role.id)
+                    if add_remove_list == "add":
+                        managers.append(role.id)
+                    else:
+                        managers.remove(role.id)
                     success.append(role.mention)
             _type = "added" if add_remove_list == "add" else "removed"
             _type2 = "to" if add_remove_list == "add" else "from"
