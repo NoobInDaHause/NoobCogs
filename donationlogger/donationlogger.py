@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -1089,7 +1089,8 @@ class DonationLogger(commands.Cog):
         autorole = await self.config.guild(context.guild).auto_role()
         banks = await self.config.guild(context.guild).banks()
         log_channel = await self.config.guild(context.guild).log_channel()
-        bank_list = [f"{k.title()}" for k, v in banks.items() if not v["hidden"]]
+        bank_list = [f"{k.title()}" for k in banks.keys()]
+        banks_list_hidden = [f"{k.title()}" for k, v in banks.items() if v["hidden"]]
         embed = discord.Embed(
             title=f"Current DonationLogger settings for [{context.guild.name}]",
             colour=await context.embed_colour(),
@@ -1116,4 +1117,10 @@ class DonationLogger(commands.Cog):
             ),
             inline=False,
         )
+        if banks_list_hidden:
+            embed.add_field(
+                name="Hidden Banks:",
+                value=cf.humanize_list(banks_list_hidden),
+                inline=False
+            )
         await context.send(embed=embed)
