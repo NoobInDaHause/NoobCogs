@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -1104,10 +1104,14 @@ class DonationLogger(commands.Cog):
         embed.add_field(
             name="Automatically Add or Remove roles:", value=autorole, inline=False
         )
-        embed.add_field(name="Log Channel:", value=f"<#{log_channel}>", inline=False)
+        embed.add_field(
+            name="Log Channel:",
+            value=f"<#{log_channel}>" if log_channel else "None",
+            inline=False,
+        )
         embed.add_field(
             name="Registered Banks:",
-            value="\n".join(
+            value=cf.humanize_list(
                 bank_list or ["There are no registered banks yet, or banks are hidden."]
             ),
             inline=False,
