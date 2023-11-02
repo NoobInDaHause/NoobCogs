@@ -17,7 +17,7 @@ from .utilities import (
     is_setup_done,
     is_a_dono_manager_or_higher,
 )
-from .views import DonationLoggerSetupView
+from .views import DonationLoggerSetupView, TotalDonoView
 
 
 class DonationLogger(commands.Cog):
@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -569,12 +569,12 @@ class DonationLogger(commands.Cog):
                 context, "add", updated, member, bank["roles"]
             )
             humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
-            await context.reply(
-                content=f"Successfully added {emoji} **{donated}** to "
+            rep = (
+                f"Successfully added {emoji} **{donated}** to "
                 f"**{member.name}**'s **__{bank_name.title()}__** donation balance.\n"
-                f"Their total donation balance is now **{emoji} {total}** on **__{bank_name.title()}__**.",
-                mention_author=False,
+                f"Their total donation balance is now **{emoji} {total}** on **__{bank_name.title()}__**."
             )
+            await TotalDonoView(self).start(context, rep, member)
             await self.send_to_log_channel(
                 context,
                 "add",
@@ -636,13 +636,13 @@ class DonationLogger(commands.Cog):
                 context, "remove", updated2, member, bank["roles"]
             )
             humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
-            await context.reply(
-                content=f"Successfully removed {emoji} **{donated}** to "
+            rep = (
+                f"Successfully removed {emoji} **{donated}** from "
                 f"**{member.name}**'s **__{bank_name.title()}__** donation balance.\n"
                 "Their total donation balance is now "
-                f"**{emoji} {total}** on **__{bank_name.title()}__**.",
-                mention_author=False,
+                f"**{emoji} {total}** on **__{bank_name.title()}__**."
             )
+            await TotalDonoView(self).start(context, rep, member)
             await self.send_to_log_channel(
                 context,
                 "remove",
@@ -697,11 +697,11 @@ class DonationLogger(commands.Cog):
             )
             roles = aroles + rrole
             humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
-            await context.reply(
-                content=f"Successfully set {emoji} **{cf.humanize_number(amount)}** as "
-                f"**{member.name}**'s **__{bank_name.title()}__** donation balance.",
-                mention_author=False,
+            rep = (
+                f"Successfully set {emoji} **{cf.humanize_number(amount)}** as "
+                f"**{member.name}**'s **__{bank_name.title()}__** donation balance."
             )
+            await TotalDonoView(self).start(context, rep, member)
             await self.send_to_log_channel(
                 context,
                 "set",

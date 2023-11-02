@@ -357,3 +357,57 @@ class DonationLoggerSetupView(discord.ui.View):
         self.stop()
         self.cog.setupcache.remove(self.context.guild.id)
         await self.message.edit(view=self)
+
+
+class TotalDonoView(discord.ui.View):
+    def __init__(self, cog: "DonationLogger", timeout: float = 60.0):
+        super().__init__(timeout=timeout)
+        self.cog = cog
+        self.member: discord.Member = None
+        self.message: discord.Message = None
+
+    async def start(self, context: commands.Context, content: str, member: discord.Member):
+        msg = await context.reply(content=content, mention_author=False, view=self)
+        self.message = msg
+        self.member = member
+
+    @discord.ui.button(label="Total donations", style=nu.get_button_colour("green"))
+    async def total_dono(self, interaction: discord.Interaction, button: discord.ui.Button):
+        final = {}
+        final_overall = []
+        async with self.cog.config.guild(interaction.guild).banks() as banks:
+            for k, v in banks.items():
+                if v["hidden"]:
+                    continue
+                donations = v["donators"].setdefault(str(self.member.id), 0)
+                final[k] = f"{v['emoji']} {cf.humanize_number(donations)}"
+                final_overall.append(donations)
+
+        overall = sum(final_overall)
+        embed = discord.Embed(
+            description=f"Overall combined bank donation amount: {cf.humanize_number(overall)}",
+            timestamp=discord.utils.utcnow(),
+            colour=self.member.colour,
+        )
+        embed.set_author(
+            name=f"{self.member} ({self.member.id})", icon_url=nu.is_have_avatar(self.member)
+        )
+        embed.set_footer(
+            text=f"{interaction.guild.name} admires your donations!",
+            icon_url=nu.is_have_avatar(interaction.guild),
+        )
+        if final:
+            for k, v in final.items():
+                embed.add_field(name=k.title(), value=v, inline=True)
+        else:
+            embed.description = (
+                "There are no banks registered yet, or banks are hidden."
+            )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    async def on_timeout(self):
+        for x in self.children:
+            x.disabled = True
+
+        self.stop()
+        await self.message.edit(view=self)
