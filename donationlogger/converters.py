@@ -1,6 +1,5 @@
 import discord
 import re
-from redbot.core import commands
 
 from redbot.core.bot import commands
 
