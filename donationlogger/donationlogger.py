@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.9"
+    __version__ = "1.0.10"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -457,7 +457,7 @@ class DonationLogger(commands.Cog):
             )
         )
 
-        output_text = ""
+        output_list = []
         for index, (donator_id, donation_amount) in enumerate(
             sorted_donators.items(), 1
         ):
@@ -467,14 +467,13 @@ class DonationLogger(commands.Cog):
                 if member
                 else f"Member not found in server. (`{donator_id}`)"
             )
-            output_text += (
+            output_list.append(
                 f"{index}. {mention}: **{cf.humanize_number(donation_amount)}**\n"
             )
 
-        if not output_text:
-            output_text = (
-                f"No one has donated {mla} than **{cf.humanize_number(amount)}** yet."
-            )
+        output_text = "\n".join(
+            output_list or [f"No one has donated {mla} than **{cf.humanize_number(amount)}** yet."]
+        )
 
         embed_title = f"All members who have donated {mla} than {cf.humanize_number(amount)} for [{bank_name.title()}]"
         paginated_output = await nu.pagify_this(
