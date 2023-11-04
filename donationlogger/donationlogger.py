@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.12"
+    __version__ = "1.0.13"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -468,7 +468,7 @@ class DonationLogger(commands.Cog):
                 else f"Member not found in server. (`{donator_id}`)"
             )
             output_list.append(
-                f"{index}. {mention}: **{cf.humanize_number(donation_amount)}**\n"
+                f"{index}. {mention}: **{cf.humanize_number(donation_amount)}**"
             )
 
         output_text = "\n".join(
