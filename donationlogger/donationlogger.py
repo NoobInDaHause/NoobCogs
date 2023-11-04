@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.10"
+    __version__ = "1.0.11"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -475,12 +475,12 @@ class DonationLogger(commands.Cog):
             output_list or [f"No one has donated {mla} than **{cf.humanize_number(amount)}** yet."]
         )
 
-        embed_title = f"All members who have donated {mla} than {cf.humanize_number(amount)} for [{bank_name.title()}]"
         paginated_output = await nu.pagify_this(
             output_text,
-            ["\n"],
+            "\n",
             "Page ({index}/{pages})",
-            embed_title=embed_title,
+            embed_title=f"All members who have donated {mla} than {cf.humanize_number(amount)} "
+            f"for [{bank_name.title()}]",
             embed_colour=await context.embed_colour(),
         )
 
