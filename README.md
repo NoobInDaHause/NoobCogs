@@ -36,6 +36,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | RandomColourRole |  v1.1.4   | Have a role that changes colour every 5 minutes.            |
 | Reach            |  v1.0.5   | Reach roles on a channel.                                   |
 | Suggestion       |  v1.5.14  | Suggestion system.                                          |
+| Timers           |  v1.0.0   | Start a timer countdown.                                    |
 
 ## License
 
