@@ -1,4 +1,3 @@
-import asyncio
 import discord
 import noobutils as nu
 import logging
@@ -30,11 +29,10 @@ class Timers(commands.Cog):
         default_global = {"maximum_duration": 1209600}
         self.config.register_guild(**default_guild)
         self.config.register_global(**default_global)
-        self.initializing = asyncio.create_task(self.initialize())
 
-        self.log = logging.getLogger("red.NoobCogs.AmariLevel")
+        self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -70,8 +68,7 @@ class Timers(commands.Cog):
                         if user_id in value["members"]:
                             value["members"].remove(user_id)
 
-    async def initialize(self):
-        await self.bot.wait_until_red_ready()
+    async def cog_load(self):
         for g in (await self.config.all_guilds()).keys():
             if guild := self.bot.get_guild(g):
                 if timers := await self.config.guild(guild).timers():
@@ -184,7 +181,7 @@ class Timers(commands.Cog):
         embed.set_thumbnail(url=nu.is_have_avatar(context.guild))
         return embed
 
-    @tasks.loop(seconds=1)
+    @tasks.loop(seconds=3)
     async def _timer_end(self):
         for g in (await self.config.all_guilds()).keys():
             if guild := self.bot.get_guild(g):
@@ -196,7 +193,7 @@ class Timers(commands.Cog):
 
     @_timer_end.before_loop
     async def _timer_end_before_loop(self):
-        await self.bot.wait_until_ready()
+        await self.bot.wait_until_red_ready()
 
     @commands.group(name="timer", invoke_without_command=True)
     @commands.mod()
