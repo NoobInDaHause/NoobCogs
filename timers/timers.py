@@ -33,7 +33,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -103,7 +103,11 @@ class Timers(commands.Cog):
             try:
                 host = guild.get_member(timers[str(message_id)]["host_id"])
                 channel = guild.get_channel(timers[str(message_id)]["channel_id"])
-                msg = await channel.fetch_message(message_id)
+                try:
+                    msg = await channel.fetch_message(message_id)
+                except discord.errors.NotFound:
+                    del timers[str(message_id)]
+                    return
                 members = timers[str(message_id)]["members"]
                 view = discord.ui.View().add_item(
                     discord.ui.Button(
