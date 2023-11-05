@@ -32,7 +32,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -69,6 +69,7 @@ class Timers(commands.Cog):
                             value["members"].remove(user_id)
 
     async def cog_load(self):
+        await self.bot.wait_until_ready()
         for g in (await self.config.all_guilds()).keys():
             if guild := self.bot.get_guild(g):
                 if timers := await self.config.guild(guild).timers():
