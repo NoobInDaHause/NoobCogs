@@ -7,7 +7,7 @@ from redbot.core.utils import chat_formatting as cf
 
 from datetime import datetime, timedelta, timezone
 from discord.ext import tasks
-from typing import Literal
+from typing import Literal, Union
 
 from .converters import TimeConverter
 from .views import TimersView
@@ -33,7 +33,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.0.4"
+    __version__ = "1.1.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -196,6 +196,32 @@ class Timers(commands.Cog):
     @_timer_end.before_loop
     async def _timer_end_before_loop(self):
         await self.bot.wait_until_red_ready()
+
+    @commands.Cog.listener("on_raw_message_delete")
+    @commands.Cog.listener("on_raw_bulk_message_delete")
+    async def message_delete_handler(
+        self, payload: Union[discord.RawMessageDeleteEvent, discord.RawBulkMessageDeleteEvent]
+    ):
+        if not payload.guild_id:
+            return
+        guild = self.bot.get_guild(payload.guild_id)
+
+        try:
+            if isinstance(payload, discord.RawMessageDeleteEvent):
+                msg_ids = [payload.message_id]
+            else:
+                msg_ids = payload.message_ids
+
+            async with self.config.guild(guild).timers() as timers:
+                for msg_id in msg_ids:
+                    try:
+                        del timers[str(msg_id)]
+                    except KeyError:
+                        continue
+        except Exception as e:
+            self.log.exception(
+                "Error occurred while handling message delete event.", exc_info=e
+            )
 
     @commands.group(name="timer", invoke_without_command=True)
     @commands.mod()
