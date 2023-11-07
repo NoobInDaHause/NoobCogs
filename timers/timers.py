@@ -9,7 +9,6 @@ from datetime import datetime, timedelta, timezone
 from discord.ext import tasks
 from typing import Literal, Union
 
-from .converters import TimeConverter
 from .views import TimersView
 
 
@@ -29,11 +28,11 @@ class Timers(commands.Cog):
         default_global = {"maximum_duration": 1209600}
         self.config.register_guild(**default_guild)
         self.config.register_global(**default_global)
-        self.on_cog_load = self.bot.loop.create_task(self.initialize())
+        self.on_cog_load = bot.loop.create_task(self.initialize())
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.1.1"
+    __version__ = "1.2.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -60,14 +59,14 @@ class Timers(commands.Cog):
         Users can delete their data at any time.
         """
         for g in (await self.config.all_guilds()).keys():
-            if guild := self.bot.get_guild(g):
-                if timers := await self.config.guild(guild).timers():
-                    for tid, value in timers.items():
-                        if value["host_id"] == user_id:
-                            await self.end_timer(guild, int(tid))
-                            continue
-                        if user_id in value["members"]:
-                            value["members"].remove(user_id)
+            async with self.config.guild_from_id(g).timers() as timers:
+                guild = self.bot.get_guild(g)
+                for tid, value in timers.items():
+                    if value["host_id"] == user_id:
+                        await self.end_timer(guild, int(tid))
+                        continue
+                    if user_id in value["members"]:
+                        value["members"].remove(user_id)
 
     async def initialize(self):
         await self.bot.wait_until_ready()
@@ -190,12 +189,15 @@ class Timers(commands.Cog):
     @tasks.loop(seconds=3)
     async def _timer_end(self):
         for g in (await self.config.all_guilds()).keys():
-            if guild := self.bot.get_guild(g):
-                if timers := await self.config.guild(guild).timers():
-                    for tid, value in timers.items():
+            if timers := await self.config.guild_from_id(g).timers():
+                guild = self.bot.get_guild(g)
+                for tid, value in timers.items():
+                    try:
                         endtime = datetime.fromtimestamp(value["end_timestamp"])
                         if datetime.now() > endtime:
                             await self.end_timer(guild, int(tid))
+                    except Exception:
+                        continue
 
     @_timer_end.before_loop
     async def _timer_end_before_loop(self):
@@ -233,7 +235,7 @@ class Timers(commands.Cog):
     async def timer(
         self,
         context: commands.Context,
-        duration: TimeConverter,
+        duration: commands.TimedeltaConverter,
         *,
         title: str = "New Timer!",
     ):
@@ -243,15 +245,15 @@ class Timers(commands.Cog):
         _max = await self.config.maximum_duration()
         emoji = await self.config.guild(context.guild).timer_emoji()
         notif = await self.config.guild(context.guild).notify_members()
-        if duration > _max:
+        if duration.seconds > _max:
             return await context.send(
                 content=f"Max duration for timers is: **{cf.humanize_timedelta(seconds=_max)}**."
             )
-        if duration < 10:
+        if duration.seconds < 10:
             return await context.send(
                 content="Duration must be greater than **10 Seconds**."
             )
-        time = datetime.now() + timedelta(seconds=duration)
+        time = datetime.now() + duration
         stamp = round(time.timestamp())
         embed = await self.timer_embed_msg(
             context, context.author, title, stamp, False, emoji
@@ -396,16 +398,16 @@ class Timers(commands.Cog):
     @timerset.command(name="maxduration")
     @commands.is_owner()
     async def timerset_maxduration(
-        self, context: commands.Context, maxduration: TimeConverter
+        self, context: commands.Context, maxduration: commands.TimedeltaConverter
     ):
         """
         Set the maximum duration a timer can countdown.
         """
-        if maxduration < 10 or maxduration > (14 * 86400):
+        if maxduration.seconds < 10 or maxduration.seconds > (14 * 86400):
             return await context.send(
                 content="The max duration time must be greater than 10 seconds or less than 14 days."
             )
-        await self.config.maximum_duration.set(maxduration)
+        await self.config.maximum_duration.set(maxduration.seconds)
         await context.send(
             content=f"The maximum duration is now: **{cf.humanize_timedelta(seconds=maxduration)}**"
         )
