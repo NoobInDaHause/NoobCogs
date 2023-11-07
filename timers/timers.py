@@ -32,7 +32,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -245,11 +245,11 @@ class Timers(commands.Cog):
         _max = await self.config.maximum_duration()
         emoji = await self.config.guild(context.guild).timer_emoji()
         notif = await self.config.guild(context.guild).notify_members()
-        if duration.seconds > _max:
+        if int(duration.total_seconds()) > _max:
             return await context.send(
                 content=f"Max duration for timers is: **{cf.humanize_timedelta(seconds=_max)}**."
             )
-        if duration.seconds < 10:
+        if int(duration.total_seconds()) < 10:
             return await context.send(
                 content="Duration must be greater than **10 Seconds**."
             )
@@ -403,11 +403,12 @@ class Timers(commands.Cog):
         """
         Set the maximum duration a timer can countdown.
         """
-        if maxduration.seconds < 10 or maxduration.seconds > (14 * 86400):
+        md = int(maxduration.total_seconds())
+        if md < 10 or md > (14 * 86400):
             return await context.send(
                 content="The max duration time must be greater than 10 seconds or less than 14 days."
             )
-        await self.config.maximum_duration.set(maxduration.seconds)
+        await self.config.maximum_duration.set(md)
         await context.send(
             content=f"The maximum duration is now: **{cf.humanize_timedelta(seconds=maxduration)}**"
         )
