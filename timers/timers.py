@@ -32,7 +32,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.2.3"
+    __version__ = "1.2.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -396,7 +396,7 @@ class Timers(commands.Cog):
         status = "will no longer" if current else "will now"
         await context.send(content=f"I {status} notify members whenever a timer ends.")
 
-    @timerset.command(name="maxduration")
+    @timerset.command(name="maxduration", aliases=["md"])
     @commands.is_owner()
     async def timerset_maxduration(
         self, context: commands.Context, maxduration: commands.TimedeltaConverter
@@ -411,7 +411,7 @@ class Timers(commands.Cog):
             )
         await self.config.maximum_duration.set(md)
         await context.send(
-            content=f"The maximum duration is now: **{cf.humanize_timedelta(maxduration)}**"
+            content=f"The maximum duration is now: **{cf.humanize_timedelta(timedelta=maxduration)}**"
         )
 
     @timerset.command(name="resetguild")
