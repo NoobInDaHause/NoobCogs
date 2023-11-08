@@ -5,7 +5,7 @@ import logging
 from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from discord.ext import tasks
 from typing import Literal, Union
 
@@ -32,7 +32,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.2.1"
+    __version__ = "1.2.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -110,7 +110,9 @@ class Timers(commands.Cog):
                 members = timers[str(message_id)]["members"]
                 view = discord.ui.View().add_item(
                     discord.ui.Button(
-                        label=str(len(members)),
+                        label=str(len(members))
+                        if notif
+                        else "Disabled",
                         emoji=emoji,
                         disabled=True,
                         style=nu.get_button_colour("green"),
@@ -125,7 +127,7 @@ class Timers(commands.Cog):
                     True,
                     emoji,
                 )
-                await msg.edit(embed=embed, view=view if notif else None)
+                await msg.edit(embed=embed, view=view)
                 if notif:
                     c = ",".join(
                         [
@@ -259,9 +261,10 @@ class Timers(commands.Cog):
             context, context.author, title, stamp, False, emoji
         )
         view = TimersView(self)
-        view.notify_button.label = "0"
+        view.notify_button.label = "0" if notif else "Disabled"
         view.notify_button.emoji = emoji
-        msg = await context.send(embed=embed, view=view if notif else None)
+        view.notify_button.disabled = (not notif)
+        msg = await context.send(embed=embed, view=view)
         await context.message.delete()
         async with self.config.guild(context.guild).timers() as timers:
             timers |= {
@@ -330,7 +333,7 @@ class Timers(commands.Cog):
                         emoji=emoji, disabled=True, style=nu.get_button_colour("green")
                     )
                 )
-                await message.edit(embed=embed, view=view if notif else None)
+                await message.edit(embed=embed, view=view)
             except Exception:
                 return await context.send(
                     content="That does not seem to be a valid timer or timer already ended or cancelled."
@@ -410,7 +413,7 @@ class Timers(commands.Cog):
             )
         await self.config.maximum_duration.set(md)
         await context.send(
-            content=f"The maximum duration is now: **{cf.humanize_timedelta(seconds=maxduration)}**"
+            content=f"The maximum duration is now: **{cf.humanize_timedelta(maxduration)}**"
         )
 
     @timerset.command(name="resetguild")
