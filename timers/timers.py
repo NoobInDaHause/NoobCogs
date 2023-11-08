@@ -32,7 +32,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.2.2"
+    __version__ = "1.2.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -110,9 +110,7 @@ class Timers(commands.Cog):
                 members = timers[str(message_id)]["members"]
                 view = discord.ui.View().add_item(
                     discord.ui.Button(
-                        label=str(len(members))
-                        if notif
-                        else "Disabled",
+                        label=str(len(members)),
                         emoji=emoji,
                         disabled=True,
                         style=nu.get_button_colour("green"),
