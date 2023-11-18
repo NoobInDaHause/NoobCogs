@@ -33,7 +33,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.2.6"
+    __version__ = "1.2.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -301,7 +301,7 @@ class Timers(commands.Cog):
         """
         Manually end a timer.
         """
-        timers = await self.config.guild(context.guild).timers()
+        timers = self.timer_cache.get(str(context.guild.id), {})
         if not timers:
             return await context.send(
                 content="There are no active timers in this guild."
