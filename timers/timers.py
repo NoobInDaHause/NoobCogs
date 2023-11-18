@@ -33,7 +33,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.2.7"
+    __version__ = "1.2.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -326,7 +326,7 @@ class Timers(commands.Cog):
         """
         Cancel a timer.
         """
-        if not message or not context.message.reference:
+        if not message and not context.message.reference:
             return await context.send_help()
         message = message or context.message.reference.resolved
         emoji = await self.config.guild(context.guild).timer_emoji()
