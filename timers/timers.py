@@ -33,7 +33,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.2.8"
+    __version__ = "1.2.9"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -189,20 +189,23 @@ class Timers(commands.Cog):
         embed.set_thumbnail(url=nu.is_have_avatar(context.guild))
         return embed
 
-    @tasks.loop(seconds=3)
+    @tasks.loop(seconds=5)
     async def _timer_end(self):
-        for k, v in self.timer_cache.items():
-            if guild := self.bot.get_guild(int(k)):
-                for mid, value in v.items():
-                    try:
-                        endtime = datetime.fromtimestamp(value["end_timestamp"])
-                        if datetime.now() > endtime:
-                            await self.end_timer(guild, int(mid))
-                            del self.timer_cache[str(guild.id)][mid]
-                    except Exception:
-                        continue
-            else:
-                del self.timer_cache[k]
+        try:
+            for k, v in self.timer_cache.items():
+                if guild := self.bot.get_guild(int(k)):
+                    for mid, value in v.items():
+                        try:
+                            endtime = datetime.fromtimestamp(value["end_timestamp"])
+                            if datetime.now() > endtime:
+                                await self.end_timer(guild, int(mid))
+                                del self.timer_cache[str(guild.id)][mid]
+                        except Exception:
+                            continue
+                else:
+                    del self.timer_cache[k]
+        except Exception:
+            self._timer_end.restart()
 
     @_timer_end.before_loop
     async def _timer_end_before_loop(self):
