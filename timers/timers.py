@@ -33,7 +33,7 @@ class Timers(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.2.5"
+    __version__ = "1.2.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -80,7 +80,7 @@ class Timers(commands.Cog):
                             channel = guild.get_channel(value["channel_id"])
                             msg = await channel.fetch_message(int(tid))
                             self.bot.add_view(TimersView(self), message_id=msg.id)
-                            self.timer_cache[str(guild.id)] |= {str(msg.id): value}
+                            self.timer_cache |= {str(guild.id): {str(msg.id): value}}
                         except Exception:
                             continue
         self.log.info("Timer ending loop task started.")
@@ -211,7 +211,10 @@ class Timers(commands.Cog):
     @commands.Cog.listener("on_raw_message_delete")
     @commands.Cog.listener("on_raw_bulk_message_delete")
     async def message_delete_handler(
-        self, payload: Union[discord.RawMessageDeleteEvent, discord.RawBulkMessageDeleteEvent]
+        self,
+        payload: Union[
+            discord.RawMessageDeleteEvent, discord.RawBulkMessageDeleteEvent
+        ],
     ):
         if not payload.guild_id:
             return
@@ -267,7 +270,7 @@ class Timers(commands.Cog):
         view = TimersView(self)
         view.notify_button.label = "0" if notif else "Disabled"
         view.notify_button.emoji = emoji
-        view.notify_button.disabled = (not notif)
+        view.notify_button.disabled = not notif
         msg = await context.send(embed=embed, view=view)
         await context.message.delete()
         async with self.config.guild(context.guild).timers() as timers:
@@ -280,12 +283,14 @@ class Timers(commands.Cog):
                     "members": [],
                 }
             }
-        self.timer_cache[str(context.guild.id)] |= {
-            str(msg.id): {
-                "end_timestamp": stamp,
-                "host_id": context.author.id,
-                "channel_id": context.channel.id,
-                "title": title,
+        self.timer_cache |= {
+            str(context.guild.id): {
+                str(msg.id): {
+                    "end_timestamp": stamp,
+                    "host_id": context.author.id,
+                    "channel_id": context.channel.id,
+                    "title": title,
+                }
             }
         }
 
