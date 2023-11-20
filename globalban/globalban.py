@@ -7,7 +7,6 @@ import noobutils as nu
 from redbot.core.bot import commands, Config, modlog, Red
 from redbot.core.utils import chat_formatting as cf
 
-from datetime import datetime, timezone
 from typing import Literal, Union
 
 from .views import GbanViewReset
@@ -24,11 +23,16 @@ class GlobalBan(commands.Cog):
         self.config = Config.get_conf(
             self, identifier=74654871231365754648, force_registration=True
         )
-        default_global = {"banlist": [], "banlogs": [], "create_modlog": False}
+        default_global = {
+            "banlist": [],
+            "banlogs": {},
+            "create_modlog": False,
+            "next_id": 1,
+        }
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.1.11"
+    __version__ = "1.2.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
@@ -39,11 +43,12 @@ class GlobalBan(commands.Cog):
         Thanks Sinbad and sravan!
         """
         plural = "s" if len(self.__author__) > 1 else ""
-        return f"""{super().format_help_for_context(context)}
-
-        Cog Version: **{self.__version__}**
-        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
-        Cog Documentation: [[Click here]]({self.__docs__})"""
+        return (
+            f"{super().format_help_for_context(context)}\n\n"
+            f"Cog Version: **{self.__version__}**\n"
+            f"Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}\n"
+            f"Cog Documentation: [[Click here]]({self.__docs__})"
+        )
 
     async def red_delete_data_for_user(
         self,
@@ -59,11 +64,11 @@ class GlobalBan(commands.Cog):
         async with self.config.banlogs() as gblog:
             if not gblog:
                 return
-            for i in gblog:
-                if user_id == i["authorizer"]:
-                    i["authorizer"] = None
-                if user_id == i["amender"]:
-                    i["amender"] = None
+            for v in gblog.values():
+                if user_id == v["authorizer"]:
+                    v["authorizer"] = None
+                if user_id == v["amender"]:
+                    v["amender"] = None
 
     async def cog_load(self):
         await self.register_casetypes()
@@ -90,18 +95,19 @@ class GlobalBan(commands.Cog):
     async def log_bans(
         self, context: commands.Context, gtype: str, user_id: int, reason: str
     ):
+        nid = await self.config.next_id()
+        await self.config.next_id.set(nid + 1)
         async with self.config.banlogs() as gblog:
-            log = {
-                "case": len(gblog) + 1,
-                "type": gtype,
+            gblog.setdefault(str(nid), {})
+            gblog[str(nid)] |= {
                 "offender": user_id,
+                "type": gtype,
                 "authorizer": context.author.id,
                 "reason": reason,
-                "timestamp": round(datetime.now(timezone.utc).timestamp()),
+                "timestamp": round(discord.utils.utcnow().timestamp()),
                 "last_modified": None,
                 "amender": None,
             }
-            gblog.append(log)
 
     async def _globalban_user(
         self, context: commands.Context, member: discord.Member, reason: str
@@ -112,16 +118,14 @@ class GlobalBan(commands.Cog):
         await self.log_bans(context, "GlobalBan", member.id, reason)
 
         async with self.config.banlist() as gblist:
-            gl: list = gblist
-            gl.append(member.id)
+            gblist.append(member.id)
 
         errors = []
         guilds = []
         for guild in self.bot.guilds:
-            await asyncio.sleep(10)
+            await asyncio.sleep(5.0)
             try:
-                entry = await guild.fetch_ban(member)
-                if entry:
+                if await guild.fetch_ban(member):
                     errors.append(f"{guild} (ID: `{guild.id}`)")
             except discord.errors.NotFound:
                 try:
@@ -132,7 +136,7 @@ class GlobalBan(commands.Cog):
                         await modlog.create_case(
                             bot=context.bot,
                             guild=guild,
-                            created_at=datetime.now(timezone.utc),
+                            created_at=discord.utils.utcnow(),
                             action_type="globalban",
                             user=member,
                             moderator=context.bot.user,
@@ -164,8 +168,7 @@ class GlobalBan(commands.Cog):
                 embed_colour=await context.embed_colour(),
             )
 
-            paginator = nu.NoobPaginator(final_page, timeout=60.0)
-            await paginator.start(context)
+            await nu.NoobPaginator(final_page).start(context)
 
     async def _globalunban_user(
         self, context: commands.Context, member: discord.Member, reason: str
@@ -176,14 +179,12 @@ class GlobalBan(commands.Cog):
         await self.log_bans(context, "GlobalUnBan", member.id, reason)
 
         async with self.config.banlist() as gblist:
-            gl: list = gblist
-            index = gl.index(member.id)
-            gl.pop(index)
+            gblist.remove(member.id)
 
         errors = []
         guilds = []
         for guild in self.bot.guilds:
-            await asyncio.sleep(10)
+            await asyncio.sleep(5)
             try:
                 res = f"GlobalUnBan Authorized by {context.author} (ID: {context.author.id}). Reason: {reason}"
                 await guild.unban(member, reason=res)
@@ -192,7 +193,7 @@ class GlobalBan(commands.Cog):
                     await modlog.create_case(
                         bot=context.bot,
                         guild=guild,
-                        created_at=datetime.now(timezone.utc),
+                        created_at=discord.utils.utcnow(),
                         action_type="globalunban",
                         user=member,
                         moderator=context.bot.user,
@@ -247,22 +248,23 @@ class GlobalBan(commands.Cog):
 
         Bot owners only.
         """
+        nid = await self.config.next_id()
         await context.typing()
         async with self.config.banlogs() as gblog:
             if not gblog:
                 return await context.send(
                     content="It appears there are no cases logged yet."
                 )
-            if case_id <= 0 or case_id > len(gblog):
+            if case_id <= 0 or case_id > (nid - 1):
                 return await context.send(
                     content="It appears the case for this ID does not exist."
                 )
-            for i in gblog:
-                if case_id == i["case"]:
-                    i["reason"] = reason
-                    i["amender"] = context.author.id
-                    i["last_modified"] = round(discord.utils.utcnow().timestamp())
-                    break
+            gblog[str(case_id)]["reason"] = reason
+            gblog[str(case_id)]["amender"] = context.author.id
+            gblog[str(case_id)]["last_modified"] = round(
+                discord.utils.utcnow().timestamp()
+            )
+
         await context.tick()
 
     @globalban.command(name="ban")
@@ -314,7 +316,7 @@ class GlobalBan(commands.Cog):
 
         await view.wait()
 
-        if view.value is True:
+        if view.value:
             await context.typing()
             await self._globalban_user(context=context, member=member, reason=reason)
 
@@ -363,8 +365,7 @@ class GlobalBan(commands.Cog):
             embed_colour=await context.embed_colour(),
         )
 
-        paginator = nu.NoobPaginator(final_page, timeout=60.0)
-        await paginator.start(context)
+        await nu.NoobPaginator(final_page).start(context)
 
     @globalban.command(name="logs")
     async def globalban_logs(self, context: commands.Context):
@@ -381,37 +382,34 @@ class GlobalBan(commands.Cog):
             )
 
         gl = []
-        for i in logs:
+        for k, v in logs.items():
             try:
-                m = await context.bot.get_or_fetch_user(i["offender"])
+                m = await context.bot.get_or_fetch_user(v["offender"])
                 off = f"{m} ({m.id})"
             except (discord.errors.NotFound, discord.errors.HTTPException):
-                off = f"Unknown or Deleted User ({i['offender']})"
+                off = f"Unknown or Deleted User ({v['offender']})"
             try:
-                a = await context.bot.get_or_fetch_user(i["authorizer"])
+                a = await context.bot.get_or_fetch_user(v["authorizer"])
                 aff = f"{a} ({a.id})"
             except (discord.errors.NotFound, discord.errors.HTTPException):
-                aff = f"Unknown or Deleted User ({i['authorizer']})"
-            if i["amender"]:
+                aff = f"Unknown or Deleted User ({v['authorizer']})"
+            if v["amender"]:
                 try:
-                    e = await context.bot.get_or_fetch_user(i["amender"])
+                    e = await context.bot.get_or_fetch_user(v["amender"])
                     eff = f"\n`Amended by:` {e} ({e.id})"
                 except (discord.errors.NotFound, discord.errors.HTTPException):
-                    eff = f"\n`Amended by:` Unknown or Deleted User ({i['amender']})"
+                    eff = f"\n`Amended by:` Unknown or Deleted User ({v['amender']})"
             else:
                 eff = ""
-            if i["last_modified"]:
-                ts = f"\n`Last modified:` <t:{i['last_modified']}:F>"
-            else:
-                ts = ""
+            ts = f"\n`Last modified:` <t:{v['last_modified']}:F>" if v["last_modified"] else ""
             l = (
-                f"> Globalban Logs Case `#{i['case']}`\n`Type:` {i['type']}\n`Offender:` {off}\n"
-                f"`Authorized by:` {aff}\n`Reason:` {i['reason']}\n"
-                f"`Timestamp:` <t:{i['timestamp']}:F>{eff}{ts}"
+                f"> Globalban Logs Case `#{k}`\n`Type:` {v['type']}\n`Offender:` {off}\n"
+                f"`Authorized by:` {aff}\n`Reason:` {v['reason']}\n"
+                f"`Timestamp:` <t:{v['timestamp']}:F>{eff}{ts}"
             )
             gl.append(l)
 
-        banlogs = """\n\n""".join(gl)
+        banlogs = "\n\n".join(gl)
         final_page = await nu.pagify_this(
             banlogs,
             "> ",
@@ -420,8 +418,7 @@ class GlobalBan(commands.Cog):
             embed_colour=await context.embed_colour(),
         )
 
-        paginator = nu.NoobPaginator(final_page, timeout=60.0)
-        await paginator.start(context)
+        await nu.NoobPaginator(final_page).start(context)
 
     @globalban.command(name="reset")
     async def globalban_reset(self, context: commands.Context):
@@ -430,9 +427,9 @@ class GlobalBan(commands.Cog):
 
         Bot owners only.
         """
-        msg = "Choose what config to reset."
-        view = GbanViewReset(timeout=30)
-        await view.start(context=context, msg=msg)
+        await GbanViewReset(timeout=30).start(
+            context=context, msg="Choose what config to reset."
+        )
 
     @globalban.command(name="unban")
     async def globalban_unban(
@@ -471,6 +468,6 @@ class GlobalBan(commands.Cog):
 
         await view.wait()
 
-        if view.value is True:
+        if view.value:
             await context.typing()
             await self._globalunban_user(context=context, member=member, reason=reason)

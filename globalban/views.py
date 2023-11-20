@@ -43,15 +43,11 @@ class GbanViewReset(discord.ui.View):
             confirm_msg = "Are you sure you want to reset the globalban banlist?"
             confirm_action = "Successfully resetted the globalban banlist."
             confview = NoobConfirmation(timeout=30)
-            await confview.start(
-                context=self.context,
-                confirm_msg=confirm_msg,
-                confirm_action=confirm_action,
-            )
+            await confview.start(interaction, confirm_action, content=confirm_msg)
 
             await confview.wait()
 
-            if confview.value == "yes":
+            if confview.value:
                 await self.context.cog.config.banlist.clear()
 
         if select.values[0] == "Logs":
@@ -59,14 +55,14 @@ class GbanViewReset(discord.ui.View):
             confirm_action = "Successfully resetted the globalban banlogs."
             confview = NoobConfirmation(timeout=30)
             await confview.start(
-                context=self.context,
-                confirm_msg=confirm_msg,
+                interaction,
                 confirm_action=confirm_action,
+                content=confirm_msg
             )
 
             await confview.wait()
 
-            if confview.value == "yes":
+            if confview.value:
                 await self.context.cog.banlogs.clear()
 
         if select.values[0] == "Cog":
@@ -74,14 +70,14 @@ class GbanViewReset(discord.ui.View):
             confirm_action = "Successfully cleared the globalban cogs configuration."
             confview = NoobConfirmation(timeout=30)
             await confview.start(
-                context=self.context,
-                confirm_msg=confirm_msg,
+                interaction,
                 confirm_action=confirm_action,
+                content=confirm_msg
             )
 
             await confview.wait()
 
-            if confview.value == "yes":
+            if confview.value:
                 await self.context.cog.config.clear_all()
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
