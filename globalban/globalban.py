@@ -21,7 +21,7 @@ class GlobalBan(commands.Cog):
         self.bot = bot
 
         self.config = Config.get_conf(
-            self, identifier=74654871231365754648, force_registration=True
+            self, identifier=123456789, force_registration=True
         )
         default_global = {
             "banlist": [],
@@ -32,7 +32,7 @@ class GlobalBan(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.GlobalBan")
 
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/globalban/README.md"
@@ -401,7 +401,11 @@ class GlobalBan(commands.Cog):
                     eff = f"\n`Amended by:` Unknown or Deleted User ({v['amender']})"
             else:
                 eff = ""
-            ts = f"\n`Last modified:` <t:{v['last_modified']}:F>" if v["last_modified"] else ""
+            ts = (
+                f"\n`Last modified:` <t:{v['last_modified']}:F>"
+                if v["last_modified"]
+                else ""
+            )
             l = (
                 f"> Globalban Logs Case `#{k}`\n`Type:` {v['type']}\n`Offender:` {off}\n"
                 f"`Authorized by:` {aff}\n`Reason:` {v['reason']}\n"

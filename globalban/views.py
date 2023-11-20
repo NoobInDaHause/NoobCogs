@@ -55,9 +55,7 @@ class GbanViewReset(discord.ui.View):
             confirm_action = "Successfully resetted the globalban banlogs."
             confview = NoobConfirmation(timeout=30)
             await confview.start(
-                interaction,
-                confirm_action=confirm_action,
-                content=confirm_msg
+                interaction, confirm_action=confirm_action, content=confirm_msg
             )
 
             await confview.wait()
@@ -70,9 +68,7 @@ class GbanViewReset(discord.ui.View):
             confirm_action = "Successfully cleared the globalban cogs configuration."
             confview = NoobConfirmation(timeout=30)
             await confview.start(
-                interaction,
-                confirm_action=confirm_action,
-                content=confirm_msg
+                interaction, confirm_action=confirm_action, content=confirm_msg
             )
 
             await confview.wait()
