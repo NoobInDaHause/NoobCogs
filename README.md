@@ -33,7 +33,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | GlobalBan        |  v1.2.1   | Globally ban a user from all the guilds the bot is in.      |
 | JoinDM           |  v1.0.4   | M newly joined users from your guild with your set message. |
 | PressF           |  v1.1.8   | F.                                                          |
-| RandomColourRole |  v1.1.4   | Have a role that changes colour every 5 minutes.            |
+| RandomColourRole |  v1.1.5   | Have a role that changes colour every 5 minutes.            |
 | Reach            |  v1.0.5   | Reach roles on a channel.                                   |
 | Suggestion       |  v1.5.14  | Suggestion system.                                          |
 | Timers           |  v1.2.10  | Start a timer countdown.                                    |

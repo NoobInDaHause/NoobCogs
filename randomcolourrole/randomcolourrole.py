@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import discord
 import logging
 import random
@@ -31,7 +32,7 @@ class RandomColourRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RandomColourRole")
 
-    __version__ = "1.1.4"
+    __version__ = "1.1.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/randomcolourrole/README.md"
 
@@ -69,17 +70,14 @@ class RandomColourRole(commands.Cog):
 
     @tasks.loop(minutes=5)
     async def change_random_colour_role(self):
-        for guild in self.bot.guilds:
+        for k, v in ((await self.config.all_guilds()).copy()).items():
             await asyncio.sleep(2.5)
-            settings = await self.config.guild(guild).all()
-            if settings["status"] is True and settings["role"] is not None:
-                try:
-                    role = guild.get_role(settings["role"])
-                    await role.edit(
-                        colour=random.randint(0, 0xFFFFFF), reason="Random Colour Role."
-                    )
-                except Exception:
-                    continue
+            if guild := self.bot.get_guild(k):
+                if v["status"] and v["role"]:
+                    with contextlib.suppress(Exception):
+                        await (guild.get_role(v["role"])).edit(
+                            colour=random.randint(0, 0xFFFFFF), reason="Random Colour Role."
+                        )
 
     @change_random_colour_role.before_loop
     async def change_random_colour_role_before_loop(self):
