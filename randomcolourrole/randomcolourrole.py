@@ -17,8 +17,8 @@ class RandomColourRole(commands.Cog):
     Have a role that changes colour every 5 minutes.
 
     May or may not be API intense but the cog is cool.
-    Due to API rate limits you can only have 1 randomcolourrole pre guild.
-    The role colour changes every 20 minutes or so depending on how many guilds the bot is in.
+    Due to API rate limits you can only have 1 randomcolourrole per guild.
+    The role colour changes every 5 minutes or so depending on how many guilds the bot is in.
     """
 
     def __init__(self, bot: Red, *args, **kwargs):
@@ -32,7 +32,7 @@ class RandomColourRole(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.RandomColourRole")
 
-    __version__ = "1.1.5"
+    __version__ = "1.1.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/randomcolourrole/README.md"
 
