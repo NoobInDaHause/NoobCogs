@@ -1,11 +1,10 @@
-import datetime
+import amari
 import discord
 import logging
 
 from redbot.core.bot import app_commands, commands, Red
 from redbot.core.utils import chat_formatting as cf
 
-from amari import AmariClient, NotFound, InvalidToken
 from typing import Literal
 
 from noobutils import is_have_avatar
@@ -25,7 +24,7 @@ class AmariLevel(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.AmariLevel")
 
-    __version__ = "1.0.6"
+    __version__ = "1.0.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/amarilevel/README.md"
@@ -85,36 +84,38 @@ class AmariLevel(commands.Cog):
         if member.bot:
             return await context.send(content="Bots do not have amari levels.")
 
-        await context.typing()
-        try:
-            amari = AmariClient(token)
-            lb = await amari.fetch_full_leaderboard(context.guild.id)
-            memb = await amari.fetch_user(context.guild.id, member.id)
-            rank = lb.get_user(member.id)
-            embed = discord.Embed(
-                title="Amari Rank",
-                description=(
-                    f"> - **Rank**: {cf.humanize_number(rank.position + 1)}\n"
-                    f"> - **Level**: {cf.humanize_number(memb.level)}\n"
-                    f"> - **EXP**: {cf.humanize_number(memb.exp)}\n"
-                    f"> - **Weekly EXP**: {cf.humanize_number(memb.weeklyexp)}"
-                ),
-                colour=member.colour,
-                timestamp=datetime.datetime.now(datetime.timezone.utc),
-            )
-            embed.set_thumbnail(url=is_have_avatar(member))
-            embed.set_footer(text=member, icon_url=is_have_avatar(context.guild))
-            await context.send(embed=embed)
-        except InvalidToken:
-            await context.send(
-                content="The amari api token is invalid please report this to the bot owner."
-            )
-        except NotFound:
-            await context.send(content="No amari data found.")
-        except Exception as e:
-            self.log.exception(e, exc_info=e)
-            await context.send(
-                content="An error has occurred.\nPlease report this to the bot owner.\n"
-                f"Here is the traceback: {cf.box(e, 'py')}"
-            )
-        await amari.close()
+        async with context.typing():
+            try:
+                _amari = amari.AmariClient(token)
+                lb = await _amari.fetch_full_leaderboard(context.guild.id)
+                memb = await _amari.fetch_user(context.guild.id, member.id)
+                rank = lb.get_user(member.id)
+                embed = discord.Embed(
+                    title="Amari Rank",
+                    description=(
+                        f"- **Rank**: {cf.humanize_number(rank.position + 1)}\n"
+                        f"- **Level**: {cf.humanize_number(memb.level)}\n"
+                        f"- **EXP**: {cf.humanize_number(memb.exp)}\n"
+                        f"- **Weekly EXP**: {cf.humanize_number(memb.weeklyexp)}"
+                    ),
+                    colour=member.colour,
+                    timestamp=discord.utils.utcnow(),
+                )
+                embed.set_thumbnail(url=is_have_avatar(member))
+                embed.set_footer(text=member, icon_url=is_have_avatar(context.guild))
+                await context.send(embed=embed)
+            except amari.InvalidToken:
+                await context.send(
+                    content="The amari api token is invalid please report this to the bot owner."
+                )
+            except amari.NotFound:
+                await context.send(content="No amari data found.")
+            except amari.HTTPException:
+                await context.send(content="It appears the amari API is down. Check back later.")
+            except Exception as e:
+                self.log.exception(e, exc_info=e)
+                await context.send(
+                    content="An error has occurred.\nPlease report this to the bot owner.\n"
+                    f"Here is the traceback: {cf.box(e, 'py')}"
+                )
+            await _amari.close()
