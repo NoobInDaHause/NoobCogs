@@ -24,7 +24,7 @@ class AmariLevel(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.AmariLevel")
 
-    __version__ = "1.0.7"
+    __version__ = "1.0.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/amarilevel/README.md"
@@ -111,7 +111,9 @@ class AmariLevel(commands.Cog):
             except amari.NotFound:
                 await context.send(content="No amari data found.")
             except amari.HTTPException:
-                await context.send(content="It appears the amari API is down. Check back later.")
+                await context.send(
+                    content="Amari API took too long to respond. Perhaps it is down check back later."
+                )
             except Exception as e:
                 self.log.exception(e, exc_info=e)
                 await context.send(
