@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import discord
 import noobutils as nu
 import logging
@@ -45,7 +46,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.13"
+    __version__ = "1.0.14"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -258,15 +259,8 @@ class DonationLogger(commands.Cog):
         view = discord.ui.View().add_item(
             discord.ui.Button(label="Jump To Command", url=context.message.jump_url)
         )
-        try:
+        with contextlib.suppress(Exception):
             await channel.send(embed=embed, view=view)
-        except Exception:
-            await context.send(
-                content="⚠️ Warning: `Log channel not found or I do not have permission to "
-                "send message in the log channel please report this to the admins.`",
-                embed=embed,
-                view=view,
-            )
 
     @commands.group(name="donationlogger", aliases=["d", "dl", "dono", "donolog"])
     @commands.bot_has_permissions(embed_links=True)
