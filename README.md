@@ -34,7 +34,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | NoobTools        |  v1.0.1   | NoobInDahause's personal tools.                             |
 | PressF           |  v1.1.8   | F.                                                          |
 | RandomColourRole |  v1.1.6   | Have a role that changes colour every 5 minutes.            |
-| Suggestion       |  v1.5.14  | Suggestion system.                                          |
+| Suggestions      |  v2.0.0   | Suggestion system.                                          |
 | Timers           |  v1.2.10  | Start a timer countdown.                                    |
 
 ## License
