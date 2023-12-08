@@ -35,7 +35,7 @@ class NoobTools(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.NoobTools")
         self.old_get_audit_reason = mod.get_audit_reason
 
-    __version__ = "1.0.1"
+    __version__ = "1.0.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/noobtools/README.md"
@@ -215,7 +215,7 @@ class NoobTools(commands.Cog):
                         except ZeroDivisionError:
                             div = 0
                         final_str.append(
-                            f"` #{len(final_str) + 1} ` @everyone: {cf.humanize_number(ev)} out of "
+                            f"` #{len(final_str) + 1} ` @{role}: {cf.humanize_number(ev)} out of "
                             f"{cf.humanize_number(mems)} members - **{div}%**"
                         )
                     elif role.lower() == "here":
@@ -240,7 +240,7 @@ class NoobTools(commands.Cog):
                         except ZeroDivisionError:
                             div = 0
                         final_str.append(
-                            f"` #{len(final_str) + 1} ` @here: {cf.humanize_number(her)} out of "
+                            f"` #{len(final_str) + 1} ` @{role}: {cf.humanize_number(her)} out of "
                             f"{cf.humanize_number(mems)} members - **{div}%**"
                         )
                 else:
@@ -260,8 +260,8 @@ class NoobTools(commands.Cog):
                     except ZeroDivisionError:
                         div = 0
                     final_str.append(
-                        f"` #{len(final_str) + 1} ` {role.mention}: {cf.humanize_number(rol)} out of "
-                        f"{cf.humanize_number(mems)} members - **{div}%**"
+                        f"` #{len(final_str) + 1} ` {role.mention} (`{role.id}`): {cf.humanize_number(rol)}"
+                        f" out of {cf.humanize_number(mems)} members - **{div}%**"
                     )
 
             overall_reach = len(list(set(final_members)))
