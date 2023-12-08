@@ -37,7 +37,7 @@ class Afk(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.Afk")
 
-    __version__ = "1.5.0"
+    __version__ = "1.5.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/afk/README.md"
 
@@ -356,7 +356,7 @@ class Afk(commands.Cog):
         members = await self.config.all_members(guild=context.guild)
 
         afk_list = [
-            f"<@{member_id}> (`{member_id}`) AFK since **<t:{member_data["timestamp"]}:R>**."
+            f"<@{member_id}> (`{member_id}`) AFK since **<t:{member_data['timestamp']}:R>**."
             for member_id, member_data in members.items()
             if member_data["afk"]
         ]
