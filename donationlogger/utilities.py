@@ -1,15 +1,15 @@
 import discord
+import noobutils as nu
 
 from redbot.core.bot import commands
 from redbot.core.utils import mod
 
 from typing import Dict, List, Union, TYPE_CHECKING
 
-from .converters import AmountConverter, FuzzyRole, DLEmojiConverter
+from .converters import AmountConverter, DLEmojiConverter
 from .exceptions import (
     AmountConversionFailure,
     MoreThanThreeRoles,
-    FuzzyRoleConversionFailure,
 )
 
 if TYPE_CHECKING:
@@ -58,10 +58,10 @@ async def verify_roles(
     for raw in raw_roles:
         try:
             r = raw.strip()
-            role = await FuzzyRole().convert(context, r)
+            role = await nu.NoobFuzzyRole().convert(context, r)
             if role not in roles:
                 roles.append(role)
-        except FuzzyRoleConversionFailure:
+        except Exception:
             continue
     return roles
 

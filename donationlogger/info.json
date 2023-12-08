@@ -12,8 +12,6 @@
     "disabled": false,
     "required_cogs": {},
     "requirements": [
-        "rapidfuzz",
-        "unidecode",
         "git+https://github.com/NoobInDaHause/noobutils.git"
     ],
     "tags": [

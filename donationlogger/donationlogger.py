@@ -10,7 +10,7 @@ from redbot.core.utils import chat_formatting as cf, mod
 from typing import Dict, Literal, List, Optional
 
 from .exceptions import MoreThanThreeRoles
-from .converters import AmountConverter, FuzzyRole, DLEmojiConverter
+from .converters import AmountConverter, DLEmojiConverter
 from .utilities import (
     verify_amount_roles,
     verify_bank,
@@ -45,20 +45,18 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.15"
+    __version__ = "1.0.16"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
-        """
-        Thanks Sinbad and sravan!
-        """
         plural = "s" if len(self.__author__) > 1 else ""
-        return f"""{super().format_help_for_context(context)}
-
-        Cog Version: **{self.__version__}**
-        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
-        Cog Documentation: [[Click here]]({self.__docs__})"""
+        return (
+            f"{super().format_help_for_context(context)}\n\n"
+            f"Cog Version: **{self.__version__}**\n"
+            f"Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}\n"
+            f"Cog Documentation: [[Click here]]({self.__docs__})"
+        )
 
     async def red_delete_data_for_user(
         self,
@@ -71,7 +69,7 @@ class DonationLogger(commands.Cog):
 
         Users can remove their data at anytime.
         """
-        for g in (await self.config.all_guilds()).keys:
+        for g in (await self.config.all_guilds()).keys():
             async with self.config.guild_from_id(g).banks() as banks:
                 for bank in banks.values():
                     try:
@@ -83,27 +81,31 @@ class DonationLogger(commands.Cog):
         self, context: commands.Context, bank_name: str
     ) -> List[discord.Embed]:
         banks = await self.config.guild(context.guild).banks()
-        if banks[bank_name.lower()]["hidden"]:
+        bank_info = banks.get(bank_name.lower())
+
+        if not bank_info or bank_info["hidden"]:
             return []
-        all_donators = banks[bank_name.lower()]["donators"]
-        sorted_donators = dict(
-            sorted(all_donators.items(), key=lambda x: x[1], reverse=True)
+
+        sorted_donators = sorted(
+            bank_info["donators"].items(), key=lambda x: x[1], reverse=True
         )
+
         final = []
-        for k, v in sorted_donators.items():
+        for k, v in sorted_donators:
             member = context.guild.get_member(int(k))
             m = (
-                f"{member.mention} (`{member.id}`): **{cf.humanize_number(v)}**"
+                f"{member.mention} (`{member.id}`): **{cf.humanize_number(v)}"
                 if member
-                else f"[Member not found in guild] (`{k}`): **{cf.humanize_number(v)}**"
+                else f"[Member not found in guild] (`{k}`): **{cf.humanize_number(v)}"
             )
             final.append(m)
+
         final2 = "\n".join(f"{index}. {donor}" for index, donor in enumerate(final, 1))
-        mm = [f"{context.guild.name}", " | Page ({index}/{pages})"]
+
         return await nu.pagify_this(
             final2,
             "\n",
-            "".join(mm),
+            "".join([f"{context.guild.name}", " | Page ({index}/{pages})"]),
             embed_title=f"All of the donors for [{bank_name.title()}]",
             embed_colour=await context.embed_colour(),
             footer_icon=nu.is_have_avatar(context.guild),
@@ -112,7 +114,7 @@ class DonationLogger(commands.Cog):
     async def get_all_bank_member_dono(
         self, guild: discord.Guild, member: discord.Member
     ) -> discord.Embed:
-        final = {}
+        final: Dict[str, str] = {}
         final_overall = []
         async with self.config.guild(guild).banks() as banks:
             for k, v in banks.items():
@@ -205,33 +207,43 @@ class DonationLogger(commands.Cog):
         logchan = await self.config.guild(context.guild).log_channel()
         if not logchan:
             return
+
         channel = context.guild.get_channel(logchan)
-        if d_type == "add":
-            ar = "was added to"
-            ra = "Roles Added:"
-            title = "**__Donation Added!__**"
-        elif d_type == "remove":
-            ar = "was removed from"
-            ra = "Roles Removed:"
-            title = "**__Donation Removed!__**"
-        else:
-            ar = "was set as"
-            ra = "Roles Added and/or Removed:"
-            title = "**__Donation Set!__**"
+
+        actions = {
+            "add": ("was added to", "Roles Added:", "**__Donation Added!__**"),
+            "remove": (
+                "was removed from",
+                "Roles Removed:",
+                "**__Donation Removed!__**",
+            ),
+            "default": (
+                "was set as",
+                "Roles Added and/or Removed:",
+                "**__Donation Set!__**",
+            ),
+        }
+
+        ar, ra, title = actions.get(d_type, actions["default"])
+
         embed = discord.Embed(
             title=title,
-            description=f"{emoji} {cf.humanize_number(amount)} {ar} "
-            f"**{member.display_name}**'s donation balance.",
+            description=(
+                f"{emoji} {cf.humanize_number(amount)} {ar} **{member.display_name}**'s donation balance."
+            ),
             colour=await context.embed_colour(),
             timestamp=discord.utils.utcnow(),
         )
+
         embed.set_footer(
             text=f"Authorized by: {context.author} ({context.author.id})",
             icon_url=nu.is_have_avatar(context.author),
         )
+
         embed.set_author(
             name=f"{member.name} ({member.id})", icon_url=nu.is_have_avatar(member)
         )
+
         embed.add_field(name="Bank:", value=bank_name.title(), inline=True)
         embed.add_field(
             name="Previous balance:",
@@ -243,21 +255,20 @@ class DonationLogger(commands.Cog):
             value=f"{emoji} {cf.humanize_number(updated)}",
             inline=True,
         )
+
         if roles:
-            embed.add_field(
-                name=ra,
-                value=roles,
-                inline=False,
-            )
+            embed.add_field(name=ra, value=roles, inline=False)
         elif not await self.config.guild(context.guild).auto_role():
             embed.add_field(
                 name=ra,
                 value=f"> Autorole is currently disabled. `{context.prefix}dlset autorole`",
                 inline=False,
             )
+
         view = discord.ui.View().add_item(
             discord.ui.Button(label="Jump To Command", url=context.message.jump_url)
         )
+
         try:
             await channel.send(embed=embed, view=view)
         except Exception:
@@ -472,7 +483,8 @@ class DonationLogger(commands.Cog):
             )
 
         output_text = "\n".join(
-            output_list or [f"No one has donated {mla} than **{cf.humanize_number(amount)}** yet."]
+            output_list
+            or [f"No one has donated {mla} than **{cf.humanize_number(amount)}** yet."]
         )
 
         paginated_output = await nu.pagify_this(
@@ -983,7 +995,6 @@ class DonationLogger(commands.Cog):
             enumerated_banks = [
                 f"{index}. {v['emoji']} {k.title()}"
                 for index, (k, v) in enumerate(banks.items(), 1)
-                if banks
             ]
             embed = discord.Embed(
                 title=f"List of all hidden banks in [{context.guild.name}]",
@@ -1000,7 +1011,7 @@ class DonationLogger(commands.Cog):
         self,
         context: commands.Context,
         add_remove_list: Literal["add", "remove", "list"],
-        *roles: FuzzyRole,
+        *roles: nu.NoobFuzzyRole,
     ):
         """
         Add, Remove or check the list of managers.
@@ -1126,6 +1137,6 @@ class DonationLogger(commands.Cog):
             embed.add_field(
                 name="Hidden Banks:",
                 value=cf.humanize_list(banks_list_hidden),
-                inline=False
+                inline=False,
             )
         await context.send(embed=embed)
