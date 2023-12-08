@@ -34,13 +34,11 @@ class Suggestions(commands.Cog):
             "next_id": 1,
             "suggestions": {},
         }
-        default_global = {"imported": False}
         self.config.register_guild(**default_guild)
-        self.config.register_global(**default_global)
 
         self.log = logging.getLogger("red.NoobCogs.Suggestions")
 
-    __version__ = "2.0.0"
+    __version__ = "2.0.1"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestions/README.md"
@@ -99,13 +97,14 @@ class Suggestions(commands.Cog):
                     for suggest_id, suggest_data in sug.items():
                         if suggest_data["status"] == "running":
                             channel = guild.get_channel(suggest_data["channel_id"])
-                            msg = await channel.fetch_message(
-                                suggest_data["message_id"]
-                            )
-                            self.bot.add_view(
-                                view=SuggestionView(cog=self, suggestion_id=suggest_id),
-                                message_id=msg.id,
-                            )
+                            with contextlib.suppress(Exception):
+                                msg = await channel.fetch_message(
+                                    suggest_data["message_id"]
+                                )
+                                self.bot.add_view(
+                                    view=SuggestionView(cog=self, suggestion_id=suggest_id),
+                                    message_id=msg.id,
+                                )
 
     async def add_suggestion(
         self,
