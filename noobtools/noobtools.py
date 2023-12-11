@@ -35,7 +35,7 @@ class NoobTools(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.NoobTools")
         self.old_get_audit_reason = mod.get_audit_reason
 
-    __version__ = "1.0.2"
+    __version__ = "1.0.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/noobtools/README.md"
@@ -163,15 +163,20 @@ class NoobTools(commands.Cog):
                 )
             await _amari.close()
 
-    @commands.command(name="reach")
+    @commands.hybrid_command(name="reach")
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.bot_has_permissions(embed_links=True, manage_roles=True)
+    @app_commands.guild_only()
+    @app_commands.describe(
+        channel="The channel that you want to reach roles.",
+        roles="The roles that you want to reach. (separate roles with spaces)"
+    )
     async def reach(
         self,
         context: commands.Context,
-        channel: Optional[discord.TextChannel],
-        *roles: CustomFuzzyRole,
+        channel: Optional[discord.TextChannel] = None,
+        roles: commands.Greedy[CustomFuzzyRole] = None,
     ):
         """
         Reach channel and see how many members who can view the channel.
@@ -296,6 +301,8 @@ class NoobTools(commands.Cog):
 
     @commands.hybrid_command(name="membercount", aliases=["mcount"])
     @commands.bot_has_permissions(embed_links=True)
+    @commands.guild_only()
+    @app_commands.guild_only()
     async def membercount(self, context: commands.Context):
         """
         See the total members in this guild.
