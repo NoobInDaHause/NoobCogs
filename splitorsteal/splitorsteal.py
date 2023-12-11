@@ -32,7 +32,7 @@ class SplitOrSteal(commands.Cog):
         self.active_cache: Dict[str, List[int]] = {}
         self.log = logging.getLogger("red.NoobCogs.SplitOrSteal")
 
-    __version__ = "3.0.1"
+    __version__ = "3.0.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
@@ -118,7 +118,7 @@ class SplitOrSteal(commands.Cog):
         )
 
         commence_view = Commence()
-        msg = await context.send(embed=embed, view=commence_view)
+        msg = await context.channel.send(embed=embed, view=commence_view)
 
         await asyncio.sleep(60)
 

@@ -82,7 +82,7 @@ class SplitOrStealView(discord.ui.View):
         sotembed.set_image(
             url="https://cdn.discordapp.com/attachments/1035334209818071161/1183346867497599076/sos.jpg"
         )
-        await self.context.send(
+        await self.context.channel.send(
             content=f"{self.player_1.mention} and {self.player_2.mention}",
             embed=sotembed,
         )
@@ -288,7 +288,7 @@ class DuelView(discord.ui.View):
         self.value: bool = None
 
     async def start(self, context: commands.Context, member: discord.Member):
-        msg = await context.send(
+        msg = await context.channel.send(
             content=f"{member.mention}, **{context.author}** has challenged you to a SplitOrStealDuel! "
             "Do you wish to accept?",
             view=self,
