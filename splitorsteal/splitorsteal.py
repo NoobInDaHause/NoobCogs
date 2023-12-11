@@ -5,7 +5,7 @@ import noobutils as nu
 import random
 
 from redbot.core.bot import app_commands, commands, Config, Red
-from redbot.core.utils import chat_formatting as cf
+from redbot.core.utils import chat_formatting as cf, mod
 
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Literal
@@ -32,7 +32,7 @@ class SplitOrSteal(commands.Cog):
         self.active_cache: Dict[str, List[int]] = {}
         self.log = logging.getLogger("red.NoobCogs.SplitOrSteal")
 
-    __version__ = "3.0.0"
+    __version__ = "3.0.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/splitorsteal/README.md"
@@ -72,15 +72,17 @@ class SplitOrSteal(commands.Cog):
 
         Fun game to play.
         """
-        guild_data = await self.config.guild(context.guild).all()
+        managers = await self.config.guild(context.guild).managers()
 
-        if await context.bot.is_owner(context.author) or any(
-            role_id in context.author._roles for role_id in guild_data["managers"]
+        if (
+            await context.bot.is_owner(context.author)
+            or await mod.is_mod_or_superior(context.bot, context.author)
+            or any(role_id in context.author._roles for role_id in managers)
         ):
             pass
         else:
             return await context.reply(
-                content="Only a SplitOrSteal manager or the bot owner can run this command. "
+                content="Only a SplitOrSteal manager or higher can run this command. "
                 f"Use `{context.prefix}sosduel` instead.",
                 mention_author=False,
                 ephemeral=True,
@@ -208,7 +210,7 @@ class SplitOrSteal(commands.Cog):
             man = await self.config.guild(context.guild).managers()
             embed = discord.Embed(
                 title=f"List of SplitOrSteal managers for [{context.guild.name}]",
-                description=cf.humanize_list([f"<@&{r_id}>" for r_id in man]),
+                description=cf.humanize_list([f"<@&{r_id}>" for r_id in man] if man else ["None"]),
                 colour=await context.embed_colour(),
                 timestamp=datetime.now(timezone.utc),
             )
