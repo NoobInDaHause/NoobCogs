@@ -3,7 +3,7 @@ import contextlib
 import discord
 import noobutils as nu
 
-from redbot.core.bot import commands
+from redbot.core.bot import commands, Red
 from redbot.core.utils import chat_formatting as cf
 
 from typing import Dict, List, TYPE_CHECKING, Union
@@ -65,7 +65,7 @@ class DonationLoggerSetupView(discord.ui.View):
         style=nu.get_button_colour("blurple"),
     )
     async def manager_roles_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
         await interaction.response.defer()
         msg = await self.message.reply(
@@ -73,7 +73,7 @@ class DonationLoggerSetupView(discord.ui.View):
             "` - ` Role(s) can be **role Mention/ID/Name** or input **none** to reset this field."
         )
         try:
-            m_msg = await self.context.bot.wait_for(
+            m_msg = await interaction.client.wait_for(
                 "message",
                 check=lambda x: x.channel.id == self.context.channel.id
                 and x.author.id == self.context.author.id,
@@ -108,7 +108,7 @@ class DonationLoggerSetupView(discord.ui.View):
         style=nu.get_button_colour("blurple"),
     )
     async def bank_name_and_emoji_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
         await interaction.response.defer()
         msg = await self.message.reply(
@@ -117,7 +117,7 @@ class DonationLoggerSetupView(discord.ui.View):
             "` - ` **Example:** `dank,💰`\n` - ` You can add more banks later after the setup is done."
         )
         try:
-            m_bank = await self.context.bot.wait_for(
+            m_bank = await interaction.client.wait_for(
                 "message",
                 check=lambda x: x.channel.id == self.context.channel.id
                 and x.author.id == self.context.author.id,
@@ -172,7 +172,7 @@ class DonationLoggerSetupView(discord.ui.View):
         style=nu.get_button_colour("blurple"),
     )
     async def auto_role_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
         current = self.autorole
         self.autorole = not current
@@ -183,7 +183,7 @@ class DonationLoggerSetupView(discord.ui.View):
         emoji="📜", label="Log Channel (Optional)", style=nu.get_button_colour("blurple")
     )
     async def log_channel_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
         await interaction.response.defer()
         msg = await self.message.reply(
@@ -191,7 +191,7 @@ class DonationLoggerSetupView(discord.ui.View):
             "or **none** to reset: (Threads are not supported)"
         )
         try:
-            m_chan = await self.context.bot.wait_for(
+            m_chan = await interaction.client.wait_for(
                 "message",
                 check=lambda x: x.channel.id == self.context.channel.id
                 and x.author.id == self.context.author.id,
@@ -225,7 +225,7 @@ class DonationLoggerSetupView(discord.ui.View):
         style=nu.get_button_colour("blurple"),
     )
     async def bank_amount_roles_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
         if not self.bank:
             return await interaction.response.send_message(
@@ -240,7 +240,7 @@ class DonationLoggerSetupView(discord.ui.View):
             "\n` - ` Example: `10m:@role:@role,10k:(role_id),12.5e6:(role_name)`"
         )
         try:
-            m_bank = await self.context.bot.wait_for(
+            m_bank = await interaction.client.wait_for(
                 "message",
                 check=lambda x: x.channel.id == self.context.channel.id
                 and x.author.id == self.context.author.id,
@@ -280,7 +280,7 @@ class DonationLoggerSetupView(discord.ui.View):
 
     @discord.ui.button(emoji="✔️", style=nu.get_button_colour("green"))
     async def done_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
         if not self.bank:
             return await interaction.response.send_message(
@@ -334,14 +334,14 @@ class DonationLoggerSetupView(discord.ui.View):
 
     @discord.ui.button(emoji="✖️", style=nu.get_button_colour("red"))
     async def cancel_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
         self.stop()
         self.cog.setupcache.remove(self.context.guild.id)
         await interaction.message.delete()
 
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if await self.context.bot.is_owner(interaction.user):
+    async def interaction_check(self, interaction: discord.Interaction[Red]) -> bool:
+        if await interaction.client.is_owner(interaction.user):
             return True
         elif interaction.user != self.context.author:
             await interaction.response.send_message(
@@ -366,13 +366,17 @@ class TotalDonoView(discord.ui.View):
         self.member: discord.Member = None
         self.message: discord.Message = None
 
-    async def start(self, context: commands.Context, content: str, member: discord.Member):
+    async def start(
+        self, context: commands.Context, content: str, member: discord.Member
+    ):
         msg = await context.reply(content=content, mention_author=False, view=self)
         self.message = msg
         self.member = member
 
     @discord.ui.button(label="Total donations", style=nu.get_button_colour("green"))
-    async def total_dono(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def total_dono(
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+    ):
         final = {}
         final_overall = []
         async with self.cog.config.guild(interaction.guild).banks() as banks:
@@ -390,7 +394,8 @@ class TotalDonoView(discord.ui.View):
             colour=self.member.colour,
         )
         embed.set_author(
-            name=f"{self.member} ({self.member.id})", icon_url=nu.is_have_avatar(self.member)
+            name=f"{self.member} ({self.member.id})",
+            icon_url=nu.is_have_avatar(self.member),
         )
         embed.set_footer(
             text=f"{interaction.guild.name} admires your donations!",

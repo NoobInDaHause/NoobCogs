@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.18"
+    __version__ = "1.0.19"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -94,15 +94,16 @@ class DonationLogger(commands.Cog):
         for k, v in sorted_donators:
             member = context.guild.get_member(int(k))
             m = (
-                f"➡️ {member.mention} (`{member.id}`): **{cf.humanize_number(v)}**"
-                if member and member == context.author
-                else f"{member.mention} (`{member.id}`): **{cf.humanize_number(v)}**"
+                f"{member.mention} (`{member.id}`): **{cf.humanize_number(v)}**"
                 if member
                 else f"[Member not found in guild] (`{k}`): **{cf.humanize_number(v)}**"
             )
             final.append(m)
 
-        final2 = "\n".join(f"{index}. {donor}" for index, donor in enumerate(final, 1))
+        e = "➡️ " if member == context.author else ""
+        final2 = "\n".join(
+            f"{e}{index}. {donor}" for index, donor in enumerate(final, 1)
+        )
 
         return await nu.pagify_this(
             final2,
@@ -476,14 +477,13 @@ class DonationLogger(commands.Cog):
         ):
             member = context.guild.get_member(int(donator_id))
             mention = (
-                f"➡️ {member.mention} (`{member.id}`)"
-                if member and member == context.author
-                else f"{member.mention} (`{member.id}`)"
+                f"{member.mention} (`{member.id}`)"
                 if member
                 else f"Member not found in server. (`{donator_id}`)"
             )
+            e = "➡️ " if member == context.author else ""
             output_list.append(
-                f"{index}. {mention}: **{cf.humanize_number(donation_amount)}**"
+                f"{e}{index}. {mention}: **{cf.humanize_number(donation_amount)}**"
             )
 
         output_text = "\n".join(
