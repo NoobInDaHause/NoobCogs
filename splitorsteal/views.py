@@ -109,7 +109,7 @@ class SplitOrStealView(discord.ui.View):
                 lose_gifs(),
                 0x2F3136,
             )
-        if self.choices["player_1"] is None and self.choices["player_2"] is not None:
+        if self.choices["player_1"] is None:
             return (
                 (
                     f"{self.player_2.mention} has won the prize since "
@@ -118,7 +118,7 @@ class SplitOrStealView(discord.ui.View):
                 forfeit_gifs(),
                 0x00FF00,
             )
-        if self.choices["player_1"] is not None and self.choices["player_2"] is None:
+        if self.choices["player_2"] is None:
             return (
                 (
                     f"{self.player_1.mention} has won the prize since "
@@ -129,7 +129,7 @@ class SplitOrStealView(discord.ui.View):
             )
         if self.choices["player_1"] == "split" and self.choices["player_2"] == "split":
             return (
-                f"Both players chose Split! They can now split the prize 🤝!",
+                "Both players chose Split! They can now split the prize 🤝!",
                 win_gifs(),
                 0x00FF00,
             )
@@ -147,7 +147,7 @@ class SplitOrStealView(discord.ui.View):
             )
         if self.choices["player_1"] == "steal" and self.choices["player_2"] == "steal":
             return (
-                f"Both players chose Steal! Nobody has won the prize 🚫!",
+                "Both players chose Steal! Nobody has won the prize 🚫!",
                 lose_gifs(),
                 0x2F3136,
             )

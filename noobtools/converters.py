@@ -16,9 +16,6 @@ class CustomFuzzyRole(NoobFuzzyRole):
     mentionable: bool
 
     async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
-        if argument.lower().strip().replace("@", "") in [
-            "everyone",
-            "here",
-        ]:
+        if argument.lower().strip().replace("@", "") in {"everyone", "here"}:
             return argument.lower().strip().replace("@", "")
         return await super().convert(ctx, argument)

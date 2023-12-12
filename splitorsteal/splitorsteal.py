@@ -75,12 +75,10 @@ class SplitOrSteal(commands.Cog):
         managers = await self.config.guild(context.guild).managers()
 
         if (
-            await context.bot.is_owner(context.author)
-            or await mod.is_mod_or_superior(context.bot, context.author)
-            or any(role_id in context.author._roles for role_id in managers)
+            not await context.bot.is_owner(context.author)
+            and not await mod.is_mod_or_superior(context.bot, context.author)
+            and all(role_id not in context.author._roles for role_id in managers)
         ):
-            pass
-        else:
             return await context.reply(
                 content="Only a SplitOrSteal manager or higher can run this command. "
                 f"Use `{context.prefix}sosduel` instead.",
@@ -100,8 +98,7 @@ class SplitOrSteal(commands.Cog):
                 ephemeral=True,
                 mention_author=False,
             )
-        if context.channel.id not in self.active_cache[str(context.guild.id)]:
-            self.active_cache[str(context.guild.id)].append(context.channel.id)
+        self.active_cache[str(context.guild.id)].append(context.channel.id)
         dt = datetime.now(timezone.utc) + timedelta(seconds=60)
         embed = discord.Embed(
             title="A game of SplitOrSteal has begun!",
@@ -180,9 +177,8 @@ class SplitOrSteal(commands.Cog):
             if context.channel.id not in self.active_cache[str(context.guild.id)]:
                 self.active_cache[str(context.guild.id)].append(context.channel.id)
             await SplitOrStealView(self).start(context, context.author, opponent, prize)
-        else:
-            if context.channel.id in self.active_cache[str(context.guild.id)]:
-                self.active_cache[str(context.guild.id)].remove(context.channel.id)
+        elif context.channel.id in self.active_cache[str(context.guild.id)]:
+            self.active_cache[str(context.guild.id)].remove(context.channel.id)
 
     @commands.group(name="splitorstealset", aliases=["sosset"])
     @commands.admin_or_permissions(manage_guild=True)

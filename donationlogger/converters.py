@@ -17,7 +17,7 @@ class AmountConverter(commands.Converter):
                 "b": 1000000000,
                 "t": 1000000000000,
             }
-            if argument[-1].lower() in amount_dict.keys():
+            if argument[-1].lower() in amount_dict:
                 amt, unit = float(argument[:-1]), argument[-1].lower()
                 amount = int(amt * amount_dict[unit])
             else:
