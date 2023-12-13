@@ -45,7 +45,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.19"
+    __version__ = "1.0.20"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -90,23 +90,18 @@ class DonationLogger(commands.Cog):
             bank_info["donators"].items(), key=lambda x: x[1], reverse=True
         )
 
-        final = []
-        for k, v in sorted_donators:
+        final = ""
+        for index, (k, v) in enumerate(sorted_donators, 1):
             member = context.guild.get_member(int(k))
-            m = (
-                f"{member.mention} (`{member.id}`): **{cf.humanize_number(v)}**"
+            e = "➡️ " if member == context.author else ""
+            final += (
+                f"{e}{index}. {member.mention} (`{member.id}`): **{cf.humanize_number(v)}**\n"
                 if member
-                else f"[Member not found in guild] (`{k}`): **{cf.humanize_number(v)}**"
+                else f"{index}. [Member not found in guild] (`{k}`): **{cf.humanize_number(v)}**\n"
             )
-            final.append(m)
-
-        e = "➡️ " if member == context.author else ""
-        final2 = "\n".join(
-            f"{e}{index}. {donor}" for index, donor in enumerate(final, 1)
-        )
 
         return await nu.pagify_this(
-            final2,
+            final,
             "\n",
             "".join([f"{context.guild.name}", " | Page ({index}/{pages})"]),
             embed_title=f"All of the donors for [{bank_name.title()}]",
@@ -465,16 +460,12 @@ class DonationLogger(commands.Cog):
             if (mla == "more" and v >= amount) or (mla == "less" and v < amount)
         }
 
-        sorted_donators = dict(
-            sorted(
-                filtered_donators.items(), key=lambda u: u[1], reverse=(mla == "more")
-            )
+        sorted_donators = sorted(
+            filtered_donators.items(), key=lambda u: u[1], reverse=(mla == "more")
         )
 
         output_list = []
-        for index, (donator_id, donation_amount) in enumerate(
-            sorted_donators.items(), 1
-        ):
+        for index, (donator_id, donation_amount) in enumerate(sorted_donators, 1):
             member = context.guild.get_member(int(donator_id))
             mention = (
                 f"{member.mention} (`{member.id}`)"
