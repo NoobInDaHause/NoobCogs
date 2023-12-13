@@ -1,6 +1,8 @@
 import discord
 import noobutils as nu
 
+from redbot.core.bot import Red
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -12,12 +14,12 @@ class TimersView(discord.ui.View):
         super().__init__(timeout=None)
         self.cog = cog
 
-    @discord.ui.button(
-        style=nu.get_button_colour("green"), custom_id="notify_button_yeah_idk"
-    )
+    @discord.ui.button(custom_id="notify_button_yeah_idk")
     async def notify_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        conf = await self.config.guild(interaction.guild).all()
         async with self.cog.config.guild(interaction.guild).timers() as timers:
             msg_id = timers[str(interaction.message.id)]
             if interaction.user.id == msg_id["host_id"]:
@@ -32,6 +34,7 @@ class TimersView(discord.ui.View):
                 msg_id["members"].append(interaction.user.id)
                 resp = "You will now get notified when this timer ends."
             button.label = str(len(msg_id["members"]))
-            button.emoji = await self.cog.config.guild(interaction.guild).timer_emoji()
-        await interaction.response.edit_message(view=self)
-        await interaction.followup.send(content=resp, ephemeral=True)
+            button.emoji = conf["timer_emoji"]
+            button.style = nu.get_button_colour(conf["time_button_colour"]["started"])
+        await interaction.message.edit(view=self)
+        await interaction.followup.send(content=resp)
