@@ -23,7 +23,7 @@ class TimersView(discord.ui.View):
         async with self.cog.config.guild(interaction.guild).timers() as timers:
             msg_id = timers[str(interaction.message.id)]
             if interaction.user.id == msg_id["host_id"]:
-                return await interaction.response.send_message(
+                return await interaction.followup.send(
                     content="You are the host you will be notified whenever this timer ends no matter what.",
                     ephemeral=True
                 )

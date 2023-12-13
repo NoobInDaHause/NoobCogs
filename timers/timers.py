@@ -37,7 +37,7 @@ class Timers(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.3.1"
+    __version__ = "1.3.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -515,6 +515,8 @@ class Timers(commands.Cog):
         Show current timer settings.
         """
         config = await self.config.guild(context.guild).all()
+        ended = config["timer_button_colour"]["ended"]
+        started = config["timer_button_colour"]["started"]
         md = await self.config.maximum_duration()
         c = (
             f"Max Duration: **{cf.humanize_timedelta(seconds=md)}**"
@@ -524,7 +526,8 @@ class Timers(commands.Cog):
         embed = discord.Embed(
             title=f"Timer settings for [{context.guild.name}]",
             description=f"Notify Members: {config['notify_members']}\n"
-            f"Timer Emoji: {config['timer_emoji']}\n{c}",
+            f"Timer Emoji: {config['timer_emoji']}\nTimer Button Colour:\n` - ` Ended: {ended}\b"
+            f"` - ` Started: {started}\n{c}",
             timestamp=datetime.now(timezone.utc),
             colour=await context.embed_colour(),
         )
