@@ -18,7 +18,7 @@ class TimersView(discord.ui.View):
     async def notify_button(
         self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
-        await interaction.response.defer(ephemeral=True, thinking=True)
+        await interaction.response.defer()
         conf = await self.cog.config.guild(interaction.guild).all()
         async with self.cog.config.guild(interaction.guild).timers() as timers:
             msg_id = timers[str(interaction.message.id)]
@@ -37,4 +37,4 @@ class TimersView(discord.ui.View):
             button.emoji = conf["timer_emoji"]
             button.style = nu.get_button_colour(conf["time_button_colour"]["started"])
         await interaction.message.edit(view=self)
-        await interaction.followup.send(content=resp)
+        await interaction.followup.send(content=resp, ephemeral=True)

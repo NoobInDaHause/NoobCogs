@@ -37,7 +37,7 @@ class Timers(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.3.4"
+    __version__ = "1.3.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
