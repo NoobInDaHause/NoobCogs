@@ -37,7 +37,7 @@ class Timers(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.3.2"
+    __version__ = "1.3.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -45,9 +45,9 @@ class Timers(commands.Cog):
         plural = "s" if len(self.__author__) > 1 else ""
         return (
             f"{super().format_help_for_context(context)}\n\n"
-        f"Cog Version: **{self.__version__}**\n"
-        f"Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}\n"
-        f"Cog Documentation: [[Click here]]({self.__docs__})"
+            f"Cog Version: **{self.__version__}**\n"
+            f"Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}\n"
+            f"Cog Documentation: [[Click here]]({self.__docs__})"
         )
 
     async def red_delete_data_for_user(
@@ -113,11 +113,10 @@ class Timers(commands.Cog):
                 except discord.errors.NotFound:
                     del timers[str(message_id)]
                     return
-                mems = timers[str(message_id)]["members"]
-                members = [host.id].extend(mems)
+                members = [host.id] + timers[str(message_id)]["members"]
                 view = discord.ui.View().add_item(
                     discord.ui.Button(
-                        label=str(len(mems)),
+                        label=str(len(members)),
                         emoji=emoji,
                         disabled=True,
                         style=nu.get_button_colour(end),

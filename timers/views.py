@@ -25,7 +25,7 @@ class TimersView(discord.ui.View):
             if interaction.user.id == msg_id["host_id"]:
                 return await interaction.followup.send(
                     content="You are the host you will be notified whenever this timer ends no matter what.",
-                    ephemeral=True
+                    ephemeral=True,
                 )
             elif interaction.user.id in msg_id["members"]:
                 msg_id["members"].remove(interaction.user.id)
