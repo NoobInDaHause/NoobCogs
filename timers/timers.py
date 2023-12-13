@@ -37,7 +37,7 @@ class Timers(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.3.3"
+    __version__ = "1.3.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -116,7 +116,7 @@ class Timers(commands.Cog):
                 members = [host.id] + timers[str(message_id)]["members"]
                 view = discord.ui.View().add_item(
                     discord.ui.Button(
-                        label=str(len(members)),
+                        label=str(len(members) - 1),  # minus host
                         emoji=emoji,
                         disabled=True,
                         style=nu.get_button_colour(end),
@@ -135,12 +135,12 @@ class Timers(commands.Cog):
                 if notif:
                     c = ",".join(
                         [
-                            guild.get_member(m).mention
+                            member.mention
                             for m in members
-                            if guild.get_member(m)
+                            if (member := guild.get_member(m))
                         ]
                     )
-                    for page in cf.pagify(c, delims=[","], page_length=1800):
+                    for page in cf.pagify(c, delims=[","], page_length=1900):
                         await asyncio.sleep(0.5)
                         await channel.send(page, delete_after=3)
                 jump_view = discord.ui.View().add_item(
@@ -525,7 +525,7 @@ class Timers(commands.Cog):
         embed = discord.Embed(
             title=f"Timer settings for [{context.guild.name}]",
             description=f"Notify Members: {config['notify_members']}\n"
-            f"Timer Emoji: {config['timer_emoji']}\nTimer Button Colour:\n` - ` Ended: {ended}\b"
+            f"Timer Emoji: {config['timer_emoji']}\nTimer Button Colour:\n` - ` Ended: {ended}\n"
             f"` - ` Started: {started}\n{c}",
             timestamp=datetime.now(timezone.utc),
             colour=await context.embed_colour(),
