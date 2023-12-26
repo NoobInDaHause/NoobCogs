@@ -36,7 +36,7 @@ class CustomError(commands.Cog):
 
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.10"
+    __version__ = "1.1.11"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
@@ -47,7 +47,7 @@ class CustomError(commands.Cog):
         return (
             f"{super().format_help_for_context(context)}\n\n"
             f"Cog Version: **{self.__version__}**\n"
-            f"Cog Author{p}: {cf.humanize_list([f"**{auth}**" for auth in self.__author__])}\n"
+            f"Cog Author{p}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}\n"
             f"Cog Documentation: [[Click here]]({self.__docs__})"
         )
 
@@ -67,7 +67,10 @@ class CustomError(commands.Cog):
     # https://github.com/Sitryk/sitcogsv3/blob/e1d8d0f3524dfec17872379c12c0edcb9360948d/errorhandler/cog.py#L30
     # modified to work with tagscriptengine and my code
     async def on_command_error(
-        self, ctx: commands.Context, error: commands.CommandError, unhandled_by_cog=False
+        self,
+        ctx: commands.Context,
+        error: commands.CommandError,
+        unhandled_by_cog: bool = False,
     ):
         context = ctx
         tagengine = tse.AsyncInterpreter(
@@ -126,7 +129,9 @@ class CustomError(commands.Cog):
                 msg=f"Exception in hybrid command '{context.command.qualified_name}'",
                 exc_info=error.original,
             )
-            exception_log = f"Exception in hybrid command '{context.command.qualified_name}'\n"
+            exception_log = (
+                f"Exception in hybrid command '{context.command.qualified_name}'\n"
+            )
             exception_log += "".join(
                 traceback.format_exception(type(error), error, error.__traceback__)
             )
@@ -141,7 +146,7 @@ class CustomError(commands.Cog):
                     allowed_mentions=discord.AllowedMentions(
                         users=True, roles=False, everyone=False
                     ),
-                    ephemeral=True
+                    ephemeral=True,
                 )
         else:
             await self.old_error(context, error, unhandled_by_cog)
