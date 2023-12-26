@@ -36,22 +36,20 @@ class CustomError(commands.Cog):
 
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.9"
+    __version__ = "1.1.10"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
     )
 
     def format_help_for_context(self, context: commands.Context) -> str:
-        """
-        Thanks Sinbad and sravan!
-        """
         p = "s" if len(self.__author__) > 1 else ""
-        return f"""{super().format_help_for_context(context)}
-
-        Cog Version: **{self.__version__}**
-        Cog Author{p}: {cf.humanize_list([f"**{auth}**" for auth in self.__author__])}
-        Cog Documentation: [[Click here]]({self.__docs__})"""
+        return (
+            f"{super().format_help_for_context(context)}\n\n"
+            f"Cog Version: **{self.__version__}**\n"
+            f"Cog Author{p}: {cf.humanize_list([f"**{auth}**" for auth in self.__author__])}\n"
+            f"Cog Documentation: [[Click here]]({self.__docs__})"
+        )
 
     async def red_delete_data_for_user(
         self,
@@ -69,7 +67,7 @@ class CustomError(commands.Cog):
     # https://github.com/Sitryk/sitcogsv3/blob/e1d8d0f3524dfec17872379c12c0edcb9360948d/errorhandler/cog.py#L30
     # modified to work with tagscriptengine and my code
     async def on_command_error(
-        self, ctx: commands.Context, error, unhandled_by_cog=False
+        self, ctx: commands.Context, error: commands.CommandError, unhandled_by_cog=False
     ):
         context = ctx
         tagengine = tse.AsyncInterpreter(
@@ -86,6 +84,22 @@ class CustomError(commands.Cog):
                 tse.ReplaceBlock(),
             ]
         )
+        cog = context.bot.get_cog("CustomError")
+        msg = await cog.config.error_msg()
+        processed = await tagengine.process(
+            message=msg,
+            seed_variables={
+                "author": tse.MemberAdapter(context.author),
+                "guild": tse.GuildAdapter(context.author.guild),
+                "channel": tse.ChannelAdapter(context.message.channel),
+                "prefix": tse.StringAdapter(context.prefix),
+                "error": tse.StringAdapter(error),
+                "command": tse.StringAdapter(context.command.qualified_name),
+                "message_content": tse.StringAdapter(context.message.content),
+                "message_id": tse.StringAdapter(context.message.id),
+                "message_jump_url": tse.StringAdapter(context.message.jump_url),
+            },
+        )
         if isinstance(error, commands.CommandInvokeError):
             self.log.exception(
                 msg=f"Exception in command '{context.command.qualified_name}'",
@@ -97,22 +111,6 @@ class CustomError(commands.Cog):
             )
             context.bot._last_exception = exception_log
 
-            cog = context.bot.get_cog("CustomError")
-            msg = await cog.config.error_msg()
-            processed = await tagengine.process(
-                message=msg,
-                seed_variables={
-                    "author": tse.MemberAdapter(context.author),
-                    "guild": tse.GuildAdapter(context.author.guild),
-                    "channel": tse.ChannelAdapter(context.message.channel),
-                    "prefix": tse.StringAdapter(context.prefix),
-                    "error": tse.StringAdapter(error),
-                    "command": tse.StringAdapter(context.command.qualified_name),
-                    "message_content": tse.StringAdapter(context.message.content),
-                    "message_id": tse.StringAdapter(context.message.id),
-                    "message_jump_url": tse.StringAdapter(context.message.jump_url),
-                },
-            )
             with contextlib.suppress(
                 discord.errors.Forbidden, discord.errors.HTTPException
             ):
@@ -123,9 +121,30 @@ class CustomError(commands.Cog):
                         users=True, roles=False, everyone=False
                     ),
                 )
-            return
+        elif isinstance(error, commands.HybridCommandError):
+            self.log.exception(
+                msg=f"Exception in hybrid command '{context.command.qualified_name}'",
+                exc_info=error.original,
+            )
+            exception_log = f"Exception in hybrid command '{context.command.qualified_name}'\n"
+            exception_log += "".join(
+                traceback.format_exception(type(error), error, error.__traceback__)
+            )
+            context.bot._last_exception = exception_log
 
-        await self.old_error(context, error, unhandled_by_cog)
+            with contextlib.suppress(
+                discord.errors.Forbidden, discord.errors.HTTPException
+            ):
+                await context.reply(
+                    content=processed.body,
+                    embed=processed.actions.get("embed"),
+                    allowed_mentions=discord.AllowedMentions(
+                        users=True, roles=False, everyone=False
+                    ),
+                    ephemeral=True
+                )
+        else:
+            await self.old_error(context, error, unhandled_by_cog)
 
     async def cog_unload(self):
         self.bot.on_command_error = self.old_error
