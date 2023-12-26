@@ -36,7 +36,7 @@ class CustomError(commands.Cog):
 
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.11"
+    __version__ = "1.1.12"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
@@ -123,30 +123,6 @@ class CustomError(commands.Cog):
                     allowed_mentions=discord.AllowedMentions(
                         users=True, roles=False, everyone=False
                     ),
-                )
-        elif isinstance(error, commands.HybridCommandError):
-            self.log.exception(
-                msg=f"Exception in hybrid command '{context.command.qualified_name}'",
-                exc_info=error.original,
-            )
-            exception_log = (
-                f"Exception in hybrid command '{context.command.qualified_name}'\n"
-            )
-            exception_log += "".join(
-                traceback.format_exception(type(error), error, error.__traceback__)
-            )
-            context.bot._last_exception = exception_log
-
-            with contextlib.suppress(
-                discord.errors.Forbidden, discord.errors.HTTPException
-            ):
-                await context.reply(
-                    content=processed.body,
-                    embed=processed.actions.get("embed"),
-                    allowed_mentions=discord.AllowedMentions(
-                        users=True, roles=False, everyone=False
-                    ),
-                    ephemeral=True,
                 )
         else:
             await self.old_error(context, error, unhandled_by_cog)
