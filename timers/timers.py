@@ -37,7 +37,7 @@ class Timers(commands.Cog):
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.Timers")
 
-    __version__ = "1.3.6"
+    __version__ = "1.3.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -152,6 +152,10 @@ class Timers(commands.Cog):
                     allowed_mentions=discord.AllowedMentions.none(),
                 )
                 del timers[str(message_id)]
+                if view := discord.utils.get(
+                    self.bot.persistent_views, _cache_key=msg.id
+                ):
+                    view.stop()
             except Exception as e:
                 self.log.exception(
                     f"Error ending timer with message ID: {message_id}", exc_info=e
@@ -231,6 +235,10 @@ class Timers(commands.Cog):
                 for msg_id in msg_ids:
                     try:
                         del timers[str(msg_id)]
+                        if view := discord.utils.get(
+                            self.bot.persistent_views, _cache_key=msg_id
+                        ):
+                            view.stop()
                     except KeyError:
                         continue
         except Exception as e:
@@ -263,6 +271,10 @@ class Timers(commands.Cog):
         if int(duration.total_seconds()) < 10:
             return await context.send(
                 content="Duration must be greater than **10 Seconds**."
+            )
+        if len(title) > 256:
+            return await context.send(
+                content="Your timer title should be less than 256 characters due to embed limits."
             )
         time = datetime.now(timezone.utc) + duration
         stamp = round(time.timestamp())

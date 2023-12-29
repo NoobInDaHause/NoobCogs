@@ -1,3 +1,4 @@
+import contextlib
 import discord
 import noobutils as nu
 
@@ -18,12 +19,11 @@ class TimersView(discord.ui.View):
     async def notify_button(
         self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
-        await interaction.response.defer(thinking=True, ephemeral=True)
         conf = await self.cog.config.guild(interaction.guild).all()
         async with self.cog.config.guild(interaction.guild).timers() as timers:
             msg_id = timers[str(interaction.message.id)]
             if interaction.user.id == msg_id["host_id"]:
-                return await interaction.followup.send(
+                return await interaction.response.send_message(
                     content="You are the host you will be notified whenever this timer ends no matter what.",
                     ephemeral=True,
                 )
@@ -36,5 +36,6 @@ class TimersView(discord.ui.View):
             button.label = str(len(msg_id["members"]))
             button.emoji = conf["timer_emoji"]
             button.style = nu.get_button_colour(conf["timer_button_colour"]["started"])
-        await interaction.message.edit(view=self)
+        with contextlib.suppress(Exception):
+            await interaction.response.edit_message(view=self)
         await interaction.followup.send(content=resp, ephemeral=True)
