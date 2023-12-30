@@ -38,7 +38,7 @@ class Suggestions(commands.Cog):
 
         self.log = logging.getLogger("red.NoobCogs.Suggestions")
 
-    __version__ = "2.0.1"
+    __version__ = "2.0.2"
     __author__ = ["NooInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/suggestions/README.md"
@@ -102,7 +102,9 @@ class Suggestions(commands.Cog):
                                     suggest_data["message_id"]
                                 )
                                 self.bot.add_view(
-                                    view=SuggestionView(cog=self, suggestion_id=suggest_id),
+                                    view=SuggestionView(
+                                        cog=self, suggestion_id=suggest_id
+                                    ),
                                     message_id=msg.id,
                                 )
 
@@ -272,6 +274,10 @@ class Suggestions(commands.Cog):
             channel = context.guild.get_channel(suggest_data["channel_id"])
             if not channel:
                 return "nochan"
+            if vi := discord.utils.get(
+                self.bot.persistent_views, _cache_key=suggest_data["message_id"]
+            ):
+                vi.stop()
             try:
                 msg = await channel.fetch_message(suggest_data["message_id"])
             except (discord.errors.NotFound, discord.errors.Forbidden):

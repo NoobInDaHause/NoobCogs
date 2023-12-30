@@ -35,7 +35,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | PressF           |  v1.1.8   | F.                                                          |
 | RandomColourRole |  v1.1.6   | Have a role that changes colour every 5 minutes.            |
 | SplitOrSteal     |  v3.0.3   | A fun split or steal game.                                  |
-| Suggestions      |  v2.0.1   | Suggestion system.                                          |
+| Suggestions      |  v2.0.2   | Suggestion system.                                          |
 | Timers           |  v1.3.7   | Start a timer countdown.                                    |
 
 ## License
