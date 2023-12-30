@@ -36,7 +36,7 @@ class CustomError(commands.Cog):
 
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.12"
+    __version__ = "1.1.13"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
@@ -87,23 +87,22 @@ class CustomError(commands.Cog):
                 tse.ReplaceBlock(),
             ]
         )
-        cog = context.bot.get_cog("CustomError")
-        msg = await cog.config.error_msg()
-        processed = await tagengine.process(
-            message=msg,
-            seed_variables={
-                "author": tse.MemberAdapter(context.author),
-                "guild": tse.GuildAdapter(context.author.guild),
-                "channel": tse.ChannelAdapter(context.message.channel),
-                "prefix": tse.StringAdapter(context.prefix),
-                "error": tse.StringAdapter(error),
-                "command": tse.StringAdapter(context.command.qualified_name),
-                "message_content": tse.StringAdapter(context.message.content),
-                "message_id": tse.StringAdapter(context.message.id),
-                "message_jump_url": tse.StringAdapter(context.message.jump_url),
-            },
-        )
         if isinstance(error, commands.CommandInvokeError):
+            msg = await self.config.error_msg()
+            processed = await tagengine.process(
+                message=msg,
+                seed_variables={
+                    "author": tse.MemberAdapter(context.author),
+                    "guild": tse.GuildAdapter(context.author.guild),
+                    "channel": tse.ChannelAdapter(context.message.channel),
+                    "prefix": tse.StringAdapter(context.prefix),
+                    "error": tse.StringAdapter(error),
+                    "command": tse.StringAdapter(context.command.qualified_name),
+                    "message_content": tse.StringAdapter(context.message.content),
+                    "message_id": tse.StringAdapter(context.message.id),
+                    "message_jump_url": tse.StringAdapter(context.message.jump_url),
+                },
+            )
             self.log.exception(
                 msg=f"Exception in command '{context.command.qualified_name}'",
                 exc_info=error.original,
