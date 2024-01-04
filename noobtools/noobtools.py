@@ -9,7 +9,6 @@ from redbot.core.utils import chat_formatting as cf, mod
 
 from typing import List, Literal, Optional
 
-from .converters import CustomFuzzyRole
 from .views import ChangeAuditReasonView
 
 
@@ -35,7 +34,7 @@ class NoobTools(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.NoobTools")
         self.old_get_audit_reason = mod.get_audit_reason
 
-    __version__ = "1.0.3"
+    __version__ = "1.0.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/noobtools/README.md"
@@ -170,14 +169,14 @@ class NoobTools(commands.Cog):
     @app_commands.guild_only()
     @app_commands.describe(
         channel="The channel that you want to reach roles.",
-        roles="The roles that you want to reach. (separate roles with spaces)"
+        roles="The roles that you want to reach. (separate roles with spaces)",
     )
     async def reach(
         self,
         context: commands.Context,
         channel: Optional[discord.TextChannel] = None,
-        roles: commands.Greedy[CustomFuzzyRole] = None,
-    ):
+        roles: commands.Greedy[nu.NoobFuzzyRole] = None,
+    ):  # sourcery skip: low-code-quality
         """
         Reach channel and see how many members who can view the channel.
 

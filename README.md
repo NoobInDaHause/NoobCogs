@@ -31,7 +31,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | DonationLogger   |  v1.1.1   | Donation Logger system.                                     |
 | GlobalBan        |  v1.2.1   | Globally ban a user from all the guilds the bot is in.      |
 | JoinDM           |  v1.0.4   | M newly joined users from your guild with your set message. |
-| NoobTools        |  v1.0.3   | NoobInDahause's personal tools.                             |
+| NoobTools        |  v1.0.4   | NoobInDahause's personal tools.                             |
 | PressF           |  v1.1.8   | F.                                                          |
 | RandomColourRole |  v1.1.6   | Have a role that changes colour every 5 minutes.            |
 | SplitOrSteal     |  v3.0.3   | A fun split or steal game.                                  |
