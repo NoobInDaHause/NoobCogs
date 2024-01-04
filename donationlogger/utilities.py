@@ -1,7 +1,7 @@
 import discord
 import noobutils as nu
 
-from redbot.core.bot import commands
+from redbot.core.bot import commands, Red
 from redbot.core.utils import mod
 
 from typing import Dict, List, Union, TYPE_CHECKING
@@ -58,9 +58,9 @@ async def verify_roles(
     for raw in raw_roles:
         try:
             r = raw.strip()
-            role = await nu.NoobFuzzyRole().convert(context, r)
-            if role not in roles:
-                roles.append(role)
+            role = await nu.NoobFuzzyRole.convert(context, r)
+            if role._role not in roles:
+                roles.append(role._role)
         except Exception:
             continue
     return roles
@@ -88,27 +88,58 @@ async def verify_amount_roles(
     return dict(sorted(par.items(), key=lambda b: int(b[0])))
 
 
-def is_setup_done():
-    async def check_if_setup_done(context: commands.Context):
-        cog: "DonationLogger" = context.bot.get_cog("DonationLogger")
-        return await cog.config.guild(context.guild).setup() if context.guild else False
+async def check_if_setup_done(
+    obj: Union[commands.Context, discord.Interaction[Red]]
+) -> bool:
+    if isinstance(obj, commands.Context):
+        cog: "DonationLogger" = obj.bot.get_cog("DonationLogger")
+    else:
+        cog: "DonationLogger" = obj.client.get_cog("DonationLogger")
+    return await cog.config.guild(obj.guild).setup() if obj.guild else False
 
+
+def is_setup_done():
     return commands.check(check_if_setup_done)
 
 
+async def check_if_is_a_dono_manager_or_higher(
+    obj: Union[commands.Context, discord.Interaction[Red]]
+) -> bool:
+    if not obj.guild:
+        return False
+
+    if isinstance(obj, commands.Context):
+        cog: "DonationLogger" = obj.bot.get_cog("DonationLogger")
+        author = obj.author
+        bot = obj.bot
+    else:
+        cog: "DonationLogger" = obj.client.get_cog("DonationLogger")
+        author = obj.user
+        bot = obj.client
+    managers = await cog.config.guild(obj.guild).managers()
+    return (
+        await bot.is_owner(author)
+        or author.guild_permissions.manage_guild
+        or await mod.is_mod_or_superior(bot, author)
+        or any(role_id in author._roles for role_id in managers)
+        or False
+    )
+
+
 def is_a_dono_manager_or_higher():
-    async def check_if_is_a_dono_manager_or_higher(context: commands.Context):
-        if not context.guild:
-            return False
-
-        cog: "DonationLogger" = context.bot.get_cog("DonationLogger")
-        managers = await cog.config.guild(context.guild).managers()
-        return (
-            await context.bot.is_owner(context.author)
-            or context.author.guild_permissions.manage_guild
-            or await mod.is_mod_or_superior(context.bot, context.author)
-            or any(role_id in context.author._roles for role_id in managers)
-            or False
-        )
-
     return commands.check(check_if_is_a_dono_manager_or_higher)
+
+
+def has_dono_permissions(
+    obj: Union[commands.Context, discord.Interaction[Red]], **perms: bool
+) -> bool:
+    if isinstance(obj, commands.Context):
+        permissions = obj.author.guild_permissions
+    else:
+        permissions = obj.user.guild_permissions
+
+    missing = [
+        perm for perm, value in perms.items() if getattr(permissions, perm) != value
+    ]
+
+    return not missing

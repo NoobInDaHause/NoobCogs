@@ -7,3 +7,7 @@ class AmountConversionFailure(BadArgument):
 
 class MoreThanThreeRoles(BadArgument):
     pass
+
+
+class BankConversionFailure(BadArgument):
+    pass

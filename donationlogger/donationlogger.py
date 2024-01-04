@@ -1,23 +1,20 @@
-import asyncio
 import discord
 import noobutils as nu
 import logging
-import random
 
-from redbot.core.bot import commands, Config, Red
+from redbot.core.bot import app_commands, commands, Config, Red
 from redbot.core.utils import chat_formatting as cf, mod
 
 from typing import Dict, Literal, List, Optional
 
 from .exceptions import MoreThanThreeRoles
-from .converters import AmountConverter, DLEmojiConverter
+from .converters import AmountConverter, BankConverter, DLEmojiConverter
+from .hybrids import HYBRIDS
 from .utilities import (
     verify_amount_roles,
-    verify_bank,
     is_setup_done,
     is_a_dono_manager_or_higher,
 )
-from .views import DonationLoggerSetupView, TotalDonoView
 
 
 class DonationLogger(commands.Cog):
@@ -45,7 +42,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.0.20"
+    __version__ = "1.1.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -308,28 +305,7 @@ class DonationLogger(commands.Cog):
         """
         Setup the donation logger system in this guild.
         """
-        if await self.config.guild(context.guild).setup():
-            return await context.send(
-                content="It appears this guild is already set up, "
-                "you can run this command again when you reset this guild."
-            )
-        conf = (
-            "You are about to set up DonationLogger system in your server.\n"
-            "Click Yes to continue or No to abort."
-        )
-        act = "Alright sending set up interactions, please wait..."
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
-        await view.wait()
-        await asyncio.sleep(3)
-        if view.value:
-            await view.message.delete()
-            if context.guild.id in self.setupcache:
-                return await context.send(
-                    content="Only one setup interaction per guild."
-                )
-            self.setupcache.append(context.guild.id)
-            await DonationLoggerSetupView(self).start(context)
+        await HYBRIDS.hybrid_setup(self, context)
 
     @donationlogger.command(name="resetmember")
     @is_setup_done()
@@ -337,53 +313,25 @@ class DonationLogger(commands.Cog):
     async def donationlogger_resetmember(
         self,
         context: commands.Context,
-        member: Optional[discord.Member] = None,
-        bank_name: str = None,
+        bank_name: BankConverter = None,
+        member: discord.Member = None,
     ):
         """
         Reset a member's specific bank or all bank donations.
         """
         if not member:
             member = context.author
-        if not bank_name:
-            act = f"Successfully cleared all bank donations from **{member.name}**."
-            conf = f"Are you sure you want to erase all bank donations from **{member.name}**?"
-            view = nu.NoobConfirmation()
-            await view.start(context, act, content=conf)
-            await view.wait()
-            if view.value:
-                async with self.config.guild(context.guild).banks() as banks:
-                    for bank in banks.values():
-                        bank["donators"].setdefault(str(member.id), 0)
-                        bank["donators"][str(member.id)] = 0
-            return
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-        act = f"Successfully cleared **{bank_name.title()}** donations from **{member.name}**."
-        conf = f"Are you sure you want to clear **{bank_name.title()}** donations from **{member.name}**"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
-        await view.wait()
-        if view.value:
-            async with self.config.guild(context.guild).banks() as banks:
-                donations = banks[bank_name.lower()]["donators"].setdefault(
-                    str(member.id), 0
-                )
-                if donations == 0:
-                    return await context.send(
-                        content="This member has 0 donation balance for this bank."
-                    )
-                banks[bank_name.lower()]["donators"][str(member.id)] = 0
+        if member.bot:
+            return await context.send(content="Bots are not allowed.")
+        await HYBRIDS.hybrid_resetmember(self, context, member, bank_name)
 
     @donationlogger.command(name="balance", aliases=["bal", "c", "check"])
     @is_setup_done()
     async def donationlogger_check(
         self,
         context: commands.Context,
-        member: Optional[discord.Member] = None,
-        bank_name: str = None,
+        bank_name: BankConverter = None,
+        member: discord.Member = None,
     ):
         """
         Check your or some one else's donation balance.
@@ -395,149 +343,33 @@ class DonationLogger(commands.Cog):
                 content="Bots are prohibited from donations. (For obvious reasons)"
             )
 
-        if bank_name:
-            if not await verify_bank(context, bank_name):
-                return await context.send(
-                    content=f'Bank "{bank_name}" does not seem to exist.'
-                )
-            async with self.config.guild(context.guild).banks() as banks:
-                bank = banks[bank_name.lower()]
-                donations = bank["donators"].setdefault(str(member.id), 0)
-                if bank["hidden"]:
-                    return await context.send(cotnent="This bank is hidden.")
-                embed = discord.Embed(
-                    title=f"{member.name} ({member.id})",
-                    description=(
-                        f"Bank: {bank_name.title()}\n"
-                        f"Total amount donated: {bank['emoji']} {cf.humanize_number(donations)}"
-                    ),
-                    timestamp=discord.utils.utcnow(),
-                    colour=member.colour,
-                )
-                embed.set_thumbnail(url=nu.is_have_avatar(member))
-                embed.set_footer(
-                    text=f"{context.guild.name} admires your donations!",
-                    icon_url=nu.is_have_avatar(context.guild),
-                )
-                return await context.send(embed=embed)
-        embed = await self.get_all_bank_member_dono(context.guild, member)
-        await context.send(embed=embed)
+        await HYBRIDS.hybrid_balance(self, context, member, bank_name)
 
     @donationlogger.command(name="donationcheck", aliases=["dc"])
     @is_setup_done()
     async def donationlogger_donationcheck(
         self,
         context: commands.Context,
-        bank_name: str,
+        bank_name: BankConverter,
         mla: Literal["more", "less", "all"],
         amount: AmountConverter = None,
     ):
         """
         See who has donated more or less or all from a bank.
         """
-        if not await verify_bank(context, bank_name):
-            return await context.send(f'Bank "{bank_name}" does not exist.')
-
-        if mla == "all":
-            embeds = await self.get_dc_from_bank(context, bank_name)
-            if not embeds:
-                return await context.send(content="This bank is hidden.")
-            await nu.NoobPaginator(embeds).start(context)
-            return
-
-        if not amount:
-            return await context.send_help()
-
-        banks_config = await self.config.guild(context.guild).banks()
-        bank_data = banks_config.get(bank_name.lower(), {})
-        if bank_data.get("hidden"):
-            return await context.send("This bank is hidden.")
-
-        donators = bank_data.get("donators", {})
-        filtered_donators = {
-            k: v
-            for k, v in donators.items()
-            if (mla == "more" and v >= amount) or (mla == "less" and v < amount)
-        }
-
-        sorted_donators = sorted(
-            filtered_donators.items(), key=lambda u: u[1], reverse=(mla == "more")
-        )
-
-        output_list = []
-        for index, (donator_id, donation_amount) in enumerate(sorted_donators, 1):
-            member = context.guild.get_member(int(donator_id))
-            mention = (
-                f"{member.mention} (`{member.id}`)"
-                if member
-                else f"Member not found in server. (`{donator_id}`)"
-            )
-            e = "➡️ " if member == context.author else ""
-            output_list.append(
-                f"{e}{index}. {mention}: **{cf.humanize_number(donation_amount)}**"
-            )
-
-        output_text = "\n".join(
-            output_list
-            or [f"No one has donated {mla} than **{cf.humanize_number(amount)}** yet."]
-        )
-
-        paginated_output = await nu.pagify_this(
-            output_text,
-            "\n",
-            "Page ({index}/{pages})",
-            embed_title=f"All members who have donated {mla} than {cf.humanize_number(amount)} "
-            f"for [{bank_name.title()}]",
-            embed_colour=await context.embed_colour(),
-        )
-
-        await nu.NoobPaginator(paginated_output).start(context)
+        await HYBRIDS.hybrid_donationcheck(self, context, bank_name, mla, amount)
 
     @donationlogger.command(name="leaderboard", aliases=["lb"])
     @is_setup_done()
     async def donationlogger_leaderboard(
-        self, context: commands.Context, bank_name: str, top: int = 10
+        self, context: commands.Context, bank_name: BankConverter, top: int = 10
     ):
         """
         See who has donated the most from a bank.
-
-        Pass `true` in the all_donors argument to see all donators from a bank.
         """
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-
-        if top > 25:
-            return await context.send(
-                content="Top number must be less than or equal to 25."
-            )
-        banks = await self.config.guild(context.guild).banks()
-        if banks[bank_name.lower()]["hidden"]:
-            return await context.send(content="This bank is hidden.")
-        donors = banks[bank_name.lower()]["donators"]
-        emoji = banks[bank_name.lower()]["emoji"]
-        sorted_donors = dict(sorted(donors.items(), key=lambda m: m[1], reverse=True))
-        embed = discord.Embed(
-            title=f"Top {top} donators for [{bank_name.title()}]",
-            colour=random.randint(0, 0xFFFFFF),
-            timestamp=discord.utils.utcnow(),
-        )
-        embed.set_footer(text=context.guild.name)
-        embed.set_thumbnail(url=nu.is_have_avatar(context.guild))
-        if not sorted_donors:
-            embed.description = "It seems no one has donated from this bank yet."
-        for index, (k, v) in enumerate(sorted_donors.items(), 1):
-            if index > top:
-                break
-            member = context.guild.get_member(int(k))
-            mem = f"{member.name}" if member else f"[Member not found in guild] ({k})"
-            embed.add_field(
-                name=f"{index}. {mem}",
-                value=f"{emoji} {cf.humanize_number(v)}",
-                inline=False,
-            )
-        await context.send(embed=embed)
+        if top > 25 or top < 1:
+            return await context.send(content="Top number must be between 1-25.")
+        await HYBRIDS.hybrid_leaderboard(self, context, bank_name, top)
 
     @donationlogger.command(name="add", aliases=["+", "a"])
     @is_setup_done()
@@ -545,9 +377,9 @@ class DonationLogger(commands.Cog):
     async def donationlogger_add(
         self,
         context: commands.Context,
-        bank_name: str,
+        bank_name: BankConverter,
         amount: AmountConverter,
-        member: Optional[discord.Member] = None,
+        member: discord.Member = None,
     ):
         """
         Add bank donation amount to a member or yourself.
@@ -559,42 +391,7 @@ class DonationLogger(commands.Cog):
                 content="Bots are prohibited from donations. (For obvious reasons)"
             )
 
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-        async with self.config.guild(context.guild).banks() as banks:
-            bank = banks[bank_name.lower()]
-            emoji = bank["emoji"]
-            if bank["hidden"]:
-                return await context.send(content="This bank is hidden.")
-            bank["donators"].setdefault(str(member.id), 0)
-            bank["donators"][str(member.id)] += amount
-            updated = bank["donators"][str(member.id)]
-            previous = updated - amount
-            donated = cf.humanize_number(amount)
-            total = cf.humanize_number(updated)
-            roles = await self.update_dono_roles(
-                context, "add", updated, member, bank["roles"]
-            )
-            humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
-            rep = (
-                f"Successfully added {emoji} **{donated}** to "
-                f"**{member.name}**'s **__{bank_name.title()}__** donation balance.\n"
-                f"Their total donation balance is now **{emoji} {total}** on **__{bank_name.title()}__**."
-            )
-            await TotalDonoView(self).start(context, rep, member)
-            await self.send_to_log_channel(
-                context,
-                "add",
-                bank_name,
-                emoji,
-                amount,
-                previous,
-                updated,
-                member,
-                humanized_roles,
-            )
+        await HYBRIDS.hybrid_add(self, context, bank_name, amount, member)
 
     @donationlogger.command(name="remove", aliases=["-", "r"])
     @is_setup_done()
@@ -602,9 +399,9 @@ class DonationLogger(commands.Cog):
     async def donationlogger_remove(
         self,
         context: commands.Context,
-        bank_name: str,
+        bank_name: BankConverter,
         amount: AmountConverter,
-        member: Optional[discord.Member] = None,
+        member: discord.Member = None,
     ):
         """
         Remove bank donation amount to a member or yourself.
@@ -616,53 +413,7 @@ class DonationLogger(commands.Cog):
                 content="Bots are prohibited from donations. (For obvious reasons)"
             )
 
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-
-        async with self.config.guild(context.guild).banks() as banks:
-            bank = banks[bank_name.lower()]
-            donators = bank["donators"]
-            emoji = bank["emoji"]
-            member_id = str(member.id)
-            if bank["hidden"]:
-                return await context.send(content="This bank is hidden.")
-            donators.setdefault(member_id, 0)
-            if donators[member_id] == 0:
-                return await context.send(
-                    content="This member has 0 donation balance for this bank."
-                )
-            donators[member_id] -= amount
-            updated1 = donators[member_id]
-            if updated1 < 0:
-                donators[member_id] = 0
-            updated2 = donators[member_id]
-            previous = updated1 + amount
-            donated = cf.humanize_number(amount)
-            total = cf.humanize_number(updated2)
-            roles = await self.update_dono_roles(
-                context, "remove", updated2, member, bank["roles"]
-            )
-            humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
-            rep = (
-                f"Successfully removed {emoji} **{donated}** from "
-                f"**{member.name}**'s **__{bank_name.title()}__** donation balance.\n"
-                "Their total donation balance is now "
-                f"**{emoji} {total}** on **__{bank_name.title()}__**."
-            )
-            await TotalDonoView(self).start(context, rep, member)
-            await self.send_to_log_channel(
-                context,
-                "remove",
-                bank_name,
-                emoji,
-                amount,
-                previous,
-                updated2,
-                member,
-                humanized_roles,
-            )
+        await HYBRIDS.hybrid_remove(self, context, bank_name, amount, member)
 
     @donationlogger.command(name="set")
     @is_setup_done()
@@ -670,9 +421,9 @@ class DonationLogger(commands.Cog):
     async def donationlogger_set(
         self,
         context: commands.Context,
-        bank_name: str,
+        bank_name: BankConverter,
         amount: AmountConverter,
-        member: Optional[discord.Member] = None,
+        member: discord.Member = None,
     ):
         """
         Set someone's donation balance to the amount of your choice.
@@ -684,44 +435,7 @@ class DonationLogger(commands.Cog):
                 content="Bots are prohibited from donations. (For obvious reasons)"
             )
 
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-
-        async with self.config.guild(context.guild).banks() as banks:
-            bank = banks[bank_name.lower()]
-            donators = bank["donators"]
-            emoji = bank["emoji"]
-            if bank["hidden"]:
-                return await context.send(content="This bank is hidden.")
-            donators.setdefault(str(member.id), 0)
-            previous = donators[str(member.id)]
-            donators[str(member.id)] = amount
-            aroles = await self.update_dono_roles(
-                context, "add", amount, member, bank["roles"]
-            )
-            rrole = await self.update_dono_roles(
-                context, "remove", amount, member, bank["roles"]
-            )
-            roles = aroles + rrole
-            humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
-            rep = (
-                f"Successfully set {emoji} **{cf.humanize_number(amount)}** as "
-                f"**{member.name}**'s **__{bank_name.title()}__** donation balance."
-            )
-            await TotalDonoView(self).start(context, rep, member)
-            await self.send_to_log_channel(
-                context,
-                "set",
-                bank_name,
-                emoji,
-                amount,
-                previous,
-                amount,
-                member,
-                humanized_roles,
-            )
+        await HYBRIDS.hybrid_set(self, context, bank_name, amount, member)
 
     @commands.group(
         name="donationloggerset", aliases=["dlset", "donologset", "donoset"]
@@ -746,16 +460,13 @@ class DonationLogger(commands.Cog):
     async def donationloggerset_bank_add(
         self,
         context: commands.Context,
-        bank_name: str,
+        bank_name: BankConverter,
         emoji: DLEmojiConverter,
         hidden: bool = False,
     ):
         """
         Add a new bank.
         """
-        if await verify_bank(context, bank_name):
-            return await context.send(content="It seems that bank already exists.")
-
         async with self.config.guild(context.guild).banks() as banks:
             if len(banks) > 25:
                 return await context.send(
@@ -775,17 +486,17 @@ class DonationLogger(commands.Cog):
 
     @donationloggerset_bank.command(name="remove")
     async def donationloggerset_bank_remove(
-        self, context: commands.Context, bank_name: str
+        self, context: commands.Context, bank_name: BankConverter
     ):
         """
         Remove a bank.
         """
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
 
         async with self.config.guild(context.guild).banks() as banks:
+            if len(list(banks.keys())) == 1:
+                return await context.send(
+                    content="This bank is the guild's only bank, you can not remove it."
+                )
             del banks[bank_name.lower()]
         await context.send(content="That bank is deleted.")
 
@@ -820,7 +531,7 @@ class DonationLogger(commands.Cog):
 
     @donationloggerset_bank_amountroles.command(name="set", aliases=["add"])
     async def donationloggerset_bank_amountroles_set(
-        self, context: commands.Context, bank_name: str, amountroles: str
+        self, context: commands.Context, bank_name: BankConverter, amountroles: str
     ):
         """
         Set roles milestone to an amount.
@@ -828,11 +539,6 @@ class DonationLogger(commands.Cog):
         Example: `10m:@role:@role,10k:(role_id),12.5e6:(role_name)`
         You can only set a maximum of 3 roles per amount.
         """
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-
         _ar = amountroles.strip().split(",")
         try:
             arole = await verify_amount_roles(context, _ar)
@@ -868,16 +574,12 @@ class DonationLogger(commands.Cog):
     async def donationloggerset_bank_amountroles_add(
         self,
         context: commands.Context,
-        bank_name: str,
+        bank_name: BankConverter,
         amount: AmountConverter,
     ):
         """
         Remove an amount from the roles milestone.
         """
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
         async with self.config.guild(context.guild).banks() as banks:
             try:
                 del banks[bank_name.lower()]["roles"][str(amount)]
@@ -887,16 +589,11 @@ class DonationLogger(commands.Cog):
 
     @donationloggerset_bank_amountroles.command(name="list")
     async def donationloggerset_bank_amountroles_list(
-        self, context: commands.Context, bank_name: str
+        self, context: commands.Context, bank_name: BankConverter
     ):
         """
         See the list of amountroles on a bank.
         """
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-
         banks = await self.config.guild(context.guild).banks()
         aroles = banks[bank_name.lower()]["roles"]
         sorted_aroles = dict(sorted(aroles.items(), key=lambda j: int(j[0])))
@@ -918,15 +615,11 @@ class DonationLogger(commands.Cog):
         self,
         context: commands.Context,
         roles_or_donators: Literal["amountroles", "donators", "both"],
-        bank_name: str,
+        bank_name: BankConverter,
     ):
         """
         Reset a banks donations or amountroles.
         """
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
         async with self.config.guild(context.guild).banks() as banks:
             if roles_or_donators == "amountroles":
                 banks[bank_name.lower()]["roles"] = {}
@@ -946,16 +639,14 @@ class DonationLogger(commands.Cog):
 
     @donationloggerset_bank.command(name="emoji")
     async def donationloggerset_bank_emoji(
-        self, context: commands.Context, bank_name: str, emoji: DLEmojiConverter
+        self,
+        context: commands.Context,
+        bank_name: BankConverter,
+        emoji: DLEmojiConverter,
     ):
         """
         Change a bank's emoji.
         """
-        if not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-
         async with self.config.guild(context.guild).banks() as banks:
             banks[bank_name.lower()]["emoji"] = str(emoji)
             await context.send(
@@ -967,16 +658,11 @@ class DonationLogger(commands.Cog):
         self,
         context: commands.Context,
         hidden: Literal["hide", "unhide", "list"],
-        bank_name: str = None,
+        bank_name: BankConverter = None,
     ):
         """
         Hide, UnHide or see the list of hidden banks.
         """
-        if bank_name and not await verify_bank(context, bank_name):
-            return await context.send(
-                content=f'Bank "{bank_name}" does not seem to exist.'
-            )
-
         if hidden in ["hide", "unhide"]:
             if not bank_name:
                 return await context.send_help()
@@ -1135,3 +821,308 @@ class DonationLogger(commands.Cog):
                 inline=False,
             )
         await context.send(embed=embed)
+
+    # <------------------------------------- SLASH COMMANDS ---------------------------------------------->
+
+    @app_commands.guild_only()
+    class SlashDonationLogger(app_commands.Group):
+        ...
+
+    slash_donologger = SlashDonationLogger(
+        name="donationlogger", description="DonationLogger base commands."
+    )
+
+    @slash_donologger.command(
+        name="setup", description="Setup the donation logger system in this guild."
+    )
+    async def slash_donationlogger(self, interaction: discord.Interaction[Red]):
+        """_summary_
+
+        Args:
+            interaction (discord.Interaction[Red]): _description_
+        """
+        await HYBRIDS.hybrid_setup(self, interaction)
+
+    @slash_donologger.command(
+        name="resetmember",
+        description="Reset a member's specific bank or all bank donations.",
+    )
+    @app_commands.describe(
+        bank_name="The name of the registered bank.",
+        member="The member that you want to reset donations. (leave blank to choose yourself)",
+    )
+    async def slash_donationlogger_resetmember(
+        self,
+        interaction: discord.Interaction[Red],
+        bank_name: Optional[app_commands.Transform[str, BankConverter]],
+        member: Optional[discord.Member],
+    ):
+        """_summary_
+
+        Args:
+            interaction (discord.Interaction[Red]): _description_
+            bank_name (Optional[app_commands.Transform[str, BankConverter]]): _description_
+            member (Optional[discord.Member]): _description_
+        """
+        if not member:
+            member = interaction.user
+        if member.bot:
+            return await interaction.response.send_message(
+                content="Bots are not allowed."
+            )
+        if isinstance(bank_name, list):
+            if bank_name[1]:
+                return await interaction.response.send_message(
+                    content=bank_name[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=bank_name[0])
+        await HYBRIDS.hybrid_resetmember(self, interaction, member, bank_name)
+
+    @slash_donologger.command(
+        name="balance", description="Check your or some one else's donation balance."
+    )
+    @app_commands.describe(
+        bank_name="The name of the registered bank.",
+        member="The member that you want to check donations. (leave blank to choose yourself)",
+    )
+    async def slash_donationlogger_balance(
+        self,
+        interaction: discord.Interaction[Red],
+        bank_name: Optional[app_commands.Transform[str, BankConverter]],
+        member: Optional[discord.Member],
+    ):
+        """_summary_
+
+        Args:
+            interaction (discord.Interaction[Red]): _description_
+            bank_name (Optional[app_commands.Transform[str, BankConverter]]): _description_
+            member (discord.Member, optional): _description_. Defaults to None.
+        """
+        if not member:
+            member = interaction.user
+        if member.bot:
+            return await interaction.response.send_message(
+                content="Bots are not allowed."
+            )
+        if isinstance(bank_name, list):
+            if bank_name[1]:
+                return await interaction.response.send_message(
+                    content=bank_name[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=bank_name[0])
+        await HYBRIDS.hybrid_balance(self, interaction, member, bank_name)
+
+    @slash_donologger.command(
+        name="donationcheck",
+        description="See who has donated more or less or all from a bank.",
+    )
+    @app_commands.rename(mla="more_less_all")
+    @app_commands.describe(
+        bank_name="The name of the registered bank.",
+        mla="Check More, Less or All donations from the bank.",
+        amount="The amount to check. (leave blank if you will check all) (examples: 10k, 1e6, 6900)",
+    )
+    async def slash_donationlogger_donationcheck(
+        self,
+        interaction: discord.Interaction[Red],
+        bank_name: app_commands.Transform[str, BankConverter],
+        mla: Literal["More", "Less", "All"],
+        amount: Optional[app_commands.Transform[str, AmountConverter]],
+    ):
+        """_summary_
+
+        Args:
+            interaction (discord.Interaction[Red]): _description_
+            bank_name (app_commands.Transform[str, BankConverter]): _description_
+            mla (Literal[&quot;More&quot;, &quot;Less&quot;, &quot;All&quot;]): _description_
+            amount (Optional[app_commands.Transform[str, AmountConverter]]): _description_
+        """
+        if isinstance(bank_name, list):
+            if bank_name[1]:
+                return await interaction.response.send_message(
+                    content=bank_name[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=bank_name[0])
+        if isinstance(amount, list):
+            if amount[1]:
+                return await interaction.response.send_message(
+                    content=amount[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=amount[0])
+        if mla.lower() != "all" and not amount:
+            return await interaction.response.send_message(
+                content="You need to pass an amount if you choose to check more or less."
+            )
+        await HYBRIDS.hybrid_donationcheck(
+            self, interaction, bank_name, mla.lower(), amount
+        )
+
+    @slash_donologger.command(
+        name="leaderboard", description="See who has donated the most from a bank."
+    )
+    @app_commands.describe(
+        bank_name="The name of the registered bank.",
+        top="The top number. (min: 1, max: 25, default: 10)",
+    )
+    async def slash_donationlogger_leaderboard(
+        self,
+        interaction: discord.Interaction[Red],
+        bank_name: app_commands.Transform[str, BankConverter],
+        top: app_commands.Range[int, 1, 25] = 10,
+    ):
+        """_summary_
+
+        Args:
+            interaction (discord.Interaction[Red]): _description_
+            bank_name (app_commands.Transform[str, BankConverter]): _description_
+            top (app_commands.Range[int, 1, 25]): _description_
+        """
+        if isinstance(bank_name, list):
+            if bank_name[1]:
+                return await interaction.response.send_message(
+                    content=bank_name[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=bank_name[0])
+        await HYBRIDS.hybrid_leaderboard(self, interaction, bank_name, top)
+
+    @slash_donologger.command(
+        name="add", description="Add bank donation amount to a member or yourself."
+    )
+    @app_commands.describe(
+        bank_name="The name of the registered bank.",
+        amount="The amount that you want to add. (examples: 10k, 1e6, 6900)",
+        member="The member that you want to add donations to.",
+    )
+    async def slash_donationlogger_add(
+        self,
+        interaction: discord.Interaction[Red],
+        bank_name: app_commands.Transform[str, BankConverter],
+        amount: app_commands.Transform[str, AmountConverter],
+        member: Optional[discord.Member],
+    ):
+        """_summary_
+
+        Args:
+            interaction (discord.Interaction[Red]): _description_
+            bank_name (app_commands.Transform[str, BankConverter]): _description_
+            amount (app_commands.Transform[str, AmountConverter]): _description_
+            member (Optional[discord.Member]): _description_
+        """
+        if not member:
+            member = interaction.user
+        if member.bot:
+            return await interaction.response.send_message(
+                content="Bots are prohibited from donations. (For obvious reasons)"
+            )
+        if isinstance(bank_name, list):
+            if bank_name[1]:
+                return await interaction.response.send_message(
+                    content=bank_name[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=bank_name[0])
+        if isinstance(amount, list):
+            if amount[1]:
+                return await interaction.response.send_message(
+                    content=amount[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=amount[0])
+        await HYBRIDS.hybrid_add(self, interaction, bank_name, amount, member)
+
+    @slash_donologger.command(
+        name="remove",
+        description="Remove bank donation amount to a member or yourself.",
+    )
+    @app_commands.describe(
+        bank_name="The name of the registered bank.",
+        amount="The amount that you want to add. (examples: 10k, 1e6, 6900)",
+        member="The member that you want to remove donations from.",
+    )
+    async def slash_donationlogger_remove(
+        self,
+        interaction: discord.Interaction[Red],
+        bank_name: app_commands.Transform[str, BankConverter],
+        amount: app_commands.Transform[str, AmountConverter],
+        member: Optional[discord.Member],
+    ):
+        """_summary_
+
+        Args:
+            context (commands.Context): _description_
+            bank_name (BankConverter): _description_
+            amount (AmountConverter): _description_
+            member (discord.Member, optional): _description_. Defaults to None.
+        """
+        if not member:
+            member = interaction.user
+        if member.bot:
+            return await interaction.response.send_message(
+                content="Bots are prohibited from donations. (For obvious reasons)"
+            )
+        if isinstance(bank_name, list):
+            if bank_name[1]:
+                return await interaction.response.send_message(
+                    content=bank_name[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=bank_name[0])
+        if isinstance(amount, list):
+            if amount[1]:
+                return await interaction.response.send_message(
+                    content=amount[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=amount[0])
+        await HYBRIDS.hybrid_remove(self, interaction, bank_name, amount, member)
+
+    @slash_donologger.command(
+        name="set",
+        description="Set someone's donation balance to the amount of your choice.",
+    )
+    @app_commands.describe(
+        bank_name="The name of the registered bank.",
+        amount="The amount that you want to add. (examples: 10k, 1e6, 6900)",
+        member="The member that you want to set donations.",
+    )
+    async def slash_donationlogger_set(
+        self,
+        interaction: discord.Interaction[Red],
+        bank_name: app_commands.Transform[str, BankConverter],
+        amount: app_commands.Transform[str, AmountConverter],
+        member: Optional[discord.Member],
+    ):
+        """_summary_
+
+        Args:
+            context (commands.Context): _description_
+            bank_name (BankConverter): _description_
+            amount (AmountConverter): _description_
+            member (discord.Member, optional): _description_. Defaults to None.
+        """
+        if not member:
+            member = interaction.user
+        if member.bot:
+            return await interaction.response.send_message(
+                content="Bots are prohibited from donations. (For obvious reasons)"
+            )
+        if isinstance(bank_name, list):
+            if bank_name[1]:
+                return await interaction.response.send_message(
+                    content=bank_name[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=bank_name[0])
+        if isinstance(amount, list):
+            if amount[1]:
+                return await interaction.response.send_message(
+                    content=amount[0], ephemeral=True
+                )
+            else:
+                return await interaction.response.send_message(content=amount[0])
+        await HYBRIDS.hybrid_set(self, interaction, bank_name, amount, member)

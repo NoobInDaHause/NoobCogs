@@ -367,7 +367,10 @@ class TotalDonoView(discord.ui.View):
         self.message: discord.Message = None
 
     async def start(
-        self, context: commands.Context, content: str, member: discord.Member
+        self,
+        context: commands.Context,
+        content: str,
+        member: discord.Member,
     ):
         msg = await context.reply(content=content, mention_author=False, view=self)
         self.message = msg
@@ -413,6 +416,5 @@ class TotalDonoView(discord.ui.View):
     async def on_timeout(self):
         for x in self.children:
             x.disabled = True
-
-        self.stop()
         await self.message.edit(view=self)
+        self.stop()
