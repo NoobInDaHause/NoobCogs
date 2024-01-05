@@ -2,11 +2,11 @@ import discord
 import re
 
 from redbot.core.bot import app_commands, commands, Red
-from redbot.core.utils import mod
 
 from noobutils import NoobEmojiConverter
 from typing import List, TYPE_CHECKING
 
+from .checks import check_if_is_a_dono_manager_or_higher, check_if_setup_done
 from .exceptions import BankConversionFailure, AmountConversionFailure
 
 if TYPE_CHECKING:
@@ -45,38 +45,22 @@ class AmountConverter(app_commands.Transformer):
     async def transform(
         cls, interaction: discord.Interaction[Red], value: int | float | str
     ) -> str:
-        if not await cls.check_if_setup_done(interaction):
+        if not await check_if_setup_done(interaction):
             return ["DonationLogger has not been setup in this guild yet.", True]
-        if not await cls.check_if_is_a_dono_manager_or_higher(interaction):
+        if interaction.command.qualified_name not in [
+            "donationlogger balance",
+            "donationlogger leaderboard",
+            "donationlogger donationcheck",
+        ] and not await check_if_is_a_dono_manager_or_higher(interaction):
             return [
                 "You need to be a donationlogger manager or higher to run this command.",
                 True,
             ]
+        context = interaction.client.get_context(interaction)
         try:
-            return await cls.convert(None, value)
+            return await cls.convert(context, value)
         except AmountConversionFailure as e:
             return [str(e), False]
-
-    @staticmethod
-    async def check_if_setup_done(obj: discord.Interaction[Red]) -> bool:
-        cog: "DonationLogger" = obj.client.get_cog("DonationLogger")
-        return await cog.config.guild(obj.guild).setup()
-
-    @staticmethod
-    async def check_if_is_a_dono_manager_or_higher(
-        obj: discord.Interaction[Red],
-    ) -> bool:
-        cog: "DonationLogger" = obj.client.get_cog("DonationLogger")
-        author = obj.user
-        bot = obj.client
-        managers = await cog.config.guild(obj.guild).managers()
-        return (
-            await bot.is_owner(author)
-            or author.guild_permissions.manage_guild
-            or await mod.is_mod_or_superior(bot, author)
-            or any(role_id in author._roles for role_id in managers)
-            or False
-        )
 
 
 class DLEmojiConverter(NoobEmojiConverter):
@@ -88,15 +72,21 @@ class DLEmojiConverter(NoobEmojiConverter):
 class BankConverter(app_commands.Transformer):
     @classmethod
     async def convert(cls, ctx: commands.Context, argument: str) -> str:
-        if not await cls.verify_bank(ctx, argument.strip().lower()):
+        cog: "DonationLogger" = ctx.bot.get_cog("DonationLogger")
+        banks = await cog.config.guild(ctx.guild).banks()
+        if not banks.get(argument.strip().lower()):
             raise BankConversionFailure(f'Bank "{argument}" does not exist.')
         return argument.strip().lower()
 
     @classmethod
     async def transform(cls, interaction: discord.Interaction[Red], value: str) -> str:
-        if not await cls.check_if_setup_done(interaction):
+        if not await check_if_setup_done(interaction):
             return ["DonationLogger has not been setup in this guild yet.", True]
-        if not await cls.check_if_is_a_dono_manager_or_higher(interaction):
+        if interaction.command.qualified_name not in [
+            "donationlogger balance",
+            "donationlogger leaderboard",
+            "donationlogger donationcheck",
+        ] and not await check_if_is_a_dono_manager_or_higher(interaction):
             return [
                 "You need to be a donationlogger manager or higher to run this command.",
                 True,
@@ -119,34 +109,3 @@ class BankConverter(app_commands.Transformer):
             for choice in bank_list
             if value.lower() in choice.lower()
         ]
-
-    @staticmethod
-    async def verify_bank(context: commands.Context, bank_name: str):
-        cog: "DonationLogger" = context.bot.get_cog("DonationLogger")
-        banks = await cog.config.guild(context.guild).banks()
-        try:
-            banks[bank_name.lower()]
-            return True
-        except KeyError:
-            return False
-
-    @staticmethod
-    async def check_if_setup_done(obj: discord.Interaction[Red]) -> bool:
-        cog: "DonationLogger" = obj.client.get_cog("DonationLogger")
-        return await cog.config.guild(obj.guild).setup()
-
-    @staticmethod
-    async def check_if_is_a_dono_manager_or_higher(
-        obj: discord.Interaction[Red],
-    ) -> bool:
-        cog: "DonationLogger" = obj.client.get_cog("DonationLogger")
-        author = obj.user
-        bot = obj.client
-        managers = await cog.config.guild(obj.guild).managers()
-        return (
-            await bot.is_owner(author)
-            or author.guild_permissions.manage_guild
-            or await mod.is_mod_or_superior(bot, author)
-            or any(role_id in author._roles for role_id in managers)
-            or False
-        )

@@ -83,24 +83,26 @@ class DonationLoggerSetupView(discord.ui.View):
             return await msg.edit(
                 content="You took too long to respond.", delete_after=5
             )
-        with contextlib.suppress(Exception):
-            if m_msg.content.lower() == "none":
-                self.manager_roles = []
-                await msg.delete()
-                await m_msg.delete()
-                m_cont = await self.update_embed_setup()
-                return await self.message.edit(embed=m_cont, view=self)
-            roles = await verify_roles(self.context, m_msg.content.split(","))
-            if not roles:
-                await m_msg.delete()
-                return await msg.edit(
-                    content="Those do not seem to be valid roles.", delete_after=5
-                )
+        if m_msg.content.lower() == "none":
+            self.manager_roles = []
             await msg.delete()
+            with contextlib.suppress(Exception):
+                await m_msg.delete()
+            m_cont = await self.update_embed_setup()
+            return await self.message.edit(embed=m_cont, view=self)
+        roles = await verify_roles(self.context, m_msg.content.split(","))
+        if not roles:
+            with contextlib.suppress(Exception):
+                await m_msg.delete()
+            return await msg.edit(
+                content="Those do not seem to be valid roles.", delete_after=5
+            )
+        await msg.delete()
+        with contextlib.suppress(Exception):
             await m_msg.delete()
-            self.manager_roles = roles
-            msg_cont = await self.update_embed_setup()
-            await self.message.edit(embed=msg_cont, view=self)
+        self.manager_roles = roles
+        msg_cont = await self.update_embed_setup()
+        await self.message.edit(embed=msg_cont, view=self)
 
     @discord.ui.button(
         emoji="🏦",
@@ -127,44 +129,49 @@ class DonationLoggerSetupView(discord.ui.View):
             return await msg.edit(
                 content="You took too long to respond.", delete_after=5
             )
-        with contextlib.suppress(Exception):
-            if m_bank.content.lower() == "none":
-                self.bank = {}
-                m_cont = await self.update_embed_setup()
+        if m_bank.content.lower() == "none":
+            self.bank = {}
+            m_cont = await self.update_embed_setup()
+            with contextlib.suppress(Exception):
                 await m_bank.delete()
-                await msg.delete()
-                return await self.message.edit(embed=m_cont, view=self)
-            _b = m_bank.content.split(",")
-            if len(_b) < 2:
-                await m_bank.delete()
-                return await msg.edit(
-                    content="That does not seem to be a valid bank name or emoji.",
-                    delete_after=5,
-                )
-            bank_name = _b[0]
-            if " " in bank_name:
-                await m_bank.delete()
-                return await msg.edit(
-                    content="Spaces are not allowed for bank names.", delete_after=5
-                )
-            if len(bank_name) > 20:
-                await m_bank.delete()
-                return await msg.edit(
-                    content="Keep the bank names under 20 characters.", delete_after=5
-                )
-            emoji = await verify_emoji(self.context, _b[1])
-            if not emoji or not bank_name:
-                await m_bank.delete()
-                return await msg.edit(
-                    content="I don't seem to recognize that emoji or bank name is invalid.",
-                    delete_after=5,
-                )
-            self.bank["name"] = bank_name
-            self.bank["emoji"] = emoji
-            co = await self.update_embed_setup()
-            await m_bank.delete()
             await msg.delete()
-            await self.message.edit(embed=co, view=self)
+            return await self.message.edit(embed=m_cont, view=self)
+        _b = m_bank.content.split(",")
+        if len(_b) < 2:
+            with contextlib.suppress(Exception):
+                await m_bank.delete()
+            return await msg.edit(
+                content="That does not seem to be a valid bank name or emoji.",
+                delete_after=5,
+            )
+        bank_name = _b[0]
+        if " " in bank_name:
+            with contextlib.suppress(Exception):
+                await m_bank.delete()
+            return await msg.edit(
+                content="Spaces are not allowed for bank names.", delete_after=5
+            )
+        if len(bank_name) > 20:
+            with contextlib.suppress(Exception):
+                await m_bank.delete()
+            return await msg.edit(
+                content="Keep the bank names under 20 characters.", delete_after=5
+            )
+        emoji = await verify_emoji(self.context, _b[1])
+        if not emoji or not bank_name:
+            with contextlib.suppress(Exception):
+                await m_bank.delete()
+            return await msg.edit(
+                content="I don't seem to recognize that emoji or bank name is invalid.",
+                delete_after=5,
+            )
+        self.bank["name"] = bank_name
+        self.bank["emoji"] = emoji
+        co = await self.update_embed_setup()
+        with contextlib.suppress(Exception):
+            await m_bank.delete()
+        await msg.delete()
+        await self.message.edit(embed=co, view=self)
 
     @discord.ui.button(
         emoji="🔄",
@@ -201,23 +208,22 @@ class DonationLoggerSetupView(discord.ui.View):
             return await msg.edit(
                 content="You took too long to respond.", delete_after=5
             )
-        with contextlib.suppress(Exception):
-            if m_chan.content.lower() == "none":
-                self.log_channel = None
-                m_cont = await self.update_embed_setup()
-                await m_chan.delete()
-                await msg.delete()
-                return await self.message.edit(embed=m_cont, view=self)
-            _m = m_chan.content.strip()
-            if c := await verify_channel(self.context, _m):
-                self.log_channel = c
-                await msg.delete()
-                await m_chan.delete()
-                msg_cont = await self.update_embed_setup()
-                await self.message.edit(embed=msg_cont, view=self)
-            else:
-                await m_chan.delete()
-                await msg.edit(content="That's an invalid channel.", delete_after=5)
+        if m_chan.content.lower() == "none":
+            self.log_channel = None
+            m_cont = await self.update_embed_setup()
+            await m_chan.delete()
+            await msg.delete()
+            return await self.message.edit(embed=m_cont, view=self)
+        _m = m_chan.content.strip()
+        if c := await verify_channel(self.context, _m):
+            self.log_channel = c
+            await msg.delete()
+            await m_chan.delete()
+            msg_cont = await self.update_embed_setup()
+            await self.message.edit(embed=msg_cont, view=self)
+        else:
+            await m_chan.delete()
+            await msg.edit(content="That's an invalid channel.", delete_after=5)
 
     @discord.ui.button(
         emoji="🔢",
@@ -250,33 +256,36 @@ class DonationLoggerSetupView(discord.ui.View):
             return await msg.edit(
                 content="You took too long to respond.", delete_after=5
             )
-        with contextlib.suppress(Exception):
-            if m_bank.content.lower() == "none":
-                self.amount_roles = {}
-                await msg.delete()
-                await m_bank.delete()
-                cop = await self.update_embed_setup()
-                return await self.message.edit(embed=cop, view=self)
-            _ar = m_bank.content.strip().split(",")
-            try:
-                arole = await verify_amount_roles(self.context, _ar)
-            except MoreThanThreeRoles:
-                await m_bank.delete()
-                return await msg.edit(
-                    content="The maximum roles you can assign to an amount should be no more than 3.",
-                    delete_after=5,
-                )
-            if not arole:
-                await m_bank.delete()
-                return await msg.edit(
-                    content="Those do not seem to be valid roles or invalid amount.",
-                    delete_after=5,
-                )
-            self.amount_roles.update(arole)
+        if m_bank.content.lower() == "none":
+            self.amount_roles = {}
             await msg.delete()
-            cp = await self.update_embed_setup()
+            with contextlib.suppress(Exception):
+                await m_bank.delete()
+            cop = await self.update_embed_setup()
+            return await self.message.edit(embed=cop, view=self)
+        _ar = m_bank.content.strip().split(",")
+        try:
+            arole = await verify_amount_roles(self.context, _ar)
+        except MoreThanThreeRoles:
+            with contextlib.suppress(Exception):
+                await m_bank.delete()
+            return await msg.edit(
+                content="The maximum roles you can assign to an amount should be no more than 3.",
+                delete_after=5,
+            )
+        if not arole:
+            with contextlib.suppress(Exception):
+                await m_bank.delete()
+            return await msg.edit(
+                content="Those do not seem to be valid roles or invalid amount.",
+                delete_after=5,
+            )
+        self.amount_roles.update(arole)
+        await msg.delete()
+        cp = await self.update_embed_setup()
+        with contextlib.suppress(Exception):
             await m_bank.delete()
-            await self.message.edit(embed=cp, view=self)
+        await self.message.edit(embed=cp, view=self)
 
     @discord.ui.button(emoji="✔️", style=nu.get_button_colour("green"))
     async def done_button(

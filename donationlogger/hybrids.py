@@ -8,7 +8,7 @@ from redbot.core.utils import chat_formatting as cf, mod
 
 from typing import Literal, TYPE_CHECKING, Union
 
-from .utilities import (
+from .checks import (
     check_if_is_a_dono_manager_or_higher,
     check_if_setup_done,
     has_dono_permissions,
@@ -82,7 +82,6 @@ class HYBRIDS:
         await view.wait()
         await asyncio.sleep(3)
         if view.value:
-            await view.message.delete()
             if obj.guild.id in cog.setupcache:
                 return await cls.hybrid_send(
                     obj, content="Only one setup interaction per guild."

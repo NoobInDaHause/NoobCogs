@@ -7,14 +7,11 @@ from redbot.core.utils import chat_formatting as cf, mod
 
 from typing import Dict, Literal, List, Optional
 
-from .exceptions import MoreThanThreeRoles
+from .checks import is_a_dono_manager_or_higher, is_setup_done
 from .converters import AmountConverter, BankConverter, DLEmojiConverter
+from .exceptions import MoreThanThreeRoles
 from .hybrids import HYBRIDS
-from .utilities import (
-    verify_amount_roles,
-    is_setup_done,
-    is_a_dono_manager_or_higher,
-)
+from .utilities import verify_amount_roles
 
 
 class DonationLogger(commands.Cog):
@@ -42,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.1.1"
+    __version__ = "1.2.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
