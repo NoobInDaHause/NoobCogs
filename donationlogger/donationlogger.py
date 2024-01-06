@@ -39,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -310,7 +310,7 @@ class DonationLogger(commands.Cog):
     async def donationlogger_resetmember(
         self,
         context: commands.Context,
-        bank_name: BankConverter = None,
+        bank_name: Optional[BankConverter] = None,
         member: discord.Member = None,
     ):
         """
@@ -327,7 +327,7 @@ class DonationLogger(commands.Cog):
     async def donationlogger_check(
         self,
         context: commands.Context,
-        bank_name: BankConverter = None,
+        bank_name: Optional[BankConverter] = None,
         member: discord.Member = None,
     ):
         """
