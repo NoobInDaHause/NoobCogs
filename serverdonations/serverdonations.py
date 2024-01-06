@@ -16,7 +16,7 @@ GMSG = """
 {role}
 {embed(title):Someone would like to donate for a giveaway!}
 {embed(colour):{donor(colour)}}
-{embed(thumbnail):{guild(icon)}}
+{embed(thumbnail):{donor(avatar)}}
 {embed(footer):{guild(name)}|{guild(icon)}}
 {embed(description):**Donor:** {donor(mention)}
 **Currency Type:** {currency_type}
@@ -31,7 +31,7 @@ EMSG = """
 {role}
 {embed(title):Someone would like to donate for an event!}
 {embed(colour):{donor(colour)}}
-{embed(thumbnail):{guild(icon)}}
+{embed(thumbnail):{donor(avatar)}}
 {embed(footer):{guild(name)}|{guild(icon)}}
 {embed(description):**Donor:** {donor(mention)}
 **Currency Type:** {currency_type}
@@ -45,7 +45,7 @@ HMSG = """
 {role}
 {embed(title):Someone would like to donate for a heist!}
 {embed(colour):{donor(colour)}}
-{embed(thumbnail):{guild(icon)}}
+{embed(thumbnail):{donor(avatar)}}
 {embed(footer):{guild(name)}|{guild(icon)}}
 {embed(description):**Donor:** {donor(mention)}
 **Currency Type:** {currency_type}
@@ -78,7 +78,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.0.1"
+    __version__ = "3.0.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -133,7 +133,7 @@ class ServerDonations(commands.Cog):
             role_mention = (
                 cf.humanize_list([ro.mention for ro in roles])
                 if roles
-                else f"There are no {manager_type} manager roles set."
+                else f"`There are no {manager_type} manager roles set.`"
             )
             return channel, roles, role_mention, message
 
@@ -196,7 +196,7 @@ class ServerDonations(commands.Cog):
         self, context: commands.Context, _type: str
     ) -> discord.Embed:
         embed = discord.Embed(
-            titile=f"List of {_type} manager roles for [{context.guild.name}]",
+            title=f"List of {_type} manager roles for [{context.guild.name}]",
             colour=context.bot._color,
             timestamp=discord.utils.utcnow(),
         ).set_thumbnail(url=nu.is_have_avatar(context.guild))
