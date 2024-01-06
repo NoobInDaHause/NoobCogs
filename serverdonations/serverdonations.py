@@ -78,7 +78,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.0.2"
+    __version__ = "3.0.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -421,11 +421,11 @@ class ServerDonations(commands.Cog):
         _type2 = "added to" if action_type == "add" else "removed from"
         if actions[0]:
             await context.send(
-                f"Successfully {actions[0]} was {_type2} the list of {manager_type} managers."
+                f"Roles {actions[0]} was successfully {_type2} the list of {manager_type} managers."
             )
         if actions[1]:
             await context.send(
-                f"Failed to {action_type} {actions[1]} from the list of {manager_type} managers."
+                f"Roles {action_type} have failed to {actions[1]} from the list of {manager_type} managers."
             )
 
     @serverdonationsset.command(name="message")
