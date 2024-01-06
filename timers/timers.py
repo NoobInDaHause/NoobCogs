@@ -20,7 +20,8 @@ class Timers(commands.Cog):
     All purpose timer countdown.
     """
 
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot: Red, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.bot = bot
 
         self.config = Config.get_conf(
@@ -42,7 +43,7 @@ class Timers(commands.Cog):
         self.followup_queue: asyncio.Queue[PrioritizedItem] = asyncio.Queue()
         self.message_edit_queue: asyncio.Queue[PrioritizedItem] = asyncio.Queue()
 
-    __version__ = "1.4.0"
+    __version__ = "1.4.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 

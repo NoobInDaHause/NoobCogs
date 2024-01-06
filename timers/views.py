@@ -21,7 +21,7 @@ class PrioritizedItem:
         return (self.priority, self.timeout) < (other.priority, other.timeout)
 
     def is_valid(self):
-        return self.timeout > discord.utils.utcnow()
+        return self.timeout > datetime.now(timezone.utc)
 
 class TimersView(discord.ui.View):
     def __init__(self, cog: "Timers"):
