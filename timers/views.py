@@ -4,11 +4,24 @@ import noobutils as nu
 
 from redbot.core.bot import Red
 
-from typing import TYPE_CHECKING
+from datetime import datetime, timedelta, timezone
+from typing import Coroutine, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from . import Timers
 
+
+class PrioritizedItem:
+    def __init__(self, priority: int, timeout: datetime, coro: Coroutine):
+        self.priority: int = priority
+        self.timeout: datetime = timeout
+        self.coro: Coroutine = coro
+
+    def __lt__(self, other: "PrioritizedItem"):
+        return (self.priority, self.timeout) < (other.priority, other.timeout)
+
+    def is_valid(self):
+        return self.timeout > discord.utils.utcnow()
 
 class TimersView(discord.ui.View):
     def __init__(self, cog: "Timers"):
@@ -36,6 +49,20 @@ class TimersView(discord.ui.View):
             button.label = str(len(msg_id["members"]))
             button.emoji = conf["timer_emoji"]
             button.style = nu.get_button_colour(conf["timer_button_colour"]["started"])
-        with contextlib.suppress(Exception):
-            await interaction.response.edit_message(view=self)
-        await interaction.followup.send(content=resp, ephemeral=True)
+        await interaction.response.defer()
+        priority = 1
+        timeout = datetime.now(timezone.utc) + timedelta(minutes=15)
+        self.cog.message_edit_queue.put_nowait(
+            PrioritizedItem(
+                priority,
+                timeout,
+                interaction.message.edit(view=self)
+            )
+        )
+        self.cog.followup_queue.put_nowait(
+            PrioritizedItem(
+                priority,
+                timeout,
+                interaction.followup.send(content=resp, ephemeral=True)
+            )
+        )

@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from discord.ext import tasks
 from typing import Literal, Union
 
-from .views import TimersView
+from .views import TimersView, PrioritizedItem
 
 
 class Timers(commands.Cog):
@@ -36,8 +36,13 @@ class Timers(commands.Cog):
         self.config.register_guild(**default_guild)
         self.config.register_global(**default_global)
         self.log = logging.getLogger("red.NoobCogs.Timers")
+        self.running = True
+        self.followup_task = self.bot.loop.create_task(self.followup_runner())
+        self.message_edit_task = self.bot.loop.create_task(self.message_edit_runner())
+        self.followup_queue: asyncio.Queue[PrioritizedItem] = asyncio.Queue()
+        self.message_edit_queue: asyncio.Queue[PrioritizedItem] = asyncio.Queue()
 
-    __version__ = "1.3.7"
+    __version__ = "1.4.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -47,7 +52,8 @@ class Timers(commands.Cog):
             f"{super().format_help_for_context(context)}\n\n"
             f"Cog Version: **{self.__version__}**\n"
             f"Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}\n"
-            f"Cog Documentation: [[Click here]]({self.__docs__})"
+            f"Cog Documentation: [[Click here]]({self.__docs__})\n"
+            f"Utils Version: **{nu.__version__}**"
         )
 
     async def red_delete_data_for_user(
@@ -72,7 +78,52 @@ class Timers(commands.Cog):
                         value["members"].remove(user_id)
 
     async def cog_load(self):
+        self.bot.add_dev_env_value("timers", lambda _: self)
         asyncio.create_task(self.initialize())
+
+    async def followup_runner(self):
+        while self.running:
+            item = await self.followup_queue.get()
+            if not item.is_valid():
+                item.coro.close()
+                self.followup_queue.task_done()
+                del item
+                continue
+            coro = item.coro
+            try:
+                await coro
+                await asyncio.sleep(0.5)
+            except discord.errors.HTTPException as e:
+                await asyncio.sleep(e.response.headers.get("Retry-After", 20))
+                await coro
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                self.log.exception("Error sending followup: ", exc_info=e)
+            del item
+            self.followup_queue.task_done()
+
+    async def message_edit_runner(self):
+        while self.running:
+            item = await self.message_edit_queue.get()
+            if not item.is_valid():
+                item.coro.close()
+                self.message_edit_queue.task_done()
+                del item
+                continue
+            coro = item.coro
+            try:
+                await coro
+                await asyncio.sleep(0.5)
+            except discord.errors.HTTPException as e:
+                await asyncio.sleep(e.response.headers.get("Retry-After", 20))
+                await coro
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                self.log.exception("Error sending followup: ", exc_info=e)
+            del item
+            self.message_edit_queue.task_done()
 
     async def initialize(self):
         await self.bot.wait_until_ready()
@@ -90,6 +141,8 @@ class Timers(commands.Cog):
         self._timer_end.start()
 
     async def cog_unload(self):
+        self.running = False
+        self.bot.remove_dev_env_value("timers")
         for data in (await self.config.all_guilds()).values():
             if timers := data.get("timers"):
                 for tid in timers:
