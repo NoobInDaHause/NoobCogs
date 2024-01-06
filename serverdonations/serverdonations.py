@@ -13,7 +13,7 @@ from .converters import GiveawayConverter, EventConverter, HeistConverter, forma
 
 
 GMSG = """
-{role_mentiion}
+{role}
 {embed(title):Someone would like to donate for a giveaway!}
 {embed(colour):{donor(colour)}}
 {embed(thumbnail):{guild(icon)}}
@@ -28,7 +28,7 @@ GMSG = """
 """
 
 EMSG = """
-{role_mentiion}
+{role}
 {embed(title):Someone would like to donate for an event!}
 {embed(colour):{donor(colour)}}
 {embed(thumbnail):{guild(icon)}}
@@ -42,7 +42,7 @@ EMSG = """
 """
 
 HMSG = """
-{role_mentiion}
+{role}
 {embed(title):Someone would like to donate for a heist!}
 {embed(colour):{donor(colour)}}
 {embed(thumbnail):{guild(icon)}}
@@ -78,7 +78,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.0.0"
+    __version__ = "3.0.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
