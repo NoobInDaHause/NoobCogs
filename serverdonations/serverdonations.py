@@ -79,7 +79,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.1.1"
+    __version__ = "3.1.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -287,6 +287,10 @@ class ServerDonations(commands.Cog):
             "prize": giveaway.prize,
             "message": giveaway.message,
         }
+        if await self.config.guild(context.guild).auto_delete():
+            await context.message.delete()
+        else:
+            await context.tick()
         msg = await self.send_donation("giveaway", context, **gaw)
         if msg:
             await context.send(content=msg)
@@ -316,6 +320,10 @@ class ServerDonations(commands.Cog):
             "prize": event.prize,
             "message": event.message,
         }
+        if await self.config.guild(context.guild).auto_delete():
+            await context.message.delete()
+        else:
+            await context.tick()
         msg = await self.send_donation("event", context, **even)
         if msg:
             await context.send(content=msg)
@@ -344,6 +352,10 @@ class ServerDonations(commands.Cog):
             "requirements": heist.requirements,
             "message": heist.message,
         }
+        if await self.config.guild(context.guild).auto_delete():
+            await context.message.delete()
+        else:
+            await context.tick()
         msg = await self.send_donation("heist", context, **heis)
         if msg:
             await context.send(content=msg)
