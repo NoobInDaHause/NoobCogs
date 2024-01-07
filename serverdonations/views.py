@@ -106,7 +106,10 @@ class DonationsView(discord.ui.View):
         else:
             await interaction.message.edit(view=self)
         dono_cog: "DonationLogger" = interaction.client.get_cog("DonationLogger")
-        claimed = f"{self._type.title()} donation claimed by {self.claimer.mention}."
+        claimed = (
+            f"{self._type.title()} donation claimed by {self.claimer.mention}.\n"
+            f"{self.context.author.mention} your {self._type} donation has been accepted.\n"
+        )
         if not dono_cog:
             return await interaction.response.send_message(content=claimed)
         if not await dono_cog.config.guild(interaction.guild).setup():
@@ -154,9 +157,19 @@ class DonationsView(discord.ui.View):
             await interaction.message.edit(view=self, embeds=m)
         else:
             await interaction.message.edit(view=self)
-        await interaction.response.send_message(
-            content=f"{self._type.title()} donation denied by {interaction.user.mention}."
+
+        modal = DenyModal()
+        await interaction.response.send_modal(modal)
+        await modal.wait()
+        if not modal.reason.value:
+            return
+        reason = (
+            f"{self._type.title()} donation denied by {interaction.user.mention}.\n"
+            f"{self.context.author.mention} your {self._type} donation has been denied.\n"
         )
+        if modal.reason.value.lower() != "none":
+            reason += f"Reason: {modal.reason.value}"
+        await interaction.followup.send(content=reason)
         self.stop()
 
     async def interaction_check(self, interaction: discord.Interaction[Red]):
@@ -185,6 +198,30 @@ class DonationsView(discord.ui.View):
             await self.message.edit(view=self)
         self.stop()
 
+
+class DenyModal(discord.ui.Modal):
+    def __init__(self):
+        super().__init__(title="Reason for denial.", timeout=60.0)
+
+    reason = discord.ui.TextInput(
+        label="What is your reason for denial.",
+        placeholder="Ex: This is a joke donation.",
+        style=discord.TextStyle.long,
+        required=True,
+    )
+
+    async def on_submit(self, interaction: discord.Interaction[Red]):
+        await interaction.response.defer()
+
+    async def on_error(self, interaction: discord.Interaction, error: Exception):
+        msg = "".join(
+            traceback.format_exception(type(error), error, error.__traceback__)
+        )
+        self.cog.log.exception(msg, exc_info=error)
+        await interaction.response.send_message(
+            content="Something went wrong. Please report this to the bot owner.",
+            ephemeral=True,
+        )
 
 class DonoModal(discord.ui.Modal):
     def __init__(self, cog: "ServerDonations", title: str, timeout: float):
