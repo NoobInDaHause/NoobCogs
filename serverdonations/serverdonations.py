@@ -79,7 +79,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.1.3"
+    __version__ = "3.1.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -179,10 +179,8 @@ class ServerDonations(commands.Cog):
             await view.start(
                 processed.body,
                 processed.actions.get("embed"),
-                discord.AllowedMentions(
-                        roles=True, users=True, everyone=False
-                    )
-                )
+                discord.AllowedMentions(roles=True, users=True, everyone=False),
+            )
         except Exception:
             return (
                 "Donation channel not found or I do not have permission to send or embed messages"

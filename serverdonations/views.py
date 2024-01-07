@@ -126,7 +126,11 @@ class DonationsView(discord.ui.View):
             return await interaction.response.send_message(content=claimed)
         await interaction.response.defer()
         view = SelectBank(
-            self.cog, "Select Bank to add donations.", select_options, self.context.author, self.claimer
+            self.cog,
+            "Select Bank to add donations.",
+            select_options,
+            self.context.author,
+            self.claimer,
         )
         view = SelectView(
             self.cog,
@@ -149,14 +153,6 @@ class DonationsView(discord.ui.View):
                 ephemeral=True,
             )
         self.claimer = interaction.user
-        for x in self.children:
-            x.disabled = True
-        if interaction.message.embeds:
-            m = interaction.message.embeds
-            m[0].colour = discord.Colour.red()
-            await interaction.message.edit(view=self, embeds=m)
-        else:
-            await interaction.message.edit(view=self)
 
         modal = DenyModal()
         await interaction.response.send_modal(modal)
@@ -170,6 +166,15 @@ class DonationsView(discord.ui.View):
         if modal.reason.value.lower() != "none":
             reason += f"Reason: {modal.reason.value}"
         await interaction.followup.send(content=reason)
+
+        for x in self.children:
+            x.disabled = True
+        if interaction.message.embeds:
+            m = interaction.message.embeds
+            m[0].colour = discord.Colour.red()
+            await interaction.message.edit(view=self, embeds=m)
+        else:
+            await interaction.message.edit(view=self)
         self.stop()
 
     async def interaction_check(self, interaction: discord.Interaction[Red]):
@@ -223,6 +228,7 @@ class DenyModal(discord.ui.Modal):
             ephemeral=True,
         )
 
+
 class DonoModal(discord.ui.Modal):
     def __init__(self, cog: "ServerDonations", title: str, timeout: float):
         super().__init__(title=title, timeout=timeout)
@@ -258,7 +264,9 @@ class SelectBank(discord.ui.Select):
         member: discord.Member,
         claimer: discord.Member,
     ):
-        super().__init__(placeholder=placeholder, options=options, min_values=1, max_values=1)
+        super().__init__(
+            placeholder=placeholder, options=options, min_values=1, max_values=1
+        )
         self.member = member
         self.cog = cog
         self.claimer = claimer
