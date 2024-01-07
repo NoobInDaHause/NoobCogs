@@ -152,13 +152,13 @@ class DonationsView(discord.ui.View):
                 content=f"This donation has already been claimed/denied by {self.claimer.mention}.",
                 ephemeral=True,
             )
-        self.claimer = interaction.user
 
         modal = DenyModal()
         await interaction.response.send_modal(modal)
         await modal.wait()
         if not modal.reason.value:
             return
+        self.claimer = interaction.user
         reason = (
             f"{self._type.title()} donation denied by {interaction.user.mention}.\n"
             f"{self.context.author.mention} your {self._type} donation has been denied.\n"
