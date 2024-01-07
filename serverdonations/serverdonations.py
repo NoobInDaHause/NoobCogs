@@ -10,6 +10,7 @@ from redbot.core.utils import chat_formatting as cf
 from typing import List, Literal, Optional, Tuple
 
 from .converters import GiveawayConverter, EventConverter, HeistConverter, format_amount
+from .views import DonationsView
 
 
 GMSG = """
@@ -78,7 +79,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.0.3"
+    __version__ = "3.1.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -174,13 +175,14 @@ class ServerDonations(commands.Cog):
                 with contextlib.suppress(Exception):
                     await rl.edit(mentionable=True)
         try:
-            await channel.send(
-                content=processed.body,
-                embed=processed.actions.get("embed"),
-                allowed_mentions=discord.AllowedMentions(
-                    roles=True, users=True, everyone=False
-                ),
-            )
+            view = DonationsView(self, context, channel, _type)
+            await view.start(
+                processed.body,
+                processed.actions.get("embed"),
+                discord.AllowedMentions(
+                        roles=True, users=True, everyone=False
+                    )
+                )
         except Exception:
             return (
                 "Donation channel not found or I do not have permission to send or embed messages"
