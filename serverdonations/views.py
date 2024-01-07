@@ -209,8 +209,8 @@ class DenyModal(discord.ui.Modal):
         super().__init__(title="Reason for denial.", timeout=60.0)
 
     reason = discord.ui.TextInput(
-        label="What is your reason for denial.",
-        placeholder="Ex: This is a joke donation.",
+        label="Ex: This is a joke donation.",
+        placeholder="Put `none` if you don't want any reason.",
         style=discord.TextStyle.long,
         required=True,
     )
