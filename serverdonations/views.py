@@ -192,7 +192,7 @@ class DonoModal(discord.ui.Modal):
         self.cog = cog
 
     amount = discord.ui.TextInput(
-        label="The amount that you want to add. (you have 10 seconds to answer)",
+        label="You have 10 seconds to answer.",
         placeholder="Ex: 10m, 69, 420000",
         style=discord.TextStyle.short,
         required=True,
@@ -227,7 +227,7 @@ class SelectBank(discord.ui.Select):
         self.claimer = claimer
 
     async def callback(self, interaction: discord.Interaction[Red]):
-        modal = DonoModal(self.cog, "Amount", 10.0)
+        modal = DonoModal(self.cog, "The amount that you want to add.", 10.0)
         view: "SelectView" = self.view
         await interaction.response.send_modal(modal)
         await modal.wait()
