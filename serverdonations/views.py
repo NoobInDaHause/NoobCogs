@@ -160,11 +160,11 @@ class DonationsView(discord.ui.View):
             return
         self.claimer = interaction.user
         reason = (
-            f"{self._type.title()} donation denied by {interaction.user.mention}.\n"
-            f"{self.context.author.mention} your {self._type} donation has been denied.\n"
+            f"- {self._type.title()} donation denied by {interaction.user.mention}.\n"
+            f"- {self.context.author.mention} your {self._type} donation has been denied.\n"
         )
         if modal.reason.value.lower() != "none":
-            reason += f"Reason: {modal.reason.value}"
+            reason += f"- `Reason:` {modal.reason.value}"
         await interaction.followup.send(content=reason)
 
         for x in self.children:
@@ -239,6 +239,7 @@ class DonoModal(discord.ui.Modal):
         placeholder="Ex: 10m, 69, 420000",
         style=discord.TextStyle.short,
         required=True,
+        max_length=1500
     )
 
     async def on_submit(self, interaction: discord.Interaction[Red]):
