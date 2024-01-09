@@ -103,7 +103,7 @@ class BankConverter(app_commands.Transformer):
     ) -> List[app_commands.Choice[str | int | float]]:
         cog: "DonationLogger" = interaction.client.get_cog("DonationLogger")
         banks = await cog.config.guild(interaction.guild).banks()
-        bank_list: List[str] = list(banks.keys())
+        bank_list: List[str] = [bank for bank in banks.keys() if not bank["hidden"]]
         return [
             app_commands.Choice(name=choice.title(), value=choice)
             for choice in bank_list

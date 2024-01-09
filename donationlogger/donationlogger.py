@@ -39,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.2.1"
+    __version__ = "1.2.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -823,12 +823,8 @@ class DonationLogger(commands.Cog):
 
     # <------------------------------------- SLASH COMMANDS ---------------------------------------------->
 
-    @app_commands.guild_only()
-    class SlashDonationLogger(app_commands.Group):
-        ...
-
-    slash_donologger = SlashDonationLogger(
-        name="donationlogger", description="DonationLogger base commands."
+    slash_donologger = app_commands.Group(
+        name="donationlogger", description="DonationLogger base commands.", guild_only=True
     )
 
     @slash_donologger.command(
