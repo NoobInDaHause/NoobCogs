@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.0.0"
+    __version__ = "1.1.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -308,7 +308,7 @@ class GrinderLogger(commands.Cog):
             description=f"{desc}\n\n**__Details:__**\n"
             f"- `{'Member':<11}`: {member.mention} (`{member.id}`)\n- `{'Tier':<11}`: "
             f"**{tier}** ({cf.humanize_number(amount)}/day)\n- `{'Date':<11}`: "
-            f"<t:{round(dt.datetime.now(dt.timezone.utc).timestamp())}:F> {emo}{gfor}{res}",
+            f"<t:{round(dt.datetime.now(dt.timezone.utc).timestamp())}:D> {emo}{gfor}{res}",
             colour=member.colour,
             timestamp=dt.datetime.now(dt.timezone.utc),
         )
@@ -909,9 +909,18 @@ class GrinderLogger(commands.Cog):
         """
         Add or remove grinder donation amount and time.
 
-        Mention the time till which the payment is made upto.
-        Bot will remind the **user** and **grinder manager** in that exact time.
-        `[p]grlogset dmstatus` Enables grinders to be reminded in DMs
+        Member can either be @mention/ID/Name
+        Amount acronyms (`k`/`m`/`b`/`t`) are accepted.
+        `Time` - The day/time till this payment is made upto. Adding more time (while adding dono) will **increase** the time. 
+        The grinder & grinder manager **both** will get a **reminder** at that time.
+
+        `[p]grlogset dmstatus` Enables grinder to be reminded in DMs.
+
+        Examples:
+        `[p]grlog dono add @member 10m 5d`: User & grinder manager will be reminded after 5 days from the command invoked.
+        `[p]grlog dono add @member 20m`: Add **just** the amount.
+        `[p]grlog dono remove user_id 10m 5d`: Remove 10 million donations **and** 5days.
+        `[p]grlog dono remove user_id 10m`: Remove **just** the amount.
         """
         if _type == "add":
             await self.donoadd(context, member, amount, time)
@@ -963,66 +972,13 @@ class GrinderLogger(commands.Cog):
         pagified = await nu.pagify_this(
             "\n".join(all_mem),
             "\n",
-            embed_title=f"GrinderLogger Leaderboard fpr [{context.guild.name}]",
+            embed_title=f"GrinderLogger Leaderboard for [{context.guild.name}]",
             embed_timestamp=dt.datetime.now(dt.timezone.utc),
             embed_colour=context.bot._color,
         )
         await nu.NoobPaginator(pagified).start(context)
 
-    @commands.group(name="grinderloggerset", aliases=["grlogset"])
-    @commands.admin_or_permissions(manage_guild=True)
-    @commands.bot_has_permissions(embed_links=True)
-    @commands.guild_only()
-    async def grinderloggerset(self, context: commands.Context):
-        """
-        GrinderLogger settings commands.
-        """
-        pass
-
-    @grinderloggerset.command(name="donationloggersupport", aliases=["dlsupport"])
-    async def grinderloggerset_donationloggersupport(
-        self, context: commands.Context, bank_name: str = None
-    ):
-        """
-        Add support for DonationLogger.
-        """
-        cog: "DonationLogger" = context.bot.get_cog("DonationLogger")
-        if not cog:
-            return await context.send(
-                content="DonationLogger is not loaded/installed report this to the bot owner."
-            )
-        if not await cog.config.guild(context.guild).setup():
-            return await context.send(
-                content="It seems DonationLogger has not been setup in this guild yet."
-            )
-        banks = await cog.config.guild(context.guild).banks()
-        if bank_name:
-            try:
-                banks[bank_name]
-            except KeyError:
-                return await context.send(content="That bank does not seem to exist.")
-            await self.config.guild(context.guild).bank.set(bank_name)
-            await context.send(
-                content="Grinder donations will now get auto add/remove from donationlogger.\n"
-                f"Donations will be added from bank **{bank_name.title()}**."
-            )
-        else:
-            await self.config.guild(context.guild).bank.set(None)
-            await context.send(
-                content="The bank to auto add/remove from has been cleared."
-            )
-
-    @grinderloggerset.command(name="dmstatus")
-    async def grinderloggerset_dmstatus(self, context: commands.Context):
-        """
-        Toggle whether to DM the member for their grinder promotion/demotion.
-        """
-        current = await self.config.guild(context.guild).dm_status()
-        await self.config.guild(context.guild).dm_status.set(not current)
-        state = "will no longer" if current else "will now"
-        await context.send(content=f"I {state} DM grinders their promotion/demotion.")
-
-    @grinderloggerset.command(name="addmember")
+    @grinderlogger.command(name="addmember")
     @commands.bot_has_permissions(manage_roles=True)
     async def grinderloggerset_addmember(
         self,
@@ -1087,7 +1043,7 @@ class GrinderLogger(commands.Cog):
             context, member, tier, tiers[tier]["amount"], "added", None, reason
         )
 
-    @grinderloggerset.command(name="removemember")
+    @grinderlogger.command(name="removemember")
     @commands.bot_has_permissions(manage_roles=True)
     async def grinderloggerset_removemember(
         self, context: commands.Context, member: discord.Member, *, reason: str = None
@@ -1139,6 +1095,59 @@ class GrinderLogger(commands.Cog):
         else:
             await context.send(content="This member is not a grinder.")
 
+    @commands.group(name="grinderloggerset", aliases=["grlogset"])
+    @commands.admin_or_permissions(manage_guild=True)
+    @commands.bot_has_permissions(embed_links=True)
+    @commands.guild_only()
+    async def grinderloggerset(self, context: commands.Context):
+        """
+        GrinderLogger settings commands.
+        """
+        pass
+
+    @grinderloggerset.command(name="donationloggersupport", aliases=["dlsupport"])
+    async def grinderloggerset_donationloggersupport(
+        self, context: commands.Context, bank_name: str = None
+    ):
+        """
+        Add support for DonationLogger.
+        """
+        cog: "DonationLogger" = context.bot.get_cog("DonationLogger")
+        if not cog:
+            return await context.send(
+                content="DonationLogger is not loaded/installed report this to the bot owner."
+            )
+        if not await cog.config.guild(context.guild).setup():
+            return await context.send(
+                content="It seems DonationLogger has not been setup in this guild yet."
+            )
+        banks = await cog.config.guild(context.guild).banks()
+        if bank_name:
+            try:
+                banks[bank_name]
+            except KeyError:
+                return await context.send(content="That bank does not seem to exist.")
+            await self.config.guild(context.guild).bank.set(bank_name)
+            await context.send(
+                content="Grinder donations will now get auto add/remove from donationlogger.\n"
+                f"Donations will be added from bank **{bank_name.title()}**."
+            )
+        else:
+            await self.config.guild(context.guild).bank.set(None)
+            await context.send(
+                content="The bank to auto add/remove from has been cleared."
+            )
+
+    @grinderloggerset.command(name="dmstatus")
+    async def grinderloggerset_dmstatus(self, context: commands.Context):
+        """
+        Toggle whether to DM the member for their grinder promotion/demotion.
+        """
+        current = await self.config.guild(context.guild).dm_status()
+        await self.config.guild(context.guild).dm_status.set(not current)
+        state = "will no longer" if current else "will now"
+        await context.send(content=f"I {state} DM grinders their promotion/demotion.")
+
     @grinderloggerset.command(name="manager")
     @commands.bot_has_permissions(manage_roles=True)
     async def grinderloggerset_manager(
@@ -1154,7 +1163,7 @@ class GrinderLogger(commands.Cog):
         Role ID/name/@mention all are accepted.
 
         Examples: 
-        `[p]grlogset manager list Shows the list of manager roles`
+        `[p]grlogset manager list`: Shows the list of manager roles
         `[p]grlogset manager add @moderator @admin `
         `[p]grlogset manager remove staff_role_ID`
         """
