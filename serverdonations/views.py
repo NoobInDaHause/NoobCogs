@@ -95,6 +95,8 @@ class DonationsView(discord.ui.View):
         )
         if not dono_cog:
             return await interaction.response.send_message(content=claimed)
+        if not await self.cog.config.guild(interaction.guild).dl_support():
+            return await interaction.response.send_message(content=claimed)
         if not await dono_cog.config.guild(interaction.guild).setup():
             return await interaction.response.send_message(content=claimed)
         banks = await dono_cog.config.guild(interaction.guild).banks()
@@ -143,8 +145,7 @@ class DonationsView(discord.ui.View):
             await interaction.message.edit(view=self, embeds=m)
         else:
             await interaction.message.edit(view=self)
-        if await self.cog.config.guild(interaction.guild).dl_support():
-            await self.donationlogger_support(interaction)
+        await self.donationlogger_support(interaction)
         self.stop()
 
     @discord.ui.button(emoji="✖️", style=nu.get_button_colour("red"))
