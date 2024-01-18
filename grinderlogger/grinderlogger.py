@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.0"
+    __version__ = "1.1.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -580,6 +580,7 @@ class GrinderLogger(commands.Cog):
                     after,
                     amount,
                     "removed",
+                    member_data["due_timestamp"]
                 )
                 if bank and context.bot.get_cog("DonationLogger"):
                     if cmd := self.bot.get_command("donationlogger remove"):
