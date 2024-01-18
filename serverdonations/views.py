@@ -87,24 +87,7 @@ class DonationsView(discord.ui.View):
         )
         self.message = msg
 
-    @discord.ui.button(emoji="✔️", style=nu.get_button_colour("green"))
-    async def accept_donation_button(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
-    ):
-        if self.claimer:
-            return await interaction.response.send_message(
-                content=f"This donation has already been claimed/denied by {self.claimer.mention}.",
-                ephemeral=True,
-            )
-        self.claimer = interaction.user
-        for x in self.children:
-            x.disabled = True
-        if interaction.message.embeds:
-            m = interaction.message.embeds
-            m[0].colour = discord.Colour.green()
-            await interaction.message.edit(view=self, embeds=m)
-        else:
-            await interaction.message.edit(view=self)
+    async def donationlogger_support(self, interaction: discord.Interaction[Red]):
         dono_cog: "DonationLogger" = interaction.client.get_cog("DonationLogger")
         claimed = (
             f"{self._type.title()} donation claimed by {self.claimer.mention}.\n"
@@ -141,6 +124,27 @@ class DonationsView(discord.ui.View):
             interaction,
         )
         await view.start(claimed)
+
+    @discord.ui.button(emoji="✔️", style=nu.get_button_colour("green"))
+    async def accept_donation_button(
+        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+    ):
+        if self.claimer:
+            return await interaction.response.send_message(
+                content=f"This donation has already been claimed/denied by {self.claimer.mention}.",
+                ephemeral=True,
+            )
+        self.claimer = interaction.user
+        for x in self.children:
+            x.disabled = True
+        if interaction.message.embeds:
+            m = interaction.message.embeds
+            m[0].colour = discord.Colour.green()
+            await interaction.message.edit(view=self, embeds=m)
+        else:
+            await interaction.message.edit(view=self)
+        if await self.cog.config.guild(interaction.guild).dl_support():
+            await self.donationlogger_support(interaction)
         self.stop()
 
     @discord.ui.button(emoji="✖️", style=nu.get_button_colour("red"))
@@ -235,11 +239,19 @@ class DonoModal(discord.ui.Modal):
         self.cog = cog
 
     amount = discord.ui.TextInput(
-        label="You have 10 seconds to answer.",
+        label="You have 20 seconds to answer.",
         placeholder="Ex: 10m, 69, 420000",
         style=discord.TextStyle.short,
         required=True,
-        max_length=1500
+        max_length=1500,
+    )
+
+    note = discord.ui.TextInput(
+        label="Note:",
+        placeholder="Add an optional note.",
+        style=discord.TextStyle.short,
+        required=False,
+        max_length=1024,
     )
 
     async def on_submit(self, interaction: discord.Interaction[Red]):
@@ -273,7 +285,7 @@ class SelectBank(discord.ui.Select):
         self.claimer = claimer
 
     async def callback(self, interaction: discord.Interaction[Red]):
-        modal = DonoModal(self.cog, "The amount that you want to add.", 10.0)
+        modal = DonoModal(self.cog, "The amount that you want to add.", 20.0)
         view: "SelectView" = self.view
         await interaction.response.send_modal(modal)
         await modal.wait()
@@ -294,7 +306,11 @@ class SelectBank(discord.ui.Select):
         )
         if cmd := interaction.client.get_command("donationlogger add"):
             await ctx.invoke(
-                cmd, bank_name=self.values[0].lower(), amount=amount, member=self.member
+                cmd,
+                bank_name=self.values[0].lower(),
+                amount=amount,
+                member=self.member,
+                note=modal.note.value,
             )
         else:
             return await interaction.followup.send(

@@ -18,7 +18,7 @@ def format_amount(argument: str):
             amount = int(amt * amount_dict[unit])
         else:
             amount = int(float(argument))
-        return None if amount > 999999999999999 or amount < 0 else amount
+        return None if amount > 999999999999999 or amount < 1 else amount
     except (ValueError, KeyError):
         return None
 

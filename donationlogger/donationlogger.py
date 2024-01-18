@@ -39,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.2.5"
+    __version__ = "1.2.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -392,6 +392,10 @@ class DonationLogger(commands.Cog):
             return await context.send(
                 content="Bots are prohibited from donations. (For obvious reasons)"
             )
+        if note and len(note) > 1024:
+            return await context.send(
+                content="Limit your note into 1024 characters due to embed field limits."
+            )
 
         await HYBRIDS.hybrid_add(self, context, bank_name, amount, member, note)
 
@@ -415,6 +419,10 @@ class DonationLogger(commands.Cog):
         if member.bot:
             return await context.send(
                 content="Bots are prohibited from donations. (For obvious reasons)"
+            )
+        if note and len(note) > 1024:
+            return await context.send(
+                content="Limit your note into 1024 characters due to embed field limits."
             )
 
         await HYBRIDS.hybrid_remove(self, context, bank_name, amount, member, note)
@@ -1026,6 +1034,10 @@ class DonationLogger(commands.Cog):
             return await interaction.response.send_message(
                 content="Bots are prohibited from donations. (For obvious reasons)"
             )
+        if note and len(note) > 1024:
+            return await interaction.response.send_message(
+                content="Limit your note into 1024 characters due to embed field limits."
+            )
         if isinstance(bank_name, list):
             if bank_name[1]:
                 return await interaction.response.send_message(
@@ -1074,6 +1086,10 @@ class DonationLogger(commands.Cog):
         if member.bot:
             return await interaction.response.send_message(
                 content="Bots are prohibited from donations. (For obvious reasons)"
+            )
+        if note and len(note) > 1024:
+            return await interaction.response.send_message(
+                content="Limit your note into 1024 characters due to embed field limits."
             )
         if isinstance(bank_name, list):
             if bank_name[1]:

@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.1"
+    __version__ = "1.1.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -529,7 +529,11 @@ class GrinderLogger(commands.Cog):
                 if bank and context.bot.get_cog("DonationLogger"):
                     if cmd := self.bot.get_command("donationlogger add"):
                         await context.invoke(
-                            cmd, bank_name=bank, amount=amount, member=member
+                            cmd,
+                            bank_name=bank,
+                            amount=amount,
+                            member=member,
+                            note="GrinderLogger donation sync.",
                         )
             else:
                 await context.send(content="This member is not a grinder.")
@@ -580,12 +584,16 @@ class GrinderLogger(commands.Cog):
                     after,
                     amount,
                     "removed",
-                    member_data["due_timestamp"]
+                    member_data["due_timestamp"],
                 )
                 if bank and context.bot.get_cog("DonationLogger"):
                     if cmd := self.bot.get_command("donationlogger remove"):
                         await context.invoke(
-                            cmd, bank_name=bank, amount=amount, member=member
+                            cmd,
+                            bank_name=bank,
+                            amount=amount,
+                            member=member,
+                            note="GrinderLogger donation sync.",
                         )
             else:
                 await context.send(content="This member is not a grinder.")
@@ -656,14 +664,9 @@ class GrinderLogger(commands.Cog):
         if guild_data := self.data.get(str(guild.id), {}):
             for member_id in guild_data.copy().keys():
                 if mem_data := self.data.get(str(guild.id), {}).get(member_id):
-                    if (
-                        mem_data["last_due"]
-                        and (
-                            dt.datetime.fromtimestamp(
-                                mem_data["last_due"], dt.timezone.utc
-                            )
-                            > dt.datetime.now(dt.timezone.utc)
-                        )
+                    if mem_data["last_due"] and (
+                        dt.datetime.fromtimestamp(mem_data["last_due"], dt.timezone.utc)
+                        > dt.datetime.now(dt.timezone.utc)
                     ):
                         mem_data["due_timestamp"] = mem_data["last_due"]
 
@@ -687,7 +690,7 @@ class GrinderLogger(commands.Cog):
         reason: str = None,
     ):  # sourcery skip: low-code-quality
         """
-        Promote a grinder to a higher tier/level. 
+        Promote a grinder to a higher tier/level.
 
         Grinder will get a DM depending on the status of `[p]grlogset dmstatus`.
         """
@@ -912,7 +915,7 @@ class GrinderLogger(commands.Cog):
 
         Member can either be @mention/ID/Name
         Amount acronyms (`k`/`m`/`b`/`t`) are accepted.
-        `Time` - The day/time till this payment is made upto. Adding more time (while adding dono) will **increase** the time. 
+        `Time` - The day/time till this payment is made upto. Adding more time (while adding dono) will **increase** the time.
         The grinder & grinder manager **both** will get a **reminder** at that time.
 
         `[p]grlogset dmstatus` Enables grinder to be reminded in DMs.
@@ -1160,10 +1163,10 @@ class GrinderLogger(commands.Cog):
         """
         Add, remove, or check the list of grinder managers.
 
-        Multiple roles are accepted, spaced by a space. 
+        Multiple roles are accepted, spaced by a space.
         Role ID/name/@mention all are accepted.
 
-        Examples: 
+        Examples:
         `[p]grlogset manager list`: Shows the list of manager roles
         `[p]grlogset manager add @moderator @admin `
         `[p]grlogset manager remove staff_role_ID`
@@ -1219,7 +1222,7 @@ class GrinderLogger(commands.Cog):
         """
         Add or remove grinder related channels idk.
 
-        Channel, threads are accepted. 
+        Channel, threads are accepted.
         Channel mention/ID all are valid.
         Run the command again mentioning a different channel to override the previous set-channel.
 

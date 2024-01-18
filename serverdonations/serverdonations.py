@@ -72,6 +72,7 @@ class ServerDonations(commands.Cog):
         )
         default_guild = {
             "auto_delete": False,
+            "dl_support": False,
             "channels": {"gchan": None, "echan": None, "hchan": None},
             "managers": {"gmans": [], "emans": [], "hmans": []},
             "messages": {"gmsg": GMSG, "emsg": EMSG, "hmsg": HMSG},
@@ -79,7 +80,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.1.8"
+    __version__ = "3.2.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -522,6 +523,16 @@ class ServerDonations(commands.Cog):
         await self.config.guild(context.guild).auto_delete.set(not current)
         state = "will no longer" if current else "will now"
         await context.send(content=f"I {state} automatically delete commands.")
+
+    @serverdonationsset.command(name="donationloggersupport", aliases=["dlsupport"])
+    async def serverdonationsset_donationloggersupport(self, context: commands.Context):
+        """
+        Set whether to enable donationlogger support or not.
+        """
+        current = await self.config.guild(context.guild).dl_support()
+        await self.config.guild(context.guild).dl_support.set(not current)
+        state = "disabled" if current else "enabled"
+        await context.send(content=f"DonationLogger support is now {state}.")
 
     @serverdonationsset.command(name="resetguild")
     async def serverdonationsset_resetguild(self, context: commands.Context):
