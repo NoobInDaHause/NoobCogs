@@ -79,7 +79,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.1.7"
+    __version__ = "3.1.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 
@@ -487,7 +487,7 @@ class ServerDonations(commands.Cog):
                 )
             await self.config.guild(context.guild).messages.emsg.set(message)
             await context.send(
-                contetn="The TagScript for the event donation message has been set to:\n"
+                content="The TagScript for the event donation message has been set to:\n"
                 f"{cf.box(message, 'py')}"
             )
         elif message_type == "giveaway":
@@ -498,7 +498,7 @@ class ServerDonations(commands.Cog):
                 )
             await self.config.guild(context.guild).messages.gmsg.set(message)
             await context.send(
-                contetn="The TagScript for the giveaway donation message has been set to:\n"
+                content="The TagScript for the giveaway donation message has been set to:\n"
                 f"{cf.box(message, 'py')}"
             )
         elif message_type == "heist":
@@ -509,7 +509,7 @@ class ServerDonations(commands.Cog):
                 )
             await self.config.guild(context.guild).messages.hmsg.set(message)
             await context.send(
-                contetn="The TagScript for the heist donation message has been set to:\n"
+                content="The TagScript for the heist donation message has been set to:\n"
                 f"{cf.box(message, 'py')}"
             )
 
@@ -521,7 +521,7 @@ class ServerDonations(commands.Cog):
         current = await self.config.guild(context.guild).auto_delete()
         await self.config.guild(context.guild).auto_delete.set(not current)
         state = "will no longer" if current else "will now"
-        await context.send(contetn=f"I {state} automatically delete commands.")
+        await context.send(content=f"I {state} automatically delete commands.")
 
     @serverdonationsset.command(name="resetguild")
     async def serverdonationsset_resetguild(self, context: commands.Context):
