@@ -72,7 +72,7 @@ class ServerDonations(commands.Cog):
         )
         default_guild = {
             "auto_delete": False,
-            "dl_support": False,
+            "dl_support": True,
             "channels": {"gchan": None, "echan": None, "hchan": None},
             "managers": {"gmans": [], "emans": [], "hmans": []},
             "messages": {"gmsg": GMSG, "emsg": EMSG, "hmsg": HMSG},
@@ -80,7 +80,7 @@ class ServerDonations(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.ServerDonations")
 
-    __version__ = "3.2.0"
+    __version__ = "3.2.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/serverdonations/README.md"
 

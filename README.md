@@ -35,7 +35,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | NoobTools        |  v1.0.4   | NoobInDahause's personal tools.                             |
 | PressF           |  v1.1.8   | F.                                                          |
 | RandomColourRole |  v1.1.6   | Have a role that changes colour every 5 minutes.            |
-| ServerDonations  |  v3.2.0   | Donate bot currencies or any other currencies to servers.   |
+| ServerDonations  |  v3.2.1   | Donate bot currencies or any other currencies to servers.   |
 | SplitOrSteal     |  v3.0.3   | A fun split or steal game.                                  |
 | Suggestions      |  v2.0.2   | Suggestion system.                                          |
 | Timers           |  v1.4.1   | Start a timer countdown.                                    |
