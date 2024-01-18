@@ -39,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.2.4"
+    __version__ = "1.2.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -195,6 +195,7 @@ class DonationLogger(commands.Cog):
         updated: int,
         member: discord.Member,
         roles: str = None,
+        note: str = None,
     ):
         logchan = await self.config.guild(context.guild).log_channel()
         if not logchan:
@@ -247,6 +248,8 @@ class DonationLogger(commands.Cog):
             value=f"{emoji} {cf.humanize_number(updated)}",
             inline=True,
         )
+        if note:
+            embed.add_field(name="Note:", value=note, inline=False)
 
         if roles:
             embed.add_field(name=ra, value=roles, inline=False)
@@ -376,7 +379,9 @@ class DonationLogger(commands.Cog):
         context: commands.Context,
         bank_name: BankConverter,
         amount: AmountConverter,
-        member: discord.Member = None,
+        member: Optional[discord.Member] = None,
+        *,
+        note: Optional[str] = None,
     ):
         """
         Add bank donation amount to a member or yourself.
@@ -388,7 +393,7 @@ class DonationLogger(commands.Cog):
                 content="Bots are prohibited from donations. (For obvious reasons)"
             )
 
-        await HYBRIDS.hybrid_add(self, context, bank_name, amount, member)
+        await HYBRIDS.hybrid_add(self, context, bank_name, amount, member, note)
 
     @donationlogger.command(name="remove", aliases=["-", "r"])
     @is_setup_done()
@@ -398,7 +403,9 @@ class DonationLogger(commands.Cog):
         context: commands.Context,
         bank_name: BankConverter,
         amount: AmountConverter,
-        member: discord.Member = None,
+        member: Optional[discord.Member] = None,
+        *,
+        note: Optional[str] = None,
     ):
         """
         Remove bank donation amount to a member or yourself.
@@ -410,7 +417,7 @@ class DonationLogger(commands.Cog):
                 content="Bots are prohibited from donations. (For obvious reasons)"
             )
 
-        await HYBRIDS.hybrid_remove(self, context, bank_name, amount, member)
+        await HYBRIDS.hybrid_remove(self, context, bank_name, amount, member, note)
 
     @donationlogger.command(name="set")
     @is_setup_done()
@@ -824,7 +831,9 @@ class DonationLogger(commands.Cog):
     # <------------------------------------- SLASH COMMANDS ---------------------------------------------->
 
     slash_donologger = app_commands.Group(
-        name="donationlogger", description="DonationLogger base commands.", guild_only=True
+        name="donationlogger",
+        description="DonationLogger base commands.",
+        guild_only=True,
     )
 
     @slash_donologger.command(
@@ -992,6 +1001,7 @@ class DonationLogger(commands.Cog):
         bank_name="The name of the registered bank.",
         amount="The amount that you want to add. (examples: 10k, 1e6, 6900)",
         member="The member that you want to add donations to.",
+        note="Add an optional note as to why you added this donation.",
     )
     async def slash_donationlogger_add(
         self,
@@ -999,6 +1009,7 @@ class DonationLogger(commands.Cog):
         bank_name: app_commands.Transform[str, BankConverter],
         amount: app_commands.Transform[str, AmountConverter],
         member: Optional[discord.Member],
+        note: Optional[str],
     ):
         """_summary_
 
@@ -1007,6 +1018,7 @@ class DonationLogger(commands.Cog):
             bank_name (app_commands.Transform[str, BankConverter]): _description_
             amount (app_commands.Transform[str, AmountConverter]): _description_
             member (Optional[discord.Member]): _description_
+            note (str, optional): _description_
         """
         if not member:
             member = interaction.user
@@ -1028,7 +1040,7 @@ class DonationLogger(commands.Cog):
                 )
             else:
                 return await interaction.response.send_message(content=amount[0])
-        await HYBRIDS.hybrid_add(self, interaction, bank_name, amount, member)
+        await HYBRIDS.hybrid_add(self, interaction, bank_name, amount, member, note)
 
     @slash_donologger.command(
         name="remove",
@@ -1038,6 +1050,7 @@ class DonationLogger(commands.Cog):
         bank_name="The name of the registered bank.",
         amount="The amount that you want to add. (examples: 10k, 1e6, 6900)",
         member="The member that you want to remove donations from.",
+        note="Add an optional note as to why you removed this donation.",
     )
     async def slash_donationlogger_remove(
         self,
@@ -1045,6 +1058,7 @@ class DonationLogger(commands.Cog):
         bank_name: app_commands.Transform[str, BankConverter],
         amount: app_commands.Transform[str, AmountConverter],
         member: Optional[discord.Member],
+        note: Optional[str],
     ):
         """_summary_
 
@@ -1052,7 +1066,8 @@ class DonationLogger(commands.Cog):
             context (commands.Context): _description_
             bank_name (BankConverter): _description_
             amount (AmountConverter): _description_
-            member (discord.Member, optional): _description_. Defaults to None.
+            member (Optional[discord.Member]): _description_
+            note (Optional[str]): _description_
         """
         if not member:
             member = interaction.user
@@ -1074,7 +1089,7 @@ class DonationLogger(commands.Cog):
                 )
             else:
                 return await interaction.response.send_message(content=amount[0])
-        await HYBRIDS.hybrid_remove(self, interaction, bank_name, amount, member)
+        await HYBRIDS.hybrid_remove(self, interaction, bank_name, amount, member, note)
 
     @slash_donologger.command(
         name="set",

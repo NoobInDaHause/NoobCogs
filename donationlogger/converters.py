@@ -29,7 +29,7 @@ class AmountConverter(app_commands.Transformer):
                 amount = int(amt * amount_dict[unit])
             else:
                 amount = int(float(argument))
-            if amount > 999999999999999 or amount < 0:
+            if amount > 999999999999999 or amount < 1:
                 raise AmountConversionFailure("Invalid amount provided.")
             return amount
         except (ValueError, KeyError) as e:
@@ -103,7 +103,9 @@ class BankConverter(app_commands.Transformer):
     ) -> List[app_commands.Choice[str | int | float]]:
         cog: "DonationLogger" = interaction.client.get_cog("DonationLogger")
         banks = await cog.config.guild(interaction.guild).banks()
-        bank_list: List[str] = [bank for bank, bank_info in banks.items() if not bank_info["hidden"]]
+        bank_list: List[str] = [
+            bank for bank, bank_info in banks.items() if not bank_info["hidden"]
+        ]
         return [
             app_commands.Choice(name=choice.title(), value=choice)
             for choice in bank_list

@@ -323,6 +323,7 @@ class HYBRIDS:
         bank_name: str,
         amount: int,
         member: discord.Member,
+        note: str = None,
     ):
         if isinstance(obj, discord.Interaction):
             if not obj.channel.permissions_for(obj.guild.me).embed_links:
@@ -378,6 +379,7 @@ class HYBRIDS:
                 updated,
                 member,
                 humanized_roles,
+                note,
             )
 
     @classmethod
@@ -388,6 +390,7 @@ class HYBRIDS:
         bank_name: str,
         amount: int,
         member: discord.Member,
+        note: str = None,
     ):
         if isinstance(obj, discord.Interaction):
             if not obj.channel.permissions_for(obj.guild.me).embed_links:
@@ -453,6 +456,7 @@ class HYBRIDS:
                 updated2,
                 member,
                 humanized_roles,
+                note,
             )
 
     @classmethod
