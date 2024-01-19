@@ -93,11 +93,15 @@ class DonationsView(discord.ui.View):
             f"{self._type.title()} donation claimed by {self.claimer.mention}.\n"
             f"{self.context.author.mention} your {self._type} donation has been accepted.\n"
         )
-        if not dono_cog:
-            return await interaction.response.send_message(content=claimed)
         if not await self.cog.config.guild(interaction.guild).dl_support():
             return await interaction.response.send_message(content=claimed)
+        if not dono_cog:
+            return await interaction.response.send_message(content=claimed)
         if not await dono_cog.config.guild(interaction.guild).setup():
+            claimed += (
+                "`DonationLogger is not set up in this guild yet ask an admin to set it up first so "
+                "it supports adding donations to DonationLogger.`"
+            )
             return await interaction.response.send_message(content=claimed)
         banks = await dono_cog.config.guild(interaction.guild).banks()
         select_options = []
