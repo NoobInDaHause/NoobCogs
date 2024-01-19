@@ -9,7 +9,7 @@ from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf, mod
 
 from discord.ext import tasks
-from typing import Any, Dict, List, Literal, TYPE_CHECKING, Union
+from typing import Any, Dict, List, Literal, Optional, TYPE_CHECKING, Union
 
 from .converters import AmountConverter
 
@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.2"
+    __version__ = "1.1.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -438,6 +438,7 @@ class GrinderLogger(commands.Cog):
         o_amount: int,
         _type: str,
         due_time: int = None,
+        note: str = None
     ):
         logchan = await self.config.guild(context.guild).channels.logging()
         if not logchan:
@@ -461,11 +462,13 @@ class GrinderLogger(commands.Cog):
         embed.add_field(
             name="After Balance:", value=cf.humanize_number(a_amount), inline=True
         )
+        if note:
+            embed.add_field(name="Note:", value=note, inline=False)
         if due_time:
             embed.add_field(
                 name="Due Date:",
                 value=f"<t:{due_time}:R> (<t:{due_time}:F>)",
-                inline=True,
+                inline=False,
             )
         embed.set_author(
             name=f"{member.name} ({member.id})", icon_url=nu.is_have_avatar(member)
@@ -489,6 +492,7 @@ class GrinderLogger(commands.Cog):
         member: discord.Member,
         amount: int,
         due_duration: dt.timedelta = None,
+        note: str = None
     ):
         """
         Add donation and set due duration on a grinder.
@@ -525,15 +529,17 @@ class GrinderLogger(commands.Cog):
                     amount,
                     "added",
                     member_data["due_timestamp"],
+                    note
                 )
                 if bank and context.bot.get_cog("DonationLogger"):
                     if cmd := self.bot.get_command("donationlogger add"):
+                        n = f"From GrinderLogger: {note}" if note else "From GrinderLogger."
                         await context.invoke(
                             cmd,
                             bank_name=bank,
                             amount=amount,
                             member=member,
-                            note="GrinderLogger donation sync.",
+                            note=n,
                         )
             else:
                 await context.send(content="This member is not a grinder.")
@@ -546,7 +552,8 @@ class GrinderLogger(commands.Cog):
         member: discord.Member,
         amount: int,
         time_to_remove: dt.timedelta = None,
-    ):  # sourcery skip: low-code-quality
+        note: str = None
+    ):    # sourcery skip: low-code-quality
         """
         Remove donation from a grinder.
         """
@@ -585,15 +592,17 @@ class GrinderLogger(commands.Cog):
                     amount,
                     "removed",
                     member_data["due_timestamp"],
+                    note
                 )
                 if bank and context.bot.get_cog("DonationLogger"):
                     if cmd := self.bot.get_command("donationlogger remove"):
+                        n = f"From GrinderLogger: {note}" if note else "From GrinderLogger."
                         await context.invoke(
                             cmd,
                             bank_name=bank,
                             amount=amount,
                             member=member,
-                            note="GrinderLogger donation sync.",
+                            note=n,
                         )
             else:
                 await context.send(content="This member is not a grinder.")
@@ -908,7 +917,9 @@ class GrinderLogger(commands.Cog):
         _type: Literal["add", "remove"],
         member: discord.Member,
         amount: AmountConverter,
-        time: commands.TimedeltaConverter = None,
+        time: Optional[commands.TimedeltaConverter] = None,
+        *,
+        note: str = None
     ):
         """
         Add or remove grinder donation amount and time.
@@ -926,10 +937,12 @@ class GrinderLogger(commands.Cog):
         `[p]grlog dono remove user_id 10m 5d`: Remove 10 million donations **and** 5days.
         `[p]grlog dono remove user_id 10m`: Remove **just** the amount.
         """
+        if note and len(note) > 1000:
+            return await context.send(content="Limit your note to 1k characters.")
         if _type == "add":
-            await self.donoadd(context, member, amount, time)
+            await self.donoadd(context, member, amount, time, note)
         else:
-            await self.donoremove(context, member, amount, time)
+            await self.donoremove(context, member, amount, time, note)
 
     @grinderlogger.command(name="leaderboard", aliases=["lb"])
     @commands.bot_has_permissions(embed_links=True)
