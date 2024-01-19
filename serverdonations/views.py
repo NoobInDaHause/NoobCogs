@@ -96,6 +96,9 @@ class DonationsView(discord.ui.View):
         if not await self.cog.config.guild(interaction.guild).dl_support():
             return await interaction.response.send_message(content=claimed)
         if not dono_cog:
+            claimed += (
+                "`It seem DonationLogger is not loaded, report this to the bot owner.`"
+            )
             return await interaction.response.send_message(content=claimed)
         if not await dono_cog.config.guild(interaction.guild).setup():
             claimed += (
