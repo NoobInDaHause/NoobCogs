@@ -36,7 +36,7 @@ class CustomError(commands.Cog):
 
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.13"
+    __version__ = "1.1.14"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
@@ -48,7 +48,8 @@ class CustomError(commands.Cog):
             f"{super().format_help_for_context(context)}\n\n"
             f"Cog Version: **{self.__version__}**\n"
             f"Cog Author{p}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}\n"
-            f"Cog Documentation: [[Click here]]({self.__docs__})"
+            f"Cog Documentation: [[Click here]]({self.__docs__})\n"
+            f"Utils Version: **{nu.__version__}**"
         )
 
     async def red_delete_data_for_user(
@@ -77,7 +78,6 @@ class CustomError(commands.Cog):
             blocks=[
                 tse.EmbedBlock(),
                 tse.LooseVariableGetterBlock(),
-                tse.StrictVariableGetterBlock(),
                 tse.IfBlock(),
                 tse.RandomBlock(),
                 tse.CommandBlock(),
@@ -85,6 +85,7 @@ class CustomError(commands.Cog):
                 tse.AllBlock(),
                 tse.AnyBlock(),
                 tse.ReplaceBlock(),
+                tse.AssignmentBlock(),
             ]
         )
         if isinstance(error, commands.CommandInvokeError):
