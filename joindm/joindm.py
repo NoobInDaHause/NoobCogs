@@ -29,20 +29,19 @@ class JoinDM(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.JoinDM")
 
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/joindm/README.md"
 
     def format_help_for_context(self, context: commands.Context) -> str:
-        """
-        Thanks Sinbad and sravan!
-        """
         plural = "s" if len(self.__author__) > 1 else ""
-        return f"""{super().format_help_for_context(context)}
-
-        Cog Version: **{self.__version__}**
-        Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}
-        Cog Documentation: [[Click here]]({self.__docs__})"""
+        return (
+            f"{super().format_help_for_context(context)}\n\n"
+            f"Cog Version: **{self.__version__}**\n"
+            f"Cog Author{plural}: {cf.humanize_list([f'**{auth}**' for auth in self.__author__])}\n"
+            f"Cog Documentation: [[Click here]]({self.__docs__})\n"
+            f"Utils Version: **{nu.__version__}**"
+        )
 
     async def red_delete_data_for_user(
         self,
@@ -69,6 +68,7 @@ class JoinDM(commands.Cog):
                 tse.AllBlock(),
                 tse.AnyBlock(),
                 tse.ReplaceBlock(),
+                tse.AssignmentBlock(),
             ]
         )
         proccessed = await tagengine.process(
