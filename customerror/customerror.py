@@ -36,7 +36,7 @@ class CustomError(commands.Cog):
 
         bot.on_command_error = self.on_command_error
 
-    __version__ = "1.1.15"
+    __version__ = "1.1.16"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/customerror/README.md"
@@ -87,6 +87,7 @@ class CustomError(commands.Cog):
                 tse.AnyBlock(),
                 tse.ReplaceBlock(),
                 tse.AssignmentBlock(),
+                tse.PythonBlock(),
             ]
         )
         if isinstance(error, commands.CommandInvokeError):

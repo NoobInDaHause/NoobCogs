@@ -29,7 +29,7 @@ class JoinDM(commands.Cog):
         self.config.register_guild(**default_guild)
         self.log = logging.getLogger("red.NoobCogs.JoinDM")
 
-    __version__ = "1.0.5"
+    __version__ = "1.0.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/joindm/README.md"
 
@@ -69,6 +69,7 @@ class JoinDM(commands.Cog):
                 tse.AnyBlock(),
                 tse.ReplaceBlock(),
                 tse.AssignmentBlock(),
+                tse.PythonBlock(),
             ]
         )
         proccessed = await tagengine.process(
