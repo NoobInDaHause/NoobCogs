@@ -38,7 +38,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | ServerDonations  |  v3.2.6   | Donate bot currencies or any other currencies to servers.   |
 | SplitOrSteal     |  v3.0.3   | A fun split or steal game.                                  |
 | Suggestions      |  v2.0.2   | Suggestion system.                                          |
-| Timers           |  v2.1.1   | Start a timer countdown.                                    |
+| Timers           |  v2.1.2   | Start a timer countdown.                                    |
 
 ## License
 

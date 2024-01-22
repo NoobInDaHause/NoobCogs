@@ -50,7 +50,7 @@ class Timers(commands.Cog):
         self.followup_queue: asyncio.Queue[FollowupItem] = asyncio.Queue()
         self.message_edit_queue: asyncio.Queue[MessageEditItem] = asyncio.Queue()
 
-    __version__ = "2.1.1"
+    __version__ = "2.1.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -229,11 +229,16 @@ class Timers(commands.Cog):
             else ["There are no active timers in this guild."]
         )
         bot = context.guild.get_member(context.bot.user.id)
+        title = (
+            "List of active timers globally."
+            if _all
+            else f"List of active timers in [{context.guild.name}]"
+        )
         return await nu.pagify_this(
             "\n".join(timers or no_timers),
             "\n",
             embed_colour=self.bot._color,
-            embed_title=f"List of active timers in [{context.guild.name}]",
+            embed_title=title,
             embed_thumbnail=nu.is_have_avatar(bot)
             if _all
             else nu.is_have_avatar(context.guild),
