@@ -103,7 +103,10 @@ class TimerObject:
             embed = await self.timer_embed_msg(emoji, responsible)
             cancel_view = discord.ui.View().add_item(
                 discord.ui.Button(
-                    emoji=emoji, disabled=True, style=nu.get_button_colour(end)
+                    emoji=emoji,
+                    disabled=True,
+                    style=nu.get_button_colour(end),
+                    label=str(len(self.members)),
                 )
             )
             await message.edit(embed=embed, view=cancel_view)
