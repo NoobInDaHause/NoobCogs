@@ -50,7 +50,7 @@ class Timers(commands.Cog):
         self.followup_queue: asyncio.Queue[FollowupItem] = asyncio.Queue()
         self.message_edit_queue: asyncio.Queue[MessageEditItem] = asyncio.Queue()
 
-    __version__ = "2.0.2"
+    __version__ = "2.1.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -81,6 +81,7 @@ class Timers(commands.Cog):
                     timer.host_id = None
                 if user_id in timer._members:
                     timer._members.remove(user_id)
+            await self.to_config()
 
     async def cog_load(self) -> None:
         self.bot.add_dev_env_value("timers", lambda _: self)
@@ -101,14 +102,16 @@ class Timers(commands.Cog):
             ):
                 view.stop()
         self.timer_ending_loop.cancel()
-        self.log.info("Timer ending loop task cancelled.")
+        self.save_timers_loop.cancel()
+        self.log.info("Timer ending and timer saving loop task cancelled.")
 
     async def initialize(self):
         for timer in self.active_timers:
             view = TimersView(self)
             self.bot.add_view(view, message_id=timer.message_id)
         self.timer_ending_loop.start()
-        self.log.info("Timer ending loop task started.")
+        self.save_timers_loop.start()
+        self.log.info("Timer ending and timer saving loop task started.")
 
     async def followup_runner(self):
         while self.running:
@@ -187,6 +190,44 @@ class Timers(commands.Cog):
             self.active_timers.pop(index)
             return True
         return False
+
+    async def get_timers(self, context: commands.Context, _all: bool) -> List[discord.Embed]:
+        timers = []
+        if _all:
+            timers.extend(
+                (
+                    f"**{index}.** {timer.title}\n` - ` Message ID: {timer.message_id}\n"
+                    f"` - ` Guild: {timer.guild} (`{timer.guild_id}`)\n"
+                    f"` - ` Jump URL: [[HERE]]({timer.jump_url})\n"
+                    f"` - ` Host: {timer.host} (`{timer.host_id}`)\n"
+                    f"` - ` Ends: <t:{timer.end_timestamp}:R> (<t:{timer.end_timestamp}:F>)"
+                )
+                for index, timer in enumerate(self.active_timers.copy(), 1)
+            )
+        else:
+            guild_timers = list(
+                filter(
+                    lambda x: x.guild_id == context.guild.id, self.active_timers.copy()
+                )
+            )
+            timers.extend(
+                (
+                    f"**{index}.** {timer.title}\n` - ` Message ID: {timer.message_id}\n"
+                    f"` - ` Jump URL: [[HERE]]({timer.jump_url})\n"
+                    f"` - ` Host: {timer.host} (`{timer.host_id}`)\n"
+                    f"` - ` Ends: <t:{timer.end_timestamp}:R> (<t:{timer.end_timestamp}:F>)"
+                )
+                for index, timer in enumerate(guild_timers, 1)
+            )
+        return await nu.pagify_this(
+            "\n".join(timers or ["There are no active timers in this guild."]),
+            "\n",
+            embed_colour=self.bot._color,
+            embed_title=f"List of active timers in [{context.guild.name}]",
+            embed_thumbnail=nu.is_have_avatar(context.bot.user)
+            if _all
+            else nu.is_have_avatar(context.guild),
+        )
 
     @tasks.loop(seconds=5)
     async def timer_ending_loop(self):
@@ -335,30 +376,18 @@ class Timers(commands.Cog):
                 content="That does not seem to be a valid timer or it was already over."
             )
 
-    @timer.command(name="list")
-    async def timer_list(self, context: commands.Context):
+    @timer.command(name="list", usage="")
+    async def timer_list(self, context: commands.Context, _all: bool = False):
         """
         See all the active timers in this guild.
         """
-        timers = list(
-            filter(lambda x: x.guild_id == context.guild.id, self.active_timers.copy())
-        )
-        list_timers = [
-            (
-                f"**{index}.** {timer.title}\n` - ` Message ID: {timer.message_id}\n"
-                f"` - ` Jump URL: [[HERE]]({timer.jump_url})\n` - ` Host: {timer.host} (`{timer.host_id}`)"
-                f"\n` - ` Ends: <t:{timer.end_timestamp}:R> (<t:{timer.end_timestamp}:F>)"
-            )
-            for index, timer in enumerate(timers, 1)
-        ]
-        final = "\n".join(list_timers or ["There are no active timers in this guild."])
-        pagified_timers = await nu.pagify_this(
-            final,
-            "\n",
-            embed_colour=self.bot._color,
-            embed_title=f"List of active timers in [{context.guild.name}]",
-        )
-        await nu.NoobPaginator(pagified_timers).start(context)
+        if _all and not await context.bot.is_owner(context.author):
+            embeds = await self.get_timers(context, False)
+        elif _all and await context.bot.is_owner(context.author):
+            embeds = await self.get_timers(context, True)
+        else:
+            embeds = await self.get_timers(context, False)
+        await nu.NoobPaginator(embeds).start(context)
 
     @commands.group(name="timerset")
     @commands.admin_or_permissions(manage_guild=True)
