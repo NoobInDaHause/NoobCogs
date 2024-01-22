@@ -50,7 +50,7 @@ class Timers(commands.Cog):
         self.followup_queue: asyncio.Queue[FollowupItem] = asyncio.Queue()
         self.message_edit_queue: asyncio.Queue[MessageEditItem] = asyncio.Queue()
 
-    __version__ = "2.1.0"
+    __version__ = "2.1.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -191,7 +191,9 @@ class Timers(commands.Cog):
             return True
         return False
 
-    async def get_timers(self, context: commands.Context, _all: bool) -> List[discord.Embed]:
+    async def get_timers(
+        self, context: commands.Context, _all: bool
+    ) -> List[discord.Embed]:
         timers = []
         if _all:
             timers.extend(
@@ -200,6 +202,7 @@ class Timers(commands.Cog):
                     f"` - ` Guild: {timer.guild} (`{timer.guild_id}`)\n"
                     f"` - ` Jump URL: [[HERE]]({timer.jump_url})\n"
                     f"` - ` Host: {timer.host} (`{timer.host_id}`)\n"
+                    f"` - ` Channel: {timer.channel} (`{timer.channel_id}`)\n"
                     f"` - ` Ends: <t:{timer.end_timestamp}:R> (<t:{timer.end_timestamp}:F>)"
                 )
                 for index, timer in enumerate(self.active_timers.copy(), 1)
@@ -215,16 +218,23 @@ class Timers(commands.Cog):
                     f"**{index}.** {timer.title}\n` - ` Message ID: {timer.message_id}\n"
                     f"` - ` Jump URL: [[HERE]]({timer.jump_url})\n"
                     f"` - ` Host: {timer.host} (`{timer.host_id}`)\n"
+                    f"` - ` Channel: {timer.channel} (`{timer.channel_id}`)\n"
                     f"` - ` Ends: <t:{timer.end_timestamp}:R> (<t:{timer.end_timestamp}:F>)"
                 )
                 for index, timer in enumerate(guild_timers, 1)
             )
+        no_timers = (
+            ["There are no active timers globally."]
+            if _all
+            else ["There are no active timers in this guild."]
+        )
+        bot = context.guild.get_member(context.bot.user.id)
         return await nu.pagify_this(
-            "\n".join(timers or ["There are no active timers in this guild."]),
+            "\n".join(timers or no_timers),
             "\n",
             embed_colour=self.bot._color,
             embed_title=f"List of active timers in [{context.guild.name}]",
-            embed_thumbnail=nu.is_have_avatar(context.bot.user)
+            embed_thumbnail=nu.is_have_avatar(bot)
             if _all
             else nu.is_have_avatar(context.guild),
         )
