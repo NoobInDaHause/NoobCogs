@@ -43,14 +43,14 @@ class Timers(commands.Cog):
         self.config.register_global(**default_global)
         self.config.init_custom("TIMERS", 1)
         self.log = logging.getLogger("red.NoobCogs.Timers")
-        self.running = False
+        self.running = True
         self.active_timers: List[TimerObject] = []
         self.folloup_queue_task = asyncio.create_task(self.followup_runner())
         self.message_edit_queue_task = asyncio.create_task(self.message_edit_runner())
         self.followup_queue: asyncio.Queue[FollowupItem] = asyncio.Queue()
         self.message_edit_queue: asyncio.Queue[MessageEditItem] = asyncio.Queue()
 
-    __version__ = "2.0.0"
+    __version__ = "2.0.1"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -83,7 +83,6 @@ class Timers(commands.Cog):
                     timer._members.remove(user_id)
 
     async def cog_load(self) -> None:
-        self.running = True
         self.bot.add_dev_env_value("timers", lambda _: self)
         if old_data := (await self.config.custom("TIMERS").all()).copy():
             for message_id, timer_data in old_data.items():
@@ -197,9 +196,10 @@ class Timers(commands.Cog):
             if timer := discord.utils.get(self.active_timers, message_id=t.message_id):
                 if timer.ended or timer.cancelled:
                     continue
-                if not timer.guild:
-                    self.remove_timer(timer)
                 if timer.ends_at < datetime.now(timezone.utc):
+                    if not timer.guild:
+                        self.remove_timer(timer)
+                        continue
                     await timer.end()
 
     @tasks.loop(minutes=5)
