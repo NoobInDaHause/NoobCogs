@@ -1,27 +1,16 @@
-import contextlib
 import discord
 import noobutils as nu
 
 from redbot.core.bot import Red
 
 from datetime import datetime, timedelta, timezone
-from typing import Coroutine, TYPE_CHECKING
+from typing import TYPE_CHECKING
+
+from .utilities import FollowupItem, MessageEditItem
 
 if TYPE_CHECKING:
     from . import Timers
 
-
-class PrioritizedItem:
-    def __init__(self, priority: int, timeout: datetime, coro: Coroutine):
-        self.priority: int = priority
-        self.timeout: datetime = timeout
-        self.coro: Coroutine = coro
-
-    def __lt__(self, other: "PrioritizedItem"):
-        return (self.priority, self.timeout) < (other.priority, other.timeout)
-
-    def is_valid(self):
-        return self.timeout > datetime.now(timezone.utc)
 
 class TimersView(discord.ui.View):
     def __init__(self, cog: "Timers"):
@@ -33,36 +22,46 @@ class TimersView(discord.ui.View):
         self, interaction: discord.Interaction[Red], button: discord.ui.Button
     ):
         conf = await self.cog.config.guild(interaction.guild).all()
-        async with self.cog.config.guild(interaction.guild).timers() as timers:
-            msg_id = timers[str(interaction.message.id)]
-            if interaction.user.id == msg_id["host_id"]:
+        if timer := discord.utils.get(
+            self.cog.active_timers, message_id=interaction.message.id
+        ):
+            if timer.host.id == interaction.user.id:
                 return await interaction.response.send_message(
                     content="You are the host you will be notified whenever this timer ends no matter what.",
                     ephemeral=True,
                 )
-            elif interaction.user.id in msg_id["members"]:
-                msg_id["members"].remove(interaction.user.id)
-                resp = "You will `no longer` be notified when this timer ends."
-            else:
-                msg_id["members"].append(interaction.user.id)
-                resp = "You will now get notified when this timer ends."
-            button.label = str(len(msg_id["members"]))
+            if timer.ended or timer.cancelled:
+                return await interaction.response.send_message(
+                    content="It seems this timer is already over.", ephemeral=True
+                )
+            await interaction.response.defer()
+            if timer.add_member(interaction.user):
+                message = "You will now get notified when this timer ends."
+            elif timer.remove_member(interaction.user):
+                message = "You will `no longer` be notified when this timer ends."
             button.emoji = conf["timer_emoji"]
+            button.label = str(len(timer.members))
             button.style = nu.get_button_colour(conf["timer_button_colour"]["started"])
-        await interaction.response.defer()
-        priority = 1
-        timeout = datetime.now(timezone.utc) + timedelta(minutes=15)
-        self.cog.message_edit_queue.put_nowait(
-            PrioritizedItem(
-                priority,
-                timeout,
-                interaction.message.edit(view=self)
+            await self.cog.to_config()
+            priority = 1
+            timeout = datetime.now(timezone.utc) + timedelta(minutes=15)
+            self.cog.message_edit_queue.put_nowait(
+                MessageEditItem(
+                    timer.message_id,
+                    priority,
+                    timeout,
+                    interaction.message.edit(view=self),
+                )
             )
-        )
-        self.cog.followup_queue.put_nowait(
-            PrioritizedItem(
-                priority,
-                timeout,
-                interaction.followup.send(content=resp, ephemeral=True)
+            self.cog.followup_queue.put_nowait(
+                FollowupItem(
+                    priority,
+                    timeout,
+                    interaction.followup.send(content=message, ephemeral=True),
+                )
             )
-        )
+        else:
+            await interaction.response.send_message(
+                content="It seems this timer does not exist in my database.",
+                ephemeral=True,
+            )

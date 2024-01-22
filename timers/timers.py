@@ -1,16 +1,21 @@
 import asyncio
+import contextlib
 import discord
-import noobutils as nu
 import logging
+import noobutils as nu
 
 from redbot.core.bot import commands, Config, Red
 from redbot.core.utils import chat_formatting as cf
 
 from datetime import datetime, timezone
 from discord.ext import tasks
-from typing import Literal, Union
+from typing import Literal, List, TYPE_CHECKING, Union
 
-from .views import TimersView, PrioritizedItem
+from .objects import TimerObject
+from .views import TimersView
+
+if TYPE_CHECKING:
+    from .utilities import FollowupItem, MessageEditItem
 
 
 class Timers(commands.Cog):
@@ -31,19 +36,21 @@ class Timers(commands.Cog):
             "timer_button_colour": {"ended": "grey", "started": "green"},
             "notify_members": True,
             "timer_emoji": "⏰",
-            "timers": {},
+            "auto_delete": False,
         }
         default_global = {"maximum_duration": 1209600}
         self.config.register_guild(**default_guild)
         self.config.register_global(**default_global)
+        self.config.init_custom("TIMERS", 1)
         self.log = logging.getLogger("red.NoobCogs.Timers")
-        self.running = True
-        self.followup_task = self.bot.loop.create_task(self.followup_runner())
-        self.message_edit_task = self.bot.loop.create_task(self.message_edit_runner())
-        self.followup_queue: asyncio.Queue[PrioritizedItem] = asyncio.Queue()
-        self.message_edit_queue: asyncio.Queue[PrioritizedItem] = asyncio.Queue()
+        self.running = False
+        self.active_timers: List[TimerObject] = []
+        self.folloup_queue_task = asyncio.create_task(self.followup_runner())
+        self.message_edit_queue_task = asyncio.create_task(self.message_edit_runner())
+        self.followup_queue: asyncio.Queue[FollowupItem] = asyncio.Queue()
+        self.message_edit_queue: asyncio.Queue[MessageEditItem] = asyncio.Queue()
 
-    __version__ = "1.4.1"
+    __version__ = "2.0.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -62,25 +69,47 @@ class Timers(commands.Cog):
         *,
         requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
-    ):
+    ) -> None:
         """
         This cog stores user ID's for timer host and users who get notified when timer ends if enabled.
 
         Users can delete their data at any time.
         """
-        for g in (await self.config.all_guilds()).keys():
-            async with self.config.guild_from_id(g).timers() as timers:
-                guild = self.bot.get_guild(g)
-                for tid, value in timers.items():
-                    if value["host_id"] == user_id:
-                        await self.end_timer(guild, int(tid))
-                        continue
-                    if user_id in value["members"]:
-                        value["members"].remove(user_id)
+        for t in self.active_timers.copy():
+            if timer := discord.utils.get(self.active_timers, message_id=t.message_id):
+                if timer.host_id == user_id:
+                    timer.host_id = None
+                if user_id in timer._members:
+                    timer._members.remove(user_id)
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
+        self.running = True
         self.bot.add_dev_env_value("timers", lambda _: self)
-        asyncio.create_task(self.initialize())
+        if old_data := (await self.config.custom("TIMERS").all()).copy():
+            for message_id, timer_data in old_data.items():
+                timer = TimerObject.from_dict(self, int(message_id), timer_data)
+                self.add_timer(timer)
+            self.log.debug("Timer data initialized.")
+        await self.initialize()
+
+    async def cog_unload(self) -> None:
+        self.running = False
+        self.bot.remove_dev_env_value("timers")
+        await self.to_config()
+        for timer in self.active_timers:
+            if view := discord.utils.get(
+                self.bot.persistent_views, _cache_key=timer.message_id
+            ):
+                view.stop()
+        self.timer_ending_loop.cancel()
+        self.log.info("Timer ending loop task cancelled.")
+
+    async def initialize(self):
+        for timer in self.active_timers:
+            view = TimersView(self)
+            self.bot.add_view(view, message_id=timer.message_id)
+        self.timer_ending_loop.start()
+        self.log.info("Timer ending loop task started.")
 
     async def followup_runner(self):
         while self.running:
@@ -112,6 +141,17 @@ class Timers(commands.Cog):
                 self.message_edit_queue.task_done()
                 del item
                 continue
+            if timer := discord.utils.get(self.active_timers, message_id=item.timer_id):
+                if timer.ended or timer.cancelled:
+                    item.coro.close()
+                    self.message_edit_queue.task_done()
+                    del item
+                    continue
+            else:
+                item.coro.close()
+                self.message_edit_queue.task_done()
+                del item
+                continue
             coro = item.coro
             try:
                 await coro
@@ -122,149 +162,55 @@ class Timers(commands.Cog):
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                self.log.exception("Error sending followup: ", exc_info=e)
+                self.log.exception("Error editing message: ", exc_info=e)
             del item
             self.message_edit_queue.task_done()
 
-    async def initialize(self):
-        await self.bot.wait_until_ready()
-        for gid, data in (await self.config.all_guilds()).items():
-            if guild := self.bot.get_guild(gid):
-                if timers := data.get("timers"):
-                    for tid, value in timers.items():
-                        try:
-                            channel = guild.get_channel(value["channel_id"])
-                            msg = await channel.fetch_message(int(tid))
-                            self.bot.add_view(TimersView(self), message_id=msg.id)
-                        except Exception:
-                            continue
-        self.log.info("Timer ending loop task started.")
-        self._timer_end.start()
+    async def to_config(self):
+        if not self.active_timers:
+            await self.config.custom("TIMERS").clear()
+            return
+        new_data = {}
+        for timer in self.active_timers.copy():
+            timer_data = timer.to_dict()
+            new_data |= timer_data
+        await self.config.custom("TIMERS").set(new_data)
 
-    async def cog_unload(self):
-        self.running = False
-        self.bot.remove_dev_env_value("timers")
-        for data in (await self.config.all_guilds()).values():
-            if timers := data.get("timers"):
-                for tid in timers:
-                    if view := discord.utils.get(
-                        self.bot.persistent_views, _cache_key=int(tid)
-                    ):
-                        view.stop()
-        self.log.info("Timer ending loop task cancelled.")
-        self._timer_end.cancel()
+    def add_timer(self, timer: TimerObject) -> bool:
+        if discord.utils.get(self.active_timers, message_id=timer.message_id):
+            return False
+        self.active_timers.append(timer)
+        return True
 
-    async def end_timer(self, guild: discord.Guild, message_id: int):
-        emoji = await self.config.guild(guild).timer_emoji()
-        notif = await self.config.guild(guild).notify_members()
-        end = await self.config.guild(guild).timer_button_colour.ended()
-        async with self.config.guild(guild).timers() as timers:
-            try:
-                host = guild.get_member(timers[str(message_id)]["host_id"])
-                channel = guild.get_channel(timers[str(message_id)]["channel_id"])
-                try:
-                    msg = await channel.fetch_message(message_id)
-                except discord.errors.NotFound:
-                    del timers[str(message_id)]
-                    return
-                members = [host.id] + timers[str(message_id)]["members"]
-                view = discord.ui.View().add_item(
-                    discord.ui.Button(
-                        label=str(len(members) - 1),  # minus host
-                        emoji=emoji,
-                        disabled=True,
-                        style=nu.get_button_colour(end),
-                    )
-                )
-                context = await self.bot.get_context(msg)
-                embed = await self.timer_embed_msg(
-                    context,
-                    host,
-                    timers[str(message_id)]["title"],
-                    timers[str(message_id)]["end_timestamp"],
-                    True,
-                    emoji,
-                )
-                await msg.edit(embed=embed, view=view)
-                if notif:
-                    c = ",".join(
-                        [
-                            member.mention
-                            for m in members
-                            if (member := guild.get_member(m))
-                        ]
-                    )
-                    for page in cf.pagify(c, delims=[","], page_length=1900):
-                        await asyncio.sleep(0.5)
-                        await channel.send(page, delete_after=3)
-                jump_view = discord.ui.View().add_item(
-                    discord.ui.Button(label="Jump To Timer", url=msg.jump_url)
-                )
-                await msg.reply(
-                    content=f"The timer for **{timers[str(message_id)]['title']}** has ended!",
-                    view=jump_view,
-                    allowed_mentions=discord.AllowedMentions.none(),
-                )
-                del timers[str(message_id)]
-                if view := discord.utils.get(
-                    self.bot.persistent_views, _cache_key=msg.id
-                ):
-                    view.stop()
-            except Exception as e:
-                self.log.exception(
-                    f"Error ending timer with message ID: {message_id}", exc_info=e
-                )
+    def remove_timer(self, timer: TimerObject) -> bool:
+        if t := discord.utils.get(self.active_timers, message_id=timer.message_id):
+            index = self.active_timers.index(t)
+            self.active_timers.pop(index)
+            return True
+        return False
 
-    async def timer_embed_msg(
-        self,
-        context: commands.Context,
-        host: discord.Member,
-        title: str,
-        timestamp: int,
-        ended: bool,
-        emoji: str,
-    ) -> discord.Embed:
-        h = host.mention if host else "[Host not found in guild]"
-        if ended:
-            desc = f"This timer has ended.\nHosted by: {h}"
-        else:
-            m = (
-                f"Click the {emoji} button to get notified when this timer ends.\n"
-                if await self.config.guild(context.guild).notify_members()
-                else ""
-            )
-            desc = (
-                f"{m}Time left: <t:{timestamp}:R> (<t:{timestamp}:F>)\nHosted by: {h}"
-            )
-        embed = discord.Embed(
-            title=title,
-            description=desc,
-            colour=0x2F3136 if ended else await context.embed_colour(),
-            timestamp=datetime.now(timezone.utc)
-            if ended
-            else datetime.fromtimestamp(timestamp),
-        )
-        embed.set_footer(text="Ended at" if ended else "Ends at")
-        embed.set_thumbnail(url=nu.is_have_avatar(context.guild))
-        return embed
+    @tasks.loop(seconds=5)
+    async def timer_ending_loop(self):
+        if not self.running:
+            return
+        for t in self.active_timers.copy():
+            if timer := discord.utils.get(self.active_timers, message_id=t.message_id):
+                if timer.ended or timer.cancelled:
+                    continue
+                if not timer.guild:
+                    self.remove_timer(timer)
+                if timer.ends_at < datetime.now(timezone.utc):
+                    await timer.end()
 
-    @tasks.loop(seconds=3)
-    async def _timer_end(self):
-        for gid, data in (await self.config.all_guilds()).items():
-            if guild := self.bot.get_guild(gid):
-                if timers := data.get("timers"):
-                    for tid, value in timers.items():
-                        try:
-                            endtime = datetime.fromtimestamp(
-                                value["end_timestamp"], timezone.utc
-                            )
-                            if datetime.now(timezone.utc) > endtime:
-                                await self.end_timer(guild, int(tid))
-                        except Exception:
-                            continue
+    @tasks.loop(minutes=5)
+    async def save_timers_loop(self):
+        if not self.running:
+            return
+        await self.to_config()
 
-    @_timer_end.before_loop
-    async def _timer_end_before_loop(self):
+    @timer_ending_loop.before_loop
+    @save_timers_loop.before_loop
+    async def before_loop(self):
         await self.bot.wait_until_red_ready()
 
     @commands.Cog.listener("on_raw_message_delete")
@@ -277,7 +223,6 @@ class Timers(commands.Cog):
     ):
         if not payload.guild_id:
             return
-        guild = self.bot.get_guild(payload.guild_id)
 
         try:
             if isinstance(payload, discord.RawMessageDeleteEvent):
@@ -285,25 +230,23 @@ class Timers(commands.Cog):
             else:
                 msg_ids = payload.message_ids
 
-            async with self.config.guild(guild).timers() as timers:
-                for msg_id in msg_ids:
-                    try:
-                        del timers[str(msg_id)]
-                        if view := discord.utils.get(
-                            self.bot.persistent_views, _cache_key=msg_id
-                        ):
-                            view.stop()
-                    except KeyError:
-                        continue
+            for msg_id in msg_ids:
+                if timer := discord.utils.get(self.active_timers, message_id=msg_id):
+                    self.remove_timer(timer)
+                    if view := discord.utils.get(
+                        self.bot.persistent_views, _cache_key=msg_id
+                    ):
+                        view.stop()
+            await self.to_config()
         except Exception as e:
             self.log.exception(
                 "Error occurred while handling message delete event.", exc_info=e
             )
 
     @commands.group(name="timer", invoke_without_command=True)
-    @commands.bot_has_permissions(manage_messages=True, embed_links=True)
-    @commands.mod()
     @commands.guild_only()
+    @commands.bot_has_permissions(embed_links=True, manage_messages=True)
+    @commands.mod_or_permissions(manage_messages=True)
     async def timer(
         self,
         context: commands.Context,
@@ -315,9 +258,7 @@ class Timers(commands.Cog):
         Timer.
         """
         _max = await self.config.maximum_duration()
-        emoji = await self.config.guild(context.guild).timer_emoji()
-        notif = await self.config.guild(context.guild).notify_members()
-        started = await self.config.guild(context.guild).timer_button_colour.started()
+        autodel = await self.config.guild(context.guild).auto_delete()
         if int(duration.total_seconds()) > _max:
             return await context.send(
                 content=f"Max duration for timers is: **{cf.humanize_timedelta(seconds=_max)}**."
@@ -330,28 +271,19 @@ class Timers(commands.Cog):
             return await context.send(
                 content="Your timer title should be less than 256 characters due to embed limits."
             )
-        time = datetime.now(timezone.utc) + duration
-        stamp = round(time.timestamp())
-        embed = await self.timer_embed_msg(
-            context, context.author, title, stamp, False, emoji
-        )
-        view = TimersView(self)
-        view.notify_button.label = "0" if notif else "Disabled"
-        view.notify_button.emoji = emoji
-        view.notify_button.disabled = not notif
-        view.notify_button.style = nu.get_button_colour(started)
-        msg = await context.send(embed=embed, view=view)
-        await context.message.delete()
-        async with self.config.guild(context.guild).timers() as timers:
-            timers |= {
-                str(msg.id): {
-                    "end_timestamp": stamp,
-                    "host_id": context.author.id,
-                    "channel_id": context.channel.id,
-                    "title": title,
-                    "members": [],
-                }
-            }
+        timer_data = {
+            "cog": self,
+            "guild_id": context.guild.id,
+            "host_id": context.author.id,
+            "channel_id": context.channel.id,
+            "end_timestamp": round((datetime.now(timezone.utc) + duration).timestamp()),
+            "title": title,
+        }
+        timer = TimerObject(**timer_data)
+        await timer.start()
+        if autodel:
+            with contextlib.suppress(Exception):
+                await context.message.delete()
 
     @timer.command(name="end")
     async def timer_end(
@@ -360,21 +292,22 @@ class Timers(commands.Cog):
         """
         Manually end a timer.
         """
-        timers = await self.config.guild(context.guild).timers()
-        if not timers:
-            return await context.send(
-                content="There are no active timers in this guild."
-            )
+        autodel = await self.config.guild(context.guild).auto_delete()
         if not message and not context.message.reference:
             return await context.send_help()
-        message = message or context.message.reference.resolved
-        try:
-            timers[str(message.id)]
-            await self.end_timer(context.guild, message.id)
-            await context.message.delete()
-        except KeyError:
-            return await context.send(
-                content="That does not seem to be a valid timer or timer already ended or cancelled."
+        msg_id = message.id if message else context.message.reference.resolved.id
+        if timer := discord.utils.get(self.active_timers, message_id=msg_id):
+            if timer.cancelled:
+                return await context.send(content="This timer was cancelled.")
+            if timer.ended:
+                return await context.send(content="This timer has already ended.")
+            if autodel:
+                with contextlib.suppress(Exception):
+                    await context.message.delete()
+            await timer.end(context.author)
+        else:
+            await context.send(
+                content="That does not seem to be a valid timer or it was already over."
             )
 
     @timer.command(name="cancel")
@@ -384,69 +317,53 @@ class Timers(commands.Cog):
         """
         Cancel a timer.
         """
+        autodel = await self.config.guild(context.guild).auto_delete()
         if not message and not context.message.reference:
             return await context.send_help()
-        message = message or context.message.reference.resolved
-        emoji = await self.config.guild(context.guild).timer_emoji()
-        notif = await self.config.guild(context.guild).notify_members()
-        async with self.config.guild(context.guild).timers() as timers:
-            if not timers:
-                return await context.send(
-                    content="There are no active timers in this guild."
-                )
-            try:
-                del timers[str(message.id)]
-                await context.message.delete()
-                embed = message.embeds[0]
-                embed.description = (
-                    f"This timer was cancelled.\nCancelled by: {context.author.mention}"
-                )
-                embed.colour = discord.Colour.red()
-                embed.timestamp = datetime.now(timezone.utc)
-                embed.set_footer(text="Cancelled at")
-                view = discord.ui.View().add_item(
-                    discord.ui.Button(
-                        emoji=emoji, disabled=True, style=nu.get_button_colour("green")
-                    )
-                )
-                await message.edit(embed=embed, view=view)
-            except Exception:
-                return await context.send(
-                    content="That does not seem to be a valid timer or timer already ended or cancelled."
-                )
+        msg_id = message.id if message else context.message.reference.resolved.id
+        if timer := discord.utils.get(self.active_timers, message_id=msg_id):
+            if timer.cancelled:
+                return await context.send(content="This timer was already cancelled.")
+            if timer.ended:
+                return await context.send(content="This timer has ended.")
+            if autodel:
+                with contextlib.suppress(Exception):
+                    await context.message.delete()
+            await timer.cancel(context.author)
+        else:
+            await context.send(
+                content="That does not seem to be a valid timer or it was already over."
+            )
 
     @timer.command(name="list")
     async def timer_list(self, context: commands.Context):
         """
-        Show running timers from this guild.
+        See all the active timers in this guild.
         """
-        timers = await self.config.guild(context.guild).timers()
-        list_timer = []
-        for index, (k, v) in enumerate(timers.items(), 1):
-            link = (
-                f"https://discord.com/channels/{context.guild.id}/{v['channel_id']}/{k}"
+        timers = list(
+            filter(lambda x: x.guild_id == context.guild.id, self.active_timers.copy())
+        )
+        list_timers = [
+            (
+                f"**{index}.** {timer.title}\n` - ` Message ID: {timer.message_id}\n"
+                f"` - ` Jump URL: [[HERE]]({timer.jump_url})\n` - ` Host: {timer.host} (`{timer.host_id}`)"
+                f"\n` - ` Ends: <t:{timer.end_timestamp}:R> (<t:{timer.end_timestamp}:F>)"
             )
-            list_timer.append(
-                (
-                    f"**{index}.** {v['title']}\n"
-                    f"` - ` Message ID: {k}\n"
-                    f"` - ` Jump URL: [[HERE]]({link})\n"
-                    f"` - ` Host: <@{v['host_id']}>\n"
-                    f"` - ` Ends: <t:{v['end_timestamp']}:R> (<t:{v['end_timestamp']}:F>)"
-                )
-            )
-        final = "\n".join(list_timer or ["There are no active timers in this guild."])
-        pagified = await nu.pagify_this(
+            for index, timer in enumerate(timers, 1)
+        ]
+        final = "\n".join(list_timers or ["There are no active timers in this guild."])
+        pagified_timers = await nu.pagify_this(
             final,
-            ")",
-            "Page ({index}/{pages})",
-            embed_colour=await context.embed_colour(),
+            "\n",
+            embed_colour=self.bot._color,
             embed_title=f"List of active timers in [{context.guild.name}]",
         )
-        await nu.NoobPaginator(pagified).start(context)
+        await nu.NoobPaginator(pagified_timers).start(context)
 
     @commands.group(name="timerset")
     @commands.admin_or_permissions(manage_guild=True)
+    @commands.bot_has_permissions(embed_links=True)
+    @commands.guild_only()
     async def timerset(self, context: commands.Context):
         """
         Configure timer settings.
@@ -546,6 +463,18 @@ class Timers(commands.Cog):
             content=f"The maximum duration is now: **{cf.humanize_timedelta(timedelta=maxduration)}**"
         )
 
+    @timerset.command(name="autodelete", aliases=["autodel"])
+    async def timerset_autodelete(self, context: commands.Context):
+        """
+        Toggle auto deletion on timer command completion.
+        """
+        current = await self.config.guild(context.guild).auto_delete()
+        await self.config.guild(context.guild).auto_delete.set(not current)
+        state = "will no longer" if current else "will now"
+        await context.send(
+            content=f"I {state} automatically delete timer commands invocation."
+        )
+
     @timerset.command(name="resetguild")
     async def timerset_resetguild(self, context: commands.Context):
         """
@@ -558,6 +487,10 @@ class Timers(commands.Cog):
         await view.wait()
         if view.value:
             await self.config.guild(context.guild).clear()
+            for timer in self.active_timers.copy():
+                if timer.guild_id == context.guild.id:
+                    self.remove_timer(timer)
+            await self.to_config()
 
     @timerset.command(name="resetcog")
     @commands.is_owner()
@@ -571,8 +504,10 @@ class Timers(commands.Cog):
         await view.start(context, act, content=conf)
         await view.wait()
         if view.value:
+            self.active_timers.clear()
             await self.config.clear_all_guilds()
             await self.config.clear_all()
+            await self.config.clear_all_custom("TIMERS")
 
     @timerset.command(name="showsettings", aliases=["ss"])
     async def timerset_showsettings(self, context: commands.Context):
@@ -582,6 +517,7 @@ class Timers(commands.Cog):
         config = await self.config.guild(context.guild).all()
         ended = config["timer_button_colour"]["ended"]
         started = config["timer_button_colour"]["started"]
+        autodel = config["auto_delete"]
         md = await self.config.maximum_duration()
         c = (
             f"Max Duration: **{cf.humanize_timedelta(seconds=md)}**"
@@ -592,7 +528,7 @@ class Timers(commands.Cog):
             title=f"Timer settings for [{context.guild.name}]",
             description=f"Notify Members: {config['notify_members']}\n"
             f"Timer Emoji: {config['timer_emoji']}\nTimer Button Colour:\n` - ` Ended: {ended}\n"
-            f"` - ` Started: {started}\n{c}",
+            f"` - ` Started: {started}\nAuto Delete: {autodel}\n{c}",
             timestamp=datetime.now(timezone.utc),
             colour=await context.embed_colour(),
         )
