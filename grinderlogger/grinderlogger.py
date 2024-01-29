@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.4"
+    __version__ = "1.1.5"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -863,6 +863,7 @@ class GrinderLogger(commands.Cog):
 
         donations = await self.config.member(member).donations()
         times = await self.config.member(member).times_as_grinder()
+        tiers = await self.config.guild(context.guild).tiers()
 
         guild_data = self.data.get(str(context.guild.id), {})
         if member_data := guild_data.get(str(member.id)):
@@ -872,11 +873,13 @@ class GrinderLogger(commands.Cog):
                 member_data.get("grinder_since"),
                 member_data.get("last_payed"),
             )
+            amount = tiers[tier]["amount"]
             description = (
-                f"`{'Tier':<13}`: {tier}\n`{'Donations':<13}`: {cf.humanize_number(donations)}\n"
-                f"`{'Times Joined':<13}`: {f'{times} times' if times > 1 else f'{times} time'}\n"
-                f"`{'Last Payed':<13}`: {f'<t:{last_pay}:R> (<t:{last_pay}:f>)' if last_pay else 'None'}\n"
-                f"`{'Due Date':<13}`: {f'<t:{due_stamp}:R> (<t:{due_stamp}:f>)' if due_stamp else 'None'}\n"
+                f"`{'Tier':<13}`: {tier} ({cf.humanize_number(amount)}/day)\n`{'Donations':<13}`: "
+                f"{cf.humanize_number(donations)}\n`{'Times Joined':<13}`: "
+                f"{f'{times} times' if times > 1 else f'{times} time'}\n`{'Last Payed':<13}`: "
+                f"{f'<t:{last_pay}:R> (<t:{last_pay}:f>)' if last_pay else 'None'}\n`{'Due Date':<13}`: "
+                f"{f'<t:{due_stamp}:R> (<t:{due_stamp}:f>)' if due_stamp else 'None'}\n"
                 f"`{'Grinder Since':<13}`: <t:{grinder_since}:R> (<t:{grinder_since}:f>)"
             )
         else:
