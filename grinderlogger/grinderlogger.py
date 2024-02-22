@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.6"
+    __version__ = "1.1.7"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -134,6 +134,8 @@ class GrinderLogger(commands.Cog):
     async def add_or_remove_grinder_roles(
         self, _type: str, member: discord.Member, roles: list, reason: str
     ) -> List[discord.Role]:
+        if isinstance(member, discord.User):
+            return []
         action = member.add_roles if _type == "add" else member.remove_roles
         hybrid_roles = [
             role
@@ -395,9 +397,7 @@ class GrinderLogger(commands.Cog):
         res = (
             f"- `{'Reason':<14}`: {reason}"
             if reason and _type == "promote"
-            else f"- `{'Reason':<13}`: {reason}"
-            if reason
-            else ""
+            else f"- `{'Reason':<13}`: {reason}" if reason else ""
         )
         rs = cf.humanize_list([f"`@{r.name}`" for r in roles]) if roles else "`None`"
         if _type == "promote":
@@ -438,7 +438,7 @@ class GrinderLogger(commands.Cog):
         o_amount: int,
         _type: str,
         due_time: int = None,
-        note: str = None
+        note: str = None,
     ):
         logchan = await self.config.guild(context.guild).channels.logging()
         if not logchan:
@@ -492,7 +492,7 @@ class GrinderLogger(commands.Cog):
         member: discord.Member,
         amount: int,
         due_duration: dt.timedelta = None,
-        note: str = None
+        note: str = None,
     ):
         """
         Add donation and set due duration on a grinder.
@@ -529,11 +529,15 @@ class GrinderLogger(commands.Cog):
                     amount,
                     "added",
                     member_data["due_timestamp"],
-                    note
+                    note,
                 )
                 if bank and context.bot.get_cog("DonationLogger"):
                     if cmd := self.bot.get_command("donationlogger add"):
-                        n = f"`From GrinderLogger`: {note}" if note else "From GrinderLogger."
+                        n = (
+                            f"`From GrinderLogger`: {note}"
+                            if note
+                            else "From GrinderLogger."
+                        )
                         await context.invoke(
                             cmd,
                             bank_name=bank,
@@ -552,8 +556,8 @@ class GrinderLogger(commands.Cog):
         member: discord.Member,
         amount: int,
         time_to_remove: dt.timedelta = None,
-        note: str = None
-    ):    # sourcery skip: low-code-quality
+        note: str = None,
+    ):  # sourcery skip: low-code-quality
         """
         Remove donation from a grinder.
         """
@@ -592,11 +596,15 @@ class GrinderLogger(commands.Cog):
                     amount,
                     "removed",
                     member_data["due_timestamp"],
-                    note
+                    note,
                 )
                 if bank and context.bot.get_cog("DonationLogger"):
                     if cmd := self.bot.get_command("donationlogger remove"):
-                        n = f"`From GrinderLogger`: {note}" if note else "From GrinderLogger."
+                        n = (
+                            f"`From GrinderLogger`: {note}"
+                            if note
+                            else "From GrinderLogger."
+                        )
                         await context.invoke(
                             cmd,
                             bank_name=bank,
@@ -615,18 +623,22 @@ class GrinderLogger(commands.Cog):
     ) -> List[str]:
         all_mem = []
         if sort_by == "dono":
-            sort = sorted(all_m.items(), key=lambda x: x[1]["donations"], reverse=True)
+            k = lambda x: x[1]["donations"]
         elif sort_by == "due":
+
             def check(x):
                 d = x[1]["due"]
                 if d is None:
                     d = 0
                 return d
-            sort = sorted(all_m.items(), key=check, reverse=True)
+
+            k = check
         else:
-            sort = sorted(all_m.items(), key=lambda x: int(x[1]["tier"]), reverse=True)
-        
-        for index, (mem, mem_dono) in enumerate(sort, 1):
+            k = lambda x: int(x[1]["tier"])
+
+        for index, (mem, mem_dono) in enumerate(
+            sorted(all_m.items(), key=k, reverse=True), 1
+        ):
             if isinstance(mem, discord.Member):
                 msg = (
                     f"` {index}. ` {mem.mention} (`{mem.id}`):\n"
@@ -957,7 +969,7 @@ class GrinderLogger(commands.Cog):
         amount: AmountConverter,
         time: Optional[commands.TimedeltaConverter] = None,
         *,
-        note: str = None
+        note: str = None,
     ):
         """
         Add or remove grinder donation amount and time.
@@ -987,7 +999,7 @@ class GrinderLogger(commands.Cog):
     async def grinderlogger_leaderboard(
         self,
         context: commands.Context,
-        sort_by: Literal["dono", "due", "tier"] = "dono"
+        sort_by: Literal["dono", "due", "tier"] = "dono",
     ):
         """
         Show the grinderlogger leaderboard.
@@ -1087,7 +1099,11 @@ class GrinderLogger(commands.Cog):
     @grinderlogger.command(name="removemember")
     @commands.bot_has_permissions(manage_roles=True)
     async def grinderloggerset_removemember(
-        self, context: commands.Context, member: discord.Member, *, reason: str = None
+        self,
+        context: commands.Context,
+        member: Union[discord.Member, discord.User],
+        *,
+        reason: str = None,
     ):
         """
         Remove a grinder.
@@ -1115,7 +1131,9 @@ class GrinderLogger(commands.Cog):
             )
             self.remove_from_data(str(context.guild.id), str(member.id))
             await self.back_to_config()
-            await self.config.member(member).last_time_as_grinder.set(
+            await self.config.member_from_ids(
+                context.guild.id, member.id
+            ).last_time_as_grinder.set(
                 round(dt.datetime.now(dt.timezone.utc).timestamp())
             )
             audit_reason = mod.get_audit_reason(
@@ -1272,23 +1290,29 @@ class GrinderLogger(commands.Cog):
         if _type == "logs":
             await _config.logging.set(channel.id if channel else None)
             await context.send(
-                content=f"Set {channel.mention} as the grinder logging channel."
-                if channel
-                else "The grinders logging channel has been cleared."
+                content=(
+                    f"Set {channel.mention} as the grinder logging channel."
+                    if channel
+                    else "The grinders logging channel has been cleared."
+                )
             )
         elif _type == "notify":
             await _config.notifying.set(channel.id if channel else None)
             await context.send(
-                content=f"Set {channel.mention} as the grinder notification channel."
-                if channel
-                else "The due grinders notification channel has been cleared."
+                content=(
+                    f"Set {channel.mention} as the grinder notification channel."
+                    if channel
+                    else "The due grinders notification channel has been cleared."
+                )
             )
         else:
             await _config.history.set(channel.id if channel else None)
             await context.send(
-                content=f"Set {channel.mention} as the grinder history channel."
-                if channel
-                else "The grinders history channel has been cleared."
+                content=(
+                    f"Set {channel.mention} as the grinder history channel."
+                    if channel
+                    else "The grinders history channel has been cleared."
+                )
             )
 
     @grinderloggerset.command(name="tier", aliases=["t"])
@@ -1406,9 +1430,11 @@ class GrinderLogger(commands.Cog):
         )
         embed.add_field(
             name="Managers:",
-            value=cf.humanize_list([f"<@&{i}>" for i in managers])
-            if managers
-            else "**None**",
+            value=(
+                cf.humanize_list([f"<@&{i}>" for i in managers])
+                if managers
+                else "**None**"
+            ),
             inline=False,
         )
         embed.add_field(name="DM Status:", value=dm_status, inline=False)
