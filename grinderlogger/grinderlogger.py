@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.7"
+    __version__ = "1.1.8"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -493,7 +493,7 @@ class GrinderLogger(commands.Cog):
         amount: int,
         due_duration: dt.timedelta = None,
         note: str = None,
-    ):
+    ):  # sourcery skip: low-code-quality
         """
         Add donation and set due duration on a grinder.
         """
@@ -617,10 +617,13 @@ class GrinderLogger(commands.Cog):
         else:
             await context.send(content="This guild has no grinders.")
 
-    @staticmethod
-    def lb_whatever(
-        sort_by: str, all_m: Dict[Union[discord.Member, int], Dict[str, Any]]
+    async def lb_whatever(
+        self,
+        guild: discord.Guild,
+        sort_by: str,
+        all_m: Dict[Union[discord.Member, int], Dict[str, Any]]
     ) -> List[str]:
+        tiers = await self.config.guild(guild).tiers()
         all_mem = []
         if sort_by == "dono":
             k = lambda x: x[1]["donations"]
@@ -639,16 +642,18 @@ class GrinderLogger(commands.Cog):
         for index, (mem, mem_dono) in enumerate(
             sorted(all_m.items(), key=k, reverse=True), 1
         ):
+            amt = tiers[mem_dono['tier']]["amount"]
             if isinstance(mem, discord.Member):
+                t = f"{mem_dono['tier']} ({cf.humanize_number(amt)}/day)"
                 msg = (
                     f"` {index}. ` {mem.mention} (`{mem.id}`):\n"
-                    f"> - `{f'Tier':<9}:` **{mem_dono['tier']}**\n"
+                    f"> - `{f'Tier':<9}`: **{t}**\n"
                     f"> - `{f'Donations':<9}`: {cf.humanize_number(mem_dono['donations'])}"
                 )
             else:
                 msg = (
                     f"` {index}. ` Member not found in guild (`{mem}`):\n"
-                    f"> - `{f'Tier':<9}:` **{mem_dono['tier']}**\n"
+                    f"> - `{f'Tier':<9}`: **{t}**\n"
                     f"> - `{f'Donations':<9}`: {cf.humanize_number(mem_dono['donations'])}"
                 )
             if mem_dono["due"]:
@@ -1020,7 +1025,7 @@ class GrinderLogger(commands.Cog):
                 "tier": md["tier"],
             }
 
-        all_mem = self.lb_whatever(sort_by, all_m)
+        all_mem = await self.lb_whatever(context.guild, sort_by, all_m)
 
         pagified = await nu.pagify_this(
             "\n\n".join(all_mem),
