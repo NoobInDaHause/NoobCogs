@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.8"
+    __version__ = "1.1.9"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -148,6 +148,7 @@ class GrinderLogger(commands.Cog):
 
     async def dm_grinder(
         self,
+        guild: discord.Guild,
         member: discord.Member,
         amount: str,
         role_list: List[discord.Role],
@@ -157,7 +158,7 @@ class GrinderLogger(commands.Cog):
     ):
         if _type == "added":
             desc = (
-                f"- Congratulations! You have been accepted as a grinder in **{member.guild.name}**.\n\n"
+                f"- Congratulations! You have been accepted as a grinder in **{guild.name}**.\n\n"
                 f"__**Details:**__\n`{'Tier':<15}`: **{tier}**\n`{'Amount per day':<15}`: "
                 f"{cf.humanize_number(amount)}/day\n`{'Recieved Roles':<15}`: "
                 f"{cf.humanize_list([f'`@{role.name}`' for role in role_list]) if role_list else '`None`'}\n"
@@ -171,14 +172,14 @@ class GrinderLogger(commands.Cog):
                     timestamp=dt.datetime.now(dt.timezone.utc),
                     description=desc,
                 )
-                .set_thumbnail(url=nu.is_have_avatar(member.guild))
+                .set_thumbnail(url=nu.is_have_avatar(guild))
                 .set_footer(
-                    text=member.guild.name, icon_url=nu.is_have_avatar(member.guild)
+                    text=guild.name, icon_url=nu.is_have_avatar(guild)
                 )
             )
         else:
             _desc = (
-                f"You have been removed from the grinders in **{member.guild.name}**.\n\n"
+                f"You have been removed from the grinders in **{guild.name}**.\n\n"
                 f"__**Details:**__\n`{'Tier':<15}`: {tier}\n`{'Removed Roles':<15}`: "
                 f"{cf.humanize_list([f'`@{role.name}`' for role in role_list]) if role_list else '`None`'}\n"
             )
@@ -191,9 +192,9 @@ class GrinderLogger(commands.Cog):
                     timestamp=dt.datetime.now(dt.timezone.utc),
                     description=_desc,
                 )
-                .set_thumbnail(url=nu.is_have_avatar(member.guild))
+                .set_thumbnail(url=nu.is_have_avatar(guild))
                 .set_footer(
-                    text=member.guild.name, icon_url=nu.is_have_avatar(member.guild)
+                    text=guild.name, icon_url=nu.is_have_avatar(guild)
                 )
             )
         with contextlib.suppress(
@@ -1095,7 +1096,7 @@ class GrinderLogger(commands.Cog):
         )
         await context.send(content=f"Added **{member.name}** as a Tier {tier} grinder.")
         await self.dm_grinder(
-            member, tiers[tier]["amount"], added_roles, tier, "added", reason
+            context.guild, member, tiers[tier]["amount"], added_roles, tier, "added", reason
         )
         await self.log_grinder_history(
             context, member, tier, tiers[tier]["amount"], "added", None, reason
@@ -1153,7 +1154,7 @@ class GrinderLogger(commands.Cog):
                 "remove", member, roles, audit_reason
             )
             await self.dm_grinder(
-                member, tiers[tier]["amount"], removed_roles, tier, "removed", reason
+                context.guild, member, tiers[tier]["amount"], removed_roles, tier, "removed", reason
             )
             await context.send(content=f"Removed **{member.name}** from grinders.")
         else:
