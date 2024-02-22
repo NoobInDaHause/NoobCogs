@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.5"
+    __version__ = "1.1.6"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -609,6 +609,41 @@ class GrinderLogger(commands.Cog):
         else:
             await context.send(content="This guild has no grinders.")
 
+    @staticmethod
+    def lb_whatever(
+        sort_by: str, all_m: Dict[Union[discord.Member, int], Dict[str, Any]]
+    ) -> List[str]:
+        all_mem = []
+        if sort_by == "dono":
+            sort = sorted(all_m.items(), key=lambda x: x[1]["donations"], reverse=True)
+        elif sort_by == "due":
+            def check(x):
+                d = x[1]["due"]
+                if d is None:
+                    d = 0
+                return d
+            sort = sorted(all_m.items(), key=check, reverse=True)
+        else:
+            sort = sorted(all_m.items(), key=lambda x: int(x[1]["tier"]), reverse=True)
+        
+        for index, (mem, mem_dono) in enumerate(sort, 1):
+            if isinstance(mem, discord.Member):
+                msg = (
+                    f"` {index}. ` {mem.mention} (`{mem.id}`):\n"
+                    f"> - `{f'Tier':<9}:` **{mem_dono['tier']}**\n"
+                    f"> - `{f'Donations':<9}`: {cf.humanize_number(mem_dono['donations'])}"
+                )
+            else:
+                msg = (
+                    f"` {index}. ` Member not found in guild (`{mem}`):\n"
+                    f"> - `{f'Tier':<9}:` **{mem_dono['tier']}**\n"
+                    f"> - `{f'Donations':<9}`: {cf.humanize_number(mem_dono['donations'])}"
+                )
+            if mem_dono["due"]:
+                msg += f"\n> - `{f'Due':<9}`: <t:{mem_dono['due']}:R>"
+            all_mem.append(msg)
+        return all_mem
+
     @tasks.loop(seconds=5)
     async def due_reminder_loop(self):
         if not self.init_done:
@@ -949,7 +984,11 @@ class GrinderLogger(commands.Cog):
 
     @grinderlogger.command(name="leaderboard", aliases=["lb"])
     @commands.bot_has_permissions(embed_links=True)
-    async def grinderlogger_leaderboard(self, context: commands.Context):
+    async def grinderlogger_leaderboard(
+        self,
+        context: commands.Context,
+        sort_by: Literal["dono", "due", "tier"] = "dono"
+    ):
         """
         Show the grinderlogger leaderboard.
         """
@@ -969,29 +1008,11 @@ class GrinderLogger(commands.Cog):
                 "tier": md["tier"],
             }
 
-        all_mem = []
-        for index, (mem, mem_dono) in enumerate(
-            sorted(all_m.items(), key=lambda x: x[1]["donations"], reverse=True), 1
-        ):
-            if isinstance(mem, discord.Member):
-                msg = (
-                    f"` {index}. ` {mem.mention} ({mem.id}):\n"
-                    f"- Tier: **{mem_dono['tier']}**\n"
-                    f"- Donations: {cf.humanize_number(mem_dono['donations'])}"
-                )
-            else:
-                msg = (
-                    f"` {index}. ` Member not found in guild ({mem}):\n"
-                    f"- Tier: **{mem_dono['tier']}**\n"
-                    f"- Donations: {cf.humanize_number(mem_dono['donations'])}"
-                )
-            if mem_dono["due"]:
-                msg += f"\n- Due: <t:{mem_dono['due']}:R>"
-            all_mem.append(msg)
+        all_mem = self.lb_whatever(sort_by, all_m)
 
         pagified = await nu.pagify_this(
-            "\n".join(all_mem),
-            "\n",
+            "\n\n".join(all_mem),
+            "\n\n",
             embed_title=f"GrinderLogger Leaderboard for [{context.guild.name}]",
             embed_timestamp=dt.datetime.now(dt.timezone.utc),
             embed_colour=context.bot._color,
