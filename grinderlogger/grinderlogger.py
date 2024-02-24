@@ -513,6 +513,8 @@ class GrinderLogger(commands.Cog):
                     )
                     stamp = dat + due_duration
                     member_data["due_timestamp"] = round(stamp.timestamp())
+                if member_data["reminded"]:
+                    member_data["reminded"] = False
                 before = await self.config.member(member).donations()
                 after = before + amount
                 await self.config.member(member).donations.set(after)
