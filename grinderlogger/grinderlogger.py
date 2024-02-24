@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.9"
+    __version__ = "1.1.10"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -208,8 +208,7 @@ class GrinderLogger(commands.Cog):
         channels = await self.config.guild(guild).channels()
         member = guild.get_member(int(member_id))
         member_data = self.data[str(guild.id)][str(member.id)]
-        member_data["last_due"] = member_data["due_timestamp"]
-        member_data["due_timestamp"] = None
+        member_data["reminded"] = True
         await self.back_to_config()
         tier = member_data.get("tier")
         man_roles: List[discord.Role] = []
@@ -578,11 +577,8 @@ class GrinderLogger(commands.Cog):
                     )
                     new_date = due_date - time_to_remove
                     if new_date < dt.datetime.now(dt.timezone.utc):
-                        member_data["due_timestamp"] = None
-                        await context.send(
-                            content="You have removed more time than the set due duration for this member so "
-                            "the due duration is removed."
-                        )
+                        member_data["due_timestamp"] = round(new_date.timestamp())
+                        member_data["reminded"] = True
                     else:
                         member_data["due_timestamp"] = round(new_date.timestamp())
                 after = max(before - amount, 0)
@@ -670,7 +666,7 @@ class GrinderLogger(commands.Cog):
             if guild := self.bot.get_guild(int(guild_id)):
                 for member_id in grinder_data.keys():
                     if member_data := self.data.get(guild_id, {}).get(member_id):
-                        if member_data["due_timestamp"] and (
+                        if not member_data["reminded"] and member_data["due_timestamp"] and (
                             dt.datetime.fromtimestamp(
                                 member_data["due_timestamp"], dt.timezone.utc
                             )
@@ -712,25 +708,6 @@ class GrinderLogger(commands.Cog):
             )
 
         return commands.check(check_if_is_a_grinder_manager_or_higher)
-
-    @commands.Cog.listener("on_guild_remove")
-    async def on_guild_remove(self, guild: discord.Guild):
-        if guild_data := self.data.get(str(guild.id), {}):
-            for member_id in guild_data.copy().keys():
-                if mem_data := self.data.get(str(guild.id), {}).get(member_id):
-                    mem_data["last_due"] = mem_data.get("due_timestamp")
-                    mem_data["due_timestamp"] = None
-
-    @commands.Cog.listener("on_guild_join")
-    async def on_guild_join(self, guild: discord.Guild):
-        if guild_data := self.data.get(str(guild.id), {}):
-            for member_id in guild_data.copy().keys():
-                if mem_data := self.data.get(str(guild.id), {}).get(member_id):
-                    if mem_data["last_due"] and (
-                        dt.datetime.fromtimestamp(mem_data["last_due"], dt.timezone.utc)
-                        > dt.datetime.now(dt.timezone.utc)
-                    ):
-                        mem_data["due_timestamp"] = mem_data["last_due"]
 
     @commands.group(name="grinderlogger", aliases=["grlog"])
     @commands.bot_has_permissions(embed_links=True)
@@ -922,7 +899,7 @@ class GrinderLogger(commands.Cog):
         if member_data := guild_data.get(str(member.id)):
             tier, due_stamp, grinder_since, last_pay = (
                 member_data.get("tier"),
-                (member_data.get("due_timestamp") or member_data.get("last_due")),
+                member_data.get("due_timestamp"),
                 member_data.get("grinder_since"),
                 member_data.get("last_payed"),
             )
@@ -1022,7 +999,7 @@ class GrinderLogger(commands.Cog):
             ).donations()
             all_m[member or mid] = {
                 "donations": donations,
-                "due": md["due_timestamp"] or md["last_due"],
+                "due": md["due_timestamp"],
                 "tier": md["tier"],
             }
 
@@ -1074,7 +1051,7 @@ class GrinderLogger(commands.Cog):
             "due_timestamp": None,
             "grinder_since": round(dt.datetime.now(dt.timezone.utc).timestamp()),
             "last_payed": None,
-            "last_due": None,
+            "reminded": True,
         }
 
         times = await self.config.member(member).times_as_grinder()
