@@ -39,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.2.7"
+    __version__ = "1.3.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -467,6 +467,58 @@ class DonationLogger(commands.Cog):
         Bank settings commands.
         """
         pass
+
+    @donationloggerset_bank.command(name="multiplier", aliases=["multi"])
+    async def donationloggerset_bank_multiplier(
+        self,
+        context: commands.Context,
+        add_or_remove_or_list: Literal["set", "remove", "list"],
+        bank_name: BankConverter = None,
+        multiplier: float = None
+    ):
+        """
+        Manage setting or removing donation multipliers from banks.
+
+        When you are removing a multiplier leave the multiplier argument blank to remove it.
+
+        Every donation multiplier defaults to 1.
+
+        Example:
+        `[p]donoset bank multi add dank 2.0`
+        """
+        if add_or_remove_or_list == "list":
+            banks = await self.config.guild(context.guild).banks()
+            desc = [f"{k}: **x{v['multi']}**" for k, v in banks.items() if v.get("multi")]
+            embed = discord.Embed(
+                title="List of banks with mutipliers",
+                description="\n".join(desc or ["There are no banks with multipliers yet."]),
+                colour=self.bot._color,
+                timestamp=discord.utils.utcnow()
+            )
+            return await context.send(embed=embed)
+        elif add_or_remove_or_list == "set":
+            if not bank_name and not multiplier:
+                return await context.send_help()
+            if multiplier < 1.0:
+                return await context.send(content="You can not set the multiplier below 1.0.")
+            
+            async with self.config.guild(context.guild).banks() as banks:
+                if banks[bank_name].get("multi"):
+                    return await context.send(content="This bank already has a multiplier set.")
+                banks[bank_name]["multi"] = multiplier
+            await context.send(
+                content=f"Added **x{multiplier}** multiplier from **__{bank_name.title()}__**."
+            )
+        else:
+            if not bank_name:
+                return await context.send_help()
+            async with self.config.guild(context.guild).banks() as banks:
+                if not banks[bank_name].get("multi"):
+                    return await context.send(content="This bank does not have a multiplier set.")
+                banks[bank_name]["multi"] = None
+            await context.send(
+                content=f"Removed multiplier from **__{bank_name.title()}__**."
+            )
 
     @donationloggerset_bank.command(name="add")
     async def donationloggerset_bank_add(

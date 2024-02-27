@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import discord
 import noobutils as nu
 import random
@@ -345,16 +346,19 @@ class HYBRIDS:
                     ephemeral=True,
                 )
         if isinstance(obj, commands.Context):
-            ctx: commands.Context = obj
+            ctx = obj
         else:
-            ctx: commands.Context = await obj.client.get_context(obj)
+            ctx = await obj.client.get_context(obj)
         async with cog.config.guild(obj.guild).banks() as banks:
             bank = banks[bank_name.lower()]
             emoji = bank["emoji"]
             if bank["hidden"]:
                 return await cls.hybrid_send(obj, content="This bank is hidden.")
+            multi = bank.get("multi")
+            if multi:
+                amount *= multi
             bank["donators"].setdefault(str(member.id), 0)
-            bank["donators"][str(member.id)] += amount
+            bank["donators"][str(member.id)] += int(amount)
             updated = bank["donators"][str(member.id)]
             previous = updated - amount
             donated = cf.humanize_number(amount)
@@ -362,13 +366,28 @@ class HYBRIDS:
             roles = await cog.update_dono_roles(
                 ctx, "add", updated, member, bank["roles"]
             )
-            humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
+            humanized_roles = cf.humanize_list([role.mention for role in roles])
             rep = (
-                f"Successfully added {emoji} **{donated}** to "
-                f"**{member.name}**'s **__{bank_name.title()}__** donation balance.\n"
-                f"Their total donation balance is now **{emoji} {total}** on **__{bank_name.title()}__**."
+                f"{emoji} **{donated}** was added to **{member.name}**'s **__{bank_name.title()}__** "
+                f"donation balance.\nTheir total donation balance is now **{emoji} {total}** on "
+                f"**__{bank_name.title()}__**."
             )
-            await TotalDonoView(cog).start(ctx, rep, member)
+            embed = discord.Embed(
+                title="Successfully Added",
+                description=rep,
+                colour=member.colour,
+                timestamp=discord.utils.utcnow()
+            )
+            embed.set_footer(
+                text=f"{member} (ID: {member.id})", icon_url=nu.is_have_avatar(member)
+            )
+            if multi:
+                embed.add_field(name="Donation Multiplier:", value=f"**x{multi}**", inline=False)
+            if humanized_roles:
+                embed.add_field(
+                    name="Added Donation Roles:", value=humanized_roles, inline=False
+                )
+            await TotalDonoView(cog).start(ctx, member, content=member.mention, embed=embed)
             await cog.send_to_log_channel(
                 ctx,
                 "add",
@@ -438,14 +457,24 @@ class HYBRIDS:
             roles = await cog.update_dono_roles(
                 ctx, "remove", updated2, member, bank["roles"]
             )
-            humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
+            humanized_roles = cf.humanize_list([role.mention for role in roles])
             rep = (
-                f"Successfully removed {emoji} **{donated}** from "
-                f"**{member.name}**'s **__{bank_name.title()}__** donation balance.\n"
-                "Their total donation balance is now "
-                f"**{emoji} {total}** on **__{bank_name.title()}__**."
+                f"{emoji} **{donated}** was removed from **{member.name}**'s **__{bank_name.title()}__** "
+                f"donation balance.\nTheir total donation balance is now **{emoji} {total}** on "
+                f"**__{bank_name.title()}__**."
             )
-            await TotalDonoView(cog).start(ctx, rep, member)
+            embed = discord.Embed(
+                title="Successfully Removed",
+                description=rep,
+                colour=member.colour,
+                timestamp=discord.utils.utcnow()
+            )
+            embed.set_footer(
+                text=f"{member} (ID: {member.id})", icon_url=nu.is_have_avatar(member)
+            )
+            if humanized_roles:
+                embed.add_field(name="Removed Donation Roles:", value=humanized_roles, inline=False)
+            await TotalDonoView(cog).start(ctx, member, content=member.mention, embed=embed)
             await cog.send_to_log_channel(
                 ctx,
                 "remove",
@@ -507,12 +536,25 @@ class HYBRIDS:
                 ctx, "remove", amount, member, bank["roles"]
             )
             roles = aroles + rrole
-            humanized_roles = f"{cf.humanize_list([role.mention for role in roles])}"
+            humanized_roles = cf.humanize_list([role.mention for role in roles])
             rep = (
-                f"Successfully set {emoji} **{cf.humanize_number(amount)}** as "
-                f"**{member.name}**'s **__{bank_name.title()}__** donation balance."
+                f"{emoji} **{cf.humanize_number(amount)}** was set as **{member.name}**'s "
+                f"**__{bank_name.title()}__** donation balance."
             )
-            await TotalDonoView(cog).start(ctx, rep, member)
+            embed = discord.Embed(
+                title="Successfully Set",
+                description=rep,
+                colour=member.colour,
+                timestamp=discord.utils.utcnow()
+            )
+            embed.set_footer(
+                text=f"{member} (ID: {member.id})", icon_url=nu.is_have_avatar(member)
+            )
+            if humanized_roles:
+                embed.add_field(
+                    name="Added/Removed Donation Roles:", value=humanized_roles, inline=False
+                )
+            await TotalDonoView(cog).start(ctx, member, content=member.mention, embed=embed)
             await cog.send_to_log_channel(
                 ctx,
                 "set",

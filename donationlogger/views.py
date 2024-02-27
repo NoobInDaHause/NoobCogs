@@ -378,10 +378,11 @@ class TotalDonoView(discord.ui.View):
     async def start(
         self,
         context: commands.Context,
-        content: str,
         member: discord.Member,
+        *args,
+        **kwargs
     ):
-        msg = await context.reply(content=content, mention_author=False, view=self)
+        msg = await context.reply(mention_author=False, view=self, *args, **kwargs)
         self.message = msg
         self.member = member
 
