@@ -26,9 +26,9 @@ class AmountConverter(app_commands.Transformer):
             }
             if argument[-1].lower() in amount_dict:
                 amt, unit = float(argument[:-1]), argument[-1].lower()
-                amount = int(amt * amount_dict[unit])
+                amount = round(amt * amount_dict[unit])
             else:
-                amount = int(float(argument))
+                amount = round(float(argument))
             if amount > 999999999999999 or amount < 1:
                 raise AmountConversionFailure("Invalid amount provided.")
             return amount

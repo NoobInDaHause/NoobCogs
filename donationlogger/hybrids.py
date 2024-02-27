@@ -356,9 +356,9 @@ class HYBRIDS:
                 return await cls.hybrid_send(obj, content="This bank is hidden.")
             multi = bank.get("multi")
             if multi:
-                amount *= multi
+                amount = round(amount * multi)
             bank["donators"].setdefault(str(member.id), 0)
-            bank["donators"][str(member.id)] += int(amount)
+            bank["donators"][str(member.id)] += amount
             updated = bank["donators"][str(member.id)]
             previous = updated - amount
             donated = cf.humanize_number(amount)
