@@ -39,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.3.1"
+    __version__ = "1.3.2"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -497,10 +497,16 @@ class DonationLogger(commands.Cog):
             )
             return await context.send(embed=embed)
         elif add_or_remove_or_list == "set":
-            if not bank_name and not multiplier:
+            if not bank_name or not multiplier:
                 return await context.send_help()
-            if multiplier < 1.0:
-                return await context.send(content="You can not set the multiplier below 1.0.")
+            if multiplier <= 1.0:
+                return await context.send(
+                    content="You can not set the multiplier below or equal to 1.0."
+                )
+            if multiplier > 10.0:
+                return await context.send(
+                    content="You can only set up to a maximum of x10.0 multiplier per bank."
+                )
             
             async with self.config.guild(context.guild).banks() as banks:
                 if banks[bank_name].get("multi"):

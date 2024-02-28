@@ -357,6 +357,12 @@ class HYBRIDS:
             multi = bank.get("multi")
             if multi:
                 amount = round(amount * multi)
+            if amount > 999999999999999:
+                return await cls.hybrid_send(
+                    obj,
+                    ephemeral=True,
+                    content="The amount you provided is way too high, consider adding something reasonable."
+                )
             bank["donators"].setdefault(str(member.id), 0)
             bank["donators"][str(member.id)] += amount
             updated = bank["donators"][str(member.id)]
