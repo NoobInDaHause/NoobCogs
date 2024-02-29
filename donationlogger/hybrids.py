@@ -1,5 +1,4 @@
 import asyncio
-import contextlib
 import discord
 import noobutils as nu
 import random
@@ -384,11 +383,8 @@ class HYBRIDS:
                 colour=member.colour,
                 timestamp=discord.utils.utcnow()
             )
-            embed.set_footer(
-                text=f"{member} (ID: {member.id})", icon_url=nu.is_have_avatar(member)
-            )
             if multi:
-                embed.add_field(name="Donation Multiplier:", value=f"**x{multi}**", inline=False)
+                embed.set_footer(text=f"Donation Multiplier: x{multi}")
             if humanized_roles:
                 embed.add_field(
                     name="Added Donation Roles:", value=humanized_roles, inline=False
@@ -475,9 +471,6 @@ class HYBRIDS:
                 colour=member.colour,
                 timestamp=discord.utils.utcnow()
             )
-            embed.set_footer(
-                text=f"{member} (ID: {member.id})", icon_url=nu.is_have_avatar(member)
-            )
             if humanized_roles:
                 embed.add_field(name="Removed Donation Roles:", value=humanized_roles, inline=False)
             await TotalDonoView(cog).start(ctx, member, content=member.mention, embed=embed)
@@ -552,9 +545,6 @@ class HYBRIDS:
                 description=rep,
                 colour=member.colour,
                 timestamp=discord.utils.utcnow()
-            )
-            embed.set_footer(
-                text=f"{member} (ID: {member.id})", icon_url=nu.is_have_avatar(member)
             )
             if humanized_roles:
                 embed.add_field(

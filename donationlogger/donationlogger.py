@@ -39,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.3.2"
+    __version__ = "1.3.3"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -75,7 +75,7 @@ class DonationLogger(commands.Cog):
         self, context: commands.Context, bank_name: str
     ) -> List[discord.Embed]:
         banks = await self.config.guild(context.guild).banks()
-        bank_info = banks.get(bank_name.lower())
+        bank_info = banks.get(bank_name)
 
         if not bank_info or bank_info["hidden"]:
             return []
@@ -84,18 +84,18 @@ class DonationLogger(commands.Cog):
             bank_info["donators"].items(), key=lambda x: x[1], reverse=True
         )
 
-        final = ""
+        final = []
         for index, (k, v) in enumerate(sorted_donators, 1):
             member = context.guild.get_member(int(k))
             e = "➡️ " if member == context.author else ""
-            final += (
+            final.append(
                 f"{e}{index}. {member.mention} (`{member.id}`): **{cf.humanize_number(v)}**\n"
                 if member
                 else f"{index}. [Member not found in guild] (`{k}`): **{cf.humanize_number(v)}**\n"
             )
 
         return await nu.pagify_this(
-            final,
+            "\n".join(final),
             "\n",
             "".join([f"{context.guild.name}", " | Page ({index}/{pages})"]),
             embed_title=f"All of the donors for [{bank_name.title()}]",
@@ -331,7 +331,7 @@ class DonationLogger(commands.Cog):
         self,
         context: commands.Context,
         member: Optional[discord.Member] = None,
-        bank_name: BankConverter = None
+        bank_name: BankConverter = None,
     ):
         """
         Check your or some one else's donation balance.
@@ -474,7 +474,7 @@ class DonationLogger(commands.Cog):
         context: commands.Context,
         add_or_remove_or_list: Literal["set", "remove", "list"],
         bank_name: BankConverter = None,
-        multiplier: float = None
+        multiplier: float = None,
     ):
         """
         Manage setting or removing donation multipliers from banks.
@@ -484,16 +484,20 @@ class DonationLogger(commands.Cog):
         Every donation multiplier defaults to 1.
 
         Example:
-        `[p]donoset bank multi add dank 2.0`
+        `[p]donoset bank multi set dank 2.0`
         """
         if add_or_remove_or_list == "list":
             banks = await self.config.guild(context.guild).banks()
-            desc = [f"{k}: **x{v['multi']}**" for k, v in banks.items() if v.get("multi")]
+            desc = [
+                f"{k}: **x{v['multi']}**" for k, v in banks.items() if v.get("multi")
+            ]
             embed = discord.Embed(
                 title="List of banks with mutipliers",
-                description="\n".join(desc or ["There are no banks with multipliers yet."]),
+                description="\n".join(
+                    desc or ["There are no banks with multipliers yet."]
+                ),
                 colour=self.bot._color,
-                timestamp=discord.utils.utcnow()
+                timestamp=discord.utils.utcnow(),
             )
             return await context.send(embed=embed)
         elif add_or_remove_or_list == "set":
@@ -507,20 +511,20 @@ class DonationLogger(commands.Cog):
                 return await context.send(
                     content="You can only set up to a maximum of x10.0 multiplier per bank."
                 )
-            
+
             async with self.config.guild(context.guild).banks() as banks:
-                if banks[bank_name].get("multi"):
-                    return await context.send(content="This bank already has a multiplier set.")
                 banks[bank_name]["multi"] = multiplier
             await context.send(
-                content=f"Added **x{multiplier}** multiplier from **__{bank_name.title()}__**."
+                content=f"Successfully set **x{multiplier}** multiplier from **__{bank_name.title()}__**."
             )
         else:
             if not bank_name:
                 return await context.send_help()
             async with self.config.guild(context.guild).banks() as banks:
                 if not banks[bank_name].get("multi"):
-                    return await context.send(content="This bank does not have a multiplier set.")
+                    return await context.send(
+                        content="This bank does not have a multiplier set."
+                    )
                 banks[bank_name]["multi"] = None
             await context.send(
                 content=f"Removed multiplier from **__{bank_name.title()}__**."
@@ -569,7 +573,7 @@ class DonationLogger(commands.Cog):
                 return await context.send(
                     content="This bank is the guild's only bank, you can not remove it."
                 )
-            del banks[bank_name.lower()]
+            del banks[bank_name]
         await context.send(content="That bank is deleted.")
 
     @donationloggerset_bank.command(name="list")
@@ -621,7 +625,7 @@ class DonationLogger(commands.Cog):
                 )
 
             async with self.config.guild(context.guild).banks() as banks:
-                banks[bank_name.lower()]["roles"] |= {
+                banks[bank_name]["roles"] |= {
                     k: [r.id for r in v] for k, v in arole.items()
                 }
 
@@ -654,7 +658,7 @@ class DonationLogger(commands.Cog):
         """
         async with self.config.guild(context.guild).banks() as banks:
             try:
-                del banks[bank_name.lower()]["roles"][str(amount)]
+                del banks[bank_name]["roles"][str(amount)]
                 await context.send(content="That amount has been removed.")
             except KeyError:
                 await context.send(content="You haven't registered that amount yet.")
@@ -667,7 +671,7 @@ class DonationLogger(commands.Cog):
         See the list of amountroles on a bank.
         """
         banks = await self.config.guild(context.guild).banks()
-        aroles = banks[bank_name.lower()]["roles"]
+        aroles = banks[bank_name]["roles"]
         sorted_aroles = dict(sorted(aroles.items(), key=lambda j: int(j[0])))
         aroles2 = [
             f"**{cf.humanize_number(int(k))}**: {cf.humanize_list([f'<@&{i}>' for i in v])}"
@@ -694,18 +698,20 @@ class DonationLogger(commands.Cog):
         """
         async with self.config.guild(context.guild).banks() as banks:
             if roles_or_donators == "amountroles":
-                banks[bank_name.lower()]["roles"] = {}
+                banks[bank_name]["roles"] = {}
             elif roles_or_donators == "donators":
-                banks[bank_name.lower()]["donators"] = {}
+                banks[bank_name]["donators"] = {}
             else:
-                banks[bank_name.lower()]["roles"] = {}
-                banks[bank_name.lower()]["donators"] = {}
+                banks[bank_name]["roles"] = {}
+                banks[bank_name]["donators"] = {}
         _type = (
             roles_or_donators
             if roles_or_donators == "amountroles"
-            else roles_or_donators
-            if roles_or_donators == "donators"
-            else "both amountroles and donators"
+            else (
+                roles_or_donators
+                if roles_or_donators == "donators"
+                else "both amountroles and donators"
+            )
         )
         await context.send(content=f"Bank **{bank_name}** {_type} has been reset.")
 
@@ -720,7 +726,7 @@ class DonationLogger(commands.Cog):
         Change a bank's emoji.
         """
         async with self.config.guild(context.guild).banks() as banks:
-            banks[bank_name.lower()]["emoji"] = str(emoji)
+            banks[bank_name]["emoji"] = str(emoji)
             await context.send(
                 content=f"Successfully changed **{bank_name}**'s emoji to {str(emoji)}"
             )
@@ -739,7 +745,7 @@ class DonationLogger(commands.Cog):
             if not bank_name:
                 return await context.send_help()
             async with self.config.guild(context.guild).banks() as banks:
-                banks[bank_name.lower()]["hidden"] = hidden == "hide"
+                banks[bank_name]["hidden"] = hidden == "hide"
                 status = "is now" if hidden == "hide" else "is no longer"
                 await context.send(content=f"Bank **{bank_name}** {status} hidden.")
         else:
@@ -959,8 +965,8 @@ class DonationLogger(commands.Cog):
     async def slash_donationlogger_balance(
         self,
         interaction: discord.Interaction[Red],
-        bank_name: Optional[app_commands.Transform[str, BankConverter]],
         member: Optional[discord.Member],
+        bank_name: Optional[app_commands.Transform[str, BankConverter]],
     ):
         """_summary_
 
