@@ -39,7 +39,7 @@ class DonationLogger(commands.Cog):
         self.log = logging.getLogger("red.NoobCogs.DonationLogger")
         self.setupcache = []
 
-    __version__ = "1.3.3"
+    __version__ = "1.3.4"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/donationlogger/README.md"
 
@@ -472,14 +472,12 @@ class DonationLogger(commands.Cog):
     async def donationloggerset_bank_multiplier(
         self,
         context: commands.Context,
-        add_or_remove_or_list: Literal["set", "remove", "list"],
+        add_or_remove_or_list: Literal["set", "list"],
         bank_name: BankConverter = None,
         multiplier: float = None,
     ):
         """
-        Manage setting or removing donation multipliers from banks.
-
-        When you are removing a multiplier leave the multiplier argument blank to remove it.
+        Manage setting donation multipliers from banks.
 
         Every donation multiplier defaults to 1.
 
@@ -500,35 +498,27 @@ class DonationLogger(commands.Cog):
                 timestamp=discord.utils.utcnow(),
             )
             return await context.send(embed=embed)
-        elif add_or_remove_or_list == "set":
-            if not bank_name or not multiplier:
-                return await context.send_help()
-            if multiplier <= 1.0:
-                return await context.send(
-                    content="You can not set the multiplier below or equal to 1.0."
-                )
-            if multiplier > 10.0:
-                return await context.send(
-                    content="You can only set up to a maximum of x10.0 multiplier per bank."
-                )
-
-            async with self.config.guild(context.guild).banks() as banks:
-                banks[bank_name]["multi"] = multiplier
-            await context.send(
-                content=f"Successfully set **x{multiplier}** multiplier from **__{bank_name.title()}__**."
-            )
         else:
             if not bank_name:
                 return await context.send_help()
-            async with self.config.guild(context.guild).banks() as banks:
-                if not banks[bank_name].get("multi"):
+
+            if multiplier:
+                if multiplier <= 1.0:
                     return await context.send(
-                        content="This bank does not have a multiplier set."
+                        content="You can not set the multiplier below or equal to 1.0."
                     )
-                banks[bank_name]["multi"] = None
-            await context.send(
-                content=f"Removed multiplier from **__{bank_name.title()}__**."
-            )
+                if multiplier > 10.0:
+                    return await context.send(
+                        content="You can only set up to a maximum of x10.0 multiplier per bank."
+                    )
+                await context.send(
+                    content=f"Successfully set **x{multiplier}** multiplier from **__{bank_name.title()}__**."
+                )
+            else:
+                await context.send(content="The multi for that bank has been removed.")
+
+            async with self.config.guild(context.guild).banks() as banks:
+                banks[bank_name]["multi"] = multiplier
 
     @donationloggerset_bank.command(name="add")
     async def donationloggerset_bank_add(
