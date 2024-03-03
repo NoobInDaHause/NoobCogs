@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.10"
+    __version__ = "1.1.12"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -206,8 +206,14 @@ class GrinderLogger(commands.Cog):
         tiers = await self.config.guild(guild).tiers()
         managers = await self.config.guild(guild).managers()
         channels = await self.config.guild(guild).channels()
-        member = guild.get_member(int(member_id))
-        member_data = self.data[str(guild.id)][str(member.id)]
+        mem = guild.get_member(int(member_id))
+        if mem:
+            c = mem.colour
+            av = nu.is_have_avatar(mem)
+        else:
+            c = self.bot.color
+            av = None
+        member_data = self.data[str(guild.id)][member_id]
         member_data["reminded"] = True
         await self.back_to_config()
         tier = member_data.get("tier")
@@ -234,12 +240,12 @@ class GrinderLogger(commands.Cog):
                     "⚠️ `Note`: Feel free to pay early!"
                 ),
                 timestamp=dt.datetime.now(dt.timezone.utc),
-                colour=member.colour,
+                colour=c,
             )
             grindembed.set_thumbnail(url=nu.is_have_avatar(guild))
             grindembed.set_footer(text=guild.name, icon_url=nu.is_have_avatar(guild))
-            await member.send(embed=grindembed)
-        except (discord.errors.Forbidden, discord.errors.HTTPException):
+            await mem.send(embed=grindembed)
+        except (discord.errors.Forbidden, discord.errors.HTTPException, AttributeError):
             dms_off.append(True)
         if not channels["notifying"]:
             return
@@ -253,19 +259,19 @@ class GrinderLogger(commands.Cog):
                 else ""
             )
             adminembed = discord.Embed(
-                colour=member.colour,
+                colour=c,
                 description=(
                     "# 🔔 Grinder Manager Reminder 🔔\nHey **Grinder Managers.**\n\n"
-                    f"Notifying you that: {member.mention} (`{member.id}`) is due for payment.\n"
+                    f"Notifying you that: <@{member_id}> (`{member_id}`) is due for payment.\n"
                     "- Please verify their payment status, **update** the grinder log, "
                     "and ensure their status remains intact.\n\n__**Payment Details**__\n"
-                    f"- `{'Member':<6}`: {member.mention}\n- `{'Tier':<6}`: {at}\n"
+                    f"- `{'Member':<6}`: <@{member_id}n>\n- `{'Tier':<6}`: {at}\n"
                     f"- `{'Date':<6}`: {ad}\n\nThanks for your attention!\n{warn}"
                 ),
                 timestamp=dt.datetime.now(dt.timezone.utc),
             )
             adminembed.set_footer(text=guild.name, icon_url=nu.is_have_avatar(guild))
-            adminembed.set_thumbnail(url=nu.is_have_avatar(member))
+            adminembed.set_thumbnail(url=av)
             for role in man_roles:
                 with contextlib.suppress(Exception):
                     await role.edit(mentionable=True)
