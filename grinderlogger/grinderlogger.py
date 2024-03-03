@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.12"
+    __version__ = "1.1.13"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -211,7 +211,7 @@ class GrinderLogger(commands.Cog):
             c = mem.colour
             av = nu.is_have_avatar(mem)
         else:
-            c = self.bot.color
+            c = self.bot._color
             av = None
         member_data = self.data[str(guild.id)][member_id]
         member_data["reminded"] = True
