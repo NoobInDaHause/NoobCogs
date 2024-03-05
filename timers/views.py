@@ -4,7 +4,7 @@ import noobutils as nu
 from redbot.core.bot import Red
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Union
 
 from .utilities import FollowupItem, MessageEditItem
 
@@ -12,18 +12,27 @@ if TYPE_CHECKING:
     from . import Timers
 
 
-class TimersView(discord.ui.View):
-    def __init__(self, cog: "Timers"):
-        super().__init__(timeout=None)
-        self.cog = cog
-
-    @discord.ui.button(custom_id="notify_button_yeah_idk")
-    async def notify_button(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+class JoinButton(discord.ui.Button):
+    def __init__(
+        self,
+        label: str,
+        style: discord.ButtonStyle,
+        emoji: Union[discord.Emoji, str],
+        disabled: bool,
     ):
-        conf = await self.cog.config.guild(interaction.guild).all()
+        super().__init__(
+            label=label,
+            style=style,
+            emoji=emoji,
+            custom_id="notify_button_yeah_idk",
+            disabled=disabled,
+        )
+
+    async def callback(self, interaction: discord.Interaction[Red]) -> Any:
+        view: "TimersView" = self.view
+        conf = await view.cog.config.guild(interaction.guild).all()
         if timer := discord.utils.get(
-            self.cog.active_timers, message_id=interaction.message.id
+            view.cog.active_timers, message_id=interaction.message.id
         ):
             if timer.host.id == interaction.user.id:
                 return await interaction.response.send_message(
@@ -39,21 +48,21 @@ class TimersView(discord.ui.View):
                 message = "You will now get notified when this timer ends."
             elif timer.remove_member(interaction.user):
                 message = "You will `no longer` be notified when this timer ends."
-            button.emoji = conf["timer_emoji"]
-            button.label = str(len(timer.members))
-            button.style = nu.get_button_colour(conf["timer_button_colour"]["started"])
-            await self.cog.to_config()
+            self.emoji = conf["timer_emoji"]
+            self.label = str(len(timer.members))
+            self.style = nu.get_button_colour(conf["timer_button_colour"]["started"])
+            await view.cog.to_config()
             priority = 1
             timeout = datetime.now(timezone.utc) + timedelta(minutes=15)
-            self.cog.message_edit_queue.put_nowait(
+            view.cog.message_edit_queue.put_nowait(
                 MessageEditItem(
                     timer.message_id,
                     priority,
                     timeout,
-                    interaction.message.edit(view=self),
+                    interaction.message.edit(view=view),
                 )
             )
-            self.cog.followup_queue.put_nowait(
+            view.cog.followup_queue.put_nowait(
                 FollowupItem(
                     priority,
                     timeout,
@@ -65,3 +74,18 @@ class TimersView(discord.ui.View):
                 content="It seems this timer does not exist in my database.",
                 ephemeral=True,
             )
+
+
+class TimersView(discord.ui.View):
+    def __init__(
+        self,
+        cog: "Timers",
+        label: str = "0",
+        emoji: Union[discord.Emoji, str] = "⏰",
+        style: discord.ButtonStyle = nu.get_button_colour("green"),
+        disabled: bool = False,
+    ):
+        super().__init__(timeout=None)
+        self.cog = cog
+        self.join_button = JoinButton(label, style, emoji, disabled)
+        self.add_item(self.join_button)

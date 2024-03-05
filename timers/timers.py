@@ -49,8 +49,10 @@ class Timers(commands.Cog):
         self.message_edit_queue_task = asyncio.create_task(self.message_edit_runner())
         self.followup_queue: asyncio.Queue[FollowupItem] = asyncio.Queue()
         self.message_edit_queue: asyncio.Queue[MessageEditItem] = asyncio.Queue()
+        self.view = TimersView(self)
+        bot.add_view(self.view)
 
-    __version__ = "2.1.2"
+    __version__ = "2.2.0"
     __author__ = ["NoobInDaHause"]
     __docs__ = "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/timers/README.md"
 
@@ -94,21 +96,14 @@ class Timers(commands.Cog):
 
     async def cog_unload(self) -> None:
         self.running = False
+        self.view.stop()
         self.bot.remove_dev_env_value("timers")
         await self.to_config()
-        for timer in self.active_timers:
-            if view := discord.utils.get(
-                self.bot.persistent_views, _cache_key=timer.message_id
-            ):
-                view.stop()
         self.timer_ending_loop.cancel()
         self.save_timers_loop.cancel()
         self.log.info("Timer ending and timer saving loop task cancelled.")
 
     async def initialize(self):
-        for timer in self.active_timers:
-            view = TimersView(self)
-            self.bot.add_view(view, message_id=timer.message_id)
         self.timer_ending_loop.start()
         self.save_timers_loop.start()
         self.log.info("Timer ending and timer saving loop task started.")
@@ -289,10 +284,6 @@ class Timers(commands.Cog):
             for msg_id in msg_ids:
                 if timer := discord.utils.get(self.active_timers, message_id=msg_id):
                     self.remove_timer(timer)
-                    if view := discord.utils.get(
-                        self.bot.persistent_views, _cache_key=msg_id
-                    ):
-                        view.stop()
             await self.to_config()
         except Exception as e:
             self.log.exception(

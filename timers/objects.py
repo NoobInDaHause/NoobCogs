@@ -84,12 +84,15 @@ class TimerObject:
         notif = await self.cog.config.guild(self.guild).notify_members()
         started = await self.cog.config.guild(self.guild).timer_button_colour.started()
         embed = await self.timer_embed_msg(emoji)
-        view = TimersView(self.cog)
-        view.notify_button.label = "0" if notif else "Disabled"
-        view.notify_button.emoji = emoji
-        view.notify_button.disabled = not notif
-        view.notify_button.style = nu.get_button_colour(started)
+        view = TimersView(
+            self.cog,
+            "0" if notif else "Disabled",
+            emoji,
+            nu.get_button_colour(started),
+            not notif
+        )
         msg = await self.channel.send(embed=embed, view=view)
+        view.stop()
         self.message_id = msg.id
         self.cog.add_timer(self)
         await self.cog.to_config()
@@ -136,10 +139,6 @@ class TimerObject:
                 )
                 embed = await self.timer_embed_msg(emoji, responsible)
                 await message.edit(embed=embed, view=end_view)
-                if view := discord.utils.get(
-                    self.cog.bot.persistent_views, _cache_key=message.id
-                ):
-                    view.stop()
                 if notif:
                     c = ",".join(members_to_notify)
                     for page in cf.pagify(c, delims=[","], page_length=1900):
