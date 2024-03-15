@@ -187,7 +187,9 @@ class DonationLoggerSetupView(discord.ui.View):
         await interaction.response.edit_message(embed=up, view=self)
 
     @discord.ui.button(
-        emoji="📜", label="Log Channel (Optional)", style=nu.get_button_colour("blurple")
+        emoji="📜",
+        label="Log Channel (Optional)",
+        style=nu.get_button_colour("blurple"),
     )
     async def log_channel_button(
         self, interaction: discord.Interaction[Red], button: discord.ui.Button
@@ -375,14 +377,10 @@ class TotalDonoView(discord.ui.View):
         self.member: discord.Member = None
         self.message: discord.Message = None
 
-    async def start(
-        self,
-        context: commands.Context,
-        member: discord.Member,
-        *args,
-        **kwargs
-    ):
-        msg = await context.reply(mention_author=False, view=self, *args, **kwargs)
+    async def start(self, context: commands.Context, member: discord.Member, **kwargs):
+        ref = context.message.to_reference(fail_if_not_exists=False)
+        kwargs.update(mention_author=False, view=self, reference=ref)
+        msg = await context.send(**kwargs)
         self.message = msg
         self.member = member
 
