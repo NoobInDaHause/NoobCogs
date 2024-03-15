@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.13"
+    __version__ = "1.1.14"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -265,7 +265,7 @@ class GrinderLogger(commands.Cog):
                     f"Notifying you that: <@{member_id}> (`{member_id}`) is due for payment.\n"
                     "- Please verify their payment status, **update** the grinder log, "
                     "and ensure their status remains intact.\n\n__**Payment Details**__\n"
-                    f"- `{'Member':<6}`: <@{member_id}n>\n- `{'Tier':<6}`: {at}\n"
+                    f"- `{'Member':<6}`: <@{member_id}>\n- `{'Tier':<6}`: {at}\n"
                     f"- `{'Date':<6}`: {ad}\n\nThanks for your attention!\n{warn}"
                 ),
                 timestamp=dt.datetime.now(dt.timezone.utc),
