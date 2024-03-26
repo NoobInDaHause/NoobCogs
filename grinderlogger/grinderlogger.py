@@ -55,7 +55,7 @@ class GrinderLogger(commands.Cog):
         self.init_done = False
         self.data: Dict[str, Dict[str, Dict[str, Any]]] = {}
 
-    __version__ = "1.1.14"
+    __version__ = "1.1.15"
     __author__ = ["NoobInDaHause"]
     __docs__ = (
         "https://github.com/NoobInDaHause/NoobCogs/blob/red-3.5/grinderlogger/README.md"
@@ -272,18 +272,12 @@ class GrinderLogger(commands.Cog):
             )
             adminembed.set_footer(text=guild.name, icon_url=nu.is_have_avatar(guild))
             adminembed.set_thumbnail(url=av)
-            for role in man_roles:
-                with contextlib.suppress(Exception):
-                    await role.edit(mentionable=True)
-            with contextlib.suppress(Exception):
+            with contextlib.suppress(discord.errors.Forbidden):
                 await notifchan.send(
-                    content=cf.humanize_list([ro.mention for ro in man_roles]),
+                    content=cf.humanize_list([role.mention for role in man_roles]),
                     embed=adminembed,
-                    allowed_mentions=discord.AllowedMentions(roles=True),
+                    allowed_mentions=discord.AllowedMentions(roles=man_roles),
                 )
-            for r in man_roles:
-                with contextlib.suppress(Exception):
-                    await r.edit(mentionable=False)
 
     async def log_grinder_history(
         self,
