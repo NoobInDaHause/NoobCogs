@@ -1,0 +1,23 @@
+{
+    "name": "AutomaticReaction",
+    "short": "Automatic emoji reactions.",
+    "description": "Add words that get automatically reacted by the bot with any emoji.",
+    "end_user_data_statement": "This cog does not store any end user data whatsoever.",
+    "install_msg": "Thank you for installing AutomaticReaction. Load the cog with `[p]load automaticreaction`.",
+    "author": [
+        "NoobInDaHause"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [
+        "git+https://github.com/NoobInDaHause/noobutils.git"
+    ],
+    "tags": [
+        "Automatic",
+        "Reaction",
+        "AutomaticReaction"
+    ],
+    "type": "COG"
+}
