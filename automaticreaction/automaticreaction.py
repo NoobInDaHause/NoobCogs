@@ -21,7 +21,7 @@ class AutomaticReaction(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.0",
+            version="1.0.1",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -141,7 +141,8 @@ class AutomaticReaction(nu.Cog):
         """
         async with context.typing():
             ar = await self.config.guild(context.guild).autoreactions()
-            for word, emoji in ar.items():
+            copied = ar.copy()
+            for word, emoji in copied.items():
                 try:
                     e = await nu.NoobEmojiConverter().convert(context, emoji)
                     available = getattr(e, "available", True)
