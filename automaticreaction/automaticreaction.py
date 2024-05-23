@@ -21,7 +21,7 @@ class AutomaticReaction(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.1",
+            version="1.0.2",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -59,7 +59,9 @@ class AutomaticReaction(nu.Cog):
         ar = await self.config.guild(message.guild).autoreactions()
         for word, emoji in ar.items():
             if self.contains_word(message.content, word):
-                with contextlib.suppress(discord.errors.HTTPException):
+                with contextlib.suppress(
+                    discord.errors.HTTPException, discord.errors.Forbidden
+                ):
                     await message.add_reaction(emoji)
 
     @commands.group(name="automaticreaction", aliases=["autoreact"])
