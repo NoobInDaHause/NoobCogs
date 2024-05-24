@@ -29,7 +29,7 @@ class CustomError(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.0",
+            version="1.2.1",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=9874825374237,
@@ -79,7 +79,9 @@ class CustomError(nu.Cog):
                 tse.PythonBlock(),
             ]
         )
-        if isinstance(error, commands.CommandInvokeError):
+        if not isinstance(error, commands.CommandInvokeError):
+            await self.old_error(context, error, unhandled_by_cog)
+        else:
             msg = await self.config.error_msg()
             processed = await tagengine.process(
                 message=msg,
@@ -115,8 +117,6 @@ class CustomError(nu.Cog):
                         users=True, roles=False, everyone=False
                     ),
                 )
-        else:
-            await self.old_error(context, error, unhandled_by_cog)
 
     async def cog_unload(self):
         self.bot.on_command_error = self.old_error
