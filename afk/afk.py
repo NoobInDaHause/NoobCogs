@@ -5,6 +5,8 @@ from redbot.core.bot import app_commands, commands, Red
 
 from typing import Literal
 
+from .fake import FakeMessage
+
 
 DEFAULT_GUILD = {"nick": True}
 DEFAULT_MEMBER = {
@@ -29,7 +31,7 @@ class Afk(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.6.1",
+            version="1.6.2",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=54646544526864548,
@@ -40,6 +42,11 @@ class Afk(nu.Cog):
         self.config.register_guild(**DEFAULT_GUILD)
         self.config.register_member(**DEFAULT_MEMBER)
         self.config.register_global(**DEFAULT_GLOBAL)
+
+        def spam_check(x: FakeMessage):
+            return (x.guild_id, x.afk_user_id, x.pinger_id)
+
+        self.spam_cooldown = commands.CooldownMapping.from_cooldown(3, 10, spam_check)
 
     async def red_delete_data_for_user(
         self,
@@ -195,17 +202,16 @@ class Afk(nu.Cog):
             colour=afk_user.colour,
         ).set_thumbnail(url=nu.is_have_avatar(afk_user))
 
-        da = await self.config.delete_after()
-
-        return (
+        if not self.spam_cooldown.get_bucket(
+            FakeMessage(message.guild.id, afk_user.id, message.author.id)
+        ).update_rate_limit():
+            ref = message.to_reference(fail_if_not_exists=False)
             await message.channel.send(
-                embed=embed, reference=message, mention_author=False, delete_after=da
+                embed=embed,
+                reference=ref,
+                mention_author=False,
+                delete_after=(await self.config.delete_after()) or ...
             )
-            if da != 0
-            else await message.channel.send(
-                embed=embed, reference=message, mention_author=False
-            )
-        )
 
     @commands.Cog.listener("on_member_remove")
     async def m_remove(self, member: discord.Member):
