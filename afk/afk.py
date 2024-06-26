@@ -31,7 +31,7 @@ class Afk(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.6.2",
+            version="1.6.3",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=54646544526864548,
@@ -194,23 +194,23 @@ class Afk(nu.Cog):
                 }
                 pl.append(dict_log)
 
-        afk_reason = await self.config.member(afk_user).reason()
-        timestamp = await self.config.member(afk_user).timestamp()
-        embed = discord.Embed(
-            description=f"{afk_user.mention} is currently AFK since <t:{timestamp}:R>.\n\n"
-            f"**Reason:**\n{afk_reason}",
-            colour=afk_user.colour,
-        ).set_thumbnail(url=nu.is_have_avatar(afk_user))
-
-        if not self.spam_cooldown.get_bucket(
-            FakeMessage(message.guild.id, afk_user.id, message.author.id)
-        ).update_rate_limit():
+        if message.channel.permissions_for(message.guild.me).send_messages and (
+            self.spam_cooldown.get_bucket(
+                FakeMessage(message.guild.id, afk_user.id, message.author.id)
+            ).update_rate_limit()
+            is None
+        ):
+            afk_reason = await self.config.member(afk_user).reason()
+            timestamp = await self.config.member(afk_user).timestamp()
+            da = (await self.config.delete_after()) or ...
+            embed = discord.Embed(
+                description=f"{afk_user.mention} is currently AFK since <t:{timestamp}:R>.\n\n"
+                f"**Reason:**\n{afk_reason}",
+                colour=afk_user.colour,
+            ).set_thumbnail(url=nu.is_have_avatar(afk_user))
             ref = message.to_reference(fail_if_not_exists=False)
             await message.channel.send(
-                embed=embed,
-                reference=ref,
-                mention_author=False,
-                delete_after=(await self.config.delete_after()) or ...
+                embed=embed, reference=ref, mention_author=False, delete_after=da
             )
 
     @commands.Cog.listener("on_member_remove")
@@ -236,8 +236,6 @@ class Afk(nu.Cog):
         if not message.guild:
             return
         if message.is_system():
-            return
-        if not message.channel.permissions_for(message.guild.me).send_messages:
             return
         if message.author.bot:
             return
