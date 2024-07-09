@@ -21,7 +21,7 @@ class AutomaticReaction(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.2",
+            version="1.0.3",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -56,7 +56,7 @@ class AutomaticReaction(nu.Cog):
         ):
             return
 
-        ar = await self.config.guild(message.guild).autoreactions()
+        ar: dict = await self.config.guild(message.guild).autoreactions()
         for word, emoji in ar.items():
             if self.contains_word(message.content, word):
                 with contextlib.suppress(
@@ -111,7 +111,7 @@ class AutomaticReaction(nu.Cog):
         """
         See the list of automatic reactions.
         """
-        ar = await self.config.guild(context.guild).autoreactions()
+        ar: dict = await self.config.guild(context.guild).autoreactions()
         if not ar:
             return await context.send(content="This guild has no automatic reactions.")
         string = ""
@@ -142,7 +142,7 @@ class AutomaticReaction(nu.Cog):
         Clear all the emojis that are no longer available.
         """
         async with context.typing():
-            ar = await self.config.guild(context.guild).autoreactions()
+            ar: dict = await self.config.guild(context.guild).autoreactions()
             copied = ar.copy()
             for word, emoji in copied.items():
                 try:
@@ -152,7 +152,8 @@ class AutomaticReaction(nu.Cog):
                         ar.pop(word)
                 except commands.BadArgument:
                     ar.pop(word)
-            await self.config.guild(context.guild).set(ar)
+            if ar:
+                await self.config.guild(context.guild).autoreactions.set(ar)
             await context.send(
                 content="Successfully cleared all the unavailable emojis from automatic reactions."
             )
