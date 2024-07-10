@@ -21,7 +21,7 @@ class AutomaticReaction(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.3",
+            version="1.0.4",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -118,8 +118,7 @@ class AutomaticReaction(nu.Cog):
         for word, emoji in ar.items():
             try:
                 e = await nu.NoobEmojiConverter().convert(context, emoji)
-                _id = getattr(e, "id", None)
-                if _id:
+                if _id := getattr(e, "id", None):
                     string += f"{emoji} **{_id}**: `{word}`\n"
                 else:
                     string += f"{emoji}: `{word}`\n"
@@ -142,18 +141,16 @@ class AutomaticReaction(nu.Cog):
         Clear all the emojis that are no longer available.
         """
         async with context.typing():
-            ar: dict = await self.config.guild(context.guild).autoreactions()
-            copied = ar.copy()
-            for word, emoji in copied.items():
-                try:
-                    e = await nu.NoobEmojiConverter().convert(context, emoji)
-                    available = getattr(e, "available", True)
-                    if available is False:
+            async with self.config.guild(context.guild).autoreactions() as ar:
+                copied = ar.copy()
+                for word, emoji in copied.items():
+                    try:
+                        e = await nu.NoobEmojiConverter().convert(context, emoji)
+                        if not getattr(e, "available", True):
+                            ar.pop(word)
+                    except commands.BadArgument:
                         ar.pop(word)
-                except commands.BadArgument:
-                    ar.pop(word)
-            if ar:
-                await self.config.guild(context.guild).autoreactions.set(ar)
+
             await context.send(
                 content="Successfully cleared all the unavailable emojis from automatic reactions."
             )
