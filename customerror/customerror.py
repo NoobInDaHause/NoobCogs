@@ -29,7 +29,7 @@ class CustomError(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.1",
+            version="1.2.2",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=9874825374237,
@@ -82,21 +82,20 @@ class CustomError(nu.Cog):
         if not isinstance(error, commands.CommandInvokeError):
             await self.old_error(context, error, unhandled_by_cog)
         else:
+            to_convert = {
+                "author": tse.MemberAdapter(context.author),
+                "channel": tse.ChannelAdapter(context.message.channel),
+                "prefix": tse.StringAdapter(context.prefix),
+                "error": tse.StringAdapter(error),
+                "command": tse.StringAdapter(context.command.qualified_name),
+                "message_content": tse.StringAdapter(context.message.content),
+                "message_id": tse.StringAdapter(context.message.id),
+                "message_jump_url": tse.StringAdapter(context.message.jump_url),
+            }
+            if hasattr(context.author, "guild"):
+                to_convert["guild"] = tse.GuildAdapter(context.author.guild)
             msg = await self.config.error_msg()
-            processed = await tagengine.process(
-                message=msg,
-                seed_variables={
-                    "author": tse.MemberAdapter(context.author),
-                    "guild": tse.GuildAdapter(context.author.guild),
-                    "channel": tse.ChannelAdapter(context.message.channel),
-                    "prefix": tse.StringAdapter(context.prefix),
-                    "error": tse.StringAdapter(error),
-                    "command": tse.StringAdapter(context.command.qualified_name),
-                    "message_content": tse.StringAdapter(context.message.content),
-                    "message_id": tse.StringAdapter(context.message.id),
-                    "message_jump_url": tse.StringAdapter(context.message.jump_url),
-                },
-            )
+            processed = await tagengine.process(message=msg, seed_variables=to_convert)
             self.log.exception(
                 msg=f"Exception in command '{context.command.qualified_name}'",
                 exc_info=error.original,

@@ -27,7 +27,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | Afk               |  v1.6.3   | Notify users whenever you go AFK with pings logging.         |
 | AutomaticReaction |  v1.0.4   | Automatic emoji reactions.                                   |
 | CookieClicker     |  v1.2.0   | Play a cookie clicker.                                       |
-| CustomError       |  v1.2.1   | Customize your bots error message.                           |
+| CustomError       |  v1.2.2   | Customize your bots error message.                           |
 | DevLogs           |  v1.1.0   | Keep a log of all that evals and debugs.                     |
 | DonationLogger    |  v1.11.1  | Donation Logger system.                                      |
 | GlobalBan         |  v1.3.0   | Globally ban a user from all the guilds the bot is in.       |
