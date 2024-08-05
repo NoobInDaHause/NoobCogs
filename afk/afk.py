@@ -31,7 +31,7 @@ class Afk(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.6.3",
+            version="1.6.4",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=54646544526864548,
@@ -182,7 +182,10 @@ class Afk(nu.Cog):
         """
         Log pings and at the same time notify members when they mentioned an AFK memebr.
         """
-        if await self.config.member(afk_user).toggle_logs():
+        if (
+            await self.config.member(afk_user).toggle_logs()
+            and message.channel.permissions_for(afk_user).view_channel
+        ):
             async with self.config.member(afk_user).pinglogs() as ping_logs:
                 pl: list = ping_logs
                 dict_log = {
