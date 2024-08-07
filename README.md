@@ -26,7 +26,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | ----------------- | --------- | ------------------------------------------------------------ |
 | Afk               |  v1.6.4   | Notify users whenever you go AFK with pings logging.         |
 | AutomaticReaction |  v1.0.4   | Automatic emoji reactions.                                   |
-| CookieClicker     |  v1.2.0   | Play a cookie clicker.                                       |
+| CookieClicker     |  v1.2.1   | Play a cookie clicker.                                       |
 | CustomError       |  v1.2.2   | Customize your bots error message.                           |
 | DevLogs           |  v1.1.0   | Keep a log of all that evals and debugs.                     |
 | DonationLogger    |  v1.11.1  | Donation Logger system.                                      |

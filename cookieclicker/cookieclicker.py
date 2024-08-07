@@ -21,7 +21,7 @@ class CookieClicker(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.0",
+            version="1.2.1",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=348468464655768,
@@ -58,8 +58,8 @@ class CookieClicker(nu.Cog):
 
         Anti stress guaranteed.
         """
-        user_lb: dict = await self.config.guild(context.guild).user_lb()
-        if context.author.id not in set(user_lb):
+        user_lb = await self.config.guild(context.guild).user_lb()
+        if str(context.author.id) not in user_lb:
             async with self.config.guild(context.guild).user_lb() as ulb:
                 ul: dict = ulb
                 ul.setdefault(str(context.author.id), 0)
@@ -103,8 +103,7 @@ class CookieClicker(nu.Cog):
             footer_icon=nu.is_have_avatar(context.guild),
         )
 
-        pag = nu.NoobPaginator(pages)
-        await pag.start(context)
+        await nu.NoobPaginator(pages).start(context)
 
     @commands.group(name="cookieclickerset", aliases=["ccset"])
     @commands.guild_only()
@@ -122,8 +121,8 @@ class CookieClicker(nu.Cog):
 
         Don't know why you would want this but hey who am I to judge.
         """
-        user_lb: dict = await self.config.guild(context.guild).user_lb()
-        if str(context.author.id) not in set(user_lb):
+        user_lb = await self.config.guild(context.guild).user_lb()
+        if str(context.author.id) not in user_lb:
             return await context.send(content="You are not in the leaderboard.")
 
         act = "You are no longer on this guild's cookie clicker leaderboard."
@@ -211,4 +210,4 @@ class CookieClicker(nu.Cog):
         await view.wait()
 
         if view.value:
-            await self.config.clear_all_guilds()
+            await self.config.clear_all()
