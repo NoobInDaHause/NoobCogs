@@ -31,7 +31,7 @@ class Afk(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.6.4",
+            version="1.6.5",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=54646544526864548,
@@ -243,6 +243,8 @@ class Afk(nu.Cog):
         if message.author.bot:
             return
         if await self.bot.cog_disabled_in_guild(cog=self, guild=message.guild):
+            return
+        if not hasattr(message.author, "guild"):
             return
         if message.mentions:
             for afk_user in message.mentions:
