@@ -39,7 +39,7 @@ class DonationLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.11.1",
+            version="1.11.2",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=657668242451927167510,
@@ -211,26 +211,35 @@ class DonationLogger(nu.Cog):
         if not bank_info or bank_info["hidden"]:
             return []
 
+        total_member_donated = bank_info["donators"].get(str(context.author.id))
+        auth = (
+            f"You have donated a total of: {cf.humanize_number(total_member_donated)}"
+            if total_member_donated
+            else "You do not have any donation data for this bank."
+        )
         sorted_donators = sorted(
             bank_info["donators"].items(), key=lambda x: x[1], reverse=True
         )
+        total_donated = sum(bank_info["donators"].values())
 
-        final = []
+        final = [f"### > - Overall Donated Amount: {cf.humanize_number(total_donated)}\n"]
         for index, (k, v) in enumerate(sorted_donators, 1):
             member = context.guild.get_member(int(k))
             e = "➡️ " if member == context.author else ""
             final.append(
-                f"{e}{index}. {member.mention} (`{member.id}`): **{cf.humanize_number(v)}**\n"
+                f"{e}{index}. {member.mention} (`{member.id}`): **{cf.humanize_number(v)}**"
                 if member
-                else f"{index}. [Member not found in guild] (`{k}`): **{cf.humanize_number(v)}**\n"
+                else f"{index}. [Member not found in guild] (`{k}`): **{cf.humanize_number(v)}**"
             )
 
         return await nu.pagify_this(
             "\n".join(final),
-            "\n",
+            "\n"
             "".join([f"{context.guild.name}", " | Page ({index}/{pages})"]),
+            page_char=1500,
             embed_title=f"All of the donors for [{bank_name.title()}]",
             embed_colour=await context.embed_colour(),
+            author_name=auth,
             footer_icon=nu.is_have_avatar(context.guild),
         )
 
