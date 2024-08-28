@@ -47,7 +47,7 @@ class GrinderLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.3.2",
+            version="1.3.3",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -886,8 +886,12 @@ class GrinderLogger(nu.Cog):
         if member.bot:
             return await context.send(content="Bots are not allowed.")
 
-        donations = await self.config.member(member).donations()
-        times = await self.config.member(member).times_as_grinder()
+        donations = await self.config.member_from_ids(
+            guild_id=context.guild.id, member_id=member.id
+        ).donations()
+        times = await self.config.member_from_ids(
+            guild_id=context.guild.id, member_id=member.id
+        ).times_as_grinder()
         tiers = await self.config.guild(context.guild).tiers()
 
         guild_data = self.data.get(str(context.guild.id), {})
