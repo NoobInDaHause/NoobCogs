@@ -47,7 +47,7 @@ class GrinderLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.3.1",
+            version="1.3.2",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -875,7 +875,9 @@ class GrinderLogger(nu.Cog):
 
     @grinderlogger.command(name="stats")
     async def grinderlogger_stats(
-        self, context: commands.Context, member: Union[discord.Member, discord.User] = None
+        self,
+        context: commands.Context,
+        member: Union[discord.Member, discord.User] = None,
     ):  # sourcery skip: low-code-quality
         """
         Check your or someone else's grinder stats.
@@ -906,8 +908,12 @@ class GrinderLogger(nu.Cog):
                 f"`{'Grinder Since':<13}`: <t:{grinder_since}:R> (<t:{grinder_since}:f>)"
             )
         else:
-            last_time = await self.config.member(member).last_time_as_grinder()
-            reason_for_left = await self.config.member(member).reason_for_left()
+            last_time = await self.config.member_from_ids(
+                guild_id=context.guild.id, member_id=member.id
+            ).last_time_as_grinder()
+            reason_for_left = await self.config.member_from_ids(
+                guild_id=context.guild.id, member_id=member.id
+            ).reason_for_left()
             description = (
                 f"`{'Donations':<12}`: {donations}\n"
                 f"`{'Times Joined':<12}`: {f'{times} times' if times > 1 else f'{times} time'}\n"
