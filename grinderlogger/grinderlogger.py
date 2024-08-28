@@ -47,7 +47,7 @@ class GrinderLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.3.0",
+            version="1.3.1",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -875,7 +875,7 @@ class GrinderLogger(nu.Cog):
 
     @grinderlogger.command(name="stats")
     async def grinderlogger_stats(
-        self, context: commands.Context, member: discord.Member = None
+        self, context: commands.Context, member: Union[discord.Member, discord.User] = None
     ):  # sourcery skip: low-code-quality
         """
         Check your or someone else's grinder stats.
