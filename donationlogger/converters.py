@@ -1,142 +1,96 @@
 import discord
+import noobutils as nu
 import re
 
-from redbot.core.bot import app_commands, commands, Red
-
-from noobutils import NoobEmojiConverter
 from typing import List, TYPE_CHECKING, Union
-
-from .checks import check_if_is_a_dono_manager_or_higher, check_if_setup_done
-from .exceptions import (
-    BankConversionFailure,
-    AmountConversionFailure,
-    MemberOrUserNotFound,
-)
 
 if TYPE_CHECKING:
     from . import DonationLogger
 
 
-class AmountConverter(app_commands.Transformer):
-    @classmethod
-    async def convert(cls, ctx: commands.Context, argument: str) -> int:
+class AmountConverter(nu.commands.Converter, nu.app_commands.Transformer):
+    async def convert(self, ctx: nu.commands.Context, argument: str) -> int:
+        amount_dict = {
+            "k": 1000,
+            "m": 1000000,
+            "b": 1000000000,
+            "t": 1000000000000,
+        }
+
         try:
             argument = argument.strip().replace(",", "")
-            amount_dict = {
-                "k": 1000,
-                "m": 1000000,
-                "b": 1000000000,
-                "t": 1000000000000,
-            }
             if argument[-1].lower() in amount_dict:
                 amt, unit = float(argument[:-1]), argument[-1].lower()
                 amount = round(amt * amount_dict[unit])
             else:
                 amount = round(float(argument))
-            if amount > 999999999999999 or amount < 1:
-                raise AmountConversionFailure("Invalid amount provided.")
-            return amount
         except (ValueError, KeyError) as e:
             if re.search("<@(.*)>", argument):
-                raise AmountConversionFailure(
+                raise nu.commands.BadArgument(
                     "The amount comes first then the member."
                 ) from e
-            raise AmountConversionFailure(
+            raise nu.commands.BadArgument(
                 f'Failed to convert "{argument}" into a proper amount.'
             ) from e
+        else:
+            if amount > 999999999999999 or amount < 0:
+                raise nu.commands.BadArgument("Invalid amount provided.")
+            return amount
 
-    @classmethod
     async def transform(
-        cls, interaction: discord.Interaction[Red], value: int | float | str
+        self, interaction: discord.Interaction[nu.Red], value: int | float | str
     ) -> str:
-        if not await check_if_setup_done(interaction):
-            return ["DonationLogger has not been setup in this guild yet.", True]
-        if interaction.command.qualified_name not in [
-            "donationlogger balance",
-            "donationlogger leaderboard",
-            "donationlogger donationcheck",
-        ] and not await check_if_is_a_dono_manager_or_higher(interaction):
-            return [
-                "You need to be a donationlogger manager or higher to run this command.",
-                True,
-            ]
         context = await interaction.client.get_context(interaction)
-        try:
-            return await cls.convert(context, value)
-        except AmountConversionFailure as e:
-            return [str(e), False]
+        return await self.convert(context, value)
 
 
-class DLEmojiConverter(NoobEmojiConverter):
-    async def convert(self, ctx: commands.Context, argument: str):
+class DLEmojiConverter(nu.NoobEmojiConverter):
+    async def convert(self, ctx: nu.commands.Context, argument: str):
         argument = argument.strip()
         return argument if argument == "⏣" else await super().convert(ctx, argument)
 
 
-class MemberOrUserConverter(app_commands.Transformer):
-    bot: bool
-
-    @classmethod
+class MemberOrUserConverter(nu.commands.Converter, nu.app_commands.Transformer):
     async def convert(
-        cls, ctx: commands.Context, argument: str
+        self, ctx: nu.commands.Context, argument: str
     ) -> Union[discord.Member, discord.User]:
         try:
-            return await commands.MemberConverter().convert(ctx, argument)
-        except commands.MemberNotFound:
-            try:
-                return await commands.UserConverter().convert(ctx, argument)
-            except commands.UserNotFound as e:
-                raise MemberOrUserNotFound(
-                    f"Member or User '{argument}' not found."
-                ) from e
+            return await nu.commands.MemberConverter().convert(ctx, argument)
+        except nu.commands.MemberNotFound:
+            return await nu.commands.UserConverter().convert(ctx, argument)
 
-    @classmethod
     async def transform(
-        cls, interaction: discord.Interaction[Red], value: str
+        self, interaction: discord.Interaction[nu.Red], value: str
     ) -> Union[discord.Member, discord.User]:
         ctx = await interaction.client.get_context(interaction)
-        return await cls.convert(ctx, value)
+        return await self.convert(ctx, value)
 
 
-class BankConverter(app_commands.Transformer):
-    @classmethod
-    async def convert(cls, ctx: commands.Context, argument: str) -> str:
+class BankConverter(nu.commands.Converter, nu.app_commands.Transformer):
+    async def convert(self, ctx: nu.commands.Context, argument: str) -> str:
+        BankConversionFailure = nu.commands.BadArgument
         cog: "DonationLogger" = ctx.bot.get_cog("DonationLogger")
-        banks = await cog.config.guild(ctx.guild).banks()
+        banks: dict = await cog.config.guild(ctx.guild).banks()
         if not banks.get(argument.strip().lower()):
             raise BankConversionFailure(f'Bank "{argument}" does not exist.')
         return argument.strip().lower()
 
-    @classmethod
-    async def transform(cls, interaction: discord.Interaction[Red], value: str) -> str:
-        if not await check_if_setup_done(interaction):
-            return ["DonationLogger has not been setup in this guild yet.", True]
-        if interaction.command.qualified_name not in [
-            "donationlogger balance",
-            "donationlogger leaderboard",
-            "donationlogger donationcheck",
-        ] and not await check_if_is_a_dono_manager_or_higher(interaction):
-            return [
-                "You need to be a donationlogger manager or higher to run this command.",
-                True,
-            ]
-
+    async def transform(
+        self, interaction: discord.Interaction[nu.Red], value: str
+    ) -> str:
         context = await interaction.client.get_context(interaction)
-        try:
-            return await cls.convert(context, value)
-        except BankConversionFailure as e:
-            return [str(e), False]
+        return await self.convert(context, value)
 
     async def autocomplete(
-        self, interaction: discord.Interaction[Red], value: int | float | str
-    ) -> List[app_commands.Choice[str | int | float]]:
+        self, interaction: discord.Interaction[nu.Red], value: int | float | str
+    ) -> List[nu.app_commands.Choice[str | int | float]]:
         cog: "DonationLogger" = interaction.client.get_cog("DonationLogger")
-        banks = await cog.config.guild(interaction.guild).banks()
+        banks: dict = await cog.config.guild(interaction.guild).banks()
         bank_list: List[str] = [
             bank for bank, bank_info in banks.items() if not bank_info["hidden"]
         ]
         return [
-            app_commands.Choice(name=choice.title(), value=choice)
+            nu.app_commands.Choice(name=choice.title(), value=choice)
             for choice in bank_list
             if value.lower() in choice.lower()
         ]
