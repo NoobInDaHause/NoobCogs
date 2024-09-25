@@ -57,7 +57,7 @@ class DonationLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.12.0",
+            version="1.12.1",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=657668242451927167510,
@@ -506,7 +506,21 @@ class DonationLogger(nu.Cog):
             embed.add_field(name="Note:", value=note, inline=False)
 
         if roles:
-            embed.add_field(name=ra, value=roles, inline=False)
+            added = []
+            removed = []
+            split_roles = roles.split(",")
+            for splitted_role in split_roles:
+                more_split = splitted_role.split(":")
+                if more_split[1].strip() == "A":
+                    added.append(more_split[0])
+                else:
+                    removed.append(more_split[0])
+            if added:
+                true_added_name = ra.replace(" and/or Removed", "")
+                embed.add_field(name=true_added_name, value=added, inline=False)
+            if removed:
+                true_removed_name = ra.replace(" Added and/or", "")
+                embed.add_field(name=true_removed_name, value=removed, inline=False)
         elif not await self.config.guild(context.guild).auto_role():
             embed.add_field(
                 name=ra,
