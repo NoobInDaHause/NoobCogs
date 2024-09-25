@@ -6,7 +6,7 @@ import random
 
 from redbot.core.utils import mod
 
-from typing import Dict, Literal, List, Optional, TYPE_CHECKING, Union
+from typing import Dict, Literal, List, Optional, Tuple, TYPE_CHECKING, Union
 
 from .converters import (
     AmountConverter as AC,
@@ -57,7 +57,7 @@ class DonationLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.12.1",
+            version="1.12.2",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=657668242451927167510,
@@ -438,6 +438,18 @@ class DonationLogger(nu.Cog):
         await action(*roles_to_modify, reason=audit_reason)
         return roles_to_modify
 
+    def convert_roles(self, roles_str: str) -> Tuple[str]:
+        added = []
+        removed = []
+        split_roles = roles_str.split(",")
+        for splitted_role in split_roles:
+            more_split = splitted_role.split(":")
+            if more_split[1].strip() == "A":
+                added.append(more_split[0].strip())
+            else:
+                removed.append(more_split[0].strip())
+        return nu.cf.humanize_list(added), nu.cf.humanize_list(removed)
+
     async def send_to_log_channel(
         self,
         context: nu.commands.Context,
@@ -506,15 +518,7 @@ class DonationLogger(nu.Cog):
             embed.add_field(name="Note:", value=note, inline=False)
 
         if roles:
-            added = []
-            removed = []
-            split_roles = roles.split(",")
-            for splitted_role in split_roles:
-                more_split = splitted_role.split(":")
-                if more_split[1].strip() == "A":
-                    added.append(more_split[0])
-                else:
-                    removed.append(more_split[0])
+            added, removed = self.convert_roles(roles)
             if added:
                 true_added_name = ra.replace(" and/or Removed", "")
                 embed.add_field(name=true_added_name, value=added, inline=False)
