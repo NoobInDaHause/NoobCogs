@@ -57,7 +57,7 @@ class DonationLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.12.3",
+            version="1.12.4",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=657668242451927167510,
@@ -479,20 +479,12 @@ class DonationLogger(nu.Cog):
         channel = context.guild.get_channel(logchan)
 
         actions = {
-            "add": ("was added to", "Roles Added:", "**__Donation Added!__**"),
-            "remove": (
-                "was removed from",
-                "Roles Removed:",
-                "**__Donation Removed!__**",
-            ),
-            "default": (
-                "was set as",
-                "Roles Added and/or Removed:",
-                "**__Donation Set!__**",
-            ),
+            "add": ("was added to", "**__Donation Added!__**"),
+            "remove": ("was removed from", "**__Donation Removed!__**"),
+            "default": ("was set as", "**__Donation Set!__**"),
         }
 
-        ar, ra, title = actions.get(d_type, actions["default"])
+        ar, title = actions.get(d_type, actions["default"])
 
         embed = discord.Embed(
             title=title,
@@ -529,15 +521,13 @@ class DonationLogger(nu.Cog):
         if roles:
             added, removed = self.convert_roles(roles, d_type)
             if added:
-                true_added_name = ra.replace(" and/or Removed", "")
-                embed.add_field(name=true_added_name, value=added, inline=False)
+                embed.add_field(name="Roles Added:", value=added, inline=False)
             if removed:
-                true_removed_name = ra.replace(" Added and/or", "")
-                embed.add_field(name=true_removed_name, value=removed, inline=False)
+                embed.add_field(name="Roles Removed:", value=removed, inline=False)
         elif not await self.config.guild(context.guild).auto_role():
             embed.add_field(
-                name=ra,
-                value=f"> Autorole is currently disabled. `{context.prefix}dlset autorole`",
+                name="Autorole Disabled.",
+                value=f"> Autorole is currently disabled. `{context.prefix}dlset autorole` to enable it.",
                 inline=False,
             )
 
