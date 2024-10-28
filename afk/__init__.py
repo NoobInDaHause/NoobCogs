@@ -9,7 +9,7 @@ __red_end_user_data_statement__ = utils.get_end_user_data_statement(__file__)
 
 async def setup(bot: bot.Red):
     if version_check_func := getattr(nu, "version_check", None):
-        version_check_func("1.11.2")
+        version_check_func("1.11.3")
     else:
         raise errors.CogLoadError(
             "Please update the noobutils to the latest version.\n"
