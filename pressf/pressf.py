@@ -21,7 +21,7 @@ class PressF(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.0",
+            version="1.2.1",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=5434354373844151563453,
@@ -61,10 +61,10 @@ class PressF(nu.Cog):
         self.active_cache.append(context.channel.id)
         e = await self.config.guild(context.guild).emoji()
         c = await self.config.guild(context.guild).buttoncolour()
-        view = PressFView(self)
+        view = PressFView(obj=context, cog=self, thing=thing)
         view.press_f_button.emoji = e
         view.press_f_button.style = nu.get_button_colour(c)
-        await view.start(context, thing)
+        await view.start()
 
     @commands.group(name="pressfset")
     @commands.guild_only()
@@ -120,8 +120,9 @@ class PressF(nu.Cog):
         """
         conf_msg = "Are you sure you want to reset the cogs config?"
         conf_act = "Successfully reset the cogs config."
-        view = nu.NoobConfirmation()
-        await view.start(context, conf_act, content=conf_msg)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=conf_act)
+        await view.start(content=conf_msg)
 
         await view.wait()
 
@@ -135,8 +136,9 @@ class PressF(nu.Cog):
         """
         confirmation_msg = "Are you sure you want to reset the current guild settings?"
         confirm_action = "Successfully reset the guilds settings."
-        view = nu.NoobConfirmation()
-        await view.start(context, confirm_action, content=confirmation_msg)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=confirm_action)
+        await view.start(content=confirmation_msg)
 
         await view.wait()
 

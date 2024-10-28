@@ -26,7 +26,7 @@ class SplitOrSteal(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="3.1.0",
+            version="3.1.1",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -123,7 +123,7 @@ class SplitOrSteal(nu.Cog):
         p2 = random.choice(commence_view.players)
         await msg.delete()
 
-        await SplitOrStealView(self).start(context, p1, p2, prize)
+        await SplitOrStealView(context, self).start(p1, p2, prize)
 
     @commands.hybrid_command(name="splitorstealduel", aliases=["sosduel"])
     @commands.bot_has_permissions(embed_links=True)
@@ -157,15 +157,15 @@ class SplitOrSteal(nu.Cog):
                 content="Successfully started a SplitOrStealDuel game.", ephemeral=True
             )
 
-        view = DuelView()
-        await view.start(context, opponent)
+        view = DuelView(context, opponent)
+        await view.start()
 
         await view.wait()
 
         if view.value:
             if context.channel.id not in self.active_cache[str(context.guild.id)]:
                 self.active_cache[str(context.guild.id)].append(context.channel.id)
-            await SplitOrStealView(self).start(context, context.author, opponent, prize)
+            await SplitOrStealView(context, self).start(context.author, opponent, prize)
         elif context.channel.id in self.active_cache[str(context.guild.id)]:
             self.active_cache[str(context.guild.id)].remove(context.channel.id)
 
@@ -246,8 +246,9 @@ class SplitOrSteal(nu.Cog):
         """
         act = "Your splitorsteal guild settings has been cleared."
         conf = "Are you sure you want to reset your guild settings?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 
@@ -262,8 +263,9 @@ class SplitOrSteal(nu.Cog):
         """
         act = "SplitOrSteal cog config has been cleared."
         conf = "Are you sure you want to reset SplitOrSteal cog config?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 

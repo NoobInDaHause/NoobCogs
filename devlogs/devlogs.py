@@ -23,7 +23,7 @@ class DevLogs(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.1.0",
+            version="1.1.1",
             authors=["sravan", "NoobInDaHause"],
             use_config=True,
             identifier=0x2_412_214_4315312_9,
@@ -193,11 +193,10 @@ class DevLogs(nu.Cog):
         title = "A list of users that bypasses the DevLogs cog"
         final_page = await nu.pagify_this(
             users,
-            "` - `",
+            ["` - `"],
             text,
             embed_title=title,
             embed_colour=context.author.colour,
             footer_icon=nu.is_have_avatar(context.author),
         )
-        paginator = nu.NoobPaginator(final_page, timeout=60.0)
-        await paginator.start(context)
+        await nu.NoobPaginator(obj=context, pages=final_page, timeout=60.0).start()

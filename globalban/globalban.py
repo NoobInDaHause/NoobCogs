@@ -27,7 +27,7 @@ class GlobalBan(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.3.0",
+            version="1.3.1",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -145,7 +145,7 @@ class GlobalBan(nu.Cog):
             em = ", ".join(errors)
             final_page = await nu.pagify_this(
                 em,
-                ", ",
+                [", "],
                 "Page {index}/{pages}",
                 embed_title=(
                     "It's either I do not have ban permission or "
@@ -154,7 +154,7 @@ class GlobalBan(nu.Cog):
                 embed_colour=await context.embed_colour(),
             )
 
-            await nu.NoobPaginator(final_page).start(context)
+            await nu.NoobPaginator(obj=context, pages=final_page).start()
 
     async def _globalunban_user(
         self, context: commands.Context, member: discord.Member, reason: str
@@ -202,7 +202,7 @@ class GlobalBan(nu.Cog):
             em = ", ".join(errors)
             final_page = await nu.pagify_this(
                 em,
-                ", ",
+                [", "],
                 "Page {index}/{pages}",
                 embed_title=(
                     "It's either I do not have ban permission or "
@@ -210,9 +210,7 @@ class GlobalBan(nu.Cog):
                 ),
                 embed_colour=await context.embed_colour(),
             )
-
-            paginator = nu.NoobPaginator(final_page, timeout=60.0)
-            await paginator.start(context)
+            await nu.NoobPaginator(obj=context, pages=final_page, timeout=60).start()
 
     @commands.group(name="globalban", aliases=["gban"])
     @commands.is_owner()
@@ -297,8 +295,9 @@ class GlobalBan(nu.Cog):
 
         confirmation_msg = f"Are you sure you want to globally ban **{member}**?"
         confirm_action = "Alright this might take a while."
-        view = nu.NoobConfirmation(timeout=30)
-        await view.start(context, confirm_action, content=confirmation_msg)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=confirm_action, timeout=30)
+        await view.start(content=confirmation_msg)
 
         await view.wait()
 
@@ -345,13 +344,13 @@ class GlobalBan(nu.Cog):
         banlist = "\n".join(users)
         final_page = await nu.pagify_this(
             banlist,
-            "\n",
+            ["\n"],
             "Page {index}/{pages}",
             embed_title="GlobalBan Ban List",
             embed_colour=await context.embed_colour(),
         )
 
-        await nu.NoobPaginator(final_page).start(context)
+        await nu.NoobPaginator(obj=context, pages=final_page).start()
 
     @globalban.command(name="logs")
     async def globalban_logs(self, context: commands.Context):
@@ -402,13 +401,13 @@ class GlobalBan(nu.Cog):
         banlogs = "\n\n".join(gl)
         final_page = await nu.pagify_this(
             banlogs,
-            "> ",
+            ["> "],
             "Page {index}/{pages}",
             embed_title="GlobalBan Ban Logs",
             embed_colour=await context.embed_colour(),
         )
 
-        await nu.NoobPaginator(final_page).start(context)
+        await nu.NoobPaginator(obj=context, pages=final_page).start()
 
     @globalban.command(name="reset")
     async def globalban_reset(self, context: commands.Context):
@@ -417,9 +416,7 @@ class GlobalBan(nu.Cog):
 
         Bot owners only.
         """
-        await GbanViewReset(timeout=30).start(
-            context=context, msg="Choose what config to reset."
-        )
+        await GbanViewReset(context, timeout=30).start("Choose what config to reset.")
 
     @globalban.command(name="unban")
     async def globalban_unban(
@@ -453,8 +450,9 @@ class GlobalBan(nu.Cog):
 
         confirm_msg = f"Are you sure you want to globally unban **{member}**?"
         confirm_action = "Alright this might take a while."
-        view = nu.NoobConfirmation(timeout=30.0)
-        await view.start(context, confirm_action, content=confirm_msg)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=confirm_action, timeout=30.0)
+        await view.start(content=confirm_msg)
 
         await view.wait()
 

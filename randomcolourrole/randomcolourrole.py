@@ -5,10 +5,8 @@ import noobutils as nu
 import random
 
 from redbot.core.bot import commands, Red
-from redbot.core.utils import chat_formatting as cf
 
 from discord.ext import tasks
-from noobutils import NoobConfirmation
 from typing import Literal
 
 
@@ -28,7 +26,7 @@ class RandomColourRole(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.0",
+            version="1.2.1",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=128943761874,
@@ -93,8 +91,9 @@ class RandomColourRole(nu.Cog):
         """
         act = "Successfully resetted the guilds randomcolourrole settings."
         conf = "Are you sure you want to reset the guilds randomcolourrole settings?"
-        view = NoobConfirmation(timeout=30)
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 
@@ -109,8 +108,9 @@ class RandomColourRole(nu.Cog):
         """
         act = "Successfully resetted the randomcolourrole cogs config."
         conf = "Are you sure you want to reset the randomcolourrole cogs whole config?"
-        view = NoobConfirmation(timeout=30)
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 

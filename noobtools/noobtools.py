@@ -25,7 +25,7 @@ class NoobTools(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.1",
+            version="1.2.2",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,

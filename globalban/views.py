@@ -1,20 +1,18 @@
 import discord
+import noobutils as nu
 
 from redbot.core import commands
 
-from noobutils import access_denied, NoobConfirmation
+from typing import Union
 
 
-class GbanViewReset(discord.ui.View):
-    def __init__(self, timeout: float = 60.0):
-        super().__init__(timeout=timeout)
+class GbanViewReset(nu.NoobView):
+    def __init__(self, obj: Union[commands.Context, discord.Interaction[nu.Red]], timeout: float = 60.0):
+        super().__init__(obj=obj, timeout=timeout)
         self.message: discord.Message = None
-        self.context: commands.Context = None
 
-    async def start(self, context: commands.Context, msg: str):
-        msg = await context.send(content=msg, view=self)
-        self.context = context
-        self.message = msg
+    async def start(self, msg: str):
+        self.message = await self.context.send(content=msg, view=self)
 
     @discord.ui.select(
         min_values=1,
@@ -42,8 +40,9 @@ class GbanViewReset(discord.ui.View):
         if select.values[0] == "List":
             confirm_msg = "Are you sure you want to reset the globalban banlist?"
             confirm_action = "Successfully resetted the globalban banlist."
-            confview = NoobConfirmation(timeout=30)
-            await confview.start(interaction, confirm_action, content=confirm_msg)
+
+            confview = nu.NoobConfirmation(obj=interaction, confirm_action=confirm_action, timeout=30)
+            await confview.start(content=confirm_msg)
 
             await confview.wait()
 
@@ -53,10 +52,9 @@ class GbanViewReset(discord.ui.View):
         if select.values[0] == "Logs":
             confirm_msg = "Are you sure you want to reset the globalban banlogs?"
             confirm_action = "Successfully resetted the globalban banlogs."
-            confview = NoobConfirmation(timeout=30)
-            await confview.start(
-                interaction, confirm_action=confirm_action, content=confirm_msg
-            )
+    
+            confview = nu.NoobConfirmation(obj=interaction, confirm_action=confirm_action, timeout=30)
+            await confview.start(content=confirm_msg)
 
             await confview.wait()
 
@@ -66,29 +64,11 @@ class GbanViewReset(discord.ui.View):
         if select.values[0] == "Cog":
             confirm_msg = "This will reset the globalban cogs whole configuration, do you want to continue?"
             confirm_action = "Successfully cleared the globalban cogs configuration."
-            confview = NoobConfirmation(timeout=30)
-            await confview.start(
-                interaction, confirm_action=confirm_action, content=confirm_msg
-            )
+
+            confview = nu.NoobConfirmation(obj=interaction, confirm_action=confirm_action, timeout=30)
+            await confview.start(content=confirm_msg)
 
             await confview.wait()
 
             if confview.value:
                 await self.context.cog.config.clear_all()
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if await self.context.bot.is_owner(interaction.user):
-            return True
-        elif interaction.user != self.context.author:
-            await interaction.response.send_message(
-                content=access_denied(), ephemeral=True
-            )
-            return False
-        else:
-            return True
-
-    async def on_timeout(self):
-        for x in self.children:
-            x.disabled = True
-        self.stop()
-        await self.message.edit(view=self)

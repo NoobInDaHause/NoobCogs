@@ -27,19 +27,19 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | Afk               |  v1.6.14  | Notify users whenever you go AFK with pings logging.         |
 | AutomaticReaction |  v1.0.8   | Automatic emoji reactions.                                   |
 | CookieClicker     |  v1.2.5   | Play a cookie clicker.                                       |
-| CustomError       |  v1.2.4   | Customize your bots error message.                           |
-| DevLogs           |  v1.1.0   | Keep a log of all that evals and debugs.                     |
-| DonationLogger    |  v1.12.4  | Donation Logger system.                                      |
-| GlobalBan         |  v1.3.0   | Globally ban a user from all the guilds the bot is in.       |
-| GrinderLogger     |  v1.3.3   | GrinderLogger system.                                        |
-| JoinDM            |  v1.1.0   | DM newly joined users from your guild with your set message. |
-| NoobTools         |  v1.2.1   | NoobInDahause's personal tools.                              |
-| PressF            |  v1.2.0   | F.                                                           |
-| RandomColourRole  |  v1.2.0   | Have a role that changes colour every 5 minutes.             |
-| ServerDonations   |  v3.3.0   | Donate bot currencies or any other currencies to servers.    |
-| SplitOrSteal      |  v3.1.0   | A fun split or steal game.                                   |
-| Suggestions       |  v2.1.0   | Suggestion system.                                           |
-| Timers            |  v2.3.0   | Start a timer countdown.                                     |
+| CustomError       |  v1.2.5   | Customize your bots error message.                           |
+| DevLogs           |  v1.1.1   | Keep a log of all that evals and debugs.                     |
+| DonationLogger    |  v1.12.5  | Donation Logger system.                                      |
+| GlobalBan         |  v1.3.1   | Globally ban a user from all the guilds the bot is in.       |
+| GrinderLogger     |  v1.3.4   | GrinderLogger system.                                        |
+| JoinDM            |  v1.1.1   | DM newly joined users from your guild with your set message. |
+| NoobTools         |  v1.2.2   | NoobInDahause's personal tools.                              |
+| PressF            |  v1.2.1   | F.                                                           |
+| RandomColourRole  |  v1.2.1   | Have a role that changes colour every 5 minutes.             |
+| ServerDonations   |  v3.3.1   | Donate bot currencies or any other currencies to servers.    |
+| SplitOrSteal      |  v3.1.1   | A fun split or steal game.                                   |
+| Suggestions       |  v2.1.1   | Suggestion system.                                           |
+| Timers            |  v2.3.1   | Start a timer countdown.                                     |
 
 ## License
 

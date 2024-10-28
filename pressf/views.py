@@ -1,31 +1,36 @@
 import discord
+import noobutils as nu
 
 from redbot.core import commands
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from . import PressF
 
 
-class PressFView(discord.ui.View):
-    def __init__(self, cog: "PressF", timeout: float = 180.0):
-        super().__init__(timeout=timeout)
+
+class PressFView(nu.NoobView):
+    def __init__(
+        self,
+        *,
+        obj: Union[commands.Context, discord.Interaction[nu.Red]],
+        cog: "PressF",
+        thing: str,
+        timeout: float = 180
+    ):
+        super().__init__(obj=obj, timeout=timeout)
         self.message: discord.Message = None
         self.cog = cog
-        self.context: commands.Context = None
-        self.thing: str = None
+        self.thing = thing
         self.paid_users = []
 
-    async def start(self, context: commands.Context, thing: str):
+    async def start(self):
         embed = discord.Embed(
-            description=f"Everyone, let's pay our respects to **{thing}**!",
-            colour=await context.embed_colour(),
+            description=f"Everyone, let's pay our respects to **{self.thing}**!",
+            colour=await self.context.embed_colour(),
         )
-        msg = await context.send(embed=embed, view=self)
-        self.message = msg
-        self.context = context
-        self.thing = thing
+        self.message = await self.context.send(embed=embed, view=self)
 
     @discord.ui.button(label="0")
     async def press_f_button(
@@ -45,8 +50,9 @@ class PressFView(discord.ui.View):
     async def on_timeout(self):
         for x in self.children:
             x.disabled = True
-        self.stop()
+
         await self.message.edit(view=self)
+
         if len(self.paid_users) == 0:
             return await self.context.channel.send(
                 content=f"No one has paid respects to **{self.thing}**.",

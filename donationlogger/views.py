@@ -17,25 +17,25 @@ if TYPE_CHECKING:
     from . import DonationLogger
 
 
-class DonationLoggerSetupView(discord.ui.View):
-    children: List[discord.ui.Button]
-
-    def __init__(self, cog: "DonationLogger", timeout: float = 180.0):
-        super().__init__(timeout=timeout)
+class DonationLoggerSetupView(nu.NoobView):
+    def __init__(
+        self,
+        obj: Union[nu.commands.Context, discord.Interaction[nu.Red]],
+        cog: "DonationLogger",
+        timeout: float = 180.0,
+    ):
+        super().__init__(obj=obj, timeout=timeout)
         self.cog = cog
         self.message: discord.Message = None
-        self.context: nu.commands.Context = None
         self.autorole = False
         self.log_channel: discord.TextChannel = None
         self.manager_roles: List[discord.Role] = []
         self.bank: Dict[str, Union[discord.Emoji, str]] = {}
         self.amount_roles: Dict[str, List[discord.Role]] = {}
 
-    async def start(self, context: nu.commands.Context):
-        self.context = context
+    async def start(self):
         msg_embed = await self.update_embed_setup()
-        msg = await context.send(embed=msg_embed, view=self)
-        self.message = msg
+        self.message = await self.context.send(embed=msg_embed, view=self)
 
     async def update_embed_setup(self) -> discord.Embed:
         banks2 = f"{self.bank['emoji']} {self.bank['name']}" if self.bank else "None"
@@ -359,40 +359,28 @@ class DonationLoggerSetupView(discord.ui.View):
         self.cog.setupcache.remove(self.context.guild.id)
         await interaction.message.delete()
 
-    async def interaction_check(self, interaction: discord.Interaction[nu.Red]) -> bool:
-        if await interaction.client.is_owner(interaction.user):
-            return True
-        elif interaction.user != self.context.author:
-            await inter_send(interaction, content=nu.access_denied(), ephemeral=True)
-            return False
-        else:
-            return True
-
     async def on_timeout(self):
-        for x in self.children:
-            x.disabled = True
-        self.stop()
         self.cog.setupcache.remove(self.context.guild.id)
-        await self.message.edit(view=self)
+        return await super().on_timeout()
 
 
-class TotalDonoView(discord.ui.View):
-    children: List[discord.Button]
-
-    def __init__(self, cog: "DonationLogger", timeout: float = 60.0):
-        super().__init__(timeout=timeout)
+class TotalDonoView(nu.NoobView):
+    def __init__(
+        self,
+        context: nu.commands.Context,
+        cog: "DonationLogger",
+        member: discord.Member,
+        timeout: float = 60.0,
+    ):
+        super().__init__(obj=context, timeout=timeout)
         self.cog = cog
-        self.member: discord.Member = None
+        self.member = member
         self.message: discord.Message = None
 
-    async def start(
-        self, context: nu.commands.Context, member: discord.Member, **kwargs
-    ):
-        ref = context.message.to_reference(fail_if_not_exists=False)
+    async def start(self, **kwargs):
+        ref = self.context.message.to_reference(fail_if_not_exists=False)
         kwargs.update(mention_author=False, view=self, reference=ref)
-        msg = await context.send(**kwargs)
-        self.message = msg
-        self.member = member
+        self.message = await self.context.send(**kwargs)
 
     @discord.ui.button(label="Total donations", style=nu.get_button_colour("green"))
     async def total_dono(
@@ -431,11 +419,8 @@ class TotalDonoView(discord.ui.View):
             )
         await inter_send(interaction, embed=embed, ephemeral=True)
 
-    async def on_timeout(self):
-        for x in self.children:
-            x.disabled = True
-        await self.message.edit(view=self)
-        self.stop()
+    async def interaction_check(self, interaction: discord.Interaction[nu.Red]) -> bool:
+        return True
 
 
 class BankNameModal(discord.ui.Modal):

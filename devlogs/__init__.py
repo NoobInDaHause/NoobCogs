@@ -1,3 +1,5 @@
+import noobutils as nu
+
 from redbot.core import bot, errors, utils
 
 from .devlogs import DevLogs
@@ -15,5 +17,15 @@ async def setup(bot: bot.Red) -> None:
         raise CogLoadError(
             "This cog requires the bot to be started with the `--dev` flag."
         )
+
+    if version_check_func := getattr(nu, "version_check", None):
+        version_check_func("1.11.9")
+    else:
+        raise errors.CogLoadError(
+            "Please update the noobutils to the latest version.\n"
+            "`[p]pipinstall --force-reinstall --no-cache-dir "
+            "git+https://github.com/NoobInDaHause/noobutils.git`\nAnd then restart your bot."
+        )
+
     cog = DevLogs(bot)
     await bot.add_cog(cog)

@@ -47,7 +47,7 @@ class GrinderLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.3.3",
+            version="1.3.4",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -1013,12 +1013,12 @@ class GrinderLogger(nu.Cog):
 
         pagified = await nu.pagify_this(
             "\n\n".join(all_mem),
-            "\n\n",
+            ["\n\n"],
             embed_title=f"GrinderLogger Leaderboard for [{context.guild.name}]",
             embed_timestamp=dt.datetime.now(dt.timezone.utc),
             embed_colour=context.bot._color,
         )
-        await nu.NoobPaginator(pagified).start(context)
+        await nu.NoobPaginator(obj=context, pages=pagified).start()
 
     @grinderlogger.command(name="addmember")
     @is_a_grinder_manager()
@@ -1394,9 +1394,12 @@ class GrinderLogger(nu.Cog):
         """
         act = "Done. This guild data has been reset."
         conf = "Are you sure you want to reset the data of this guild?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         if view.value:
             with contextlib.suppress(KeyError):
                 self.data.pop(str(context.guild.id))
@@ -1415,9 +1418,12 @@ class GrinderLogger(nu.Cog):
         """
         act = "Done. The config has been cleared."
         conf = "Are you sure you want to clear the config?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         if view.value:
             self.init_done = False
             self.save_data_to_config.restart()

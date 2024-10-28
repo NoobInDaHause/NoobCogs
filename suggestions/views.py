@@ -98,30 +98,26 @@ class SuggestionView(discord.ui.View):
         return False
 
 
-class SuggestionViewView(discord.ui.View):
-    def __init__(self, timeout: float = 180.0):
-        super().__init__(timeout=timeout)
+class SuggestionViewView(nu.NoobView):
+    def __init__(self, context: commands.Context, timeout: float = 180.0):
+        super().__init__(obj=context, timeout=timeout)
         self.suggestion_id: str = None
-        self.context: commands.Context = None
         self.message: discord.Message = None
         self.upvotes: List[discord.Member] = None
         self.downvotes: List[discord.Member] = None
 
     async def start(
         self,
-        context: commands.Context,
         suggestion_id,
         upvotes,
         downvotes,
         *args,
         **kwargs,
     ):
-        msg = await context.send(view=self, *args, **kwargs)
-        self.context = context
-        self.message = msg
+        self.message = await self.context.send(view=self, *args, **kwargs)
         self.suggestion_id = suggestion_id
-        self.upvotes = [m for mm in upvotes if (m := context.guild.get_member(mm))]
-        self.downvotes = [n for nn in downvotes if (n := context.guild.get_member(nn))]
+        self.upvotes = [m for mm in upvotes if (m := self.context.guild.get_member(mm))]
+        self.downvotes = [n for nn in downvotes if (n := self.context.guild.get_member(nn))]
 
     @discord.ui.button()
     async def UpVotesButton(
@@ -139,8 +135,7 @@ class SuggestionViewView(discord.ui.View):
             embed_colour=await self.context.embed_colour(),
             embed_title=f"{len(self.upvotes)} members have upvoted the suggestion **#{self.suggestion_id}**",
         )
-        pag = nu.NoobPaginator(pages)
-        await pag.start(interaction, ephemeral=True)
+        await nu.NoobPaginator(obj=interaction, pages=pages, is_ephemeral=True).start()
 
     @discord.ui.button(emoji="✖️", style=nu.get_button_colour("red"))
     async def quit_button(
@@ -170,20 +165,7 @@ class SuggestionViewView(discord.ui.View):
             embed_title=f"{len(self.downvotes)} members have downvoted the suggestion **#{self.suggestion_id}**",
             footer_icon=nu.is_have_avatar(interaction.guild),
         )
-        pag = nu.NoobPaginator(pages)
-        await pag.start(interaction, ephemeral=True)
-
-    async def interaction_check(self, interaction: discord.Interaction[Red]) -> bool:
-        if await interaction.client.is_owner(interaction.user):
-            return True
-
-        if interaction.user != self.context.author:
-            await interaction.response.send_message(
-                content=nu.access_denied(), ephemeral=True
-            )
-            return False
-
-        return True
+        await nu.NoobPaginator(obj=interaction, pages=pages, is_ephemeral=True).start()
 
     async def on_timeout(self):
         self.DownVotesButton.disabled = True

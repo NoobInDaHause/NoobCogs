@@ -38,7 +38,7 @@ class Timers(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="2.3.0",
+            version="2.3.1",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=65466546,
@@ -223,7 +223,7 @@ class Timers(nu.Cog):
         )
         return await nu.pagify_this(
             "\n".join(timers or no_timers),
-            "\n",
+            ["\n"],
             embed_colour=self.bot._color,
             embed_title=title,
             embed_thumbnail=(
@@ -394,7 +394,7 @@ class Timers(nu.Cog):
             embeds = await self.get_timers(context, True)
         else:
             embeds = await self.get_timers(context, False)
-        await nu.NoobPaginator(embeds).start(context)
+        await nu.NoobPaginator(obj=context, pages=embeds).start()
 
     @commands.group(name="timerset")
     @commands.admin_or_permissions(manage_guild=True)
@@ -518,9 +518,12 @@ class Timers(nu.Cog):
         """
         act = "This guilds timer settings has been cleared."
         conf = "Are you sure you want to clear this guilds timer settings?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         if view.value:
             await self.config.guild(context.guild).clear()
             for timer in self.active_timers.copy():
@@ -536,9 +539,12 @@ class Timers(nu.Cog):
         """
         act = "This cogs config has been cleared."
         conf = "Are you sure you want to clear this cogs config?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         if view.value:
             self.active_timers.clear()
             await self.config.clear_all_guilds()

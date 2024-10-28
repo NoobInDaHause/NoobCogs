@@ -57,7 +57,7 @@ class DonationLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.12.4",
+            version="1.12.5",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=657668242451927167510,
@@ -288,7 +288,8 @@ class DonationLogger(nu.Cog):
 
         return await nu.pagify_this(
             "\n".join(final),
-            "\n" "".join([f"{context.guild.name}", " | Page ({index}/{pages})"]),
+            ["\n"],
+            "".join([f"{context.guild.name}", " | Page ({index}/{pages})"]),
             page_char=1500,
             embed_title=f"All of the donors for [{bank_name.title()}]",
             embed_colour=await context.embed_colour(),
@@ -564,8 +565,9 @@ class DonationLogger(nu.Cog):
         """
         act = "The cog's config has been cleared."
         conf = "Are you sure you want to clear the whole cog's config?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 
@@ -587,9 +589,12 @@ class DonationLogger(nu.Cog):
             "Click Yes to continue or No to abort."
         )
         act = "Alright sending set up interactions, please wait..."
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         await asyncio.sleep(3)
         if view.value:
             if context.guild.id in self.setupcache:
@@ -621,9 +626,12 @@ class DonationLogger(nu.Cog):
         if bank_name:
             act = f"Successfully cleared **{bank_name.title()}** donations from **{user.name}**."
             conf = f"Are you sure you want to clear **{bank_name.title()}** donations from **{user.name}**"
-            view = nu.NoobConfirmation()
-            await view.start(context, act, content=conf)
+    
+            view = nu.NoobConfirmation(obj=context, confirm_action=act)
+            await view.start(content=conf)
+    
             await view.wait()
+    
             if view.value:
                 async with self.config.guild(context.guild).banks() as banks:
                     bank = banks[bank_name.lower()]
@@ -640,9 +648,11 @@ class DonationLogger(nu.Cog):
         conf = (
             f"Are you sure you want to erase all bank donations from **{user.name}**?"
         )
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         if view.value:
             async with self.config.guild(context.guild).banks() as banks:
                 for bank in banks.values():
@@ -725,7 +735,7 @@ class DonationLogger(nu.Cog):
             embeds = await self.get_dc_from_bank(context, bank_name)
             if not embeds:
                 return await context.send(content="This bank is hidden.")
-            await nu.NoobPaginator(embeds).start(context)
+            await nu.NoobPaginator(obj=context, pages=embeds).start()
             return
 
         if not amount:
@@ -771,14 +781,14 @@ class DonationLogger(nu.Cog):
 
         paginated_output = await nu.pagify_this(
             output_text,
-            "\n",
+            ["\n"],
             "Page ({index}/{pages})",
             embed_title=f"All members who have donated {mla} than {nu.cf.humanize_number(amount)} "
             f"for [{bank_name.title()}]",
             embed_colour=await context.embed_colour(),
         )
 
-        await nu.NoobPaginator(paginated_output).start(context)
+        await nu.NoobPaginator(obj=context, pages=paginated_output).start()
 
     @donationlogger.command(name="leaderboard", aliases=["lb"])
     @donationlogger_check(check_if_setup_done=True)
@@ -1497,9 +1507,12 @@ class DonationLogger(nu.Cog):
         """
         act = "This guild's DonationLogger system has been reset."
         conf = "Are you sure you want to reset this guild's DonationLogger system?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         if view.value:
             await self.config.guild(context.guild).clear()
 

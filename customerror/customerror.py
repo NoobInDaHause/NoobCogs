@@ -29,7 +29,7 @@ class CustomError(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.4",
+            version="1.2.5",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=9874825374237,
@@ -191,8 +191,9 @@ class CustomError(nu.Cog):
         """
         act = "Successfully reset the cogs settings."
         msg = "Are you sure you want to reset the cogs settings?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=msg)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=msg)
 
         await view.wait()
 

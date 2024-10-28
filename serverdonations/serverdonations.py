@@ -4,7 +4,6 @@ import noobutils as nu
 import TagScriptEngine as tse
 
 from redbot.core.bot import app_commands, commands, Red
-from redbot.core.utils import chat_formatting as cf
 
 from typing import List, Literal, Optional, Tuple
 
@@ -73,7 +72,7 @@ class ServerDonations(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="3.3.0",
+            version="3.3.1",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -123,7 +122,7 @@ class ServerDonations(nu.Cog):
                 context.guild.get_role(r) for r in managers[f"{manager_type[0]}mans"]
             ]
             role_mention = (
-                cf.humanize_list([ro.mention for ro in roles])
+                nu.cf.humanize_list([ro.mention for ro in roles])
                 if roles
                 else f"`There are no {manager_type} manager roles set.`"
             )
@@ -201,7 +200,7 @@ class ServerDonations(nu.Cog):
             role.mention for r in roles if (role := context.guild.get_role(r))
         ]
         embed.description = (
-            cf.humanize_list(updated_roles)
+            nu.cf.humanize_list(updated_roles)
             if updated_roles
             else f"There are no {_type} manager roles set."
         )
@@ -250,7 +249,7 @@ class ServerDonations(nu.Cog):
             else:
                 process_roles(managers)
 
-        return [cf.humanize_list(success), cf.humanize_list(failed)]
+        return [nu.cf.humanize_list(success), nu.cf.humanize_list(failed)]
 
     @commands.command(
         name="giveawaydonate",
@@ -481,7 +480,7 @@ class ServerDonations(nu.Cog):
             await self.config.guild(context.guild).messages.emsg.set(message)
             await context.send(
                 content="The TagScript for the event donation message has been set to:\n"
-                f"{cf.box(message, 'py')}"
+                f"{nu.cf.box(message, 'py')}"
             )
         elif message_type == "giveaway":
             if not message:
@@ -492,7 +491,7 @@ class ServerDonations(nu.Cog):
             await self.config.guild(context.guild).messages.gmsg.set(message)
             await context.send(
                 content="The TagScript for the giveaway donation message has been set to:\n"
-                f"{cf.box(message, 'py')}"
+                f"{nu.cf.box(message, 'py')}"
             )
         elif message_type == "heist":
             if not message:
@@ -503,7 +502,7 @@ class ServerDonations(nu.Cog):
             await self.config.guild(context.guild).messages.hmsg.set(message)
             await context.send(
                 content="The TagScript for the heist donation message has been set to:\n"
-                f"{cf.box(message, 'py')}"
+                f"{nu.cf.box(message, 'py')}"
             )
 
     @serverdonationsset.command(name="autodelete", aliases=["autodel"])
@@ -533,9 +532,12 @@ class ServerDonations(nu.Cog):
         """
         act = "You serverdonations guild settings has been cleared."
         conf = "Are you sure you want to reset your serverdonations guild settings?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         if view.value:
             await self.config.guild(context.guild).clear()
 
@@ -547,9 +549,12 @@ class ServerDonations(nu.Cog):
         """
         act = "The cog config has been clear."
         conf = "Are you sure you want to reset the whole cog config?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
+
         if view.value:
             await self.config.clear_all_guilds()
 
@@ -573,11 +578,11 @@ class ServerDonations(nu.Cog):
         )
         managers = (
             "Event: "
-            f"""{cf.humanize_list([f'<@&{r}>' for r in mans["emans"]]) if mans["emans"] else "None"}\n"""
+            f"""{nu.cf.humanize_list([f'<@&{r}>' for r in mans["emans"]]) if mans["emans"] else "None"}\n"""
             "Giveaway: "
-            f"""{cf.humanize_list([f'<@&{r}>' for r in mans["gmans"]]) if mans["gmans"] else "None"}\n"""
+            f"""{nu.cf.humanize_list([f'<@&{r}>' for r in mans["gmans"]]) if mans["gmans"] else "None"}\n"""
             "Heist: "
-            f"""{cf.humanize_list([f'<@&{r}>' for r in mans["hmans"]]) if mans["hmans"] else "None"}"""
+            f"""{nu.cf.humanize_list([f'<@&{r}>' for r in mans["hmans"]]) if mans["hmans"] else "None"}"""
         )
         embed = discord.Embed(
             title=f"Serverdonations guild settings for [{context.guild.name}]",
@@ -592,22 +597,22 @@ class ServerDonations(nu.Cog):
             title=f"Serverdonations guild settings for [{context.guild.name}]",
             colour=await context.embed_colour(),
             timestamp=discord.utils.utcnow(),
-            description=f"**Event Message:**\n{cf.box(msgs['emsg'])}",
+            description=f"**Event Message:**\n{nu.cf.box(msgs['emsg'])}",
         ).set_footer(text="Page (2/4)")
         msg2 = discord.Embed(
             title=f"Serverdonations guild settings for [{context.guild.name}]",
             colour=await context.embed_colour(),
             timestamp=discord.utils.utcnow(),
-            description=f"**Giveaway Message:**\n{cf.box(msgs['gmsg'])}",
+            description=f"**Giveaway Message:**\n{nu.cf.box(msgs['gmsg'])}",
         ).set_footer(text="Page (3/4)")
         msg3 = discord.Embed(
             title=f"Serverdonations guild settings for [{context.guild.name}]",
             colour=await context.embed_colour(),
             timestamp=discord.utils.utcnow(),
-            description=f"**Heist Message:**\n{cf.box(msgs['hmsg'])}",
+            description=f"**Heist Message:**\n{nu.cf.box(msgs['hmsg'])}",
         ).set_footer(text="Page (4/4)")
         lst = [embed, msg1, msg2, msg3]
-        await nu.NoobPaginator(lst).start(context)
+        await nu.NoobPaginator(obj=context, pages=lst).start()
 
     # <----------------------------------------- SLASH COMMANDS -------------------------------------------->
 
@@ -656,7 +661,7 @@ class ServerDonations(nu.Cog):
         gaw = {
             "currency_type": currency_type.strip(),
             "duration": (
-                cf.humanize_timedelta(timedelta=duration_td)
+                nu.cf.humanize_timedelta(timedelta=duration_td)
                 if (duration_td := commands.parse_timedelta(duration.strip()))
                 else duration.strip()
             ),

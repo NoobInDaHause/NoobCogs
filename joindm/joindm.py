@@ -24,7 +24,7 @@ class JoinDM(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.1.0",
+            version="1.1.1",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=947_123_432_421,
@@ -114,8 +114,9 @@ class JoinDM(nu.Cog):
         """
         c_act = "Successfully reset your joindm guild settings."
         c_conf = "Are you sure you want to reset your joindm guild settings?"
-        view = nu.NoobConfirmation()
-        await view.start(context, c_act, content=c_conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=c_act)
+        await view.start(content=c_conf)
 
         await view.wait()
 
@@ -130,8 +131,9 @@ class JoinDM(nu.Cog):
         """
         c_act = "Successfully reset the cogs config."
         c_conf = "Are you sure you want to reset the cogs config?"
-        view = nu.NoobConfirmation()
-        await view.start(context, c_act, content=c_conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=c_act)
+        await view.start(content=c_conf)
 
         await view.wait()
 

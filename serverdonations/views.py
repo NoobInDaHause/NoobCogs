@@ -1,12 +1,11 @@
-import contextlib
 import discord
 import noobutils as nu
 import traceback
 
-from redbot.core.bot import commands, Red
+from redbot.core.bot import commands
 from redbot.core.utils import mod
 
-from typing import Literal, List, TYPE_CHECKING
+from typing import Any, Dict, Literal, List, TYPE_CHECKING, Union
 
 from .converters import format_amount
 
@@ -15,7 +14,7 @@ if TYPE_CHECKING:
     from donationlogger.donationlogger import DonationLogger
 
 
-class SelectView(discord.ui.View):
+class SelectView(nu.NoobView):
     def __init__(
         self,
         cog: "ServerDonations",
@@ -23,10 +22,10 @@ class SelectView(discord.ui.View):
         options: List[discord.SelectOption],
         member: discord.Member,
         claimer: discord.Member,
-        orig_inter: discord.Interaction[Red],
+        orig_inter: discord.Interaction[nu.Red],
         timeout: float = 300.0,
     ):
-        super().__init__(timeout=timeout)
+        super().__init__(obj=orig_inter, timeout=timeout)
         select = SelectBank(
             cog=cog,
             placeholder=placeholder,
@@ -36,14 +35,13 @@ class SelectView(discord.ui.View):
         )
         self.add_item(select)
         self.claimer = claimer
-        self.orig_inter = orig_inter
         self.message: discord.Message = None
 
     async def start(self, content: str):
-        msg = await self.orig_inter.message.reply(content=content, view=self)
+        msg = await self.interaction.message.reply(content=content, view=self)
         self.message = msg
 
-    async def interaction_check(self, interaction: discord.Interaction[Red]):
+    async def interaction_check(self, interaction: discord.Interaction[nu.Red]):
         if interaction.user.id != self.claimer.id:
             await interaction.response.send_message(
                 content=f"You are not {self.claimer.mention}.", ephemeral=True
@@ -51,27 +49,19 @@ class SelectView(discord.ui.View):
             return False
         return True
 
-    async def on_timeout(self) -> None:
-        for x in self.children:
-            x.disabled = True
-        with contextlib.suppress(Exception):
-            await self.message.edit(view=self)
-        self.stop()
 
-
-class DonationsView(discord.ui.View):
+class DonationsView(nu.NoobView):
     def __init__(
         self,
         cog: "ServerDonations",
-        context: commands.Context,
+        obj: Union[commands.Context, discord.Interaction[nu.Red]],
         channel: discord.TextChannel,
         _type: Literal["giveaway", "event", "heist"],
         timeout: float = 600.0,
     ):
-        super().__init__(timeout=timeout)
+        super().__init__(obj=obj, timeout=timeout)
         self.cog = cog
         self._type = _type
-        self.context = context
         self.channel = channel
         self.message: discord.Message = None
         self.claimer: discord.Member = None
@@ -87,7 +77,7 @@ class DonationsView(discord.ui.View):
         )
         self.message = msg
 
-    async def donationlogger_support(self, interaction: discord.Interaction[Red]):
+    async def donationlogger_support(self, interaction: discord.Interaction[nu.Red]):
         dono_cog: "DonationLogger" = interaction.client.get_cog("DonationLogger")
         claimed = (
             f"{self._type.title()} donation claimed by {self.claimer.mention}.\n"
@@ -106,7 +96,7 @@ class DonationsView(discord.ui.View):
                 "it supports adding donations to DonationLogger.`"
             )
             return await interaction.response.send_message(content=claimed)
-        banks = await dono_cog.config.guild(interaction.guild).banks()
+        banks: Dict[str, Any] = await dono_cog.config.guild(interaction.guild).banks()
         select_options = []
         for k, v in banks.items():
             if not v["hidden"]:
@@ -136,7 +126,7 @@ class DonationsView(discord.ui.View):
 
     @discord.ui.button(emoji="✔️", style=nu.get_button_colour("green"))
     async def accept_donation_button(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+        self, interaction: discord.Interaction[nu.Red], button: discord.ui.Button
     ):
         if self.claimer:
             return await interaction.response.send_message(
@@ -157,7 +147,7 @@ class DonationsView(discord.ui.View):
 
     @discord.ui.button(emoji="✖️", style=nu.get_button_colour("red"))
     async def deny_donation_button(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+        self, interaction: discord.Interaction[nu.Red], button: discord.ui.Button
     ):
         if self.claimer:
             return await interaction.response.send_message(
@@ -189,7 +179,7 @@ class DonationsView(discord.ui.View):
             await interaction.message.edit(view=self)
         self.stop()
 
-    async def interaction_check(self, interaction: discord.Interaction[Red]):
+    async def interaction_check(self, interaction: discord.Interaction[nu.Red]):
         if self._type == "giveaway":
             managers = await self.cog.config.guild(interaction.guild).managers.gmans()
         elif self._type == "event":
@@ -208,13 +198,6 @@ class DonationsView(discord.ui.View):
             return False
         return True
 
-    async def on_timeout(self) -> None:
-        for x in self.children:
-            x.disabled = True
-        with contextlib.suppress(Exception):
-            await self.message.edit(view=self)
-        self.stop()
-
 
 class DenyModal(discord.ui.Modal):
     def __init__(self):
@@ -227,7 +210,7 @@ class DenyModal(discord.ui.Modal):
         required=True,
     )
 
-    async def on_submit(self, interaction: discord.Interaction[Red]):
+    async def on_submit(self, interaction: discord.Interaction[nu.Red]):
         await interaction.response.defer()
 
     async def on_error(self, interaction: discord.Interaction, error: Exception):
@@ -262,7 +245,7 @@ class DonoModal(discord.ui.Modal):
         max_length=1024,
     )
 
-    async def on_submit(self, interaction: discord.Interaction[Red]):
+    async def on_submit(self, interaction: discord.Interaction[nu.Red]):
         await interaction.response.defer()
 
     async def on_error(self, interaction: discord.Interaction, error: Exception):
@@ -292,7 +275,7 @@ class SelectBank(discord.ui.Select):
         self.cog = cog
         self.claimer = claimer
 
-    async def callback(self, interaction: discord.Interaction[Red]):
+    async def callback(self, interaction: discord.Interaction[nu.Red]):
         modal = DonoModal(self.cog, "The amount that you want to add.", 20.0)
         view: "SelectView" = self.view
         await interaction.response.send_modal(modal)

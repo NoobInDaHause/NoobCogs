@@ -5,7 +5,7 @@ import noobutils as nu
 from redbot.core.bot import commands, Red
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from .sosgifs import forfeit_gifs, win_gifs, lose_gifs, betray_gifs
 
@@ -13,9 +13,9 @@ if TYPE_CHECKING:
     from . import SplitOrSteal
 
 
-class Commence(discord.ui.View):
+class Commence(nu.NoobView):
     def __init__(self):
-        super().__init__(timeout=180.0)
+        super().__init__(obj=None)
         self.players = []
 
     @discord.ui.button(label="0", style=nu.get_button_colour("green"))
@@ -33,29 +33,26 @@ class Commence(discord.ui.View):
         await interaction.response.edit_message(view=self)
         await interaction.followup.send(content=message, ephemeral=True)
 
-    async def on_timeout(self) -> None:
-        self.stop()
+    async def interaction_check(self, interaction: discord.Interaction[Red]) -> bool:
+        return True
 
 
-class SplitOrStealView(discord.ui.View):
-    def __init__(self, cog: "SplitOrSteal"):
-        super().__init__(timeout=200.0)
+class SplitOrStealView(nu.NoobView):
+    def __init__(self, obj: Union[commands.Context, discord.Interaction[nu.Red]], cog: "SplitOrSteal"):
+        super().__init__(obj=obj, timeout=200.0)
         self.cog = cog
         self.prize: str = None
         self.message: discord.Message = None
-        self.context: commands.Context = None
         self.player_1: discord.Member = None
         self.player_2: discord.Member = None
         self.choices = {"player_1": None, "player_2": None}
 
     async def start(
         self,
-        context: commands.Context,
         p1: discord.Member,
         p2: discord.Member,
         prize: str,
     ):
-        self.context = context
         self.prize = prize
         self.player_1 = p1
         self.player_2 = p2
@@ -65,7 +62,7 @@ class SplitOrStealView(discord.ui.View):
             description="The split or steal game has begun!\n"
             "Players can now discuss if they want to either `Split 🤝` or `Steal ⚔️` before the timer ends.\n"
             "Think very carefully and make your decisions precise!",
-            colour=await context.embed_colour(),
+            colour=await self.context.embed_colour(),
         )
         sotembed.add_field(name="Prize:", value=prize, inline=True)
         sotembed.add_field(
@@ -73,11 +70,11 @@ class SplitOrStealView(discord.ui.View):
         )
         sotembed.set_footer(
             text="Remember trust no one in this game. ;)",
-            icon_url=nu.is_have_avatar(context.guild),
+            icon_url=nu.is_have_avatar(self.context.guild),
         )
         sotembed.set_author(
-            name=f"Hosted by: {context.author} ({context.author.id})",
-            icon_url=nu.is_have_avatar(context.author),
+            name=f"Hosted by: {self.context.author} ({self.context.author.id})",
+            icon_url=nu.is_have_avatar(self.context.author),
         )
         sotembed.set_image(
             url="https://cdn.discordapp.com/attachments/1035334209818071161/1183346867497599076/sos.jpg"
@@ -278,21 +275,19 @@ class SplitOrStealView(discord.ui.View):
         )
 
 
-class DuelView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=30.0)
+class DuelView(nu.NoobView):
+    def __init__(self, context: commands.Context, member: discord.Member):
+        super().__init__(obj=context, timeout=30.0)
         self.message: discord.Message = None
-        self.member: discord.Member = None
+        self.member: discord.Member = member
         self.value: bool = None
 
-    async def start(self, context: commands.Context, member: discord.Member):
-        msg = await context.channel.send(
-            content=f"{member.mention}, **{context.author}** has challenged you to a SplitOrStealDuel! "
-            "Do you wish to accept?",
+    async def start(self):
+        self.message = await self.context.channel.send(
+            content=f"{self.member.mention}, **{self.context.author}** has challenged you to a "
+            "SplitOrStealDuel! Do you wish to accept?",
             view=self,
         )
-        self.message = msg
-        self.member = member
 
     @discord.ui.button(label="Yes", style=nu.get_button_colour("green"))
     async def yes_duel(

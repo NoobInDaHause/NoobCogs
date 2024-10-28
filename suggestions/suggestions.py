@@ -33,7 +33,7 @@ class Suggestions(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="2.1.0",
+            version="2.1.1",
             authors=["NooInDaHause"],
             use_config=True,
             force_registration=True,
@@ -774,8 +774,9 @@ class Suggestions(nu.Cog):
         """
         act = "Successfully reset the guilds whole configuration."
         conf = "Are you sure you want to reset the guilds whole confirguration?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 
@@ -790,8 +791,9 @@ class Suggestions(nu.Cog):
         """
         act = "Successfully reset the cogs whole configuration."
         conf = "Are you sure you want to reset the cogs whole confirguration?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 
