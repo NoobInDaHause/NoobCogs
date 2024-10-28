@@ -31,7 +31,7 @@ class Afk(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.6.5",
+            version="1.6.6",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=54646544526864548,
@@ -166,7 +166,7 @@ class Afk(nu.Cog):
             pinglist = "\n".join(final_log)
             final_page = await nu.pagify_this(
                 pinglist,
-                "` - `",
+                ["` - `"],
                 "Page {index}/{pages}",
                 embed_title=f"You have recieved some pings while you were AFK, {user.display_name}.",
                 embed_colour=user.colour,
@@ -174,7 +174,7 @@ class Afk(nu.Cog):
             )
             context = await self.bot.get_context(message)
             await self.config.member(user).pinglogs.clear()
-            await nu.NoobPaginator(final_page, timeout=60.0).start(context)
+            await nu.NoobPaginator(obj=context, pages=final_page, timeout=60.0).start()
 
     async def maybe_log_and_notify(
         self, message: discord.Message, afk_user: discord.Member
@@ -375,13 +375,13 @@ class Afk(nu.Cog):
         afk_users = "\n".join(afk_list)
         final_page = await nu.pagify_this(
             afk_users,
-            "\n",
+            ["\n"],
             "Page {index}/{pages}",
             embed_title="Here are the members who are afk in this guild.",
             embed_colour=await context.embed_colour(),
             footer_icon=nu.is_have_avatar(context.guild),
         )
-        await nu.NoobPaginator(final_page, timeout=60.0).start(context)
+        await nu.NoobPaginator(obj=context, pages=final_page, timeout=60.0).start()
 
     @afkset.command(name="nick")
     @commands.admin_or_permissions(manage_guild=True)
@@ -406,10 +406,9 @@ class Afk(nu.Cog):
         """
         confirm_msg = "Are you sure you want to reset your AFK settings?"
         confirm_action = "Successfully resetted your AFK settings."
-        view = nu.NoobConfirmation(timeout=30)
-        await view.start(
-            object=context, confirm_action=confirm_action, content=confirm_msg
-        )
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=confirm_action)
+        await view.start(content=confirm_msg)
 
         await view.wait()
 
@@ -424,10 +423,9 @@ class Afk(nu.Cog):
         """
         confirm_msg = "Are you sure you want to reset the AFK cogs whole configuration?"
         confirm_action = "Successfully resetted the AFK cogs configuration."
-        view = nu.NoobConfirmation(timeout=30)
-        await view.start(
-            object=context, confirm_action=confirm_action, content=confirm_msg
-        )
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=confirm_action, timeout=30)
+        await view.start(content=confirm_msg)
 
         await view.wait()
 
