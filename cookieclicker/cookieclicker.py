@@ -21,7 +21,7 @@ class CookieClicker(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.3",
+            version="1.2.4",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=348468464655768,
