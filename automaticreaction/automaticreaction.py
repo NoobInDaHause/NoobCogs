@@ -21,7 +21,7 @@ class AutomaticReaction(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.5",
+            version="1.0.6",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
