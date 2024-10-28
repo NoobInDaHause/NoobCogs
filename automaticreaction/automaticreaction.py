@@ -21,7 +21,7 @@ class AutomaticReaction(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.4",
+            version="1.0.5",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -132,7 +132,7 @@ class AutomaticReaction(nu.Cog):
             embed_timestamp=discord.utils.utcnow(),
             embed_thumbnail=nu.is_have_avatar(context.guild),
         )
-        await nu.NoobPaginator(pagified).start(context)
+        await nu.NoobPaginator(obj=context, pages=pagified).start()
 
     @automaticreaction.command(name="clearremoved")
     @commands.admin_or_permissions(manage_guild=True)
@@ -163,8 +163,10 @@ class AutomaticReaction(nu.Cog):
         """
         act = "This guilds automatic reaction has been cleared."
         conf = "Are you sure you want to reset this guilds automatic reactions?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
 
         if view.value:
@@ -178,8 +180,10 @@ class AutomaticReaction(nu.Cog):
         """
         act = "Successfully cleared the automaticreaction config."
         conf = "Are you sure you want to reset the cog config?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
+
         await view.wait()
 
         if view.value:

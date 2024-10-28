@@ -21,7 +21,7 @@ class CookieClicker(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.1",
+            version="1.2.2",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=348468464655768,
@@ -65,10 +65,10 @@ class CookieClicker(nu.Cog):
                 ul.setdefault(str(context.author.id), 0)
         e = await self.config.guild(context.guild).emoji()
         c = await self.config.guild(context.guild).buttoncolour()
-        view = CookieClickerView(self, timeout=15.0)
+        view = CookieClickerView(context, self, timeout=15.0)
         view.cookieclicker.emoji = e
         view.cookieclicker.style = nu.get_button_colour(c)
-        await view.start(context)
+        await view.start()
 
     @commands.command(name="cookieclickerlb", aliases=["cclb"])
     @commands.bot_has_permissions(embed_links=True)
@@ -103,7 +103,7 @@ class CookieClicker(nu.Cog):
             footer_icon=nu.is_have_avatar(context.guild),
         )
 
-        await nu.NoobPaginator(pages).start(context)
+        await nu.NoobPaginator(obj=context, pages=pages).start()
 
     @commands.group(name="cookieclickerset", aliases=["ccset"])
     @commands.guild_only()
@@ -127,8 +127,9 @@ class CookieClicker(nu.Cog):
 
         act = "You are no longer on this guild's cookie clicker leaderboard."
         conf = "Are you sure you want to remove yourself from this guild's leaderboard?"
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 
@@ -186,8 +187,9 @@ class CookieClicker(nu.Cog):
         """
         confirmation_msg = "Are you sure you want to reset the current guild settings?"
         confirm_action = "Successfully reset the guilds settings."
-        view = nu.NoobConfirmation()
-        await view.start(context, confirm_action, content=confirmation_msg)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=confirm_action)
+        await view.start(content=confirmation_msg)
 
         await view.wait()
 
@@ -204,8 +206,9 @@ class CookieClicker(nu.Cog):
         """
         conf = "Are you sure you want to reset the whole cog settings?"
         act = "The cog settings have been reset."
-        view = nu.NoobConfirmation()
-        await view.start(context, act, content=conf)
+
+        view = nu.NoobConfirmation(obj=context, confirm_action=act)
+        await view.start(content=conf)
 
         await view.wait()
 

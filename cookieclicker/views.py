@@ -1,27 +1,23 @@
 import discord
+import noobutils as nu
 
 from redbot.core import commands
 
 from typing import TYPE_CHECKING
 
-from noobutils import access_denied
-
 if TYPE_CHECKING:
     from . import CookieClicker
 
 
-class CookieClickerView(discord.ui.View):
-    def __init__(self, cog: "CookieClicker", timeout: float = 60.0):
-        super().__init__(timeout=timeout)
+class CookieClickerView(nu.NoobView):
+    def __init__(self, context: commands.Context, cog: "CookieClicker", timeout: float = 60.0):
+        super().__init__(obj=context, timeout=timeout)
         self.cog = cog
         self.message: discord.Message = None
-        self.context: commands.Context = None
         self.clicked = 0
 
-    async def start(self, context: commands.Context):
-        msg = await context.send(view=self)
-        self.message = msg
-        self.context = context
+    async def start(self):
+        self.message = await self.context.send(view=self)
 
     @discord.ui.button(label="0")
     async def cookieclicker(
@@ -41,20 +37,3 @@ class CookieClickerView(discord.ui.View):
             x.disabled = True
         self.stop()
         await interaction.response.edit_message(view=self)
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if await self.context.bot.is_owner(interaction.user):
-            return True
-        elif interaction.user != self.context.author:
-            await interaction.response.send_message(
-                content=access_denied(), ephemeral=True
-            )
-            return False
-        else:
-            return True
-
-    async def on_timeout(self):
-        for x in self.children:
-            x.disabled = True
-        self.stop()
-        await self.message.edit(view=self)
