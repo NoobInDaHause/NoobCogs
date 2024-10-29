@@ -57,7 +57,7 @@ class DonationLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.12.5",
+            version="1.12.6",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=657668242451927167510,
@@ -602,7 +602,7 @@ class DonationLogger(nu.Cog):
                     content="Only one setup interaction per guild.", ephemeral=True
                 )
             self.setupcache.append(context.guild.id)
-            await DonationLoggerSetupView(self).start(context)
+            await DonationLoggerSetupView(context, self).start()
 
     @donationlogger.command(name="resetuser")
     @donationlogger_check(check_if_setup_done=True, check_if_manager_or_higher=True)
@@ -920,8 +920,8 @@ class DonationLogger(nu.Cog):
                 embed.add_field(
                     name="Added Donation Roles:", value=humanized_roles, inline=False
                 )
-            await TotalDonoView(self).start(
-                context, member, content=member.mention, embed=embed
+            await TotalDonoView(context, self, member).start(
+                content=member.mention, embed=embed
             )
             await self.send_to_log_channel(
                 context,
@@ -1005,8 +1005,8 @@ class DonationLogger(nu.Cog):
                 embed.add_field(
                     name="Removed Donation Roles:", value=humanized_roles, inline=False
                 )
-            await TotalDonoView(self).start(
-                context, member, content=member.mention, embed=embed
+            await TotalDonoView(context, self, member).start(
+                content=member.mention, embed=embed
             )
             await self.send_to_log_channel(
                 context,
@@ -1092,8 +1092,8 @@ class DonationLogger(nu.Cog):
                     value=humanized_removed_roles,
                     inline=False,
                 )
-            await TotalDonoView(self).start(
-                context, member, content=member.mention, embed=embed
+            await TotalDonoView(context, self, member).start(
+                content=member.mention, embed=embed
             )
             humanized_roles = nu.cf.humanize_list(
                 [f"{lrr.mention}: A" for lrr in aroles]
