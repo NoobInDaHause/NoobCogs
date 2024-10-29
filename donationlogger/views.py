@@ -313,9 +313,14 @@ class DonationLoggerSetupView(nu.NoobView):
             )
         act = "Well alright."
         conf = "Are you sure these informations are correct?"
-        view = nu.NoobConfirmation()
-        await view.start(interaction, act, True, content=conf)
+
+        view = nu.NoobConfirmation(
+            obj=interaction, confirm_action=act, is_ephemeral=True
+        )
+        await view.start(content=conf)
+
         await view.wait()
+
         if not view.value:
             return
         config = self.cog.config.guild
@@ -348,19 +353,24 @@ class DonationLoggerSetupView(nu.NoobView):
         await interaction.followup.send(
             content="Alright setup done, you can now use the DonationLogger system."
         )
-        self.cog.setupcache.remove(self.context.guild.id)
+        self.remove_from_cache()
         self.stop()
 
     @discord.ui.button(emoji="✖️", style=nu.get_button_colour("red"))
     async def cancel_button(
         self, interaction: discord.Interaction[nu.Red], button: discord.ui.Button
     ):
+        self.remove_from_cache()
         self.stop()
-        self.cog.setupcache.remove(self.context.guild.id)
         await interaction.message.delete()
 
+    def remove_from_cache(self) -> None:
+        self.cog.setupcache.remove(
+            self.context.guild.id if self.context else self.interaction.guild.id
+        )
+
     async def on_timeout(self):
-        self.cog.setupcache.remove(self.context.guild.id)
+        self.remove_from_cache()
         return await super().on_timeout()
 
 
