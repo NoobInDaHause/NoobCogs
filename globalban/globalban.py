@@ -27,7 +27,7 @@ class GlobalBan(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.3.1",
+            version="1.3.2",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,

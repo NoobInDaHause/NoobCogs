@@ -29,8 +29,8 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | CookieClicker     |  v1.2.5   | Play a cookie clicker.                                       |
 | CustomError       |  v1.2.5   | Customize your bots error message.                           |
 | DevLogs           |  v1.1.1   | Keep a log of all that evals and debugs.                     |
-| DonationLogger    |  v1.12.7  | Donation Logger system.                                      |
-| GlobalBan         |  v1.3.1   | Globally ban a user from all the guilds the bot is in.       |
+| DonationLogger    |  v1.12.8  | Donation Logger system.                                      |
+| GlobalBan         |  v1.3.2   | Globally ban a user from all the guilds the bot is in.       |
 | GrinderLogger     |  v1.3.4   | GrinderLogger system.                                        |
 | JoinDM            |  v1.1.1   | DM newly joined users from your guild with your set message. |
 | NoobTools         |  v1.2.2   | NoobInDahause's personal tools.                              |

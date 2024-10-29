@@ -57,7 +57,7 @@ class DonationLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.12.7",
+            version="1.12.8",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=657668242451927167510,
