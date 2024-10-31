@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import discord.ext.tasks
 import noobutils as nu
 import random
 
@@ -22,7 +23,7 @@ class RandomColourRole(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.2",
+            version="1.2.3",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=128943761874,
@@ -51,11 +52,12 @@ class RandomColourRole(nu.Cog):
 
     async def cog_unload(self):
         self.log.info("Random Color Role task cancelled.")
-        await self.change_random_colour_role.cancel()
+        self.change_random_colour_role.cancel()
 
-    @nu.discord.ext.tasks.loop(minutes=5)
+    @discord.ext.tasks.loop(minutes=5)
     async def change_random_colour_role(self):
-        for k, v in ((await self.config.all_guilds()).copy()).items():
+        all_guilds = await self.config.all_guilds()
+        for k, v in all_guilds.items():
             await asyncio.sleep(2.5)
             if guild := self.bot.get_guild(k):
                 if v["status"] and v["role"]:

@@ -35,7 +35,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | JoinDM            |  v1.1.2   | DM newly joined users from your guild with your set message. |
 | NoobTools         |  v1.2.3   | NoobInDahause's personal tools.                              |
 | PressF            |  v1.2.2   | F.                                                           |
-| RandomColourRole  |  v1.2.2   | Have a role that changes colour every 5 minutes.             |
+| RandomColourRole  |  v1.2.3   | Have a role that changes colour every 5 minutes.             |
 | ServerDonations   |  v3.3.1   | Donate bot currencies or any other currencies to servers.    |
 | SplitOrSteal      |  v3.1.1   | A fun split or steal game.                                   |
 | Suggestions       |  v2.1.1   | Suggestion system.                                           |
