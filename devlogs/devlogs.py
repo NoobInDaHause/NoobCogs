@@ -1,9 +1,5 @@
 import datetime
-import discord
 import noobutils as nu
-
-from redbot.core.bot import commands, Red
-from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal
 
@@ -19,11 +15,11 @@ class DevLogs(nu.Cog):
     Originally and formerly from sravan but I got permission to maintain it now.
     """
 
-    def __init__(self, bot: Red, *args, **kwargs):
+    def __init__(self, bot: nu.Red, *args, **kwargs):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.1.1",
+            version="1.1.2",
             authors=["sravan", "NoobInDaHause"],
             use_config=True,
             identifier=0x2_412_214_4315312_9,
@@ -48,8 +44,8 @@ class DevLogs(nu.Cog):
                 index = b.index(user_id)
                 b.pop(index)
 
-    @commands.Cog.listener("on_command_completion")
-    async def on_command_completion(self, context: commands.Context) -> None:
+    @nu.commands.Cog.listener("on_command_completion")
+    async def on_command_completion(self, context: nu.commands.Context) -> None:
         """
         Log the command and send it to the channel.
         """
@@ -60,7 +56,7 @@ class DevLogs(nu.Cog):
         ):
             await self.send_log(context)
 
-    async def send_log(self, context: commands.Context) -> None:
+    async def send_log(self, context: nu.commands.Context) -> None:
         """
         sends a embed in the channel and also returns DM if the command was ran in Dms.
         """
@@ -71,9 +67,9 @@ class DevLogs(nu.Cog):
         content = context.message.content.replace("```", "")
         if content.startswith("```"):
             content = content.replace("```", "")
-        embed = discord.Embed(
+        embed = nu.discord.Embed(
             title=f"{context.command.name.upper()} Logs",
-            description=cf.box(content, lang="py"),
+            description=nu.cf.box(content, lang="py"),
             color=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc),
         )
@@ -99,20 +95,22 @@ class DevLogs(nu.Cog):
             inline=True,
         )
         try:
-            view = discord.ui.View()
+            view = nu.discord.ui.View()
             view.add_item(
-                discord.ui.Button(label="Jump To Command", url=context.message.jump_url)
+                nu.discord.ui.Button(
+                    label="Jump To Command", url=context.message.jump_url
+                )
             )
             await self.bot.get_channel(partialchannel).send(embed=embed, view=view)
-        except (discord.errors.Forbidden, discord.errors.HTTPException) as e:
+        except (nu.discord.errors.Forbidden, nu.discord.errors.HTTPException) as e:
             self.log.exception(
                 "Error occurred while sending eval/debug logs.", exc_info=e
             )
 
-    @commands.group(name="devlogset", aliases=["devset"])
-    @commands.guild_only()
-    @commands.is_owner()
-    async def devlogset(self, context: commands.Context) -> None:
+    @nu.commands.group(name="devlogset", aliases=["devset"])
+    @nu.commands.guild_only()
+    @nu.commands.is_owner()
+    async def devlogset(self, context: nu.commands.Context) -> None:
         """
         Configure DevLogs settings.
         """
@@ -120,7 +118,7 @@ class DevLogs(nu.Cog):
 
     @devlogset.command(name="channel", aliases=["chan"])
     async def devlogset_channel(
-        self, context: commands.Context, channel: discord.TextChannel = None
+        self, context: nu.commands.Context, channel: nu.discord.TextChannel = None
     ) -> None:
         """
         Set the channel to log to.
@@ -137,7 +135,7 @@ class DevLogs(nu.Cog):
         )
 
     @devlogset.group(name="bypass")
-    async def devlogset_bypass(self, context: commands.Context) -> None:
+    async def devlogset_bypass(self, context: nu.commands.Context) -> None:
         """
         Manage the bypass list.
         """
@@ -145,7 +143,7 @@ class DevLogs(nu.Cog):
 
     @devlogset_bypass.command(name="add", aliases=["+"])
     async def devlogset_bypass_add(
-        self, context: commands.Context, user: discord.User
+        self, context: nu.commands.Context, user: nu.discord.User
     ) -> None:
         """
         Add a user to the bypass list.
@@ -160,7 +158,7 @@ class DevLogs(nu.Cog):
 
     @devlogset_bypass.command(name="remove", aliases=["-"])
     async def devlogset_bypass_remove(
-        self, context: commands.Context, user: discord.User
+        self, context: nu.commands.Context, user: nu.discord.User
     ) -> None:
         """
         Remove a user from the bypass list.
@@ -174,7 +172,7 @@ class DevLogs(nu.Cog):
             await context.send(content=f"{user.mention} removed from the bypass list.")
 
     @devlogset_bypass.command(name="list")
-    async def devlogset_bypass_list(self, context: commands.Context) -> None:
+    async def devlogset_bypass_list(self, context: nu.commands.Context) -> None:
         """
         list the users in the bypass list.
         """
@@ -187,7 +185,7 @@ class DevLogs(nu.Cog):
             try:
                 user_obj = await context.bot.get_or_fetch_user(user)
                 users += f"` - ` {user_obj} (`{user_obj.id}`).\n"
-            except discord.errors.NotFound:
+            except nu.discord.errors.NotFound:
                 users += f"` - ` Unknown User (`{user}`).\n"
         text = f"Command executed by {context.author} |" " Page ({index}/{pages})"
         title = "A list of users that bypasses the DevLogs cog"

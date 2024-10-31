@@ -28,7 +28,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | AutomaticReaction |  v1.0.8   | Automatic emoji reactions.                                   |
 | CookieClicker     |  v1.2.5   | Play a cookie clicker.                                       |
 | CustomError       |  v1.2.5   | Customize your bots error message.                           |
-| DevLogs           |  v1.1.1   | Keep a log of all that evals and debugs.                     |
+| DevLogs           |  v1.1.2   | Keep a log of all that evals and debugs.                     |
 | DonationLogger    |  v1.12.8  | Donation Logger system.                                      |
 | GlobalBan         |  v1.3.2   | Globally ban a user from all the guilds the bot is in.       |
 | GrinderLogger     |  v1.3.4   | GrinderLogger system.                                        |
