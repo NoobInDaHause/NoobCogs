@@ -1,40 +1,35 @@
-import discord
 import noobutils as nu
 
-from redbot.core import commands
-
-from typing import TYPE_CHECKING, Union
+from typing import Self, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from . import PressF
-
 
 
 class PressFView(nu.NoobView):
     def __init__(
         self,
         *,
-        obj: Union[commands.Context, discord.Interaction[nu.Red]],
+        obj: Union[nu.commands.Context, nu.discord.Interaction[nu.Red]],
         cog: "PressF",
         thing: str,
-        timeout: float = 180
+        timeout: float = 180,
     ):
         super().__init__(obj=obj, timeout=timeout)
-        self.message: discord.Message = None
         self.cog = cog
         self.thing = thing
         self.paid_users = []
 
     async def start(self):
-        embed = discord.Embed(
+        embed = nu.discord.Embed(
             description=f"Everyone, let's pay our respects to **{self.thing}**!",
             colour=await self.context.embed_colour(),
         )
         self.message = await self.context.send(embed=embed, view=self)
 
-    @discord.ui.button(label="0")
+    @nu.discord.ui.button(label="0")
     async def press_f_button(
-        self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: nu.discord.Interaction, button: nu.discord.ui.Button[Self]
     ):
         if interaction.user.id in self.paid_users:
             return await interaction.response.send_message(
@@ -47,6 +42,11 @@ class PressFView(nu.NoobView):
             content=f"**{interaction.user}** has paid their respects."
         )
 
+    async def interaction_check(
+        self, interaction: nu.discord.Interaction[nu.Red]
+    ) -> bool:
+        return True
+
     async def on_timeout(self):
         for x in self.children:
             x.disabled = True
@@ -56,12 +56,12 @@ class PressFView(nu.NoobView):
         if len(self.paid_users) == 0:
             return await self.context.channel.send(
                 content=f"No one has paid respects to **{self.thing}**.",
-                allowed_mentions=discord.AllowedMentions.none(),
+                allowed_mentions=nu.discord.AllowedMentions.none(),
             )
         plural = "s" if len(self.paid_users) != 1 else ""
         await self.context.channel.send(
             content=f"**{len(self.paid_users)}** member{plural} has paid their respects to **{self.thing}**.",
-            allowed_mentions=discord.AllowedMentions.none(),
+            allowed_mentions=nu.discord.AllowedMentions.none(),
         )
         act_chan: list = self.cog.active_cache
         if self.context.channel.id in act_chan:
