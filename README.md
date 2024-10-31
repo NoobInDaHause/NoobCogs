@@ -33,7 +33,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | GlobalBan         |  v1.3.2   | Globally ban a user from all the guilds the bot is in.       |
 | GrinderLogger     |  v1.3.4   | GrinderLogger system.                                        |
 | JoinDM            |  v1.1.2   | DM newly joined users from your guild with your set message. |
-| NoobTools         |  v1.2.2   | NoobInDahause's personal tools.                              |
+| NoobTools         |  v1.2.3   | NoobInDahause's personal tools.                              |
 | PressF            |  v1.2.2   | F.                                                           |
 | RandomColourRole  |  v1.2.1   | Have a role that changes colour every 5 minutes.             |
 | ServerDonations   |  v3.3.1   | Donate bot currencies or any other currencies to servers.    |
