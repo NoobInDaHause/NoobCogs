@@ -1,12 +1,8 @@
 import asyncio
 import contextlib
-import discord
 import noobutils as nu
 import random
 
-from redbot.core.bot import commands, Red
-
-from discord.ext import tasks
 from typing import Literal
 
 
@@ -22,11 +18,11 @@ class RandomColourRole(nu.Cog):
     The role colour changes every 5 minutes or so depending on how many guilds the bot is in.
     """
 
-    def __init__(self, bot: Red, *args, **kwargs):
+    def __init__(self, bot: nu.Red, *args, **kwargs):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.1",
+            version="1.2.2",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=128943761874,
@@ -57,7 +53,7 @@ class RandomColourRole(nu.Cog):
         self.log.info("Random Color Role task cancelled.")
         await self.change_random_colour_role.cancel()
 
-    @tasks.loop(minutes=5)
+    @nu.discord.ext.tasks.loop(minutes=5)
     async def change_random_colour_role(self):
         for k, v in ((await self.config.all_guilds()).copy()).items():
             await asyncio.sleep(2.5)
@@ -73,19 +69,19 @@ class RandomColourRole(nu.Cog):
     async def change_random_colour_role_before_loop(self):
         await self.bot.wait_until_red_ready()
 
-    @commands.group(
+    @nu.commands.group(
         name="randomcolourroleset", aliases=["rcrset", "randomcolorroleset"]
     )
-    @commands.guild_only()
-    @commands.has_permissions(manage_guild=True)
-    async def randomcolourroleset(self, context: commands.Context):
+    @nu.commands.guild_only()
+    @nu.commands.has_permissions(manage_guild=True)
+    async def randomcolourroleset(self, context: nu.commands.Context):
         """
         Settings for the RandomColourRole cog.
         """
         pass
 
     @randomcolourroleset.command(name="reset")
-    async def randomcolourroleset_reset(self, context: commands.Context):
+    async def randomcolourroleset_reset(self, context: nu.commands.Context):
         """
         Reset the RandomColourRoles guild settings.
         """
@@ -101,8 +97,8 @@ class RandomColourRole(nu.Cog):
             await self.config.guild(context.guild).clear()
 
     @randomcolourroleset.command(name="resetcog")
-    @commands.is_owner()
-    async def randomcolourroleset_resetcog(self, context: commands.Context):
+    @nu.commands.is_owner()
+    async def randomcolourroleset_resetcog(self, context: nu.commands.Context):
         """
         Reset the RandomColourRole cogs whole config. (Bot owners only)
         """
@@ -119,9 +115,9 @@ class RandomColourRole(nu.Cog):
             await self.config.clear_all_guilds()
 
     @randomcolourroleset.command(name="role")
-    @commands.bot_has_permissions(manage_roles=True)
+    @nu.commands.bot_has_permissions(manage_roles=True)
     async def randomcolourroleset_role(
-        self, context: commands.Context, role: discord.Role = None
+        self, context: nu.commands.Context, role: nu.discord.Role = None
     ):
         """
         Set the guilds random colour role.
@@ -142,8 +138,8 @@ class RandomColourRole(nu.Cog):
         )
 
     @randomcolourroleset.command(name="status")
-    @commands.bot_has_permissions(manage_roles=True)
-    async def randomcolourroleset_status(self, context: commands.Context, state: bool):
+    @nu.commands.bot_has_permissions(manage_roles=True)
+    async def randomcolourroleset_status(self, context: nu.commands.Context, state: bool):
         """
         Toggle whether to enable or disable the RandomColourRole.
         """
@@ -152,16 +148,16 @@ class RandomColourRole(nu.Cog):
         await context.send(content=f"The randomcolourrole has been {status}.")
 
     @randomcolourroleset.command(name="showsettings", aliases=["ss"])
-    async def randomcolourroleset_showsettings(self, context: commands.Context):
+    async def randomcolourroleset_showsettings(self, context: nu.commands.Context):
         """
         See the current guild settings for the RandomColourRole.
         """
         settings = await self.config.guild(context.guild).all()
         role = context.guild.get_role(settings["role"])
-        embed = discord.Embed(
+        embed = nu.discord.Embed(
             title=f"Current RandomColourRole guild settings for {context.guild}",
             colour=await context.embed_colour(),
-            timestamp=discord.utils.utcnow(),
+            timestamp=nu.discord.utils.utcnow(),
         )
         embed.add_field(
             name="Role:", value=role.mention if role else "None", inline=False
