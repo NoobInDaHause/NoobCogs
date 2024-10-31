@@ -1,11 +1,7 @@
 import contextlib
 import datetime
-import discord
 import noobutils as nu
 import TagScriptEngine as tse
-
-from redbot.core.bot import commands, Red
-from redbot.core.utils import chat_formatting as cf
 
 from typing import Literal
 
@@ -20,11 +16,11 @@ class JoinDM(nu.Cog):
     This cog uses TagScriptEngine and requires you to know basic tagscript knowledge to use this cog.
     """
 
-    def __init__(self, bot: Red, *args, **kwargs):
+    def __init__(self, bot: nu.Red, *args, **kwargs):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.1.1",
+            version="1.1.2",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=947_123_432_421,
@@ -47,7 +43,7 @@ class JoinDM(nu.Cog):
             requester=requester, user_id=user_id
         )
 
-    async def dm_user(self, member: discord.Member, message: str):
+    async def dm_user(self, member: nu.discord.Member, message: str):
         tagengine = tse.AsyncInterpreter(
             blocks=[
                 tse.EmbedBlock(),
@@ -70,16 +66,16 @@ class JoinDM(nu.Cog):
                 "guild": tse.GuildAdapter(member.guild),
             },
         )
-        view = discord.ui.View()
+        view = nu.discord.ui.View()
         view.add_item(
-            discord.ui.Button(
+            nu.discord.ui.Button(
                 label=f"Sent from: {member.guild.name} ({member.guild.id}).",
                 disabled=True,
                 style=nu.get_button_colour("grey"),
             )
         )
         with contextlib.suppress(
-            discord.errors.Forbidden, discord.errors.HTTPException
+            nu.discord.errors.Forbidden, nu.discord.errors.HTTPException
         ):
             await member.send(
                 content=proccessed.body,
@@ -87,8 +83,8 @@ class JoinDM(nu.Cog):
                 view=view,
             )
 
-    @commands.Cog.listener("on_member_join")
-    async def on_member_join(self, member: discord.Member):
+    @nu.commands.Cog.listener("on_member_join")
+    async def on_member_join(self, member: nu.discord.Member):
         data = await self.config.guild(member.guild).all()
         if (
             not member.bot
@@ -98,17 +94,17 @@ class JoinDM(nu.Cog):
         ):
             await self.dm_user(member, data["message"])
 
-    @commands.group(name="joindmset", aliases=["jdmset"])
-    @commands.admin_or_permissions(manage_guild=True)
-    @commands.bot_has_permissions(embed_links=True)
-    async def joindmset(self, context: commands.Context):
+    @nu.commands.group(name="joindmset", aliases=["jdmset"])
+    @nu.commands.admin_or_permissions(manage_guild=True)
+    @nu.commands.bot_has_permissions(embed_links=True)
+    async def joindmset(self, context: nu.commands.Context):
         """
         Configure your joindm settings.
         """
         pass
 
     @joindmset.command(name="reset")
-    async def joindmset_reset(self, context: commands.Context):
+    async def joindmset_reset(self, context: nu.commands.Context):
         """
         Reset your current joindm guild settings.
         """
@@ -124,8 +120,8 @@ class JoinDM(nu.Cog):
             await self.config.guild(context.guild).clear()
 
     @joindmset.command(name="resetcog")
-    @commands.is_owner()
-    async def joindmset_resetcog(self, context: commands.Context):
+    @nu.commands.is_owner()
+    async def joindmset_resetcog(self, context: nu.commands.Context):
         """
         Reset the cogs whole configuration.
         """
@@ -142,7 +138,7 @@ class JoinDM(nu.Cog):
 
     @joindmset.command(name="message", aliases=["msg"])
     async def joindmset_message(
-        self, context: commands.Context, *, message: str = None
+        self, context: nu.commands.Context, *, message: str = None
     ):
         """
         Set the join dm message.
@@ -162,11 +158,11 @@ class JoinDM(nu.Cog):
 
         await self.config.guild(context.guild).message.set(message)
         await context.send(
-            content=f"Successfully set your joindm message to: {cf.box(message, 'py')}"
+            content=f"Successfully set your joindm message to: {nu.cf.box(message, 'py')}"
         )
 
     @joindmset.command(name="toggle")
-    async def joindmset_toggle(self, context: commands.Context):
+    async def joindmset_toggle(self, context: nu.commands.Context):
         """
         Toggle the joindm on or off.
         """
@@ -181,12 +177,12 @@ class JoinDM(nu.Cog):
         await context.send(content=f"I {status} DM newly joined users.")
 
     @joindmset.command(name="showsettings", aliases=["ss"])
-    async def joindmset_showsettings(self, context: commands.Context):
+    async def joindmset_showsettings(self, context: nu.commands.Context):
         """
         Show the currently joindm guild settings.
         """
         data = await self.config.guild(context.guild).all()
-        embed = discord.Embed(
+        embed = nu.discord.Embed(
             title=f"{context.guild}'s current guild settings",
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc),
@@ -194,6 +190,6 @@ class JoinDM(nu.Cog):
         embed.set_thumbnail(url=nu.is_have_avatar(context.guild))
         embed.add_field(name="Toggled:", value=data["toggled"], inline=False)
         embed.add_field(
-            name="Message:", value=cf.box(data["message"], "py"), inline=False
+            name="Message:", value=nu.cf.box(data["message"], "py"), inline=False
         )
         await context.send(embed=embed)
