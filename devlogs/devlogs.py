@@ -19,7 +19,7 @@ class DevLogs(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.1.2",
+            version="1.1.3",
             authors=["sravan", "NoobInDaHause"],
             use_config=True,
             identifier=0x2_412_214_4315312_9,
@@ -189,7 +189,7 @@ class DevLogs(nu.Cog):
                 users += f"` - ` Unknown User (`{user}`).\n"
         text = f"Command executed by {context.author} |" " Page ({index}/{pages})"
         title = "A list of users that bypasses the DevLogs cog"
-        final_page = await nu.pagify_this(
+        final_page = nu.pagify_this(
             users,
             ["` - `"],
             text,

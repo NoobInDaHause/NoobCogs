@@ -128,7 +128,7 @@ class SuggestionViewView(nu.NoobView):
             or ["No one has upvoted this suggestion yet."]
         )
 
-        pages = await nu.pagify_this(
+        pages = nu.pagify_this(
             du,
             ["\n"],
             "Page ({index}/{pages})",
@@ -157,7 +157,7 @@ class SuggestionViewView(nu.NoobView):
             or ["No one has upvoted this suggestion yet."]
         )
 
-        pages = await nu.pagify_this(
+        pages = nu.pagify_this(
             dv,
             ["\n"],
             "Page ({index}/{pages})",

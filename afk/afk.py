@@ -31,7 +31,7 @@ class Afk(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.6.14",
+            version="1.6.15",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=54646544526864548,
@@ -164,7 +164,7 @@ class Afk(nu.Cog):
                 final_log.append(logs)
 
             pinglist = "\n".join(final_log)
-            final_page = await nu.pagify_this(
+            final_page = nu.pagify_this(
                 pinglist,
                 ["` - `"],
                 "Page {index}/{pages}",
@@ -373,7 +373,7 @@ class Afk(nu.Cog):
             return await context.send(content="No members are AFK in this guild.")
 
         afk_users = "\n".join(afk_list)
-        final_page = await nu.pagify_this(
+        final_page = nu.pagify_this(
             afk_users,
             ["\n"],
             "Page {index}/{pages}",

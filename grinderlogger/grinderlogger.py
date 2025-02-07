@@ -47,7 +47,7 @@ class GrinderLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.3.4",
+            version="1.3.5",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -1011,7 +1011,7 @@ class GrinderLogger(nu.Cog):
 
         all_mem = await self.lb_whatever(context.guild, sort_by, all_m)
 
-        pagified = await nu.pagify_this(
+        pagified = nu.pagify_this(
             "\n\n".join(all_mem),
             ["\n\n"],
             embed_title=f"GrinderLogger Leaderboard for [{context.guild.name}]",

@@ -7,7 +7,7 @@ __red_end_user_data_statement__ = utils.get_end_user_data_statement_or_raise(__f
 
 
 async def setup(bot: nu.Red) -> None:
-    nu.version_check("1.11.9")
+    nu.version_check("1.12.2")
 
     if "Dev" not in bot.cogs:
         raise nu.CogLoadError(

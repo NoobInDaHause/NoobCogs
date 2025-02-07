@@ -38,7 +38,7 @@ class Timers(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="2.3.1",
+            version="2.3.2",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=65466546,
@@ -221,7 +221,7 @@ class Timers(nu.Cog):
             if _all
             else f"List of active timers in [{context.guild.name}]"
         )
-        return await nu.pagify_this(
+        return nu.pagify_this(
             "\n".join(timers or no_timers),
             ["\n"],
             embed_colour=self.bot._color,

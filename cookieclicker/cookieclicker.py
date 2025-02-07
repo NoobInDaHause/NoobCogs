@@ -21,7 +21,7 @@ class CookieClicker(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.5",
+            version="1.2.6",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=348468464655768,
@@ -94,7 +94,7 @@ class CookieClicker(nu.Cog):
             ]
         )
 
-        pages = await nu.pagify_this(
+        pages = nu.pagify_this(
             ctop,
             ["\n"],
             "Page ({index}/{pages})",

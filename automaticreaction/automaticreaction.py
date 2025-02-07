@@ -21,7 +21,7 @@ class AutomaticReaction(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.8",
+            version="1.0.9",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -125,7 +125,7 @@ class AutomaticReaction(nu.Cog):
             except commands.BadArgument:
                 string += f"{emoji}: `{word}`\n"
 
-        pagified = await nu.pagify_this(
+        pagified = nu.pagify_this(
             string,
             embed_title=f"List of automatic reactions for [{context.guild.name}]",
             embed_colour=self.bot._color,

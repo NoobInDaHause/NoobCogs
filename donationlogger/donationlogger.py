@@ -57,7 +57,7 @@ class DonationLogger(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.12.8",
+            version="1.12.9",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=657668242451927167510,
@@ -286,7 +286,7 @@ class DonationLogger(nu.Cog):
                 else f"{index}. [Member not found in guild] (`{k}`): **{nu.cf.humanize_number(v)}**"
             )
 
-        return await nu.pagify_this(
+        return nu.pagify_this(
             "\n".join(final),
             ["\n"],
             "".join([f"{context.guild.name}", " | Page ({index}/{pages})"]),
@@ -779,7 +779,7 @@ class DonationLogger(nu.Cog):
             ]
         )
 
-        paginated_output = await nu.pagify_this(
+        paginated_output = nu.pagify_this(
             output_text,
             ["\n"],
             "Page ({index}/{pages})",

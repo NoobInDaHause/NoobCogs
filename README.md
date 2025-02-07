@@ -24,22 +24,22 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 
 | Cog Name          |  Version  | Cog Description                                              |
 | ----------------- | --------- | ------------------------------------------------------------ |
-| Afk               |  v1.6.14  | Notify users whenever you go AFK with pings logging.         |
-| AutomaticReaction |  v1.0.8   | Automatic emoji reactions.                                   |
-| CookieClicker     |  v1.2.5   | Play a cookie clicker.                                       |
+| Afk               |  v1.6.15  | Notify users whenever you go AFK with pings logging.         |
+| AutomaticReaction |  v1.0.9   | Automatic emoji reactions.                                   |
+| CookieClicker     |  v1.2.6   | Play a cookie clicker.                                       |
 | CustomError       |  v1.2.5   | Customize your bots error message.                           |
-| DevLogs           |  v1.1.2   | Keep a log of all that evals and debugs.                     |
-| DonationLogger    |  v1.12.8  | Donation Logger system.                                      |
-| GlobalBan         |  v1.3.2   | Globally ban a user from all the guilds the bot is in.       |
-| GrinderLogger     |  v1.3.4   | GrinderLogger system.                                        |
+| DevLogs           |  v1.1.3   | Keep a log of all that evals and debugs.                     |
+| DonationLogger    |  v1.12.9  | Donation Logger system.                                      |
+| GlobalBan         |  v1.3.3   | Globally ban a user from all the guilds the bot is in.       |
+| GrinderLogger     |  v1.3.5   | GrinderLogger system.                                        |
 | JoinDM            |  v1.1.2   | DM newly joined users from your guild with your set message. |
 | NoobTools         |  v1.2.3   | NoobInDahause's personal tools.                              |
 | PressF            |  v1.2.2   | F.                                                           |
 | RandomColourRole  |  v1.2.3   | Have a role that changes colour every 5 minutes.             |
 | ServerDonations   |  v3.3.1   | Donate bot currencies or any other currencies to servers.    |
 | SplitOrSteal      |  v3.1.1   | A fun split or steal game.                                   |
-| Suggestions       |  v2.1.1   | Suggestion system.                                           |
-| Timers            |  v2.3.1   | Start a timer countdown.                                     |
+| Suggestions       |  v2.1.2   | Suggestion system.                                           |
+| Timers            |  v2.3.2   | Start a timer countdown.                                     |
 
 ## License
 

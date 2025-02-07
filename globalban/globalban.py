@@ -27,7 +27,7 @@ class GlobalBan(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.3.2",
+            version="1.3.3",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -143,7 +143,7 @@ class GlobalBan(nu.Cog):
 
         if errors:
             em = ", ".join(errors)
-            final_page = await nu.pagify_this(
+            final_page = nu.pagify_this(
                 em,
                 [", "],
                 "Page {index}/{pages}",
@@ -200,7 +200,7 @@ class GlobalBan(nu.Cog):
 
         if errors:
             em = ", ".join(errors)
-            final_page = await nu.pagify_this(
+            final_page = nu.pagify_this(
                 em,
                 [", "],
                 "Page {index}/{pages}",
@@ -342,7 +342,7 @@ class GlobalBan(nu.Cog):
                 users.append(l)
 
         banlist = "\n".join(users)
-        final_page = await nu.pagify_this(
+        final_page = nu.pagify_this(
             banlist,
             ["\n"],
             "Page {index}/{pages}",
@@ -399,7 +399,7 @@ class GlobalBan(nu.Cog):
             gl.append(l)
 
         banlogs = "\n\n".join(gl)
-        final_page = await nu.pagify_this(
+        final_page = nu.pagify_this(
             banlogs,
             ["> "],
             "Page {index}/{pages}",
