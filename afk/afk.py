@@ -31,7 +31,7 @@ class Afk(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.6.15",
+            version="1.6.16",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=54646544526864548,
@@ -138,12 +138,12 @@ class Afk(nu.Cog):
                         content="Could not change your nick cause you are the guild owner.",
                         delete_after=10,
                     )
-                    return
-                await channel.send(
-                    content="Could not change your nick due to role hierarchy or "
-                    "I'm missing the manage nicknames permission.",
-                    delete_after=10,
-                )
+                else:
+                    await channel.send(
+                        content="Could not change your nick due to role hierarchy or "
+                        "I'm missing the manage nicknames permission.",
+                        delete_after=10,
+                    )
             except discord.errors.HTTPException:
                 await channel.send(
                     content="It seems your nick name is too long for me to add '[AFK]' beside it."
@@ -167,7 +167,6 @@ class Afk(nu.Cog):
             final_page = nu.pagify_this(
                 pinglist,
                 ["` - `"],
-                "Page {index}/{pages}",
                 embed_title=f"You have recieved some pings while you were AFK, {user.display_name}.",
                 embed_colour=user.colour,
                 footer_icon=nu.is_have_avatar(user),
