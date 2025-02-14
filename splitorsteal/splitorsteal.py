@@ -26,7 +26,7 @@ class SplitOrSteal(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="3.1.1",
+            version="3.1.2",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -75,8 +75,8 @@ class SplitOrSteal(nu.Cog):
                 ephemeral=True,
             )
 
-        if context.prefix == "/":
-            await context.reply(
+        if context.interaction:
+            await context.interaction.response.send_message(
                 content="Successfully started a SplitOrSteal game.", ephemeral=True
             )
 
@@ -152,8 +152,8 @@ class SplitOrSteal(nu.Cog):
                 mention_author=False,
             )
 
-        if context.prefix == "/":
-            await context.reply(
+        if context.interaction:
+            await context.interaction.response.send_message(
                 content="Successfully started a SplitOrStealDuel game.", ephemeral=True
             )
 

@@ -37,7 +37,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | PressF            |  v1.2.2   | F.                                                           |
 | RandomColourRole  |  v1.2.3   | Have a role that changes colour every 5 minutes.             |
 | ServerDonations   |  v3.3.1   | Donate bot currencies or any other currencies to servers.    |
-| SplitOrSteal      |  v3.1.1   | A fun split or steal game.                                   |
+| SplitOrSteal      |  v3.1.2   | A fun split or steal game.                                   |
 | Suggestions       |  v2.1.2   | Suggestion system.                                           |
 | Timers            |  v2.3.2   | Start a timer countdown.                                     |
 

@@ -173,11 +173,11 @@ class SplitOrStealView(nu.NoobView):
         last_embed.add_field(name="Prize:", value=self.prize, inline=False)
         last_embed.add_field(name="Results:", value="".join(results), inline=False)
         await self.context.send(content=self.context.author.mention, embed=last_embed)
-        self.stop()
         if self.context.channel.id in self.cog.active_cache[str(self.context.guild.id)]:
             self.cog.active_cache[str(self.context.guild.id)].remove(
                 self.context.channel.id
             )
+        self.stop()
 
     async def update_embed(self):
         stat = []
@@ -269,10 +269,10 @@ class SplitOrStealView(nu.NoobView):
             self.cog.active_cache[str(self.context.guild.id)].remove(
                 self.context.channel.id
             )
-        self.stop()
         await self.message.edit(
             content="This SplitOrSteal game has timed out.", view=None, embed=None
         )
+        self.stop()
 
 
 class DuelView(nu.NoobView):
