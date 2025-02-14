@@ -26,7 +26,7 @@ class SplitOrSteal(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="3.1.2",
+            version="3.1.3",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,

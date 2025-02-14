@@ -10,7 +10,9 @@ if TYPE_CHECKING:
 
 
 class CookieClickerView(nu.NoobView):
-    def __init__(self, context: commands.Context, cog: "CookieClicker", timeout: float = 60.0):
+    def __init__(
+        self, context: commands.Context, cog: "CookieClicker", timeout: float = 60.0
+    ):
         super().__init__(obj=context, timeout=timeout)
         self.cog = cog
         self.message: discord.Message = None

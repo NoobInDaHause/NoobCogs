@@ -8,7 +8,7 @@ __red_end_user_data_statement__ = utils.get_end_user_data_statement_or_raise(__f
 
 
 async def setup(bot: bot.Red):
-    nu.version_check("1.12.2")
+    nu.version_check("1.12.3")
 
     cog = DonationLogger(bot)
     await bot.add_cog(cog)

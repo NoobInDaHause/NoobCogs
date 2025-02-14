@@ -19,7 +19,7 @@ class PressF(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.2.2",
+            version="1.2.3",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=5434354373844151563453,

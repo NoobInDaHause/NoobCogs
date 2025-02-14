@@ -142,8 +142,8 @@ class SuggestionViewView(nu.NoobView):
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         await interaction.response.defer()
-        self.stop()
         await self.message.delete()
+        self.stop()
 
     @discord.ui.button()
     async def DownVotesButton(
@@ -171,5 +171,5 @@ class SuggestionViewView(nu.NoobView):
         self.DownVotesButton.disabled = True
         self.UpVotesButton.disabled = True
         self.quit_button.disabled = True
-        self.stop()
         await self.message.edit(view=self)
+        self.stop()

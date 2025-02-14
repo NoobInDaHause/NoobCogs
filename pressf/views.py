@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import noobutils as nu
 
-from typing import Self, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from . import PressF
@@ -29,7 +31,7 @@ class PressFView(nu.NoobView):
 
     @nu.discord.ui.button(label="0")
     async def press_f_button(
-        self, interaction: nu.discord.Interaction, button: nu.discord.ui.Button[Self]
+        self, interaction: nu.discord.Interaction, button: nu.discord.ui.Button[PressFView]
     ):
         if interaction.user.id in self.paid_users:
             return await interaction.response.send_message(

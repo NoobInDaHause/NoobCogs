@@ -3,11 +3,18 @@ import noobutils as nu
 
 from redbot.core import commands
 
-from typing import Union
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from . import GlobalBan
 
 
 class GbanViewReset(nu.NoobView):
-    def __init__(self, obj: Union[commands.Context, discord.Interaction[nu.Red]], timeout: float = 60.0):
+    def __init__(
+        self,
+        obj: Union[commands.Context, discord.Interaction[nu.Red]],
+        timeout: float = 60.0,
+    ):
         super().__init__(obj=obj, timeout=timeout)
         self.message: discord.Message = None
 
@@ -30,8 +37,9 @@ class GbanViewReset(nu.NoobView):
         ],
     )
     async def select_callback(
-        self, interaction: discord.Interaction, select: discord.ui.Select
+        self, interaction: discord.Interaction[nu.Red], select: discord.ui.Select
     ):
+        cog: "GlobalBan" = interaction.client.get_cog("GlobalBan")
         for x in self.children:
             x.disabled = True
         await interaction.response.defer()
@@ -41,34 +49,40 @@ class GbanViewReset(nu.NoobView):
             confirm_msg = "Are you sure you want to reset the globalban banlist?"
             confirm_action = "Successfully resetted the globalban banlist."
 
-            confview = nu.NoobConfirmation(obj=interaction, confirm_action=confirm_action, timeout=30)
+            confview = nu.NoobConfirmation(
+                obj=interaction, confirm_action=confirm_action, timeout=30
+            )
             await confview.start(content=confirm_msg)
 
             await confview.wait()
 
             if confview.value:
-                await self.context.cog.config.banlist.clear()
+                await cog.config.banlist.clear()
 
         if select.values[0] == "Logs":
             confirm_msg = "Are you sure you want to reset the globalban banlogs?"
             confirm_action = "Successfully resetted the globalban banlogs."
-    
-            confview = nu.NoobConfirmation(obj=interaction, confirm_action=confirm_action, timeout=30)
+
+            confview = nu.NoobConfirmation(
+                obj=interaction, confirm_action=confirm_action, timeout=30
+            )
             await confview.start(content=confirm_msg)
 
             await confview.wait()
 
             if confview.value:
-                await self.context.cog.banlogs.clear()
+                await cog.config.banlogs.clear()
 
         if select.values[0] == "Cog":
             confirm_msg = "This will reset the globalban cogs whole configuration, do you want to continue?"
             confirm_action = "Successfully cleared the globalban cogs configuration."
 
-            confview = nu.NoobConfirmation(obj=interaction, confirm_action=confirm_action, timeout=30)
+            confview = nu.NoobConfirmation(
+                obj=interaction, confirm_action=confirm_action, timeout=30
+            )
             await confview.start(content=confirm_msg)
 
             await confview.wait()
 
             if confview.value:
-                await self.context.cog.config.clear_all()
+                await cog.config.clear_all()
