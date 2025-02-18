@@ -45,7 +45,7 @@ class StockMarket(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.2",
+            version="1.0.3",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -429,7 +429,7 @@ class StockMarket(nu.Cog):
         You can skip `new_name` argument if you are not editting a stock.
         You can skill all arguments if removing a stock.
         """
-        if not all([emoji, price, bankrupt]) and action == "add":
+        if None in [emoji, price, bankrupt] and action == "add":
             return await context.send(
                 content="All arguments are required for adding stocks except for `new_name`."
             )
