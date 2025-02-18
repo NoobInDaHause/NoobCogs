@@ -46,7 +46,7 @@ class StockMarket(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.0",
+            version="1.0.1",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -419,10 +419,10 @@ class StockMarket(nu.Cog):
         context: nu.commands.Context,
         action: t.Literal["add", "remove", "edit"],
         stock_name: str,
-        new_name: t.Optional[str] = None,
         emoji: nu.NoobEmojiConverter = None,
         price: int = None,
         bankrupt: bool = None,
+        new_name: str = None,
     ):
         """
         Add, Remove or Edit stocks.
