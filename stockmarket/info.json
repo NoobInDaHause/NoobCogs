@@ -1,0 +1,24 @@
+{
+    "name": "StockMarket",
+    "short": "Stock Market Simulation Cog.",
+    "description": "Trade stocks on discord! This cog requires Red's core economy and it is set to Global Mode.",
+    "end_user_data_statement": "This cog stores user ids for owned stocks purposes. Users can delete their data at any time.",
+    "install_msg": "Thank you for installing StockMarket. Load the cog with `[p]load stockmarket`.",
+    "author": [
+        "NoobInDaHause"
+    ],
+    "min_bot_version": "3.5.0",
+    "hidden": false,
+    "disabled": false,
+    "required_cogs": {},
+    "requirements": [
+        "quickchart-io",
+        "git+https://github.com/NoobInDaHause/noobutils.git"
+    ],
+    "tags": [
+        "Stock",
+        "Market",
+        "StockMarket"
+    ],
+    "type": "COG"
+}
