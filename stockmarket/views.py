@@ -76,7 +76,7 @@ class StockPaginatorView(nu.NoobPaginator):
         if stock.bankrupt:
             return await interaction.response.send_message(
                 content="Unfortunately this stock is bankrupt and it is no longer worth buying it.",
-                ephemeral=True
+                ephemeral=True,
             )
 
         modal = BuyOrSellModal(f"How many {stock_name} would you like to buy?")

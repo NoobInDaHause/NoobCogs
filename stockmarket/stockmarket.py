@@ -1,5 +1,4 @@
 import asyncio
-import contextlib
 import datetime
 import noobutils as nu
 import typing as t
@@ -46,7 +45,7 @@ class StockMarket(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.1",
+            version="1.0.2",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -428,10 +427,11 @@ class StockMarket(nu.Cog):
         Add, Remove or Edit stocks.
 
         You can skip `new_name` argument if you are not editting a stock.
+        You can skill all arguments if removing a stock.
         """
         if not all([emoji, price, bankrupt]) and action == "add":
             return await context.send(
-                content="All arguments are required for adding stocks except for `new_name_for_edit`."
+                content="All arguments are required for adding stocks except for `new_name`."
             )
         if action == "add":
             if nu.discord.utils.get(self.stocks, name=stock_name):
