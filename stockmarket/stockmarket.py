@@ -45,7 +45,7 @@ class StockMarket(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.0.3",
+            version="1.0.4",
             authors=["NoobInDaHause"],
             use_config=True,
             force_registration=True,
@@ -67,6 +67,11 @@ class StockMarket(nu.Cog):
         requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
+        """
+        This cog stores user ids for owned stocks purposes.
+
+        Users can delete their data at any time.
+        """
         await self.config.user_from_id(user_id).clear()
 
     async def to_config(self):
@@ -114,6 +119,8 @@ class StockMarket(nu.Cog):
                 if await bank.is_global():
                     for stock in self.stocks:
                         stock.update_price(self.next_date_run)
+
+                    await self.to_config()
                 else:
                     self.log.warning(
                         "Economy is not set to global! Please set it to global mode!"
@@ -467,7 +474,7 @@ class StockMarket(nu.Cog):
             if price:
                 stock.previous_price = stock.price
                 stock.price = price
-            if bankrupt:
+            if bankrupt is not None:
                 stock.bankrupt = bankrupt
             await context.send(content="Successfully editted that stock.")
         else:
