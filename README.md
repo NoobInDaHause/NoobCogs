@@ -36,7 +36,6 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | NoobTools         |  v1.2.3   | NoobInDahause's personal tools.                              |
 | PressF            |  v1.2.3   | F.                                                           |
 | RandomColourRole  |  v1.2.3   | Have a role that changes colour every 5 minutes.             |
-| ServerDonations   |  v3.3.2   | Donate bot currencies or any other currencies to servers.    |
 | SplitOrSteal      |  v3.1.3   | A fun split or steal game.                                   |
 | StockMarket       |  v1.0.4   | Stock Market Simulation Cog.                                 |
 | Suggestions       |  v2.1.3   | Suggestion system.                                           |
