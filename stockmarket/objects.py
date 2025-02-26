@@ -14,17 +14,21 @@ class StockObject:
         self.emoji: str = payload.get("emoji")
         self.previous_price: int = payload.get("previous_price")
         self.last_updated_timestamp: float = payload.get("last_updated_timestamp")
+        self._graph_url = payload.get("graph_url")
 
         # these things are just temporary
         self.price_history_time = []
         self.price_history = []
-        self.graph_url = (
-            "https://cdn.discordapp.com/attachments/1000751975308197918"
-            "/1335571235408707584/no_data_found.png"
-        )
 
     def __str__(self):
         return self.name
+
+    @property
+    def graph_url(self) -> str:
+        return self._graph_url or (
+            "https://cdn.discordapp.com/attachments/1000751975308197918"
+            "/1335571235408707584/no_data_found.png"
+        )
 
     @property
     def last_updated(self) -> t.Optional[datetime.datetime]:
@@ -69,7 +73,7 @@ class StockObject:
                 ],
             },
         }
-        self.graph_url = chart.get_url()
+        self._graph_url = chart.get_url()
 
     def update_price(self, date_time: datetime.datetime) -> None:
         if not self.bankrupt:
@@ -96,5 +100,6 @@ class StockObject:
                 "emoji": self.emoji,
                 "previous_price": self.previous_price,
                 "last_updated_timestamp": self.last_updated_timestamp,
+                "graph_url": self._graph_url,
             }
         }
