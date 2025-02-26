@@ -17,8 +17,8 @@ class StockObject:
         self._graph_url = payload.get("graph_url")
 
         # these things are just temporary
-        self.price_history_time = []
-        self.price_history = []
+        self.price_history_time = t.Deque()
+        self.price_history = t.Deque()
 
     def __str__(self):
         return self.name
@@ -59,14 +59,14 @@ class StockObject:
         chart.config = {
             "type": "line",
             "data": {
-                "labels": self.price_history_time[-24:],
+                "labels": list(self.price_history_time),
                 "datasets": [
                     {
                         "label": (
                             f"{self.name.title()} "
                             f"({self.last_updated.strftime('%A, %B %d, %Y')} UTC)"
                         ),
-                        "data": self.price_history[-24:],
+                        "data": list(self.price_history),
                         "fill": False,
                         "borderColor": "black",
                     },
@@ -77,19 +77,26 @@ class StockObject:
 
     def update_price(self, date_time: datetime.datetime) -> None:
         if not self.bankrupt:
-            self.price_history_time.append(date_time.strftime("%H:%M"))
             self.last_updated_timestamp = date_time.timestamp()
             self._percent = get_percent_number()
 
             self.previous_price = self.price
             new_price = round(self.price * self._percent)
             self.price = round(self.price + new_price)
-            self.price_history.append(self.price)
 
-            self.generate_graph_url()
             if self.price < 10:
                 self.price = 0
                 self.bankrupt = True
+
+            if len(self.price_history) >= 24:
+                self.price_history.popleft()
+            if len(self.price_history_time) >= 24:
+                self.price_history_time.popleft()
+
+            self.price_history_time.append(date_time.strftime("%H:%M"))
+            self.price_history.append(self.price)
+
+            self.generate_graph_url()
 
     def to_dict(self) -> dict:
         return {
