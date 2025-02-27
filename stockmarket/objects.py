@@ -42,7 +42,7 @@ class StockObject:
 
     @property
     def percent(self) -> str:
-        return f"+{self._percent:.0%}" if self._percent > 0 else f"{self._percent:.0%}"
+        return f"+{self._percent:.2%}" if self._percent > 0 else f"{self._percent:.2%}"
 
     @property
     def status(self) -> str:
@@ -76,27 +76,28 @@ class StockObject:
         self._graph_url = chart.get_url()
 
     def update_price(self, date_time: datetime.datetime) -> None:
-        if not self.bankrupt:
-            self.last_updated_timestamp = date_time.timestamp()
-            self._percent = get_percent_number()
+        if self.bankrupt:
+            return
+        self.last_updated_timestamp = date_time.timestamp()
+        self._percent = get_percent_number()
 
-            self.previous_price = self.price
-            new_price = round(self.price * self._percent)
-            self.price = round(self.price + new_price)
+        self.previous_price = self.price
+        new_price = self.price * self._percent
+        self.price = round(self.price + new_price)
 
-            if self.price < 10:
-                self.price = 0
-                self.bankrupt = True
+        if self.price < 10:
+            self.price = 0
+            self.bankrupt = True
 
-            if len(self.price_history) >= 24:
-                self.price_history.popleft()
-            if len(self.price_history_time) >= 24:
-                self.price_history_time.popleft()
+        if len(self.price_history) >= 24:
+            self.price_history.popleft()
+        if len(self.price_history_time) >= 24:
+            self.price_history_time.popleft()
 
-            self.price_history_time.append(date_time.strftime("%H:%M"))
-            self.price_history.append(self.price)
+        self.price_history_time.append(date_time.strftime("%H:%M"))
+        self.price_history.append(self.price)
 
-            self.generate_graph_url()
+        self.generate_graph_url()
 
     def to_dict(self) -> dict:
         return {
