@@ -20,8 +20,15 @@ class StockObject:
         self.price_history_time = t.Deque()
         self.price_history = t.Deque()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(name={self.name}, price={self.price}, percent={self._percent}, "
+            f"bankrupt={self.bankrupt}, emoji={self.emoji}, previous_price={self.previous_price}, "
+            f"last_updated_timestamp={self.last_updated_timestamp})"
+        )
 
     @property
     def graph_url(self) -> str:
@@ -42,7 +49,7 @@ class StockObject:
 
     @property
     def percent(self) -> str:
-        return f"+{self._percent:.2%}" if self._percent > 0 else f"{self._percent:.2%}"
+        return f"+{self._percent:.1%}" if self._percent > 0 else f"{self._percent:.1%}"
 
     @property
     def status(self) -> str:

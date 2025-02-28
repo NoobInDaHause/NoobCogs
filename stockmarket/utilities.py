@@ -12,7 +12,7 @@ def float_generator(start: float, stop: float, step: float):
 
 
 def get_percent_number() -> float:
-    return random.choice(list(float_generator(0.0001, 0.1001, 0.0001))) * random.choice(
+    return random.choice(list(float_generator(0.01, 0.101, 0.001))) * random.choice(
         [-1, 1]
     )
 
