@@ -2,8 +2,7 @@ import contextlib
 import datetime
 import noobutils as nu
 import TagScriptEngine as tse
-
-from typing import Literal
+import typing as t
 
 
 DEFAULT_GUILD = {"message": None, "toggled": False}
@@ -20,7 +19,7 @@ class JoinDM(nu.Cog):
         super().__init__(
             bot=bot,
             cog_name=self.__class__.__name__,
-            version="1.1.2",
+            version="1.1.3",
             authors=["NoobInDaHause"],
             use_config=True,
             identifier=947_123_432_421,
@@ -29,22 +28,7 @@ class JoinDM(nu.Cog):
             **kwargs,
         )
         self.config.register_guild(**DEFAULT_GUILD)
-
-    async def red_delete_data_for_user(
-        self,
-        *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
-        user_id: int,
-    ):
-        """
-        This cog does not store any end user data whatsoever.
-        """
-        return await super().red_delete_data_for_user(
-            requester=requester, user_id=user_id
-        )
-
-    async def dm_user(self, member: nu.discord.Member, message: str):
-        tagengine = tse.AsyncInterpreter(
+        self.tagengine = tse.AsyncInterpreter(
             blocks=[
                 tse.EmbedBlock(),
                 tse.LooseVariableGetterBlock(),
@@ -59,20 +43,27 @@ class JoinDM(nu.Cog):
                 tse.PythonBlock(),
             ]
         )
-        proccessed = await tagengine.process(
+
+    async def red_delete_data_for_user(
+        self,
+        *,
+        requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
+    ):
+        """
+        This cog does not store any end user data whatsoever.
+        """
+        return await super().red_delete_data_for_user(
+            requester=requester, user_id=user_id
+        )
+
+    async def dm_user(self, member: nu.discord.Member, message: str):
+        proccessed = await self.tagengine.process(
             message=message,
             seed_variables={
                 "member": tse.MemberAdapter(member),
                 "guild": tse.GuildAdapter(member.guild),
             },
-        )
-        view = nu.discord.ui.View()
-        view.add_item(
-            nu.discord.ui.Button(
-                label=f"Sent from: {member.guild.name} ({member.guild.id}).",
-                disabled=True,
-                style=nu.get_button_colour("grey"),
-            )
         )
         with contextlib.suppress(
             nu.discord.errors.Forbidden, nu.discord.errors.HTTPException
@@ -80,11 +71,17 @@ class JoinDM(nu.Cog):
             await member.send(
                 content=proccessed.body,
                 embed=proccessed.actions.get("embed"),
-                view=view,
+                view=nu.discord.ui.View().add_item(
+                    nu.discord.ui.Button(
+                        label=f"Sent from: {member.guild.name} ({member.guild.id}).",
+                        disabled=True,
+                        style=nu.get_button_colour("grey"),
+                    )
+                ),
             )
 
-    @nu.commands.Cog.listener("on_member_join")
-    async def on_member_join(self, member: nu.discord.Member):
+    @nu.listener("on_member_join")
+    async def dm_on_join(self, member: nu.discord.Member):
         data = await self.config.guild(member.guild).all()
         if (
             not member.bot
@@ -94,7 +91,7 @@ class JoinDM(nu.Cog):
         ):
             await self.dm_user(member, data["message"])
 
-    @nu.commands.group(name="joindmset", aliases=["jdmset"])
+    @nu.group(name="joindmset", aliases=["jdmset"])
     @nu.commands.admin_or_permissions(manage_guild=True)
     @nu.commands.bot_has_permissions(embed_links=True)
     async def joindmset(self, context: nu.commands.Context):
@@ -166,11 +163,6 @@ class JoinDM(nu.Cog):
         """
         Toggle the joindm on or off.
         """
-        if not await self.config.guild(context.guild).message():
-            return await context.send(
-                content="Setup a joindm message first before turning the joindm on."
-            )
-
         current = await self.config.guild(context.guild).toggled()
         await self.config.guild(context.guild).toggled.set(not current)
         status = "will not" if current else "will now"
