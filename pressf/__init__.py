@@ -1,13 +1,12 @@
 import noobutils as nu
-import redbot.core.utils as utils
 
 from .pressf import PressF
 
-__red_end_user_data_statement__ = utils.get_end_user_data_statement(__file__)
+__red_end_user_data_statement__ = nu.get_eud(__file__)
 
 
 async def setup(bot: nu.Red):
-    nu.version_check("1.12.3")
+    nu.version_check("1.13.0")
 
-    cog = PressF(bot)
+    cog = PressF(bot=bot)
     await bot.add_cog(cog)

@@ -15,12 +15,12 @@ class JoinDM(nu.Cog):
     This cog uses TagScriptEngine and requires you to know basic tagscript knowledge to use this cog.
     """
 
-    def __init__(self, bot: nu.Red, *args, **kwargs):
+    __version__ = "1.1.3"
+    __authors__ = ["NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="1.1.3",
-            authors=["NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             identifier=947_123_432_421,
             force_registration=True,

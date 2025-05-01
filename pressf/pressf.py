@@ -15,12 +15,12 @@ class PressF(nu.Cog):
     Press F to pay respect on something using buttons.
     """
 
-    def __init__(self, bot: nu.Red, *args, **kwargs) -> None:
+    __version__ = "1.2.4"
+    __authors__ = ["NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="1.2.3",
-            authors=["NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             identifier=5434354373844151563453,
             force_registration=True,

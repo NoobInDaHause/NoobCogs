@@ -23,12 +23,12 @@ class Afk(nu.Cog):
     Be afk and notify users who ping you with a reason of your choice.
     """
 
-    def __init__(self, bot: nu.Red, *args, **kwargs):
+    __version__ = "1.7.0"
+    __authors__ = ["NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="1.7.0",
-            authors=["NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             identifier=54646544526864548,
             force_registration=True,

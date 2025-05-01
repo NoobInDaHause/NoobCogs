@@ -31,7 +31,9 @@ class PressFView(nu.NoobView):
 
     @nu.discord.ui.button(label="0")
     async def press_f_button(
-        self, interaction: nu.discord.Interaction, button: nu.discord.ui.Button[PressFView]
+        self,
+        interaction: nu.discord.Interaction,
+        button: nu.discord.ui.Button[PressFView],
     ):
         if interaction.user.id in self.paid_users:
             return await interaction.response.send_message(
@@ -44,9 +46,7 @@ class PressFView(nu.NoobView):
             content=f"**{interaction.user}** has paid their respects."
         )
 
-    async def interaction_check(
-        self, interaction: nu.discord.Interaction[nu.Red]
-    ) -> bool:
+    async def interaction_check(self, _: nu.discord.Interaction[nu.Red]) -> bool:
         return True
 
     async def on_timeout(self):

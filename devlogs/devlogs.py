@@ -15,12 +15,12 @@ class DevLogs(nu.Cog):
     Originally and formerly from sravan but I got permission to maintain it now.
     """
 
-    def __init__(self, bot: nu.Red, *args, **kwargs):
+    __version__ = "1.1.4"
+    __authors__ = ["sravan", "NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="1.1.3",
-            authors=["sravan", "NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             identifier=0x2_412_214_4315312_9,
             force_registration=True,
