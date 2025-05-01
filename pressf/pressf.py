@@ -1,6 +1,5 @@
 import noobutils as nu
-
-from typing import Literal
+import typing as t
 
 from .views import PressFView
 
@@ -33,7 +32,7 @@ class PressF(nu.Cog):
     async def red_delete_data_for_user(
         self,
         *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
         """
@@ -43,12 +42,11 @@ class PressF(nu.Cog):
             requester=requester, user_id=user_id
         )
 
-    @nu.commands.hybrid_command(name="pressf")
+    @nu.hybrid_command(name="pressf")
     @nu.commands.guild_only()
     @nu.commands.bot_has_permissions(embed_links=True, use_external_emojis=True)
-    @nu.app_commands.guild_only()
     @nu.app_commands.describe(thing="The thing that you want to pay respects to.")
-    async def pressf(self, context: nu.commands.Context, *, thing: str):
+    async def pressf(self, context: nu.Context, *, thing: str):
         """
         Pay respects on something.
         """
@@ -64,11 +62,11 @@ class PressF(nu.Cog):
         view.press_f_button.style = nu.get_button_colour(c)
         await view.start()
 
-    @nu.commands.group(name="pressfset")
+    @nu.group(name="pressfset")
     @nu.commands.guild_only()
     @nu.commands.admin_or_permissions(manage_guild=True)
     @nu.commands.bot_has_permissions(use_external_emojis=True)
-    async def pressfset(self, context: nu.commands.Context):
+    async def pressfset(self, context: nu.Context):
         """
         Configure the cogs settings.
         """
@@ -76,7 +74,7 @@ class PressF(nu.Cog):
 
     @pressfset.command(name="emoji")
     async def pressfset_emoji(
-        self, context: nu.commands.Context, emoji: nu.NoobEmojiConverter = None
+        self, context: nu.Context, emoji: nu.NoobEmojiConverter = None
     ):
         """
         Change the F emoji.
@@ -92,8 +90,8 @@ class PressF(nu.Cog):
     @pressfset.command(name="buttoncolour", aliases=["buttoncolor"])
     async def pressfset_buttoncolour(
         self,
-        context: nu.commands.Context,
-        colour: Literal["red", "green", "blurple", "grey"] = None,
+        context: nu.Context,
+        colour: t.Literal["red", "green", "blurple", "grey"] = None,
     ):
         """
         Change the Press F button colour.
@@ -112,7 +110,7 @@ class PressF(nu.Cog):
 
     @pressfset.command(name="resetcog")
     @nu.commands.is_owner()
-    async def pressfset_resetcog(self, context: nu.commands.Context):
+    async def pressfset_resetcog(self, context: nu.Context):
         """
         Reset the cogs configuration.
         """
@@ -128,7 +126,7 @@ class PressF(nu.Cog):
             await self.config.clear_all()
 
     @pressfset.command(name="reset")
-    async def pressfset_reset(self, context: nu.commands.Context):
+    async def pressfset_reset(self, context: nu.Context):
         """
         Reset the Press F current guild settings to default.
         """

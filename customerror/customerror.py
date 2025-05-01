@@ -1,14 +1,9 @@
 import contextlib
 import datetime
-import discord
 import noobutils as nu
 import TagScriptEngine as tse
 import traceback
-
-from redbot.core.bot import commands, Red
-from redbot.core.utils import chat_formatting as cf
-
-from typing import Literal
+import typing as t
 
 
 DEFAULT_GLOBAL = {
@@ -25,12 +20,12 @@ class CustomError(nu.Cog):
     Credits to sitryk and phen for some of the code.
     """
 
-    def __init__(self, bot: Red, *args, **kwargs):
+    __version__ = "1.2.6"
+    __authors__ = ["NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="1.2.5",
-            authors=["NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             identifier=9874825374237,
             force_registration=True,
@@ -39,12 +34,12 @@ class CustomError(nu.Cog):
         )
         self.config.register_global(**DEFAULT_GLOBAL)
         self.old_error = self.bot.on_command_error
-        bot.on_command_error = self.on_command_error
+        self.bot.on_command_error = self.on_command_error
 
     async def red_delete_data_for_user(
         self,
         *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
         """
@@ -58,8 +53,8 @@ class CustomError(nu.Cog):
     # modified to work with tagscriptengine and my code
     async def on_command_error(
         self,
-        ctx: commands.Context,
-        error: commands.CommandError,
+        ctx: nu.Context,
+        error: nu.commands.CommandError,
         unhandled_by_cog: bool = False,
     ):
         context = ctx
@@ -79,7 +74,7 @@ class CustomError(nu.Cog):
                 tse.PythonBlock(),
             ]
         )
-        if not isinstance(error, commands.CommandInvokeError):
+        if not isinstance(error, nu.commands.CommandInvokeError):
             await self.old_error(context, error, unhandled_by_cog)
         else:
             to_convert = {
@@ -107,22 +102,23 @@ class CustomError(nu.Cog):
             context.bot._last_exception = exception_log
 
             with contextlib.suppress(
-                discord.errors.Forbidden, discord.errors.HTTPException
+                nu.discord.errors.Forbidden, nu.discord.errors.HTTPException
             ):
                 await context.send(
                     content=processed.body,
                     embed=processed.actions.get("embed"),
-                    allowed_mentions=discord.AllowedMentions(
+                    allowed_mentions=nu.discord.AllowedMentions(
                         users=True, roles=False, everyone=False
                     ),
                 )
 
     async def cog_unload(self):
+        await super().cog_unload()
         self.bot.on_command_error = self.old_error
 
-    @commands.group(name="customerror")
-    @commands.is_owner()
-    async def customerror(self, context: commands.Context):
+    @nu.group(name="customerror")
+    @nu.commands.is_owner()
+    async def customerror(self, context: nu.Context):
         """
         Base commands for customizing the bots error message.
 
@@ -131,9 +127,7 @@ class CustomError(nu.Cog):
         pass
 
     @customerror.command(name="message")
-    async def customerror_message(
-        self, context: commands.Context, *, message: str = None
-    ):
+    async def customerror_message(self, context: nu.Context, *, message: str = None):
         """
         Customize [botname]'s error message.
 
@@ -166,11 +160,11 @@ class CustomError(nu.Cog):
 
         await self.config.error_msg.set(message)
         await context.send(
-            content=f"The error message has been set to: {cf.box(message, 'py')}"
+            content=f"The error message has been set to: {nu.cf.box(message, 'py')}"
         )
 
     @customerror.command(name="plzerror")
-    async def customerror_plzerror(self, context: commands.Context):
+    async def customerror_plzerror(self, context: nu.Context):
         """
         Test the bots error message.
 
@@ -183,7 +177,7 @@ class CustomError(nu.Cog):
         raise NotImplementedError("This is a test error.")
 
     @customerror.command(name="reset")
-    async def customerror_reset(self, context: commands.Context):
+    async def customerror_reset(self, context: nu.Context):
         """
         Reset the cogs settings.
 
@@ -201,16 +195,16 @@ class CustomError(nu.Cog):
             await self.config.clear_all()
 
     @customerror.command(name="showsettings", aliases=["ss"])
-    async def customerror_showsettings(self, context: commands.Context):
+    async def customerror_showsettings(self, context: nu.Context):
         """
         See your current settings for the CustomError cog.
 
         Bot owners only.
         """
         settings = await self.config.error_msg()
-        embed = discord.Embed(
+        embed = nu.discord.Embed(
             title="Current error message",
-            description=cf.box(settings, "py"),
+            description=nu.cf.box(settings, "py"),
             colour=await context.embed_colour(),
             timestamp=datetime.datetime.now(datetime.timezone.utc),
         )

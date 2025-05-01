@@ -1,11 +1,7 @@
 import contextlib
-import discord
 import noobutils as nu
 import re
-
-from redbot.core.bot import commands, Red
-
-from typing import Literal
+import typing as t
 
 DEFAULT_GUILD = {"autoreactions": {}}
 
@@ -17,12 +13,12 @@ class AutomaticReaction(nu.Cog):
     Add words that get automatically reacted by the bot with any emoji.
     """
 
-    def __init__(self, bot: Red, *args, **kwargs):
+    __version__ = "1.0.10"
+    __authors__ = ["NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="1.0.9",
-            authors=["NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             force_registration=True,
             *args,
@@ -33,7 +29,7 @@ class AutomaticReaction(nu.Cog):
     async def red_delete_data_for_user(
         self,
         *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
         return await super().red_delete_data_for_user(
@@ -45,13 +41,13 @@ class AutomaticReaction(nu.Cog):
         pattern = re.escape(word)
         return bool(re.search(pattern, string))
 
-    @commands.Cog.listener(name="on_message")
-    async def auto_reaction_listener(self, message: discord.Message):
+    @nu.listener(name="on_message")
+    async def auto_reaction_listener(self, message: nu.discord.Message):
         if (
             not message.guild
             or await self.bot.cog_disabled_in_guild(self, message.guild)
             or not message.channel.permissions_for(message.guild.me).add_reactions
-            or isinstance(message.author, discord.User)
+            or isinstance(message.author, nu.discord.User)
             or not message.content
         ):
             return
@@ -60,28 +56,29 @@ class AutomaticReaction(nu.Cog):
         for word, emoji in ar.items():
             if self.contains_word(message.content, word):
                 with contextlib.suppress(
-                    discord.errors.HTTPException, discord.errors.Forbidden
+                    nu.discord.errors.HTTPException, nu.discord.errors.Forbidden
                 ):
                     await message.add_reaction(emoji)
 
-    @commands.group(name="automaticreaction", aliases=["autoreact"])
-    @commands.bot_has_permissions(embed_links=True)
-    @commands.mod_or_permissions(manage_guild=True)
-    async def automaticreaction(self, context: commands.Context):
+    @nu.group(name="automaticreaction", aliases=["autoreact"])
+    @nu.commands.bot_has_permissions(embed_links=True)
+    @nu.commands.mod_or_permissions(manage_guild=True)
+    async def automaticreaction(self, context: nu.Context):
         """
         Base commands for automatic reaction cog.
         """
         pass
 
     @automaticreaction.command(name="add")
-    @commands.bot_has_permissions(add_reactions=True)
+    @nu.commands.bot_has_permissions(add_reactions=True)
     async def automaticreaction_add(
-        self, context: commands.Context, emoji: nu.NoobEmojiConverter, *, word: str
+        self, context: nu.Context, emoji: nu.NoobEmojiConverter, *, word: str
     ):
         """
         Add an automatic reaction.
         """
-        async with self.config.guild(context.guild).autoreactions() as ar:
+        async with self.config.guild(context.guild).autoreactions() as _ar:
+            ar: dict = _ar
             if ar.get(word):
                 return await context.send(
                     content="That word seems to already have an automatic reaction on it."
@@ -92,11 +89,12 @@ class AutomaticReaction(nu.Cog):
         )
 
     @automaticreaction.command(name="remove")
-    async def automaticreaction_remove(self, context: commands.Context, *, word: str):
+    async def automaticreaction_remove(self, context: nu.Context, *, word: str):
         """
         Remove an automatic reaction.
         """
-        async with self.config.guild(context.guild).autoreactions() as ar:
+        async with self.config.guild(context.guild).autoreactions() as _ar:
+            ar: dict = _ar
             if not ar.get(word):
                 return await context.send(
                     content="That word does not have any automatic reactions set."
@@ -107,7 +105,7 @@ class AutomaticReaction(nu.Cog):
         )
 
     @automaticreaction.command(name="list")
-    async def automaticreaction_list(self, context: commands.Context):
+    async def automaticreaction_list(self, context: nu.Context):
         """
         See the list of automatic reactions.
         """
@@ -122,33 +120,34 @@ class AutomaticReaction(nu.Cog):
                     string += f"{emoji} **{_id}**: `{word}`\n"
                 else:
                     string += f"{emoji}: `{word}`\n"
-            except commands.BadArgument:
+            except nu.commands.BadArgument:
                 string += f"{emoji}: `{word}`\n"
 
         pagified = nu.pagify_this(
             string,
             embed_title=f"List of automatic reactions for [{context.guild.name}]",
             embed_colour=self.bot._color,
-            embed_timestamp=discord.utils.utcnow(),
+            embed_timestamp=nu.discord.utils.utcnow(),
             embed_thumbnail=nu.is_have_avatar(context.guild),
         )
         await nu.NoobPaginator(obj=context, pages=pagified).start()
 
     @automaticreaction.command(name="clearremoved")
-    @commands.admin_or_permissions(manage_guild=True)
-    async def automaticreaction_clearremoved(self, context: commands.Context):
+    @nu.commands.admin_or_permissions(manage_guild=True)
+    async def automaticreaction_clearremoved(self, context: nu.Context):
         """
         Clear all the emojis that are no longer available.
         """
         async with context.typing():
-            async with self.config.guild(context.guild).autoreactions() as ar:
+            async with self.config.guild(context.guild).autoreactions() as _ar:
+                ar: dict = _ar
                 copied = ar.copy()
                 for word, emoji in copied.items():
                     try:
                         e = await nu.NoobEmojiConverter().convert(context, emoji)
                         if not getattr(e, "available", True):
                             ar.pop(word)
-                    except commands.BadArgument:
+                    except nu.commands.BadArgument:
                         ar.pop(word)
 
             await context.send(
@@ -156,8 +155,8 @@ class AutomaticReaction(nu.Cog):
             )
 
     @automaticreaction.command(name="resetguild")
-    @commands.admin_or_permissions(manage_guild=True)
-    async def automaticreaction_resetguild(self, context: commands.Context):
+    @nu.commands.admin_or_permissions(manage_guild=True)
+    async def automaticreaction_resetguild(self, context: nu.Context):
         """
         Reset the automatic reactions for this guild.
         """
@@ -173,8 +172,8 @@ class AutomaticReaction(nu.Cog):
             await self.config.guild(context.guild).clear()
 
     @automaticreaction.command(name="resetcog")
-    @commands.is_owner()
-    async def automaticreaction_resetcog(self, context: commands.Context):
+    @nu.commands.is_owner()
+    async def automaticreaction_resetcog(self, context: nu.Context):
         """
         Reset the automaticreaction cog config.
         """

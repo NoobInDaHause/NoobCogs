@@ -94,14 +94,14 @@ class JoinDM(nu.Cog):
     @nu.group(name="joindmset", aliases=["jdmset"])
     @nu.commands.admin_or_permissions(manage_guild=True)
     @nu.commands.bot_has_permissions(embed_links=True)
-    async def joindmset(self, context: nu.commands.Context):
+    async def joindmset(self, context: nu.Context):
         """
         Configure your joindm settings.
         """
         pass
 
     @joindmset.command(name="reset")
-    async def joindmset_reset(self, context: nu.commands.Context):
+    async def joindmset_reset(self, context: nu.Context):
         """
         Reset your current joindm guild settings.
         """
@@ -118,7 +118,7 @@ class JoinDM(nu.Cog):
 
     @joindmset.command(name="resetcog")
     @nu.commands.is_owner()
-    async def joindmset_resetcog(self, context: nu.commands.Context):
+    async def joindmset_resetcog(self, context: nu.Context):
         """
         Reset the cogs whole configuration.
         """
@@ -135,7 +135,7 @@ class JoinDM(nu.Cog):
 
     @joindmset.command(name="message", aliases=["msg"])
     async def joindmset_message(
-        self, context: nu.commands.Context, *, message: str = None
+        self, context: nu.Context, *, message: str = None
     ):
         """
         Set the join dm message.
@@ -159,7 +159,7 @@ class JoinDM(nu.Cog):
         )
 
     @joindmset.command(name="toggle")
-    async def joindmset_toggle(self, context: nu.commands.Context):
+    async def joindmset_toggle(self, context: nu.Context):
         """
         Toggle the joindm on or off.
         """
@@ -169,7 +169,7 @@ class JoinDM(nu.Cog):
         await context.send(content=f"I {status} DM newly joined users.")
 
     @joindmset.command(name="showsettings", aliases=["ss"])
-    async def joindmset_showsettings(self, context: nu.commands.Context):
+    async def joindmset_showsettings(self, context: nu.Context):
         """
         Show the currently joindm guild settings.
         """

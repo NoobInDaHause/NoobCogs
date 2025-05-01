@@ -13,5 +13,4 @@ async def setup(bot: nu.Red) -> None:
             "This cog requires the bot to be started with the `--dev` flag."
         )
 
-    cog = DevLogs(bot=bot)
-    await bot.add_cog(cog)
+    await bot.add_cog(DevLogs(bot=bot))

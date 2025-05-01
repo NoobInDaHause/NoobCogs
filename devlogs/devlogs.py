@@ -1,7 +1,6 @@
 import datetime
 import noobutils as nu
-
-from typing import Literal
+import typing as t
 
 
 DEFAULT_GLOBAL = {"default_channel": None, "bypass": []}
@@ -32,7 +31,7 @@ class DevLogs(nu.Cog):
     async def red_delete_data_for_user(
         self,
         *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
         """
@@ -44,8 +43,8 @@ class DevLogs(nu.Cog):
                 index = b.index(user_id)
                 b.pop(index)
 
-    @nu.commands.Cog.listener("on_command_completion")
-    async def on_command_completion(self, context: nu.commands.Context) -> None:
+    @nu.listener("on_command_completion")
+    async def on_command_completion(self, context: nu.Context) -> None:
         """
         Log the command and send it to the channel.
         """
@@ -56,7 +55,7 @@ class DevLogs(nu.Cog):
         ):
             await self.send_log(context)
 
-    async def send_log(self, context: nu.commands.Context) -> None:
+    async def send_log(self, context: nu.Context) -> None:
         """
         sends a embed in the channel and also returns DM if the command was ran in Dms.
         """
@@ -107,10 +106,10 @@ class DevLogs(nu.Cog):
                 "Error occurred while sending eval/debug logs.", exc_info=e
             )
 
-    @nu.commands.group(name="devlogset", aliases=["devset"])
+    @nu.group(name="devlogset", aliases=["devset"])
     @nu.commands.guild_only()
     @nu.commands.is_owner()
-    async def devlogset(self, context: nu.commands.Context) -> None:
+    async def devlogset(self, context: nu.Context) -> None:
         """
         Configure DevLogs settings.
         """
@@ -118,7 +117,7 @@ class DevLogs(nu.Cog):
 
     @devlogset.command(name="channel", aliases=["chan"])
     async def devlogset_channel(
-        self, context: nu.commands.Context, channel: nu.discord.TextChannel = None
+        self, context: nu.Context, channel: nu.discord.TextChannel = None
     ) -> None:
         """
         Set the channel to log to.
@@ -135,7 +134,7 @@ class DevLogs(nu.Cog):
         )
 
     @devlogset.group(name="bypass")
-    async def devlogset_bypass(self, context: nu.commands.Context) -> None:
+    async def devlogset_bypass(self, context: nu.Context) -> None:
         """
         Manage the bypass list.
         """
@@ -143,7 +142,7 @@ class DevLogs(nu.Cog):
 
     @devlogset_bypass.command(name="add", aliases=["+"])
     async def devlogset_bypass_add(
-        self, context: nu.commands.Context, user: nu.discord.User
+        self, context: nu.Context, user: nu.discord.User
     ) -> None:
         """
         Add a user to the bypass list.
@@ -158,7 +157,7 @@ class DevLogs(nu.Cog):
 
     @devlogset_bypass.command(name="remove", aliases=["-"])
     async def devlogset_bypass_remove(
-        self, context: nu.commands.Context, user: nu.discord.User
+        self, context: nu.Context, user: nu.discord.User
     ) -> None:
         """
         Remove a user from the bypass list.
@@ -172,7 +171,7 @@ class DevLogs(nu.Cog):
             await context.send(content=f"{user.mention} removed from the bypass list.")
 
     @devlogset_bypass.command(name="list")
-    async def devlogset_bypass_list(self, context: nu.commands.Context) -> None:
+    async def devlogset_bypass_list(self, context: nu.Context) -> None:
         """
         list the users in the bypass list.
         """

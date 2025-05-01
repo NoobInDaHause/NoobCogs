@@ -1,8 +1,5 @@
 import noobutils as nu
-
-from redbot.core.bot import app_commands, commands, Red
-
-from typing import Literal
+import typing as t
 
 from .views import CookieClickerView
 
@@ -17,12 +14,12 @@ class CookieClicker(nu.Cog):
     Anti stress 100%.
     """
 
-    def __init__(self, bot: Red, *args, **kwargs) -> None:
+    __version__ = "1.2.8"
+    __authors__ = ["NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="1.2.7",
-            authors=["NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             identifier=348468464655768,
             force_registration=True,
@@ -34,7 +31,7 @@ class CookieClicker(nu.Cog):
     async def red_delete_data_for_user(
         self,
         *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
         """
@@ -48,11 +45,10 @@ class CookieClicker(nu.Cog):
                 async with self.config.guild(guild).user_lb() as ulb:
                     del ulb[user_id]
 
-    @commands.hybrid_command(name="cookieclicker")
-    @commands.bot_has_permissions(embed_links=True)
-    @commands.guild_only()
-    @app_commands.guild_only()
-    async def cookieclicker(self, context: commands.Context):
+    @nu.hybrid_command(name="cookieclicker")
+    @nu.commands.bot_has_permissions(embed_links=True)
+    @nu.commands.guild_only()
+    async def cookieclicker(self, context: nu.Context):
         """
         Cookie clicker.
 
@@ -70,9 +66,9 @@ class CookieClicker(nu.Cog):
         view.cookieclicker.style = nu.get_button_colour(c)
         await view.start()
 
-    @commands.command(name="cookieclickerlb", aliases=["cclb"])
-    @commands.bot_has_permissions(embed_links=True)
-    async def cookieclickerlb(self, context: commands.Context):
+    @nu.command(name="cookieclickerlb", aliases=["cclb"])
+    @nu.commands.bot_has_permissions(embed_links=True)
+    async def cookieclickerlb(self, context: nu.Context):
         """
         See this guild's leaderboard.
 
@@ -105,17 +101,17 @@ class CookieClicker(nu.Cog):
 
         await nu.NoobPaginator(obj=context, pages=pages).start()
 
-    @commands.group(name="cookieclickerset", aliases=["ccset"])
-    @commands.guild_only()
-    @commands.bot_has_permissions(use_external_emojis=True, embed_links=True)
-    async def cookieclickerset(self, context: commands.Context):
+    @nu.group(name="cookieclickerset", aliases=["ccset"])
+    @nu.commands.guild_only()
+    @nu.commands.bot_has_permissions(use_external_emojis=True, embed_links=True)
+    async def cookieclickerset(self, context: nu.Context):
         """
         Configure the cogs settings.
         """
         pass
 
     @cookieclickerset.command(name="forgetme")
-    async def cookieclickerset_forgetme(self, context: commands.Context):
+    async def cookieclickerset_forgetme(self, context: nu.Context):
         """
         Remove yourself from this guild's cookie clicker leaderboard.
 
@@ -138,9 +134,9 @@ class CookieClicker(nu.Cog):
                 del ulb[str(context.author.id)]
 
     @cookieclickerset.command(name="emoji")
-    @commands.admin_or_permissions(manage_guild=True)
+    @nu.commands.admin_or_permissions(manage_guild=True)
     async def cookieclickerset_emoji(
-        self, context: commands.Context, emoji: nu.NoobEmojiConverter = None
+        self, context: nu.Context, emoji: nu.NoobEmojiConverter = None
     ):
         """
         Change the cookie emoji.
@@ -158,11 +154,11 @@ class CookieClicker(nu.Cog):
         )
 
     @cookieclickerset.command(name="buttoncolour", aliases=["buttoncolor"])
-    @commands.admin_or_permissions(manage_guild=True)
+    @nu.commands.admin_or_permissions(manage_guild=True)
     async def cookieclickerset_buttoncolour(
         self,
-        context: commands.Context,
-        colour: Literal["red", "green", "blurple", "grey"] = None,
+        context: nu.Context,
+        colour: t.Literal["red", "green", "blurple", "grey"] = None,
     ):
         """
         Change the CookieClicker button colour.
@@ -180,8 +176,8 @@ class CookieClicker(nu.Cog):
         )
 
     @cookieclickerset.command(name="reset")
-    @commands.admin_or_permissions(manage_guild=True)
-    async def cookieclickerset_reset(self, context: commands.Context):
+    @nu.commands.admin_or_permissions(manage_guild=True)
+    async def cookieclickerset_reset(self, context: nu.Context):
         """
         Reset the CookieClicker current guild settings to default.
         """
@@ -197,8 +193,8 @@ class CookieClicker(nu.Cog):
             await self.config.guild(context.guild).clear()
 
     @cookieclickerset.command(name="resetcog")
-    @commands.is_owner()
-    async def cookieclickerset_resetcog(self, context: commands.Context):
+    @nu.commands.is_owner()
+    async def cookieclickerset_resetcog(self, context: nu.Context):
         """
         Reset the whole cogs data.
 

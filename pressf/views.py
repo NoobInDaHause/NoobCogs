@@ -12,7 +12,7 @@ class PressFView(nu.NoobView):
     def __init__(
         self,
         *,
-        obj: Union[nu.commands.Context, nu.discord.Interaction[nu.Red]],
+        obj: Union[nu.Context, nu.Interaction],
         cog: "PressF",
         thing: str,
         timeout: float = 180,
@@ -32,7 +32,7 @@ class PressFView(nu.NoobView):
     @nu.discord.ui.button(label="0")
     async def press_f_button(
         self,
-        interaction: nu.discord.Interaction,
+        interaction: nu.Interaction,
         button: nu.discord.ui.Button[PressFView],
     ):
         if interaction.user.id in self.paid_users:
@@ -46,7 +46,7 @@ class PressFView(nu.NoobView):
             content=f"**{interaction.user}** has paid their respects."
         )
 
-    async def interaction_check(self, _: nu.discord.Interaction[nu.Red]) -> bool:
+    async def interaction_check(self, _: nu.Interaction) -> bool:
         return True
 
     async def on_timeout(self):
