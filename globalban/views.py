@@ -1,43 +1,39 @@
-import discord
 import noobutils as nu
+import typing as t
 
-from redbot.core import commands
-
-from typing import TYPE_CHECKING, Union
-
-if TYPE_CHECKING:
+if t.TYPE_CHECKING:
     from . import GlobalBan
 
 
 class GbanViewReset(nu.NoobView):
     def __init__(
         self,
-        obj: Union[commands.Context, discord.Interaction[nu.Red]],
+        obj: t.Union[nu.Context, nu.Interaction],
         timeout: float = 60.0,
     ):
         super().__init__(obj=obj, timeout=timeout)
-        self.message: discord.Message = None
+        self.message: nu.discord.Message = None
 
     async def start(self, msg: str):
         self.message = await self.context.send(content=msg, view=self)
 
-    @discord.ui.select(
+    @nu.discord.ui.select(
         min_values=1,
         max_values=1,
         options=[
-            discord.SelectOption(
+            nu.discord.SelectOption(
                 label="List", emoji="📰", description="Reset the cogs banlist config."
             ),
-            discord.SelectOption(
+            nu.discord.SelectOption(
                 label="Logs", emoji="📜", description="Reset the cogs banlogs config."
             ),
-            discord.SelectOption(
+            nu.discord.SelectOption(
                 label="Cog", emoji="⚙️", description="Reset the whole cogs config."
             ),
         ],
     )
     async def select_callback(
-        self, interaction: discord.Interaction[nu.Red], select: discord.ui.Select
+        self, interaction: nu.Interaction, select: nu.discord.ui.Select
     ):
         cog: "GlobalBan" = interaction.client.get_cog("GlobalBan")
         for x in self.children:
@@ -58,8 +54,7 @@ class GbanViewReset(nu.NoobView):
 
             if confview.value:
                 await cog.config.banlist.clear()
-
-        if select.values[0] == "Logs":
+        elif select.values[0] == "Logs":
             confirm_msg = "Are you sure you want to reset the globalban banlogs?"
             confirm_action = "Successfully resetted the globalban banlogs."
 
@@ -72,8 +67,7 @@ class GbanViewReset(nu.NoobView):
 
             if confview.value:
                 await cog.config.banlogs.clear()
-
-        if select.values[0] == "Cog":
+        else:
             confirm_msg = "This will reset the globalban cogs whole configuration, do you want to continue?"
             confirm_action = "Successfully cleared the globalban cogs configuration."
 
