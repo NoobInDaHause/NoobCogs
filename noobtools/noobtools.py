@@ -1,8 +1,7 @@
 import amari
 import noobutils as nu
 import random
-
-from typing import List, Literal, Optional
+import typing as t
 
 from .converters import ModifiedFuzzyRole
 
@@ -17,23 +16,23 @@ class NoobTools(nu.Cog):
     Too lazy to think of a description, feel free to make a pr on my repo to change this.
     """
 
-    def __init__(self, bot: nu.Red, *args, **kwargs):
+    __version__ = "1.2.4"
+    __authors__ = ["NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="1.2.3",
-            authors=["NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             force_registration=True,
             *args,
-            **kwargs
+            **kwargs,
         )
         self.config.register_global(**DEFAULT_GLOBAL)
 
     async def red_delete_data_for_user(
         self,
         *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
         """
@@ -44,21 +43,20 @@ class NoobTools(nu.Cog):
         )
 
     async def cog_load(self) -> None:
+        await super().cog_load()
         if t := await self.config.tick_emoji():
             nu.commands.context.TICK = t
 
     async def cog_unload(self) -> None:
+        await super().cog_unload()
         nu.commands.context.TICK = "✅"
 
-    @nu.commands.hybrid_command(name="amarilevel", aliases=["alvl", "alevel", "amari"])
+    @nu.hybrid_command(name="amarilevel", aliases=["alvl", "alevel", "amari"])
     @nu.commands.guild_only()
     @nu.commands.cooldown(1, 5, nu.commands.BucketType.user)
     @nu.commands.bot_has_permissions(embed_links=True)
-    @nu.app_commands.guild_only()
     @nu.app_commands.describe(member="The member that you want to level check.")
-    async def amarilevel(
-        self, context: nu.commands.Context, member: nu.discord.Member = None
-    ):
+    async def amarilevel(self, context: nu.Context, member: nu.discord.Member = None):
         """
         Check your or someone else's amari level.
 
@@ -118,19 +116,18 @@ class NoobTools(nu.Cog):
                 )
             await _amari.close()
 
-    @nu.commands.hybrid_command(name="reach")
+    @nu.hybrid_command(name="reach")
     @nu.commands.guild_only()
     @nu.commands.cooldown(1, 10, nu.commands.BucketType.user)
     @nu.commands.bot_has_permissions(embed_links=True, manage_roles=True)
-    @nu.app_commands.guild_only()
     @nu.app_commands.describe(
         channel="The channel that you want to reach roles.",
         roles="The roles that you want to reach. (separate roles with spaces)",
     )
     async def reach(
         self,
-        context: nu.commands.Context,
-        channel: Optional[nu.discord.TextChannel] = None,
+        context: nu.Context,
+        channel: t.Optional[nu.discord.TextChannel] = None,
         roles: nu.commands.Greedy[ModifiedFuzzyRole] = None,
     ):  # sourcery skip: low-code-quality
         """
@@ -151,8 +148,8 @@ class NoobTools(nu.Cog):
                 "Easy there you can only reach up to 15 roles at a time."
             )
 
-        final_members: List[nu.discord.Member] = []
-        final_str: List[str] = []
+        final_members: t.List[nu.discord.Member] = []
+        final_str: t.List[str] = []
         all_members = []
 
         async with context.typing():
@@ -254,11 +251,10 @@ class NoobTools(nu.Cog):
 
             await context.send(embed=embed)
 
-    @nu.commands.hybrid_command(name="membercount", aliases=["mcount"])
+    @nu.hybrid_command(name="membercount", aliases=["mcount"])
     @nu.commands.bot_has_permissions(embed_links=True)
     @nu.commands.guild_only()
-    @nu.app_commands.guild_only()
-    async def membercount(self, context: nu.commands.Context):
+    async def membercount(self, context: nu.Context):
         """
         See the total members in this guild.
         """
@@ -283,9 +279,9 @@ class NoobTools(nu.Cog):
         )
         await context.send(embed=embed)
 
-    @nu.commands.command(name="randomcolour", aliases=["randomcolor"])
+    @nu.command(name="randomcolour", aliases=["randomcolor"])
     @nu.commands.bot_has_permissions(embed_links=True)
-    async def randomcolour(self, context: nu.commands.Context):
+    async def randomcolour(self, context: nu.Context):
         """
         Generate a random colour.
         """
@@ -300,10 +296,10 @@ class NoobTools(nu.Cog):
         embed.set_image(url=url)
         await context.send(embed=embed)
 
-    @nu.commands.command(name="changetickemoji")
+    @nu.command(name="changetickemoji")
     @nu.commands.is_owner()
     async def changetickemoji(
-        self, context: nu.commands.Context, emoji: nu.NoobEmojiConverter = None
+        self, context: nu.Context, emoji: nu.NoobEmojiConverter = None
     ):
         """
         Change [botname]'s tick emoji.
@@ -323,4 +319,3 @@ class NoobTools(nu.Cog):
             await self.config.tick_emoji.clear()
         await context.tick()
         await context.send(content=f"Successfully set {str(emoji)} as my tick emoji.")
-
