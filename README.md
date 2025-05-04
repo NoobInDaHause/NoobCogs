@@ -36,7 +36,7 @@ If you have any issues with any of the cogs be sure to open an issue or make a p
 | NoobTools         |  v1.2.4   | NoobInDahause's personal tools.                              |
 | PressF            |  v1.2.4   | F.                                                           |
 | RandomColourRole  |  v1.2.4   | Have a role that changes colour every 5 minutes.             |
-| SplitOrSteal      |  v3.1.3   | A fun split or steal game.                                   |
+| SplitOrSteal      |  v3.1.4   | A fun split or steal game.                                   |
 | StockMarket       |  v1.0.9   | Stock Market Simulation Cog.                                 |
 | Suggestions       |  v2.1.3   | Suggestion system.                                           |
 | Timers            |  v2.3.2   | Start a timer countdown.                                     |

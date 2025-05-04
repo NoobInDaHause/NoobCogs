@@ -1,13 +1,11 @@
 import asyncio
-import discord
 import noobutils as nu
 import random
+import typing as t
 
-from redbot.core.bot import app_commands, commands, Red
-from redbot.core.utils import chat_formatting as cf, mod
+from redbot.core.utils import mod
 
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Literal
 
 from .views import Commence, DuelView, SplitOrStealView
 
@@ -22,24 +20,24 @@ class SplitOrSteal(nu.Cog):
     This game can shatter friendships.
     """
 
-    def __init__(self, bot: Red, *args, **kwargs):
+    __version__ = "3.1.4"
+    __authors__ = ["NoobInDaHause"]
+
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            bot=bot,
-            cog_name=self.__class__.__name__,
-            version="3.1.3",
-            authors=["NoobInDaHause"],
+            bot=kwargs.pop("bot"),
             use_config=True,
             force_registration=True,
             *args,
             **kwargs,
         )
         self.config.register_guild(**DEFAULT_GUILD)
-        self.active_cache: Dict[str, List[int]] = {}
+        self.active_cache: t.Dict[str, t.List[int]] = {}
 
     async def red_delete_data_for_user(
         self,
         *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        requester: t.Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ) -> None:
         """
@@ -49,13 +47,12 @@ class SplitOrSteal(nu.Cog):
             requester=requester, user_id=user_id
         )
 
-    @commands.hybrid_command(name="splitorsteal", aliases=["sos"])
-    @commands.bot_has_permissions(embed_links=True)
-    @commands.cooldown(1, 10, commands.BucketType.channel)
-    @commands.guild_only()
-    @app_commands.guild_only()
-    @app_commands.describe(prize="The prize for the game.")
-    async def splitorsteal(self, context: commands.Context, *, prize: str):
+    @nu.hybrid_command(name="splitorsteal", aliases=["sos"])
+    @nu.commands.bot_has_permissions(embed_links=True)
+    @nu.commands.cooldown(1, 10, nu.commands.BucketType.channel)
+    @nu.commands.guild_only()
+    @nu.app_commands.describe(prize="The prize for the game.")
+    async def splitorsteal(self, context: nu.Context, *, prize: str):
         """
         Start a split or steal game event.
 
@@ -89,7 +86,7 @@ class SplitOrSteal(nu.Cog):
             )
         self.active_cache[str(context.guild.id)].append(context.channel.id)
         dt = datetime.now(timezone.utc) + timedelta(seconds=60)
-        embed = discord.Embed(
+        embed = nu.discord.Embed(
             title="A game of SplitOrSteal has begun!",
             description="Click the button below to get a chance to play and win a prize.",
             colour=await context.embed_colour(),
@@ -125,16 +122,15 @@ class SplitOrSteal(nu.Cog):
 
         await SplitOrStealView(context, self).start(p1, p2, prize)
 
-    @commands.hybrid_command(name="splitorstealduel", aliases=["sosduel"])
-    @commands.bot_has_permissions(embed_links=True)
-    @commands.cooldown(1, 10, commands.BucketType.channel)
-    @commands.guild_only()
-    @app_commands.guild_only()
-    @app_commands.describe(
+    @nu.hybrid_command(name="splitorstealduel", aliases=["sosduel"])
+    @nu.commands.bot_has_permissions(embed_links=True)
+    @nu.commands.cooldown(1, 10, nu.commands.BucketType.channel)
+    @nu.commands.guild_only()
+    @nu.app_commands.describe(
         opponent="Your splitorsteal opponent.", prize="The prize for the game."
     )
     async def splitorstealduel(
-        self, context: commands.Context, opponent: discord.Member, *, prize: str
+        self, context: nu.Context, opponent: nu.discord.Member, *, prize: str
     ):
         """
         SplitOrStealDuel someone.
@@ -169,11 +165,11 @@ class SplitOrSteal(nu.Cog):
         elif context.channel.id in self.active_cache[str(context.guild.id)]:
             self.active_cache[str(context.guild.id)].remove(context.channel.id)
 
-    @commands.group(name="splitorstealset", aliases=["sosset"])
-    @commands.admin_or_permissions(manage_guild=True)
-    @commands.guild_only()
-    @commands.bot_has_permissions(embed_links=True)
-    async def splitorstealset(self, context: commands.Context):
+    @nu.group(name="splitorstealset", aliases=["sosset"])
+    @nu.commands.admin_or_permissions(manage_guild=True)
+    @nu.commands.guild_only()
+    @nu.commands.bot_has_permissions(embed_links=True)
+    async def splitorstealset(self, context: nu.Context):
         """
         Configure your splitorsteal guild settings.
         """
@@ -182,8 +178,8 @@ class SplitOrSteal(nu.Cog):
     @splitorstealset.command(name="manager")
     async def splitorstealset_manager(
         self,
-        context: commands.Context,
-        _types: Literal["add", "remove", "list"],
+        context: nu.Context,
+        _types: t.Literal["add", "remove", "list"],
         *roles: nu.NoobFuzzyRole,
     ):
         """
@@ -193,9 +189,9 @@ class SplitOrSteal(nu.Cog):
         """
         if _types == "list":
             man = await self.config.guild(context.guild).managers()
-            embed = discord.Embed(
+            embed = nu.discord.Embed(
                 title=f"List of SplitOrSteal managers for [{context.guild.name}]",
-                description=cf.humanize_list(
+                description=nu.cf.humanize_list(
                     [f"<@&{r_id}>" for r_id in man] if man else ["None"]
                 ),
                 colour=await context.embed_colour(),
@@ -229,18 +225,18 @@ class SplitOrSteal(nu.Cog):
 
         if s:
             await context.send(
-                content=f"Successfully {_type} {cf.humanize_list(s)} {_type2} the list of manager"
+                content=f"Successfully {_type} {nu.cf.humanize_list(s)} {_type2} the list of manager"
                 " roles."
             )
 
         if f:
             await context.send(
-                content=f"Failed to {_types} {cf.humanize_list(f)} {_type2} the list of "
+                content=f"Failed to {_types} {nu.cf.humanize_list(f)} {_type2} the list of "
                 "manager roles since they are already manager roles."
             )
 
     @splitorstealset.command(name="resetguild")
-    async def splitorstealset_resetguild(self, context: commands.Context):
+    async def splitorstealset_resetguild(self, context: nu.Context):
         """
         Reset your guild settings.
         """
@@ -256,8 +252,8 @@ class SplitOrSteal(nu.Cog):
             await self.config.guild(context.guild).clear()
 
     @splitorstealset.command(name="resetcog")
-    @commands.is_owner()
-    async def splitorstealset_resetcog(self, context: commands.Context):
+    @nu.commands.is_owner()
+    async def splitorstealset_resetcog(self, context: nu.Context):
         """
         Reset the cogs config.
         """

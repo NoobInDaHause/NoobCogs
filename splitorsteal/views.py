@@ -1,15 +1,12 @@
 import asyncio
-import discord
 import noobutils as nu
-
-from redbot.core.bot import commands, Red
+import typing as t
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Union
 
 from .sosgifs import forfeit_gifs, win_gifs, lose_gifs, betray_gifs
 
-if TYPE_CHECKING:
+if t.TYPE_CHECKING:
     from . import SplitOrSteal
 
 
@@ -18,9 +15,9 @@ class Commence(nu.NoobView):
         super().__init__(obj=None)
         self.players = []
 
-    @discord.ui.button(label="0", style=nu.get_button_colour("green"))
+    @nu.discord.ui.button(label="0", style=nu.get_button_colour("green"))
     async def commence_button(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+        self, interaction: nu.Interaction, button: nu.discord.ui.Button
     ):
         if interaction.user in self.players:
             self.players.remove(interaction.user)
@@ -33,31 +30,31 @@ class Commence(nu.NoobView):
         await interaction.response.edit_message(view=self)
         await interaction.followup.send(content=message, ephemeral=True)
 
-    async def interaction_check(self, interaction: discord.Interaction[Red]) -> bool:
+    async def interaction_check(self, interaction: nu.Interaction) -> bool:
         return True
 
 
 class SplitOrStealView(nu.NoobView):
-    def __init__(self, obj: Union[commands.Context, discord.Interaction[nu.Red]], cog: "SplitOrSteal"):
+    def __init__(self, obj: t.Union[nu.Context, nu.Interaction], cog: "SplitOrSteal"):
         super().__init__(obj=obj, timeout=200.0)
         self.cog = cog
         self.prize: str = None
-        self.message: discord.Message = None
-        self.player_1: discord.Member = None
-        self.player_2: discord.Member = None
+        self.message: nu.discord.Message = None
+        self.player_1: nu.discord.Member = None
+        self.player_2: nu.discord.Member = None
         self.choices = {"player_1": None, "player_2": None}
 
     async def start(
         self,
-        p1: discord.Member,
-        p2: discord.Member,
+        p1: nu.discord.Member,
+        p2: nu.discord.Member,
         prize: str,
     ):
         self.prize = prize
         self.player_1 = p1
         self.player_2 = p2
         t = datetime.now(timezone.utc) + timedelta(seconds=60)
-        sotembed = discord.Embed(
+        sotembed = nu.discord.Embed(
             title="Split or Steal Game",
             description="The split or steal game has begun!\n"
             "Players can now discuss if they want to either `Split 🤝` or `Steal ⚔️` before the timer ends.\n"
@@ -159,11 +156,11 @@ class SplitOrStealView(nu.NoobView):
             else:
                 results.append(f"{p.mention} did not choose anything!\n")
         res, gif, col = self.get_gifs_and_stuff()
-        last_embed = discord.Embed(
+        last_embed = nu.discord.Embed(
             title="SplitOrSteal game ended.",
             description=res,
             colour=col,
-            timestamp=discord.utils.utcnow(),
+            timestamp=nu.discord.utils.utcnow(),
         )
         last_embed.set_author(
             name=f"Hosted by: {self.context.author} ({self.context.author.id})",
@@ -187,7 +184,7 @@ class SplitOrStealView(nu.NoobView):
                 stat.append(f"**✅ {p.mention} Ready.**\n")
             else:
                 stat.append(f"**❌ {p.mention} Not ready.**\n")
-        sembed = discord.Embed(
+        sembed = nu.discord.Embed(
             description="Players can now choose `Split 🤝` or `Steal ⚔️`.",
             colour=await self.context.embed_colour(),
         )
@@ -210,9 +207,9 @@ class SplitOrStealView(nu.NoobView):
             view=self,
         )
 
-    @discord.ui.button(emoji="🤝", label="Split", style=nu.get_button_colour("green"))
+    @nu.discord.ui.button(emoji="🤝", label="Split", style=nu.get_button_colour("green"))
     async def split_button(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+        self, interaction: nu.Interaction, button: nu.discord.ui.Button
     ):
         if interaction.user == self.player_1:
             if self.choices["player_1"]:
@@ -233,9 +230,9 @@ class SplitOrStealView(nu.NoobView):
             content="You have chosen 🤝 Split.", ephemeral=True
         )
 
-    @discord.ui.button(emoji="⚔️", label="Steal", style=nu.get_button_colour("red"))
+    @nu.discord.ui.button(emoji="⚔️", label="Steal", style=nu.get_button_colour("red"))
     async def steal_button(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+        self, interaction: nu.Interaction, button: nu.discord.ui.Button
     ):
         if interaction.user == self.player_1:
             if self.choices["player_1"]:
@@ -256,7 +253,7 @@ class SplitOrStealView(nu.NoobView):
             content="You have chosen ⚔️ Steal.", ephemeral=True
         )
 
-    async def interaction_check(self, interaction: discord.Interaction[Red]) -> bool:
+    async def interaction_check(self, interaction: nu.Interaction) -> bool:
         if interaction.user.id in [self.player_1.id, self.player_2.id]:
             return True
         await interaction.response.send_message(
@@ -276,10 +273,10 @@ class SplitOrStealView(nu.NoobView):
 
 
 class DuelView(nu.NoobView):
-    def __init__(self, context: commands.Context, member: discord.Member):
+    def __init__(self, context: nu.Context, member: nu.discord.Member):
         super().__init__(obj=context, timeout=30.0)
-        self.message: discord.Message = None
-        self.member: discord.Member = member
+        self.message: nu.discord.Message = None
+        self.member: nu.discord.Member = member
         self.value: bool = None
 
     async def start(self):
@@ -289,9 +286,9 @@ class DuelView(nu.NoobView):
             view=self,
         )
 
-    @discord.ui.button(label="Yes", style=nu.get_button_colour("green"))
+    @nu.discord.ui.button(label="Yes", style=nu.get_button_colour("green"))
     async def yes_duel(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+        self, interaction: nu.Interaction, button: nu.discord.ui.Button
     ):
         self.value = True
         for x in self.children:
@@ -301,9 +298,9 @@ class DuelView(nu.NoobView):
         )
         self.stop()
 
-    @discord.ui.button(label="No", style=nu.get_button_colour("red"))
+    @nu.discord.ui.button(label="No", style=nu.get_button_colour("red"))
     async def no_duel(
-        self, interaction: discord.Interaction[Red], button: discord.ui.Button
+        self, interaction: nu.Interaction, button: nu.discord.ui.Button
     ):
         self.value = False
         for x in self.children:
@@ -313,7 +310,7 @@ class DuelView(nu.NoobView):
         )
         self.stop()
 
-    async def interaction_check(self, interaction: discord.Interaction[Red]) -> bool:
+    async def interaction_check(self, interaction: nu.Interaction) -> bool:
         if interaction.user == self.member:
             return True
         await interaction.response.send_message(
