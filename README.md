@@ -1,4 +1,8 @@
-# NoobCogs
+# Archived
+
+⚠️ This repository is no longer maintained and supported use at your own risk.
+
+## NoobCogs
 
 Some random cogs for red discord bot made by a noob at python.
 
